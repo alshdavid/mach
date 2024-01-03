@@ -12,7 +12,9 @@ pub fn transform_tsx(source_map: Lrc<SourceMap>, mut module: Module) -> Module {
     let top_level_mark = Mark::fresh(Mark::root());
     let comments: Option<SingleThreadedComments> = None;
 
-    module = module.fold_with(&mut typescript_transforms::tsx(
+    let mut program = Program::Module(module).fold_with(&mut typescript_transforms::strip(top_level_mark));
+
+    program = program.fold_with(&mut typescript_transforms::tsx(
       source_map.clone(),
       Default::default(),
       typescript_transforms::TsxConfig::default(),
@@ -20,6 +22,7 @@ pub fn transform_tsx(source_map: Lrc<SourceMap>, mut module: Module) -> Module {
       top_level_mark,
     ));
 
-    return module;
+    let Program::Module(m) = program else { panic!("")};
+    return m;
   });
 }
