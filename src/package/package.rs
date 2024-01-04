@@ -70,9 +70,6 @@ pub fn package(
 
     match bundle.kind {
       BundleKind::Entry(asset_id) => {
-        for module_item in runtime_factory.prelude() {
-          package.body.push(module_item);
-        }
         let stmt = runtime_factory.bootstrap(&asset_id);
         package.body.push(ModuleItem::Stmt(stmt));
         packages.insert(PathBuf::from(format!("{}.js", bundle_id)), package);

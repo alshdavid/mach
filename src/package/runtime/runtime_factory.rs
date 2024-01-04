@@ -13,14 +13,13 @@ use crate::linking::parse;
   parsed modules are transformed into
 */
 
-pub const HEADER: &str = include_str!("./sources/header.js");
-pub const PRELUDE: &str = include_str!("./sources/prelude.js");
-pub const WRAPPER: &str = include_str!("./sources/wrapper.js");
-pub const BOOTSTRAP: &str = include_str!("./sources/bootstrap.js");
+pub const MODULE_HEADER: &str = include_str!("./sources/module_header.js");
+pub const MODULE_WRAPPER: &str = include_str!("./sources/module_wrapper.js");
 pub const IMPORT: &str = include_str!("./sources/import.js");
 pub const IMPORT_DYNAMIC: &str = include_str!("./sources/import_dynamic.js");
 pub const EXPORT_ALL: &str = include_str!("./sources/export_all.js");
 pub const EXPORT_CJS: &str = include_str!("./sources/export_cjs.js");
+pub const BOOTSTRAP: &str = include_str!("./sources/bootstrap.js");
 
 pub const RUNTIME_DEFAULT_EXPORT_SYMBOL: &str = "default";
 pub const RUNTIME_EXPORT_SYMBOL: &str = "$$export";
@@ -31,10 +30,9 @@ pub const RUNTIME_EXPORT_SYMBOL: &str = "$$export";
 /// EXAMPLE: import * as foo from './bar'
 /// BECOMES: const foo = __mach_import_module('./bar')
 pub struct RuntimeFactory {
-  header_stmt: Stmt,
-  prelude_stmt: Vec<ModuleItem>,
-  wrapper_stmt: Stmt,
-  bootstrap_stmt: CallExpr,
+  module_header_stmt: Stmt,
+  module_wrapper_stmt: Stmt,
+  bootstrap_stmt: ExprStmt,
   import_stmt: CallExpr,
   import_dynamic_stmt: CallExpr,
   export_all_stmt: Stmt,
@@ -43,30 +41,23 @@ pub struct RuntimeFactory {
 
 impl RuntimeFactory {
   pub fn new(source_map: Lrc<SourceMap>) -> Self {
-    let header_stmt: Stmt = {
+    let module_header_stmt: Stmt = {
       let name = PathBuf::from("mach_header");
-      let (module, _) = parse(&name, HEADER, source_map.clone()).unwrap();
+      let (module, _) = parse(&name, MODULE_HEADER, source_map.clone()).unwrap();
       module.body[0].as_stmt().unwrap().to_owned()
     };
 
-    let prelude_stmt: Vec<ModuleItem> = {
-      let name = PathBuf::from("mach_prelude");
-      let (module, _) = parse(&name, PRELUDE, source_map.clone()).unwrap();
-      module.body.clone()
-    };
-
-    let wrapper_stmt: Stmt = {
+    let module_wrapper_stmt: Stmt = {
       let name = PathBuf::from("mach_wrapper");
-      let (module, _) = parse(&name, WRAPPER, source_map.clone()).unwrap();
+      let (module, _) = parse(&name, MODULE_WRAPPER, source_map.clone()).unwrap();
       module.body[0].as_stmt().unwrap().to_owned()
     };
 
-    let bootstrap_stmt: CallExpr = {
+    let bootstrap_stmt: ExprStmt = {
       let name = PathBuf::from("mach_bootstrap");
       let (module, _) = parse(&name, BOOTSTRAP, source_map.clone()).unwrap();
       let stmt = module.body[0].as_stmt().unwrap().to_owned();
-      let expr = stmt.as_expr().unwrap().to_owned();
-      expr.expr.as_call().unwrap().to_owned()
+      stmt.as_expr().unwrap().to_owned()
     };
 
     let import_stmt: CallExpr = {
@@ -98,9 +89,8 @@ impl RuntimeFactory {
     };
 
     return RuntimeFactory {
-      header_stmt,
-      prelude_stmt,
-      wrapper_stmt,
+      module_header_stmt,
+      module_wrapper_stmt,
       bootstrap_stmt,
       import_stmt,
       import_dynamic_stmt,
@@ -111,34 +101,32 @@ impl RuntimeFactory {
 
   /// The header
   pub fn header(&self) -> Stmt {
-    return self.header_stmt.clone();
+    return self.module_header_stmt.clone();
   }
 
-  /// The prelude is a lightweight runtime that contains initialized modules
-  pub fn prelude(&self) -> Vec<ModuleItem> {
-    return self.prelude_stmt.clone();
-  }
+  pub fn bootstrap(&self, entry_module_id: &str) -> Stmt {
+    let mut template = self.bootstrap_stmt.clone();
 
-  pub fn bootstrap(&self, specifier: &str) -> Stmt {
-    let mut expr = self.bootstrap_stmt.clone();
-
-    let arg = &mut expr.args[0];
-
-    arg.expr = Box::new(Expr::Lit(Lit::Str(Str {
+    let arg = template.expr.as_mut_unary().unwrap();
+    let arg = arg.arg.as_mut_call().unwrap();
+    let callee = arg.callee.as_mut_expr().unwrap();
+    let func = callee.as_mut_fn_expr().unwrap();
+    let block = func.function.body.as_mut().unwrap();
+    let expr = block.stmts[3].as_mut_expr().unwrap();
+    let call = expr.expr.as_mut_call().unwrap();
+    
+    call.args[0].expr = Box::new(Expr::Lit(Lit::Str(Str {
       span: Span::default(),
-      value: Atom::from(specifier),
-      raw: Some(Atom::from(format!("\"{}\"", specifier))),
+      value: Atom::from(entry_module_id),
+      raw: Some(Atom::from(format!("\"{}\"", entry_module_id))),
     })));
 
-    return Stmt::Expr(ExprStmt {
-      span: Span::default(),
-      expr: Box::new(Expr::Call(expr)),
-    });
+    return Stmt::Expr(template);
   }
 
   /// Mints a module wrapper
   pub fn module(&self, specifier: &str, has_exports: bool, body: Vec<ModuleItem>) -> Stmt {
-    let mut stmt = self.wrapper_stmt.clone();
+    let mut stmt = self.module_wrapper_stmt.clone();
 
     let Stmt::Expr(expr) = &mut stmt else {
       panic!("Unable to generate module");

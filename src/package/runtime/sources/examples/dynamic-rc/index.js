@@ -1,6 +1,39 @@
-void function mach_runtime(initial_modules = {}) {
-  const mach_state = (globalThis[Symbol.for("PROJECT_HASH")] ?? (globalThis[Symbol.for("PROJECT_HASH")] = { 
-    $$: { 'entry': initial_modules },
+// MODULE COLLECTION START
+const modules = {}
+
+modules["d"] = ($$import, $$export)=>{
+  const b = 'b';
+  $$export["b"] = b;
+};
+
+modules["c"] = ($$import, $$export)=>{
+  const a = 'a';
+  $$export["a"] = a;
+};
+
+modules["b"] = ($$import, $$export, $$export_all, $$export_cjs)=>{
+  $$export_all("c")
+  $$export_all("d")
+};
+
+modules["index"] = ($$import, $$export)=>{
+    const fromA = $$import("b");
+    console.log(fromA);
+    console.log($$import("c"))
+    console.log($$import("c"))
+    $$import("c", "./b.js").then(m => {
+      console.log(m)
+      console.log($$import("c"))
+    })
+};
+// MODULE COLLECTION END
+
+
+// Bootstrap function
+// Only exists in the entry module and is passed into loaded modules
+void function bootstap(initial_modules = {}) {
+  const mach_state = (globalThis[Symbol.for("mach_state")] ?? (globalThis[Symbol.for("mach_state")] = { 
+    $$: { 'index.js': initial_modules },
   }))
 
   const run_module = (module, exports) => {
@@ -31,10 +64,10 @@ void function mach_runtime(initial_modules = {}) {
     return exports;
   }
 
-  mach_state.$ = (id, bundle_id = 'entry') => {
+  mach_state.$ = (id, bundle_id = 'index.js') => {
     // Load bundle
     if (!mach_state.$$[bundle_id]) {
-      mach_state.$$[bundle_id] = import(`./${bundle_id}.js`).then(({ modules }) => {
+      mach_state.$$[bundle_id] = import(bundle_id).then(({ modules }) => {
         mach_state.$$[bundle_id] = modules
         return mach_state.$(id, bundle_id)
       })
@@ -52,11 +85,11 @@ void function mach_runtime(initial_modules = {}) {
 
     const module_fn = mach_state.$$[bundle_id][id]
     mach_state[id] = mach_state[id] || {}
-    delete mach_state.$$[bundle_id][id]
     const result = run_module(module_fn, mach_state[id])
+    delete mach_state.$$[bundle_id][id]
     return result
   }
 
   // Start app
-  mach_state.$("ENTRY_MODULE")
+  mach_state.$("index")
 }(modules)
