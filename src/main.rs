@@ -1,5 +1,5 @@
 mod bundle;
-mod config;
+mod app_config;
 mod linking;
 mod optimize;
 mod package;
@@ -8,7 +8,6 @@ mod render;
 mod transform;
 mod platform;
 
-use std::env;
 use std::fs;
 use std::time::Instant;
 
@@ -16,7 +15,7 @@ use swc_core::common::sync::Lrc;
 use swc_core::common::SourceMap;
 
 use crate::bundle::bundle;
-use crate::config::AppConfig;
+use crate::app_config::AppConfig;
 use crate::linking::link;
 use crate::optimize::optimize;
 use crate::package::package;
@@ -27,21 +26,32 @@ use crate::transform::transform_pipeline;
 
 /*
     TODO:
+        * Combine optimize pipeline into the packaging pipeline
+        * read config from tsconfig or jsconfig
         * import alias support (https://parceljs.org/features/dependency-resolution/#global-aliases)
         * threaded transformations
+        * support split bundle with dynamic imports
         * multiple entries
-        * css import
+        * css imports
         * html entries
 */
 
 fn main() {
   let timing_start = Instant::now();
-  let config = AppConfig::new();
 
-  println!("Entry:    {}", config.entry_point.to_str().unwrap());
-  println!("Root:     {}", config.project_root.to_str().unwrap());
-  println!("Out Dir:  {}", config.dist_dir.to_str().unwrap());
-  println!("Threads:  {}", config.threads);
+  let config = match AppConfig::from_env() {
+    Ok(v) => v,
+    Err(err) => {
+      println!("{}", err);
+      return;
+    }
+  };
+
+  println!("Entry:       {}", config.entry_point.to_str().unwrap());
+  println!("Root:        {}", config.project_root.to_str().unwrap());
+  println!("Workspace:   {:?}", config.workspace_root);
+  println!("Out Dir:     {}", config.dist_dir.to_str().unwrap());
+  println!("Threads:     {}", config.threads);
 
   let asset_map = AssetMap::new();
   let dependency_map = DependencyMap::new();
@@ -61,7 +71,7 @@ fn main() {
     };
 
   let timing_linking = timing_start.elapsed().as_secs_f64();
-  println!("Assets:   {}", asset_map.len());
+  println!("Assets:      {}", asset_map.len());
   println!("Timings:");
   println!("   Linking:      {:.4}s", timing_linking);
 

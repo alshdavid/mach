@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 pub fn parse_command_line_args(cli_args: &str) -> (HashMap<String, Vec<String>>, String) {
-  println!("{}", cli_args);
   let mut args = HashMap::new();
 
   let mut key_buff = String::new();
@@ -12,7 +11,7 @@ pub fn parse_command_line_args(cli_args: &str) -> (HashMap<String, Vec<String>>,
   for c in cli_args.chars() {
     let c = c.to_string();
 
-    if c == " " {
+    if c == " " || c == "=" {
       pos = TABLE[pos][SPACE]
     } else if c == "-" {
       pos = TABLE[pos][DASH]

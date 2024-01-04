@@ -11,7 +11,7 @@ use swc_core::ecma::visit::FoldWith;
 use crate::bundle::BundleDependencyIndex;
 use crate::bundle::BundleKind;
 use crate::bundle::BundleMap;
-use crate::config::AppConfig;
+use crate::app_config::AppConfig;
 use crate::package::RuntimeFactory;
 
 use super::apply_runtime_cjs::apply_runtime_cjs;

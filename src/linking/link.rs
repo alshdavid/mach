@@ -17,7 +17,7 @@ use std::thread::JoinHandle;
 use swc_core::common::sync::Lrc;
 use swc_core::common::SourceMap;
 
-use crate::config::AppConfig;
+use crate::app_config::AppConfig;
 use crate::public::Asset;
 use crate::public::AssetId;
 use crate::public::AssetMap;

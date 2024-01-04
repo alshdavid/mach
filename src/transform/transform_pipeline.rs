@@ -11,7 +11,7 @@ use swc_core::common::SourceMap;
 use swc_core::ecma::visit::FoldWith;
 use swc_core::ecma::atoms::JsWord;
 
-use crate::config::AppConfig;
+use crate::app_config::AppConfig;
 use crate::linking::DependencyIndex;
 use crate::public::AssetMap;
 use crate::public::DependencyMap;
