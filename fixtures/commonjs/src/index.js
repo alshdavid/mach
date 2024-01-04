@@ -1,9 +1,5 @@
-module.exports.a = ''
-
-// const a = require('./a.js')
-// console.log(a)
-// // console.log(require('./a.js'))
-// // console.log(require('./b.js'))
-// // console.log(require('./c.js'))
-// // console.log(require('./d.js'))
+console.log(require('./a.js'))
+console.log(require('./b.js'))
+console.log(require('./c.js'))
+console.log(require('./d.js'))
 

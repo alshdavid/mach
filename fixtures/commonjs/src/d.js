@@ -2,4 +2,5 @@
 
 const d = 'd'
 
-exports = { d }
+module.exports = { d }
+// exports = { d }

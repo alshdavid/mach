@@ -1,1 +1,1 @@
-__mach_export_all(__mach_exports, "specifier")
+$$export_all("specifier")

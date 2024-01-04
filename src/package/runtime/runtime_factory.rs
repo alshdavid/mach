@@ -13,15 +13,17 @@ use crate::linking::parse;
   parsed modules are transformed into
 */
 
+pub const HEADER: &str = include_str!("./sources/header.js");
 pub const PRELUDE: &str = include_str!("./sources/prelude.js");
 pub const WRAPPER: &str = include_str!("./sources/wrapper.js");
+pub const BOOTSTRAP: &str = include_str!("./sources/bootstrap.js");
 pub const IMPORT: &str = include_str!("./sources/import.js");
 pub const IMPORT_DYNAMIC: &str = include_str!("./sources/import_dynamic.js");
 pub const EXPORT_ALL: &str = include_str!("./sources/export_all.js");
-pub const EXPORT_ALL_REQUIRE: &str = include_str!("./sources/export_require_default.js");
+pub const EXPORT_CJS: &str = include_str!("./sources/export_cjs.js");
 
-pub const RUNTIME_DEFAULT_EXPORT_SYMBOL: &str = "__mach_default_export";
-pub const RUNTIME_EXPORT_SYMBOL: &str = "__mach_exports";
+pub const RUNTIME_DEFAULT_EXPORT_SYMBOL: &str = "default";
+pub const RUNTIME_EXPORT_SYMBOL: &str = "$$export";
 
 /// RuntimeFactory mints SWC AST statements that represents module
 /// syntax that is transformed into the equivalent bundle wrapping code
@@ -29,8 +31,10 @@ pub const RUNTIME_EXPORT_SYMBOL: &str = "__mach_exports";
 /// EXAMPLE: import * as foo from './bar'
 /// BECOMES: const foo = __mach_import_module('./bar')
 pub struct RuntimeFactory {
+  header_stmt: Stmt,
   prelude_stmt: Vec<ModuleItem>,
   wrapper_stmt: Stmt,
+  bootstrap_stmt: CallExpr,
   import_stmt: CallExpr,
   import_dynamic_stmt: CallExpr,
   export_all_stmt: Stmt,
@@ -39,94 +43,65 @@ pub struct RuntimeFactory {
 
 impl RuntimeFactory {
   pub fn new(source_map: Lrc<SourceMap>) -> Self {
-    let prelude_stmt = {
-      let Ok((module, _)) = parse(&PathBuf::from("mach_prelude"), PRELUDE, source_map.clone())
-      else {
-        panic!("Unable to parse prelude");
-      };
+    let header_stmt: Stmt = {
+      let name = PathBuf::from("mach_header");
+      let (module, _) = parse(&name, HEADER, source_map.clone()).unwrap();
+      module.body[0].as_stmt().unwrap().to_owned()
+    };
+
+    let prelude_stmt: Vec<ModuleItem> = {
+      let name = PathBuf::from("mach_prelude");
+      let (module, _) = parse(&name, PRELUDE, source_map.clone()).unwrap();
       module.body.clone()
     };
 
-    let wrapper_stmt = {
-      let Ok((module, _)) = parse(&PathBuf::from("mach_wrapper"), WRAPPER, source_map.clone())
-      else {
-        panic!("Unable to parse prelude");
-      };
-      let ModuleItem::Stmt(stmt) = module.body[0].clone() else {
-        panic!("Unable to parse import");
-      };
-      stmt
+    let wrapper_stmt: Stmt = {
+      let name = PathBuf::from("mach_wrapper");
+      let (module, _) = parse(&name, WRAPPER, source_map.clone()).unwrap();
+      module.body[0].as_stmt().unwrap().to_owned()
     };
 
-    let import_stmt = {
-      let Ok((module, _)) = parse(&PathBuf::from("mach_import"), IMPORT, source_map.clone()) else {
-        panic!("Unable to parse import");
-      };
-      let ModuleItem::Stmt(stmt) = module.body[0].clone() else {
-        panic!("Unable to parse import");
-      };
-      let Stmt::Expr(expr) = &stmt else {
-        panic!("Unable to generate import");
-      };
-
-      let Expr::Call(expr) = &*expr.expr else {
-        panic!("Unable to generate import");
-      };
-      expr.clone()
+    let bootstrap_stmt: CallExpr = {
+      let name = PathBuf::from("mach_bootstrap");
+      let (module, _) = parse(&name, BOOTSTRAP, source_map.clone()).unwrap();
+      let stmt = module.body[0].as_stmt().unwrap().to_owned();
+      let expr = stmt.as_expr().unwrap().to_owned();
+      expr.expr.as_call().unwrap().to_owned()
     };
 
-    let import_dynamic_stmt = {
-      let Ok((module, _)) = parse(
-        &PathBuf::from("mach_import_dynamic"),
-        IMPORT_DYNAMIC,
-        source_map.clone(),
-      ) else {
-        panic!("Unable to parse import");
-      };
-      let ModuleItem::Stmt(stmt) = module.body[0].clone() else {
-        panic!("Unable to parse import");
-      };
-      let Stmt::Expr(expr) = &stmt else {
-        panic!("Unable to generate import");
-      };
-
-      let Expr::Call(expr) = &*expr.expr else {
-        panic!("Unable to generate import");
-      };
-      expr.clone()
+    let import_stmt: CallExpr = {
+      let name = PathBuf::from("mach_import");
+      let (module, _) = parse(&name, IMPORT, source_map.clone()).unwrap();
+      let stmt = module.body[0].as_stmt().unwrap().to_owned();
+      let expr = stmt.as_expr().unwrap().to_owned();
+      expr.expr.as_call().unwrap().to_owned()
     };
 
-    let export_all_stmt = {
-      let Ok((module, _)) = parse(
-        &PathBuf::from("mach_export_all"),
-        EXPORT_ALL,
-        source_map.clone(),
-      ) else {
-        panic!("Unable to parse export_all");
-      };
-      let ModuleItem::Stmt(stmt) = module.body[0].clone() else {
-        panic!("Unable to parse export_all");
-      };
-      stmt
+    let import_dynamic_stmt: CallExpr = {
+      let name = PathBuf::from("mach_import_dynamic");
+      let (module, _) = parse(&name, IMPORT_DYNAMIC, source_map.clone()).unwrap();
+      let stmt = module.body[0].as_stmt().unwrap().to_owned();
+      let expr = stmt.as_expr().unwrap().to_owned();
+      expr.expr.as_call().unwrap().to_owned()
     };
 
-    let export_all_require_stmt = {
-      let Ok((module, _)) = parse(
-        &PathBuf::from("mach_export_all_require"),
-        EXPORT_ALL_REQUIRE,
-        source_map.clone(),
-      ) else {
-        panic!("Unable to parse export_all");
-      };
-      let ModuleItem::Stmt(stmt) = module.body[0].clone() else {
-        panic!("Unable to parse export_all");
-      };
-      stmt
+    let export_all_stmt: Stmt = {
+      let name = PathBuf::from("mach_export_all");
+      let (module, _) = parse(&name, EXPORT_ALL, source_map.clone()).unwrap();
+      module.body[0].as_stmt().unwrap().to_owned()
+    };
+
+    let export_all_require_stmt: Stmt = {
+      let name = PathBuf::from("mach_export_cjs");
+      let (module, _) = parse(&name, EXPORT_CJS, source_map.clone()).unwrap(); 
+      module.body[0].as_stmt().unwrap().to_owned()
     };
 
     return RuntimeFactory {
+      header_stmt,
       prelude_stmt,
       wrapper_stmt,
+      bootstrap_stmt,
       import_stmt,
       import_dynamic_stmt,
       export_all_stmt,
@@ -134,9 +109,31 @@ impl RuntimeFactory {
     };
   }
 
+  /// The header
+  pub fn header(&self) -> Stmt {
+    return self.header_stmt.clone();
+  }
+
   /// The prelude is a lightweight runtime that contains initialized modules
   pub fn prelude(&self) -> Vec<ModuleItem> {
     return self.prelude_stmt.clone();
+  }
+
+  pub fn bootstrap(&self, specifier: &str) -> Stmt {
+    let mut expr = self.bootstrap_stmt.clone();
+
+    let arg = &mut expr.args[0];
+
+    arg.expr = Box::new(Expr::Lit(Lit::Str(Str {
+      span: Span::default(),
+      value: Atom::from(specifier),
+      raw: Some(Atom::from(format!("\"{}\"", specifier))),
+    })));
+
+    return Stmt::Expr(ExprStmt {
+      span: Span::default(),
+      expr: Box::new(Expr::Call(expr)),
+    });
   }
 
   /// Mints a module wrapper
@@ -280,11 +277,11 @@ impl RuntimeFactory {
           imports.push(ObjectPatProp::KeyValue(KeyValuePatProp {
             key: PropName::Computed(ComputedPropName {
               span: Span::default(),
-              expr: Box::new(Expr::Ident(Ident {
+              expr: Box::new(Expr::Lit(Lit::Str(Str {
                 span: Span::default(),
-                sym: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
-                optional: false,
-              })),
+                value: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
+                raw: Some(Atom::from(format!("\"{}\"", RUNTIME_DEFAULT_EXPORT_SYMBOL))),
+              }))),
             }),
             value: Box::new(Pat::Ident(BindingIdent {
               id: Ident {
@@ -407,11 +404,11 @@ impl RuntimeFactory {
         })),
         prop: MemberProp::Computed(ComputedPropName {
           span: Span::default(),
-          expr: Box::new(Expr::Ident(Ident {
+          expr: Box::new(Expr::Lit(Lit::Str(Str {
             span: Span::default(),
-            sym: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
-            optional: false,
-          })),
+            value: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
+            raw: Some(Atom::from(format!("\"{}\"", RUNTIME_DEFAULT_EXPORT_SYMBOL))),
+          }))),
         }),
       }))),
       right: Box::new(Expr::Ident(Ident {
@@ -441,11 +438,11 @@ impl RuntimeFactory {
         })),
         prop: MemberProp::Computed(ComputedPropName {
           span: Span::default(),
-          expr: Box::new(Expr::Ident(Ident {
+          expr: Box::new(Expr::Lit(Lit::Str(Str {
             span: Span::default(),
-            sym: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
-            optional: false,
-          })),
+            value: Atom::from(RUNTIME_DEFAULT_EXPORT_SYMBOL),
+            raw: Some(Atom::from(format!("\"{}\"", RUNTIME_DEFAULT_EXPORT_SYMBOL))),
+          }))),
         }),
       }))),
       right: stmt,
@@ -465,7 +462,7 @@ impl RuntimeFactory {
     let assign = expr.expr.as_mut_assign().unwrap();
     let call = assign.right.as_mut_call().unwrap();
 
-    call.args[1].expr = stmt;
+    call.args[0].expr = stmt;
 
     return template;
   }
@@ -479,7 +476,7 @@ impl RuntimeFactory {
     let assign = expr.expr.as_mut_assign().unwrap();
     let call = assign.right.as_mut_call().unwrap();
 
-    call.args[1].expr = stmt;
+    call.args[0].expr = stmt;
 
     call.args.push(ExprOrSpread {
       spread: None,
@@ -506,7 +503,7 @@ impl RuntimeFactory {
       panic!("Unable to generate import");
     };
 
-    let arg = &mut expr.args[1];
+    let arg = &mut expr.args[0];
 
     arg.expr = Box::new(Expr::Lit(Lit::Str(Str {
       span: Span::default(),

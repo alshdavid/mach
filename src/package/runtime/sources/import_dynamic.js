@@ -1,1 +1,1 @@
-Promise.resolve(__mach_import_module('specifier'))
+Promise.resolve($$import('specifier'))

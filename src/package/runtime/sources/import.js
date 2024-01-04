@@ -1,1 +1,1 @@
-__mach_import_module('specifier')
+$$import('specifier')

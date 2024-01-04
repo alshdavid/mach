@@ -107,7 +107,19 @@ impl Fold for ApplyRuntimeCommonJs {
               .unwrap()
               .clone();
           }
-          MemberProp::Computed(_) => todo!(),
+          MemberProp::Computed(computed) => {
+            let Expr::Lit(lit) = *computed.expr else { panic!("Expected literal value") };
+            let Lit::Str(str) = lit else { panic!("Expected string value") };
+            return self
+              .runtime_factory
+              .require_export_named(str.value.as_str(), v.right)
+              .as_expr()
+              .unwrap()
+              .expr
+              .as_assign()
+              .unwrap()
+              .clone();
+          },
           MemberProp::PrivateName(_) => {
             return v;
           }
@@ -149,7 +161,19 @@ impl Fold for ApplyRuntimeCommonJs {
               .unwrap()
               .clone();
           }
-          MemberProp::Computed(_) => todo!(),
+          MemberProp::Computed(computed) => {
+            let Expr::Lit(lit) = *computed.expr else { panic!("Expected literal value") };
+            let Lit::Str(str) = lit else { panic!("Expected string value") };
+            return self
+              .runtime_factory
+              .require_export_named(str.value.as_str(), v.right)
+              .as_expr()
+              .unwrap()
+              .expr
+              .as_assign()
+              .unwrap()
+              .clone();
+          },
           MemberProp::PrivateName(_) => {
             return v;
           }

@@ -37,9 +37,7 @@ pub fn package(
       shebang: None,
     };
 
-    for module_item in runtime_factory.prelude() {
-      package.body.push(module_item);
-    }
+    package.body.push(ModuleItem::Stmt(runtime_factory.header()));
 
     bundle.assets.sort_by(|a, b| a.id.cmp(&b.id));
 
@@ -72,9 +70,11 @@ pub fn package(
 
     match bundle.kind {
       BundleKind::Entry(asset_id) => {
-        package
-          .body
-          .push(ModuleItem::Stmt(runtime_factory.import(&asset_id)));
+        for module_item in runtime_factory.prelude() {
+          package.body.push(module_item);
+        }
+        let stmt = runtime_factory.bootstrap(&asset_id);
+        package.body.push(ModuleItem::Stmt(stmt));
         packages.insert(PathBuf::from(format!("{}.js", bundle_id)), package);
       }
       BundleKind::Dynamic => todo!(),
