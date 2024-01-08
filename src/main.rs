@@ -1,51 +1,35 @@
-mod bundle;
 mod app_config;
-mod linking;
-mod optimize;
-mod package;
-mod public;
-mod render;
-mod transform;
+mod bundling;
+mod default_plugins;
+mod emitting;
+mod packaging;
 mod platform;
+mod public;
+mod transformation;
 
-use std::fs;
-use std::time::Instant;
-
-use swc_core::common::sync::Lrc;
 use swc_core::common::SourceMap;
 
-use crate::bundle::bundle;
-use crate::app_config::AppConfig;
-use crate::linking::link;
-use crate::optimize::optimize;
-use crate::package::package;
+use crate::app_config::app_config;
+use crate::bundling::bundle;
+use crate::emitting::emit;
+use crate::packaging::package;
+use crate::platform::Container;
 use crate::public::AssetMap;
+use crate::public::BundleMap;
 use crate::public::DependencyMap;
-use crate::render::render;
-use crate::transform::transform_pipeline;
-
-/*
-    TODO:
-        * Combine optimize pipeline into the packaging pipeline
-        * read config from tsconfig or jsconfig
-        * import alias support (https://parceljs.org/features/dependency-resolution/#global-aliases)
-        * threaded transformations
-        * support split bundle with dynamic imports
-        * multiple entries
-        * css imports
-        * html entries
-*/
+use crate::transformation::transform;
 
 fn main() {
-  let timing_start = Instant::now();
+  let config = app_config().expect("Could not parse CLI args");
 
-  let config = match AppConfig::from_env() {
-    Ok(v) => v,
-    Err(err) => {
-      println!("{}", err);
-      return;
-    }
-  };
+  // Data structures are stored in containers that allow the
+  // internal values to be extracted. Helps with multi-threading.
+  let mut asset_map_ref = Container::new(AssetMap::new());
+  let mut dependency_map_ref = Container::new(DependencyMap::new());
+  let mut bundle_map_ref = Container::new(BundleMap::new());
+
+  // Global SWC source map
+  let mut source_map_ref = Container::new(SourceMap::default());
 
   println!("Entry:       {}", config.entry_point.to_str().unwrap());
   println!("Root:        {}", config.project_root.to_str().unwrap());
@@ -53,121 +37,59 @@ fn main() {
   println!("Out Dir:     {}", config.dist_dir.to_str().unwrap());
   println!("Threads:     {}", config.threads);
 
-  let asset_map = AssetMap::new();
-  let dependency_map = DependencyMap::new();
-  let source_map = Lrc::new(SourceMap::default());
-
-  // This phase parses source files into AST, identifying import/export
-  // statements and repeating the process on the targets - crawling the
-  // sources until there are no files left to process.
-  // During this phase we generate a graph of relationships between files.
-  let (asset_map, dependency_map, dependency_index, source_map) =
-    match link(&config, asset_map, dependency_map, source_map) {
-      Ok(v) => v,
-      Err(err) => {
-        println!("Error Linking:\n{}", err);
-        return;
-      }
-    };
-
-  let timing_linking = timing_start.elapsed().as_secs_f64();
-  println!("Assets:      {}", asset_map.len());
-  println!("Timings:");
-  println!("   Linking:      {:.4}s", timing_linking);
-
-  // This phase modifies the assets applying transformations like
-  // converting JSX/TSX or stripping TypeScript types.
-  let (asset_map, dependency_map, dependency_index, source_map) = match transform_pipeline(
+  // This phase reads source files and transforms them. New imports
+  // are discovered as files are parsed, looping until no more imports exist
+  if let Err(err) = transform(
     &config,
-    asset_map,
-    dependency_map,
-    dependency_index,
-    source_map,
+    &mut asset_map_ref,
+    &mut dependency_map_ref,
+    &mut source_map_ref,
   ) {
-    Ok(v) => v,
-    Err(err) => {
-      println!("Error Transforming:\n{}", err);
-      return;
-    }
-  };
-
-  let timing_transforming = timing_start.elapsed().as_secs_f64();
-  println!(
-    "   Transforming: {:.4}s",
-    timing_transforming - timing_linking
-  );
-
-  // This phase analyzes the bundle graph and determines how to divide
-  // assets into their respective bundles. Each bundle represents a file
-  // that will be written to disk.
-  let (source_map, bundle_map, bundle_dependency_index) = match bundle(
-    &config,
-    asset_map,
-    dependency_map,
-    dependency_index,
-    source_map,
-  ) {
-    Ok(v) => v,
-    Err(err) => {
-      println!("Error Bundling:\n{}", err);
-      return;
-    }
-  };
-
-  let timing_bundling = timing_start.elapsed().as_secs_f64();
-  println!(
-    "   Bundling:     {:.4}s",
-    timing_bundling - timing_transforming
-  );
-
-  // This stage generates a Module for each file in the bundle map, wrapping
-  // the assets within each bundle in the runtime code and transforming the
-  // import/export/commonjs statements so they are compatible
-  let (mut source_map, mut packages) =
-    match package(&config, bundle_map, bundle_dependency_index, source_map) {
-      Ok(v) => v,
-      Err(err) => {
-        println!("Error Packaging:\n{}", err);
-        return;
-      }
-    };
-
-  let timing_packaging = timing_start.elapsed().as_secs_f64();
-  println!(
-    "   Packaging:    {:.4}s",
-    timing_packaging - timing_bundling
-  );
-
-  // This stage minifies the code within the bundles
-  if config.optimize == true {
-    (source_map, packages) = match optimize(packages, source_map) {
-      Ok(v) => v,
-      Err(err) => {
-        println!("Error Optimizing:\n{}", err);
-        return;
-      }
-    };
+    println!("Transformation Error");
+    println!("{}", err);
+    return;
   }
 
-  let timing_optimize = timing_start.elapsed().as_secs_f64();
-  println!(
-    "   Optimizing:   {:.4}s",
-    timing_optimize - timing_packaging
-  );
+  let assets = asset_map_ref.take();
+  println!("Asset {}", assets.len());
+  asset_map_ref.insert(assets);
 
-  // This stage writes the bundle modules to disk
-  fs::create_dir_all(&config.dist_dir).unwrap();
-  for (out_file, bundle) in packages {
-    let bundle_str = render(&bundle, source_map.clone());
-    fs::write(config.dist_dir.join(out_file), bundle_str).unwrap();
-    // println!("{}", bundle_str);
+  // This phase reads the dependency graph and produces multiple bundles,
+  // each bundle representing and output file
+  if let Err(err) = bundle(
+    &mut asset_map_ref,
+    &mut dependency_map_ref,
+    &mut bundle_map_ref,
+    &mut source_map_ref,
+  ) {
+    println!("Bundling Error");
+    println!("{}", err);
+    return;
   }
 
-  let timing_writing = timing_start.elapsed().as_secs_f64();
-  println!("   Writing:      {:.4}s", timing_writing - timing_packaging);
-  println!("   ------");
-  println!(
-    "   Total:        {:.4}s",
-    timing_start.elapsed().as_secs_f64()
-  );
+  // This phase reads the bundle graph and applies the "runtime" code,
+  // to the assets. This is things like rewriting import statements
+  if let Err(err) = package(
+    &mut asset_map_ref,
+    &mut dependency_map_ref,
+    &mut bundle_map_ref,
+    &mut source_map_ref,
+  ) {
+    println!("Packaging Error:");
+    println!("{}", err);
+    return;
+  }
+
+  // This phase writes the bundles to disk
+  if let Err(err) = emit(
+    &config,
+    &mut asset_map_ref,
+    &mut dependency_map_ref,
+    &mut bundle_map_ref,
+    &mut source_map_ref,
+  ) {
+    println!("Emitting Error");
+    println!("{}", err);
+    return;
+  }
 }

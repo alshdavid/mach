@@ -9,10 +9,10 @@ use crate::public::ImportSpecifier;
 pub type DependencyIndex = HashMap<(AssetId, ImportSpecifier), AssetId>;
 
 pub fn generate_dependency_index(
+  dependency_index: &mut DependencyIndex,
   asset_map: &AssetMap,
   dependency_map: &DependencyMap,
-) -> DependencyIndex {
-  let mut dependency_index = DependencyIndex::new();
+) {
 
   for (asset_id, asset) in asset_map {
     let Some(dependencies) = dependency_map.get(asset_id) else {
@@ -26,6 +26,4 @@ pub fn generate_dependency_index(
       );
     }
   }
-
-  return dependency_index;
 }

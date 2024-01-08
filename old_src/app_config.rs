@@ -2,47 +2,82 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-use glob_match::glob_match;
 use normalize_path::NormalizePath;
+use glob_match::glob_match;
 
 use crate::platform::CommandArgs;
 use crate::platform::CommandLineParseResult;
-use crate::public::Config;
-use crate::public::WorkspaceKind;
 
-pub fn app_config() -> Result<Config, String> {
-  let args = CommandArgs::from_args(env::args());
+#[derive(Clone, Debug)]
+pub enum WorkspaceKind {
+  Pnpm,
+  NpmOrYarn,
+  None,
+}
 
-  let Some(entry_point) = get_entry(&args) else {
-    return Err(
-      "Missing entry point\n\tusage:\n\t\t--entry ./filepath\n\t\t-i ./filepath".to_string(),
-    );
-  };
+#[derive(Clone, Debug)]
+pub struct AppConfig {
+  /// CLI:
+  ///   -i --entry
+  ///   [cmd]
+  pub entry_point: PathBuf,
+  /// CLI
+  ///   -o
+  ///   --dist-dir
+  pub dist_dir: PathBuf,
+  /// Automatic
+  pub workspace_root: Option<PathBuf>,
+  /// Automatic
+  pub workspace_kind: WorkspaceKind,
+  /// Automatic
+  pub project_root: PathBuf,
+  /// CLI:
+  ///   -t [i32]
+  ///   --threads [i32]
+  /// ENV:
+  ///   env MACH_THREADS=[i32]
+  pub threads: usize,
+  /// CLI:
+  ///   -z
+  ///   --optimize
+  /// ENV:
+  ///   env MACH_OPTIMIZE=true
+  pub optimize: bool,
+}
 
-  let project_root = find_project_root(&entry_point);
+impl AppConfig {
+  pub fn from_env() -> Result<Self, String> {
+    let args = CommandArgs::from_args(env::args());
 
-  let Ok((workspace_root, workspace_kind)) = find_project_workspace(&project_root) else {
-    return Err("Error while looking up workspace".to_string());
-  };
+    let Some(entry_point) = get_entry(&args) else {
+      return Err("Missing entry point\n\tusage:\n\t\t--entry ./filepath\n\t\t-i ./filepath".to_string());
+    };
 
-  let dist_dir = get_dist_dir(&args, &project_root);
+    let project_root = find_project_root(&entry_point);
 
-  let threads = match get_threads(&args) {
-    Ok(v) => v,
-    Err(err) => return Err(err),
-  };
+    let Ok((workspace_root, workspace_kind)) = find_project_workspace(&project_root) else {
+      return Err("Error while looking up workspace".to_string());
+    };
+    
+    let dist_dir = get_dist_dir(&args, &project_root);
 
-  let optimize = get_optimize(&args);
+    let threads = match get_threads(&args) {
+        Ok(v) => v,
+        Err(err) => return Err(err),
+    };
 
-  return Ok(Config {
-    entry_point,
-    dist_dir,
-    workspace_root,
-    workspace_kind,
-    project_root,
-    threads,
-    optimize,
-  });
+    let optimize = get_optimize(&args);
+
+    return Ok(AppConfig {
+      entry_point,
+      dist_dir,
+      workspace_root,
+      workspace_kind,
+      project_root,
+      threads,
+      optimize,
+    });
+  }
 }
 
 fn get_entry(args: &CommandArgs) -> Option<PathBuf> {
@@ -70,23 +105,21 @@ fn get_threads(args: &CommandArgs) -> Result<usize, String> {
     };
     return Ok(parse_res);
   };
-
+  
   // From CLI
   match args.get_all_nums(&["t", "threads"]) {
-    CommandLineParseResult::Ok(threads_cli) => {
-      if threads_cli.len() > 0 {
-        return Ok(threads_cli[0]);
-      }
-    }
-    CommandLineParseResult::Err(err) => {
-      return Err(format!("Unable to parse threads from cli args: {}", err))
-    }
-    CommandLineParseResult::MissingValue => {
-      return Err(format!(
-        "Unable to parse threads from cli args: missing value"
-      ))
-    }
-    CommandLineParseResult::MissingKey => {}
+      CommandLineParseResult::Ok(threads_cli) => {
+        if threads_cli.len() > 0 {
+          return Ok(threads_cli[0]);
+        }
+      },
+      CommandLineParseResult::Err(err) => {
+        return Err(format!("Unable to parse threads from cli args: {}", err))
+      },
+      CommandLineParseResult::MissingValue => {
+        return Err(format!("Unable to parse threads from cli args: missing value"))
+      },
+      CommandLineParseResult::MissingKey => {},
   };
 
   return Ok(num_cpus::get());
@@ -94,9 +127,9 @@ fn get_threads(args: &CommandArgs) -> Result<usize, String> {
 
 fn get_optimize(args: &CommandArgs) -> bool {
   if let Ok(value) = env::var("MACH_OPTIMIZE") {
-    return value == "true";
+    return value == "true"
   }
-
+  
   return args.get_all_bool(&["z", "optimize"]);
 }
 
@@ -113,9 +146,7 @@ fn find_project_root(entry: &PathBuf) -> PathBuf {
   return current_test;
 }
 
-fn find_project_workspace(
-  project_root: &PathBuf,
-) -> Result<(Option<PathBuf>, WorkspaceKind), String> {
+fn find_project_workspace(project_root: &PathBuf) -> Result<(Option<PathBuf>, WorkspaceKind), String> {
   let mut current_test = project_root.clone();
 
   loop {

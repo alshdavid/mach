@@ -1,4 +1,4 @@
-use super::AssetId;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 pub enum DependencyKind {
@@ -9,10 +9,10 @@ pub enum DependencyKind {
 
 #[derive(Debug, Clone)]
 pub struct Dependency {
-  /// Id of the consumer
-  pub parent_asset_id: AssetId,
-  /// Id of the dependency
-  pub target_asset_id: AssetId,
+  /// Path to the consumer
+  pub consumer_path: PathBuf,
+  /// Path to the dependency
+  pub target_path: PathBuf,
   /// import foo from 'import_specifier'
   ///    This part -> |----------------|
   pub import_specifier: String,

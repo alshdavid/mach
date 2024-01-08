@@ -1,3 +1,4 @@
+use core::panic;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -14,6 +15,7 @@ use std::sync::mpsc::channel;
 use std::thread;
 use std::thread::JoinHandle;
 
+use swc_core::common::source_map;
 use swc_core::common::sync::Lrc;
 use swc_core::common::SourceMap;
 
@@ -21,9 +23,13 @@ use crate::app_config::AppConfig;
 use crate::public::Asset;
 use crate::public::AssetId;
 use crate::public::AssetMap;
+use crate::public::AssetMapRef;
 use crate::public::Dependency;
+use crate::public::DependencyIndexRef;
 use crate::public::DependencyKind;
 use crate::public::DependencyMap;
+use crate::public::DependencyMapRef;
+use crate::public::SourceMapRef;
 
 use super::ImportReadResult;
 use super::generate_dependency_index;
@@ -34,12 +40,15 @@ use super::DependencyIndex;
 
 pub fn link(
   config: &AppConfig,
-  assets_map: AssetMap,
-  dependency_map: DependencyMap,
-  source_map: Lrc<SourceMap>,
-) -> Result<(AssetMap, DependencyMap, DependencyIndex, Lrc<SourceMap>), String> {
-  let assets_map = Arc::new(Mutex::new(assets_map));
-  let dependency_map = Arc::new(Mutex::new(dependency_map));
+  asset_map_ref: &mut AssetMapRef,
+  dependency_map_ref: &mut DependencyMapRef,
+  dependency_index_ref: &mut DependencyIndexRef,
+  source_map_ref: &mut SourceMapRef,
+) -> Result<(), String> {
+  let assets_map = Arc::new(Mutex::new(asset_map_ref.take().unwrap()));
+  let dependency_map = Arc::new(Mutex::new(dependency_map_ref.take().unwrap()));
+  let source_map = Arc::new(source_map_ref.take().unwrap());
+  let mut dependency_index = dependency_index_ref.take().unwrap();
 
   let queue = Arc::new(Mutex::new(VecDeque::<(AssetId, ImportReadResult)>::new()));
   let (senders, mut receivers) = create_channels(config.threads);
@@ -200,14 +209,32 @@ pub fn link(
     };
     return Err(err);
   }
-  let assets_map = Arc::try_unwrap(assets_map).unwrap().into_inner().unwrap();
-  let dependency_map = Arc::try_unwrap(dependency_map)
-    .unwrap()
-    .into_inner()
-    .unwrap();
-  let dependency_index = generate_dependency_index(&assets_map, &dependency_map);
 
-  return Ok((assets_map, dependency_map, dependency_index, source_map));
+  //
+  // Put values back into containers
+  //
+  let assets_map = {
+    let Ok(asset_map) = Arc::try_unwrap(assets_map) else { panic!() };
+    asset_map.into_inner().unwrap()
+  };
+  
+  let dependency_map = {
+    let Ok(dependency_map) = Arc::try_unwrap(dependency_map) else { panic!() };
+    dependency_map.into_inner().unwrap()
+  };
+
+  let source_map = {
+    let Ok(source_map) = Arc::try_unwrap(source_map) else { panic!() };
+    source_map
+  };
+
+  generate_dependency_index(&mut dependency_index, &assets_map, &dependency_map);
+
+  asset_map_ref.replace(assets_map);
+  dependency_map_ref.replace(dependency_map);
+  dependency_index_ref.replace(dependency_index);
+  source_map_ref.replace(source_map);
+  return Ok(());
 }
 
 pub fn create_channels(n: usize) -> (Vec<Sender<Option<()>>>, Vec<Option<Receiver<Option<()>>>>) {
