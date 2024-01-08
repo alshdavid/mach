@@ -54,6 +54,7 @@ fn main() {
   // This phase reads the dependency graph and produces multiple bundles,
   // each bundle representing and output file
   if let Err(err) = bundle(
+    &config,
     &mut asset_map_ref,
     &mut dependency_map_ref,
     &mut bundle_map_ref,

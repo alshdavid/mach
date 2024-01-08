@@ -124,6 +124,14 @@ impl RuntimeFactory {
     return Stmt::Expr(template);
   }
 
+  pub fn bootstrap_script(&self, entry_module_id: &str) -> Script {
+    return Script{ 
+      span: Span::default(),
+      body: vec![self.bootstrap(entry_module_id)],
+      shebang: None, 
+    };
+  }
+
   /// Mints a module wrapper
   pub fn module(&self, specifier: &str, has_exports: bool, body: Vec<Stmt>) -> Stmt {
     let mut stmt = self.module_wrapper_stmt.clone();

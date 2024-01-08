@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use swc_core::common::SourceMap;
 
-use crate::platform::hash::truncate;
 use crate::platform::Container;
 use crate::public;
 use crate::public::AssetMap;
@@ -34,7 +33,7 @@ pub fn emit(
     fs::write(
       config
         .dist_dir
-        .join(format!("{}", truncate(&bundle.name, 15))),
+        .join(format!("{}.js", bundle.name)),
       rendered,
     )
     .unwrap();

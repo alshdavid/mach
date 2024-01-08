@@ -3,6 +3,8 @@ use swc_core::ecma::ast::Script;
 
 use crate::platform::hash::hash_string_sha_256;
 use crate::platform::Container;
+use crate::platform::hash::truncate;
+use crate::public;
 use crate::public::Asset;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -11,6 +13,7 @@ use crate::public::DependencyMap;
 use crate::public::JavaScriptBundle;
 
 pub fn bundle(
+  config: &public::Config,
   asset_map_ref: &mut Container<AssetMap>,
   dependency_map_ref: &mut Container<DependencyMap>,
   bundle_map_ref: &mut Container<BundleMap>,
@@ -44,7 +47,7 @@ pub fn bundle(
     hash_calc.push_str(&asset.source_content_hash);
   }
 
-  bundle.name = hash_string_sha_256(&hash_calc);
+  bundle.name = truncate(&hash_string_sha_256(&hash_calc), 15);
 
   // find entry asset
   'lookup: for (_, dependencies) in dependency_map.iter() {
@@ -66,8 +69,17 @@ pub fn bundle(
     }
   }
 
+  if config.optimize {
+    bundle.name = format!(
+      "{}-min",
+      bundle.name
+    );
+  }
+
+  bundle.assets.sort_by(|a, b| a.cmp(&b));
+
   // Temporary
-  bundle.name = "index.js".into();
+  bundle.name = "index".into();
 
   bundle_map.insert(Bundle::JavaScript(bundle));
 

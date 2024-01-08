@@ -115,10 +115,10 @@ pub fn package(
 
     if let Some(entry_id) = &bundle.entry {
       if config.optimize {
-        bundle.output.body.push(runtime_factory.bootstrap(entry_id));
-        // let result   = optimize(runtime_factory.bootstrap(entry_id), &PathBuf::new(), source_map.clone()).expect("failed to optimize");
+        let script = optimize(Program::Script(runtime_factory.bootstrap_script(entry_id)), &PathBuf::new(), source_map.clone()).expect("failed to optimize");
+        let Program::Script(mut script) = script else { panic!() };
+        bundle.output.body.push(script.body.pop().unwrap());
       } else {
-
         bundle.output.body.push(runtime_factory.bootstrap(entry_id));
       }
     }

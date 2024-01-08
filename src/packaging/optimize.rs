@@ -14,13 +14,12 @@ use swc_core::ecma::visit::FoldWith;
 
 use crate::default_plugins::transformers::javascript::parse_program;
 use crate::emitting::render_program;
-use crate::public::JavaScriptAsset;
 
-pub fn optimize(mut program: Program, file_path: &PathBuf, source_map: Arc<SourceMap>) -> Result<Program, String> {
+pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap>) -> Result<Program, String> {
   let asset = swc_core::common::GLOBALS.set(&Globals::new(), move || {
     // TODO figure out why this doesn't work
     // looks like the transformations before this break it
-    // for now I will just render, parse and optimize
+    // for now I will just render to string, parse and optimize
     let sm = Arc::new(SourceMap::default());
     let rendered = render_program(&program, source_map.clone());
     let parse_result = parse_program(&file_path, &rendered, sm.clone()).unwrap();
