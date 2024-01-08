@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use swc_core::common::Globals;
@@ -6,6 +7,7 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
 use crate::platform::Container;
+use crate::public;
 use crate::public::Asset;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -15,8 +17,10 @@ use crate::public::DependencyMap;
 use super::apply_runtime_cjs::apply_runtime_cjs;
 use super::apply_runtime_esm::fold::apply_runtime_esm;
 use super::RuntimeFactory;
+use super::optimize::optimize;
 
 pub fn package(
+  config: &public::Config,
   asset_map_ref: &mut Container<AssetMap>,
   dependency_map_ref: &mut Container<DependencyMap>,
   bundle_map_ref: &mut Container<BundleMap>,
@@ -35,6 +39,7 @@ pub fn package(
 
     let dependency_map = dependency_map.clone();
     let runtime_factory = runtime_factory.clone();
+    let source_map = source_map.clone();
 
     let asset = swc_core::common::GLOBALS.set(&Globals::new(), move || {
       asset.program = asset.program.fold_with(&mut apply_runtime_esm(
@@ -48,7 +53,6 @@ pub fn package(
         dependency_map.clone(),
         runtime_factory.clone(),
       ));
-
 
       match &mut asset.program {
         Program::Module(m) => {
@@ -68,6 +72,11 @@ pub fn package(
           let wrapped = runtime_factory.module(&asset.id, true, stmts);
           s.body = vec![wrapped];
         },
+      }
+
+      if config.optimize {
+        let result = optimize(asset.program, &asset.file_path, source_map.clone()).expect("failed to optimize");
+        asset.program = result;
       }
 
       return asset;
@@ -105,7 +114,13 @@ pub fn package(
     }
 
     if let Some(entry_id) = &bundle.entry {
-      bundle.output.body.push(runtime_factory.bootstrap(entry_id));
+      if config.optimize {
+        bundle.output.body.push(runtime_factory.bootstrap(entry_id));
+        // let result   = optimize(runtime_factory.bootstrap(entry_id), &PathBuf::new(), source_map.clone()).expect("failed to optimize");
+      } else {
+
+        bundle.output.body.push(runtime_factory.bootstrap(entry_id));
+      }
     }
   }
 

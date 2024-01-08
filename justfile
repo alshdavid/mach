@@ -16,5 +16,5 @@ serve-fixture FIXTURE:
 
 build-fixture FIXTURE *ARGS:
 	test -d node_modules || pnpm install
-	cd fixtures/{{FIXTURE}} && test -f ./src/index.jsx && cargo run {{ARGS}} ./src/index.jsx || true
-	cd fixtures/{{FIXTURE}} && test -f ./src/index.js && cargo run {{ARGS}} ./src/index.js || true
+	cd fixtures/{{FIXTURE}} && test -f ./src/index.jsx && cargo run ./src/index.jsx {{ARGS}} || true
+	cd fixtures/{{FIXTURE}} && test -f ./src/index.js && cargo run ./src/index.js {{ARGS}} || true

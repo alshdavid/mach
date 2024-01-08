@@ -35,6 +35,7 @@ fn main() {
   println!("Root:        {}", config.project_root.to_str().unwrap());
   println!("Workspace:   {:?}", config.workspace_root);
   println!("Out Dir:     {}", config.dist_dir.to_str().unwrap());
+  println!("Optimize:    {}", config.optimize);
   println!("Threads:     {}", config.threads);
 
   // This phase reads source files and transforms them. New imports
@@ -65,6 +66,7 @@ fn main() {
   // This phase reads the bundle graph and applies the "runtime" code,
   // to the assets. This is things like rewriting import statements
   if let Err(err) = package(
+    &config,
     &mut asset_map_ref,
     &mut dependency_map_ref,
     &mut bundle_map_ref,
