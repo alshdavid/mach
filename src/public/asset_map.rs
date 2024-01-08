@@ -40,4 +40,19 @@ impl AssetMap {
   pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Asset> {
     return self.assets.values_mut();
   }
+
+  pub fn pop(&mut self) -> Option<Asset> {
+    let mut first_key = None;
+    
+    for (k, _) in self.assets.iter() {
+      first_key.replace(k.clone());
+      break;
+    };
+
+    let Some(first_key) = first_key else {
+      return None;
+    };
+
+    return Some(self.assets.remove(&first_key).unwrap());
+  }
 }

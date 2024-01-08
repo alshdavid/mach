@@ -5,7 +5,7 @@ run *ARGS:
 	cargo run {{ARGS}}
 
 format:
-  rustfmt +nightly ./src/*.rs ./src/**/*.rs
+  rustfmt +nightly ./src/*.rs ./src/**/*.rs ./src/**/**/*.rs ./src/**/**/**/*.rs
 
 test:
 	@echo "coming soon"

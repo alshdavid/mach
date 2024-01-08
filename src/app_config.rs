@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
@@ -42,6 +43,7 @@ pub fn app_config() -> Result<Config, String> {
     project_root,
     threads,
     optimize,
+    env: get_env(),
   });
 }
 
@@ -98,6 +100,14 @@ fn get_optimize(args: &CommandArgs) -> bool {
   }
 
   return args.get_all_bool(&["z", "optimize"]);
+}
+
+fn get_env() -> HashMap<String, String> {
+  let mut vars = HashMap::<String, String>::new();
+  for (k, v) in env::vars() {
+    vars.insert(k, v);
+  }
+  return vars;
 }
 
 fn find_project_root(entry: &PathBuf) -> PathBuf {

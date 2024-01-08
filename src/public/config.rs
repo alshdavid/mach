@@ -1,5 +1,4 @@
-use std::env;
-use std::fs;
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 #[derive(Clone, Debug)]
@@ -18,4 +17,5 @@ pub struct Config {
   pub project_root: PathBuf,
   pub threads: usize,
   pub optimize: bool,
+  pub env: HashMap<String, String>,
 }

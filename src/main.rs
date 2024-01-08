@@ -7,6 +7,8 @@ mod platform;
 mod public;
 mod transformation;
 
+use std::sync::Arc;
+
 use swc_core::common::SourceMap;
 
 use crate::app_config::app_config;
@@ -27,9 +29,7 @@ fn main() {
   let mut asset_map_ref = Container::new(AssetMap::new());
   let mut dependency_map_ref = Container::new(DependencyMap::new());
   let mut bundle_map_ref = Container::new(BundleMap::new());
-
-  // Global SWC source map
-  let mut source_map_ref = Container::new(SourceMap::default());
+  let source_map = Arc::new(SourceMap::default());
 
   println!("Entry:       {}", config.entry_point.to_str().unwrap());
   println!("Root:        {}", config.project_root.to_str().unwrap());
@@ -43,16 +43,12 @@ fn main() {
     &config,
     &mut asset_map_ref,
     &mut dependency_map_ref,
-    &mut source_map_ref,
+    source_map.clone(),
   ) {
     println!("Transformation Error");
     println!("{}", err);
     return;
   }
-
-  let assets = asset_map_ref.take();
-  println!("Asset {}", assets.len());
-  asset_map_ref.insert(assets);
 
   // This phase reads the dependency graph and produces multiple bundles,
   // each bundle representing and output file
@@ -60,7 +56,6 @@ fn main() {
     &mut asset_map_ref,
     &mut dependency_map_ref,
     &mut bundle_map_ref,
-    &mut source_map_ref,
   ) {
     println!("Bundling Error");
     println!("{}", err);
@@ -73,7 +68,7 @@ fn main() {
     &mut asset_map_ref,
     &mut dependency_map_ref,
     &mut bundle_map_ref,
-    &mut source_map_ref,
+    source_map.clone(),
   ) {
     println!("Packaging Error:");
     println!("{}", err);
@@ -86,7 +81,7 @@ fn main() {
     &mut asset_map_ref,
     &mut dependency_map_ref,
     &mut bundle_map_ref,
-    &mut source_map_ref,
+    source_map.clone(),
   ) {
     println!("Emitting Error");
     println!("{}", err);

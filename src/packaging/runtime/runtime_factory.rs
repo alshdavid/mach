@@ -84,7 +84,7 @@ impl RuntimeFactory {
 
     let export_all_require_stmt: Stmt = {
       let name = PathBuf::from("mach_export_cjs");
-      let (module, _) = parse_module(&name, EXPORT_CJS, source_map.clone()).unwrap(); 
+      let (module, _) = parse_module(&name, EXPORT_CJS, source_map.clone()).unwrap();
       module.body[0].as_stmt().unwrap().to_owned()
     };
 
@@ -114,7 +114,7 @@ impl RuntimeFactory {
     let block = func.function.body.as_mut().unwrap();
     let expr = block.stmts[3].as_mut_expr().unwrap();
     let call = expr.expr.as_mut_call().unwrap();
-    
+
     call.args[0].expr = Box::new(Expr::Lit(Lit::Str(Str {
       span: Span::default(),
       value: Atom::from(entry_module_id),
@@ -125,7 +125,7 @@ impl RuntimeFactory {
   }
 
   /// Mints a module wrapper
-  pub fn module(&self, specifier: &str, has_exports: bool, body: Program) -> Stmt {
+  pub fn module(&self, specifier: &str, has_exports: bool, body: Vec<Stmt>) -> Stmt {
     let mut stmt = self.module_wrapper_stmt.clone();
 
     let Stmt::Expr(expr) = &mut stmt else {
@@ -167,19 +167,9 @@ impl RuntimeFactory {
 
       let mut stmt_body = Vec::<Stmt>::new();
 
-      match body {
-        Program::Module(b) => {
-          for item in b.body {
-            let ModuleItem::Stmt(stmt) = item else { continue };
-            stmt_body.push(stmt);
-          }
-        },
-        Program::Script(b) => {
-          for item in b.body {
-              stmt_body.push(item);
-          }
-        },
-      };
+      for item in body {
+        stmt_body.push(item);
+      }
 
       expr.body = Box::new(BlockStmtOrExpr::BlockStmt(BlockStmt {
         span: Span::default(),

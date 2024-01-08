@@ -21,7 +21,10 @@ impl DependencyMap {
     import_specifier: &str,
   ) -> Result<AssetId, String> {
     let Some(dependencies) = self.dependencies.get(parent_id) else {
-      return Err(format!("Asset has no dependencies: {} from {}", import_specifier, parent_id));
+      return Err(format!(
+        "Asset has no dependencies: {} from {}",
+        import_specifier, parent_id
+      ));
     };
 
     for dependency in dependencies {
@@ -30,7 +33,10 @@ impl DependencyMap {
       }
     }
 
-    return Err(format!("Asset does not contain specifier: importing \"{}\" from \"{}\"", import_specifier, parent_id));
+    return Err(format!(
+      "Asset does not contain specifier: importing \"{}\" from \"{}\"",
+      import_specifier, parent_id
+    ));
   }
 
   pub fn insert_many(&mut self, asset_id: &AssetId, dependencies: Vec<Dependency>) {

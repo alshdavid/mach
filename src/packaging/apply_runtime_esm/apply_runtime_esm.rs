@@ -9,12 +9,11 @@ use crate::public::AssetId;
 use crate::public::DependencyMap;
 
 use super::read_exports::read_exports;
+use super::read_exports_named::read_exports_named;
 use super::read_exports_named::ExportAssignment;
 use super::read_exports_named::ExportNamedAssignment;
-use super::read_exports_named::read_exports_named;
-use super::read_import_assignments::ImportAssignment;
 use super::read_import_assignments::read_import_assignments;
-
+use super::read_import_assignments::ImportAssignment;
 
 pub struct ApplyRuntimeEsm {
   pub asset_id: AssetId,
@@ -34,7 +33,10 @@ impl Fold for ApplyRuntimeEsm {
           match decl {
             ModuleDecl::Import(import_decl) => {
               let specifier = &import_decl.src.value.to_string();
-              let asset_id = self.dependency_index.lookup_dependency_by_specifier(&self.asset_id, &specifier).unwrap();
+              let asset_id = self
+                .dependency_index
+                .lookup_dependency_by_specifier(&self.asset_id, &specifier)
+                .unwrap();
 
               match read_import_assignments(&import_decl) {
                 /*
@@ -176,7 +178,10 @@ impl Fold for ApplyRuntimeEsm {
             }
             ModuleDecl::ExportAll(decl) => {
               let specifier = &decl.src.value.to_string();
-              let asset_id = self.dependency_index.lookup_dependency_by_specifier(&self.asset_id, &specifier).unwrap();
+              let asset_id = self
+                .dependency_index
+                .lookup_dependency_by_specifier(&self.asset_id, &specifier)
+                .unwrap();
               statements.push(self.runtime_factory.reexport_all(&asset_id))
             }
             ModuleDecl::TsImportEquals(_) => todo!(),
@@ -216,7 +221,10 @@ impl Fold for ApplyRuntimeEsm {
         let Lit::Str(import_specifier) = import_specifier_arg else {
           return call_expr;
         };
-        let asset_id = self.dependency_index.lookup_dependency_by_specifier(&self.asset_id, &import_specifier.value.to_string()).unwrap();
+        let asset_id = self
+          .dependency_index
+          .lookup_dependency_by_specifier(&self.asset_id, &import_specifier.value.to_string())
+          .unwrap();
         return self.runtime_factory.import_dynamic_call_expr(&asset_id);
       }
       Callee::Expr(_) => {}

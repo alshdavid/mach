@@ -1,8 +1,10 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use swc_core::common::comments::SingleThreadedComments;
 use swc_core::common::sync::Lrc;
 use swc_core::common::FileName;
+use swc_core::common::SourceFile;
 use swc_core::common::SourceMap;
 use swc_core::ecma::ast::Module;
 use swc_core::ecma::ast::Program;
@@ -46,8 +48,8 @@ pub fn parse_module(
 pub fn parse_program(
   file_name: &PathBuf,
   code: &str,
-  source_map: Lrc<SourceMap>,
-) -> Result<(Program, SingleThreadedComments), String> {
+  source_map: Arc<SourceMap>,
+) -> Result<ParseResult, String> {
   let source_file = source_map.new_source_file(FileName::Real(file_name.to_owned()), code.into());
 
   let comments = SingleThreadedComments::default();
@@ -66,10 +68,20 @@ pub fn parse_program(
 
   let mut parser = Parser::new_from(lexer);
 
-  let module = match parser.parse_program() {
+  let program = match parser.parse_program() {
     Err(err) => return Err(format!("{:?}", err)),
     Ok(module) => module,
   };
 
-  return Ok((module, comments));
+  return Ok(ParseResult {
+    program,
+    comments,
+    source_file,
+  });
+}
+
+pub struct ParseResult {
+  pub program: Program,
+  pub comments: SingleThreadedComments,
+  pub source_file: Arc<SourceFile>,
 }

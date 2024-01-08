@@ -1,6 +1,7 @@
 use swc_core::ecma::ast::*;
 
-use crate::public::{DependencyMap, AssetId};
+use crate::public::AssetId;
+use crate::public::DependencyMap;
 
 /*
   const foo = ''; export { foo }
@@ -15,7 +16,9 @@ pub fn read_exports_named(
   let asset_id: Option<String> = {
     if let Some(src) = &decl.src {
       let specifier = &src.value.to_string();
-      let asset_id = dependency_index.lookup_dependency_by_specifier(asset_id, &specifier).unwrap();
+      let asset_id = dependency_index
+        .lookup_dependency_by_specifier(asset_id, &specifier)
+        .unwrap();
       Some(asset_id.clone())
     } else {
       None

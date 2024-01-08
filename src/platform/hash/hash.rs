@@ -4,7 +4,7 @@ use sha2::Digest;
 use sha2::Sha256;
 
 pub fn hash_sha_256(input: &[u8]) -> String {
-  let mut hasher = Sha256::new();
+  let mut hasher = <Sha256 as Digest>::new();
   hasher.update(input);
   let digest = hasher.finalize();
   return format!("{:x}", digest);

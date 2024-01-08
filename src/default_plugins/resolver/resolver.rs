@@ -1,3 +1,5 @@
+// TODO not a plugin yet
+
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;

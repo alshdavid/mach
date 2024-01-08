@@ -41,7 +41,10 @@ impl Fold for ApplyRuntimeCommonJs {
           return call_expr;
         };
 
-        let asset_id = self.dependency_index.lookup_dependency_by_specifier(&self.asset_id, &import_specifier.value.to_string()).unwrap();
+        let asset_id = self
+          .dependency_index
+          .lookup_dependency_by_specifier(&self.asset_id, &import_specifier.value.to_string())
+          .unwrap();
         return self.runtime_factory.import_call_expr(&asset_id);
       }
       Callee::Import(_) => {}
@@ -103,8 +106,12 @@ impl Fold for ApplyRuntimeCommonJs {
               .clone();
           }
           MemberProp::Computed(computed) => {
-            let Expr::Lit(lit) = *computed.expr else { panic!("Expected literal value") };
-            let Lit::Str(str) = lit else { panic!("Expected string value") };
+            let Expr::Lit(lit) = *computed.expr else {
+              panic!("Expected literal value")
+            };
+            let Lit::Str(str) = lit else {
+              panic!("Expected string value")
+            };
             return self
               .runtime_factory
               .require_export_named(str.value.as_str(), v.right)
@@ -114,7 +121,7 @@ impl Fold for ApplyRuntimeCommonJs {
               .as_assign()
               .unwrap()
               .clone();
-          },
+          }
           MemberProp::PrivateName(_) => {
             return v;
           }
@@ -157,8 +164,12 @@ impl Fold for ApplyRuntimeCommonJs {
               .clone();
           }
           MemberProp::Computed(computed) => {
-            let Expr::Lit(lit) = *computed.expr else { panic!("Expected literal value") };
-            let Lit::Str(str) = lit else { panic!("Expected string value") };
+            let Expr::Lit(lit) = *computed.expr else {
+              panic!("Expected literal value")
+            };
+            let Lit::Str(str) = lit else {
+              panic!("Expected string value")
+            };
             return self
               .runtime_factory
               .require_export_named(str.value.as_str(), v.right)
@@ -168,7 +179,7 @@ impl Fold for ApplyRuntimeCommonJs {
               .as_assign()
               .unwrap()
               .clone();
-          },
+          }
           MemberProp::PrivateName(_) => {
             return v;
           }

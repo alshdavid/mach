@@ -1,6 +1,6 @@
 use swc_core::ecma::ast::Script;
 
-use super::{AssetId, JavaScriptAsset};
+use super::AssetId;
 
 #[derive(Debug)]
 pub enum Bundle {
@@ -14,7 +14,7 @@ impl Bundle {
     return match self {
       Bundle::JavaScript(a) => a.name.clone(),
       _ => panic!(),
-    }
+    };
   }
 }
 
@@ -22,6 +22,6 @@ impl Bundle {
 pub struct JavaScriptBundle {
   pub name: String,
   pub entry: Option<AssetId>,
-  pub assets: Vec<JavaScriptAsset>,
+  pub assets: Vec<AssetId>,
   pub output: Script,
 }
