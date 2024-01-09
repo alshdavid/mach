@@ -11,7 +11,7 @@ pub fn render_program(module: &Program, cm: Lrc<SourceMap>) -> String {
   let writer = Box::new(JsWriter::new(cm.clone(), "\n", &mut buf, None));
 
   let mut config = Config::default();
-  config.minify = false;
+  config.minify = true;
 
   let mut emitter = Emitter {
     cfg: config,
@@ -25,12 +25,12 @@ pub fn render_program(module: &Program, cm: Lrc<SourceMap>) -> String {
   return String::from_utf8(buf).unwrap();
 }
 
-pub fn render(module: &Script, cm: Lrc<SourceMap>) -> String {
+pub fn render(module: &Script, cm: Lrc<SourceMap>, minify: bool) -> String {
   let mut buf = vec![];
   let writer = Box::new(JsWriter::new(cm.clone(), "\n", &mut buf, None));
 
   let mut config = Config::default();
-  config.minify = false;
+  config.minify = minify;
 
   let mut emitter = Emitter {
     cfg: config,

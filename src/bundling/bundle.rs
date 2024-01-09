@@ -35,14 +35,20 @@ pub fn bundle(
     },
   };
 
-  let mut hash_calc = String::new();
-
   // all assets go into this bundle
   for asset in asset_map.iter() {
     let Asset::JavaScript(asset) = asset else {
       continue;
     };
     bundle.assets.push(asset.id.clone());
+  }
+
+  bundle.assets.sort_by(|a, b| a.cmp(&b));
+
+  let mut hash_calc = String::new();
+
+  for asset_id in &bundle.assets {
+    let Asset::JavaScript(asset) = asset_map.get(asset_id).unwrap() else { panic!() };
     hash_calc.push_str(&asset.id);
     hash_calc.push_str(&asset.source_content_hash);
   }
@@ -75,8 +81,6 @@ pub fn bundle(
       bundle.name
     );
   }
-
-  bundle.assets.sort_by(|a, b| a.cmp(&b));
 
   // Temporary
   bundle.name = "index".into();

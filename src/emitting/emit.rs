@@ -29,7 +29,7 @@ pub fn emit(
     let Bundle::JavaScript(bundle) = bundle else {
       continue;
     };
-    let rendered = render(&bundle.output, source_map.clone());
+    let rendered = render(&bundle.output, source_map.clone(), config.optimize.clone());
     fs::write(
       config
         .dist_dir

@@ -10,6 +10,8 @@ use swc_core::ecma::ast::Program;
 use swc_core::ecma::minifier::{self};
 use swc_core::ecma::transforms::base::fixer::fixer;
 use swc_core::ecma::transforms::base::resolver;
+use swc_core::ecma::transforms::optimization::simplifier;
+use swc_core::ecma::transforms::optimization::simplify::Config as SimplifyConfig;
 use swc_core::ecma::visit::FoldWith;
 
 use crate::default_plugins::transformers::javascript::parse_program;
@@ -33,11 +35,11 @@ pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap
 
     program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
 
-    // module = module.fold_with(&mut simplifier(unresolved_mark, Config{
-    // 	dce: Default::default(),
-    // 	inlining: Default::default(),
-    // 	expr: Default::default()
-    // }));
+    program = program.fold_with(&mut simplifier(unresolved_mark, SimplifyConfig{
+    	dce: Default::default(),
+    	inlining: Default::default(),
+    	expr: Default::default()
+    }));
 
     let compress_options_default = minifier::option::CompressOptions::default();
 
@@ -122,7 +124,7 @@ pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap
         rename: true,
         // compress: None,
         compress: Some(compress_options),
-        // mangle: None,,
+        // mangle: None,
         mangle: Some(mangle_options),
         wrap: false,
         enclose: false,
