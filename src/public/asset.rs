@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use swc_core::ecma::ast::Program;
+
 use crate::platform::hash::{hash_path_buff_sha_256, hash_string_sha_256};
 
 use super::JavaScriptAsset;
@@ -80,5 +82,16 @@ impl UnknownAsset {
       contents: asset_contents.to_string(),
       contents_hash,
     };
+  }
+
+  pub fn to_javascript(&self, program: Program) -> JavaScriptAsset {
+    return JavaScriptAsset {
+      id: self.id.clone(),
+      file_path: self.file_path.clone(),
+      file_path_relative: self.file_path_relative.clone(),
+      file_path_relative_hash: self.file_path_relative_hash.clone(),
+      source_content_hash: self.contents_hash.clone(),
+      program,
+    }
   }
 }

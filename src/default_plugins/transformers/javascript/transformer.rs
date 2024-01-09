@@ -12,7 +12,6 @@ use swc_core::ecma::visit::FoldWith;
 use crate::default_plugins::transformers::javascript::parse_program;
 use crate::default_plugins::transformers::javascript::read_imports;
 use crate::public::Asset;
-use crate::public::JavaScriptAssetOptions;
 use crate::public::TransformResult;
 use crate::public::Transformer;
 use crate::public::TransformerContext;
@@ -20,7 +19,7 @@ use crate::public::TransformerContext;
 use super::collect_decls;
 use super::NodeEnvReplacer;
 
-pub struct JavaScriptTransformer {}
+pub struct JavaScriptTransformer;
 
 impl Transformer for JavaScriptTransformer {
   fn transform(&self, ctx: &TransformerContext, asset: &mut Asset) -> TransformResult {
@@ -35,6 +34,7 @@ impl Transformer for JavaScriptTransformer {
     let program = result.program;
     let comments = result.comments;
     let source_map = ctx.source_map.clone();
+    let file_extension = asset.file_path.extension().unwrap().to_str().unwrap().to_string();
 
     result.program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let top_level_mark = Mark::fresh(Mark::root());
@@ -54,7 +54,7 @@ impl Transformer for JavaScriptTransformer {
         unresolved_mark,
       });
 
-      if asset.file_path.extension().unwrap() == "jsx" {
+      if file_extension == "jsx" {
         program = program.fold_with(&mut react_transforms::react(
           source_map.clone(),
           Some(&comments),
@@ -64,7 +64,7 @@ impl Transformer for JavaScriptTransformer {
         ));
       }
 
-      if asset.file_path.extension().unwrap() == "tsx" {
+      if file_extension == "tsx" {
         program = program
           .fold_with(&mut typescript_transforms::strip(top_level_mark));
 
@@ -77,7 +77,7 @@ impl Transformer for JavaScriptTransformer {
         ));
       }
 
-      if asset.file_path.extension().unwrap() == "ts" {
+      if file_extension == "ts" {
         program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
       }
 
@@ -88,9 +88,7 @@ impl Transformer for JavaScriptTransformer {
       ctx.add_dependency(&dependency.specifier, dependency.kind);
     }
 
-    return TransformResult::NewJavaScriptAsset(JavaScriptAssetOptions {
-      program: result.program,
-    });
+    return TransformResult::Convert(Asset::JavaScript(asset.to_javascript(result.program)));
   }
 }
 

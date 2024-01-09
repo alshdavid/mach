@@ -15,7 +15,6 @@ use crate::public::AssetMap;
 use crate::public::Dependency;
 use crate::public::DependencyKind;
 use crate::public::DependencyMap;
-use crate::public::JavaScriptAsset;
 use crate::public::Transformer;
 use crate::public::TransformerContext;
 use crate::public::UnknownAsset;
@@ -91,21 +90,14 @@ pub fn transform(
     let mut dependencies = Vec::<(String, DependencyKind)>::new();
     let ctx = TransformerContext::new(
         config,
-        &asset_map,
-        &dependency_map,
         source_map.clone(),
         &mut dependencies,
     );
 
     for transformer in transformers.iter() {
       match transformer.transform(&ctx, &mut new_asset) {
-        public::TransformResult::NewJavaScriptAsset(opts) => {
-          new_asset = Asset::JavaScript(JavaScriptAsset::new(
-              &config.project_root,
-              &new_asset_absolute_path,
-              &asset_contents,
-              opts.program,
-          ))
+        public::TransformResult::Convert(converted_asset) => {
+          new_asset = converted_asset;
         },
         public::TransformResult::End => {
           break 'main_loop;
