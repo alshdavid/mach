@@ -34,20 +34,20 @@ pub fn package(
       continue;
     };
 
-    let dependency_map = dependency_map_arc.clone();
+    let dependency_map_arc = dependency_map_arc.clone();
     let runtime_factory = runtime_factory.clone();
     let source_map = source_map.clone();
 
     let asset = swc_core::common::GLOBALS.set(&Globals::new(), move || {
       asset.program = asset.program.fold_with(&mut apply_runtime_esm(
         asset.id.clone(),
-        dependency_map.clone(),
+        dependency_map_arc.clone(),
         runtime_factory.clone(),
       ));
 
       asset.program = asset.program.fold_with(&mut apply_runtime_cjs(
         asset.id.clone(),
-        dependency_map.clone(),
+        dependency_map_arc.clone(),
         runtime_factory.clone(),
       ));
 
