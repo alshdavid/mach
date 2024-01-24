@@ -15,7 +15,6 @@ use crate::app_config::app_config;
 use crate::bundling::bundle;
 use crate::emitting::emit;
 use crate::packaging::package;
-use crate::platform::Container;
 use crate::public::AssetMap;
 use crate::public::BundleMap;
 use crate::public::DependencyMap;
@@ -26,9 +25,9 @@ fn main() {
 
   // Data structures are stored in containers that allow the
   // internal values to be extracted. Helps with multi-threading.
-  let mut asset_map_ref = Container::new(AssetMap::new());
-  let mut dependency_map_ref = Container::new(DependencyMap::new());
-  let mut bundle_map_ref = Container::new(BundleMap::new());
+  let mut asset_map = AssetMap::new();
+  let mut dependency_map = DependencyMap::new();
+  let mut bundle_map = BundleMap::new();
   let source_map = Arc::new(SourceMap::default());
 
   println!("Entry:       {}", config.entry_point.to_str().unwrap());
@@ -42,8 +41,8 @@ fn main() {
   // are discovered as files are parsed, looping until no more imports exist
   if let Err(err) = transform(
     &config,
-    &mut asset_map_ref,
-    &mut dependency_map_ref,
+    &mut asset_map,
+    &mut dependency_map,
     source_map.clone(),
   ) {
     println!("Transformation Error");
@@ -55,22 +54,22 @@ fn main() {
   // each bundle representing and output file
   if let Err(err) = bundle(
     &config,
-    &mut asset_map_ref,
-    &mut dependency_map_ref,
-    &mut bundle_map_ref,
+    &asset_map,
+    &dependency_map,
+    &mut bundle_map,
   ) {
     println!("Bundling Error");
     println!("{}", err);
     return;
   }
 
-  // This phase reads the bundle graph and applies the "runtime" code,
-  // to the assets. This is things like rewriting import statements
+  // // This phase reads the bundle graph and applies the "runtime" code,
+  // // to the assets. This is things like rewriting import statements
   if let Err(err) = package(
     &config,
-    &mut asset_map_ref,
-    &mut dependency_map_ref,
-    &mut bundle_map_ref,
+    &mut asset_map,
+    &mut dependency_map,
+    &mut bundle_map,
     source_map.clone(),
   ) {
     println!("Packaging Error:");
@@ -78,12 +77,10 @@ fn main() {
     return;
   }
 
-  // This phase writes the bundles to disk
+  // // This phase writes the bundles to disk
   if let Err(err) = emit(
     &config,
-    &mut asset_map_ref,
-    &mut dependency_map_ref,
-    &mut bundle_map_ref,
+    &bundle_map,
     source_map.clone(),
   ) {
     println!("Emitting Error");

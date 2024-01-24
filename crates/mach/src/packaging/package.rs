@@ -6,7 +6,6 @@ use swc_core::common::SourceMap;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
-use crate::platform::Container;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetMap;
@@ -21,14 +20,12 @@ use super::optimize::optimize;
 
 pub fn package(
   config: &public::Config,
-  asset_map_ref: &mut Container<AssetMap>,
-  dependency_map_ref: &mut Container<DependencyMap>,
-  bundle_map_ref: &mut Container<BundleMap>,
+  asset_map: &mut AssetMap,
+  dependency_map: &mut DependencyMap,
+  bundle_map: &mut BundleMap,
   source_map: Arc<SourceMap>,
 ) -> Result<(), String> {
-  let mut asset_map = asset_map_ref.take();
-  let dependency_map = dependency_map_ref.take_arc();
-  let mut bundle_map = bundle_map_ref.take();
+  let dependency_map_arc = Arc::new(std::mem::take(dependency_map));
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 
   let mut updated_assets = Vec::<Asset>::new();
@@ -37,7 +34,7 @@ pub fn package(
       continue;
     };
 
-    let dependency_map = dependency_map.clone();
+    let dependency_map = dependency_map_arc.clone();
     let runtime_factory = runtime_factory.clone();
     let source_map = source_map.clone();
 
@@ -124,8 +121,6 @@ pub fn package(
     }
   }
 
-  asset_map_ref.insert(asset_map);
-  dependency_map_ref.insert_arc(dependency_map);
-  bundle_map_ref.insert(bundle_map);
+  std::mem::swap(dependency_map, &mut Arc::try_unwrap(dependency_map_arc).unwrap());
   Ok(())
 }

@@ -7,7 +7,6 @@ use swc_core::common::SourceMap;
 
 use crate::default_plugins::resolver::resolve;
 use crate::default_plugins::transformers::javascript::JavaScriptTransformer;
-use crate::platform::Container;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetId;
@@ -23,13 +22,10 @@ type ImportSpecifier = String;
 
 pub fn transform(
   config: &public::Config,
-  asset_map_ref: &mut Container<AssetMap>,
-  dependency_map_ref: &mut Container<DependencyMap>,
+  asset_map: &mut AssetMap,
+  dependency_map: &mut DependencyMap,
   source_map: Arc<SourceMap>,
 ) -> Result<(), String> {
-  let mut asset_map = asset_map_ref.take();
-  let mut dependency_map = dependency_map_ref.take();
-
   let asset_filepath_reference = HashMap::<PathBuf, AssetId>::new();
 
   let mut queue = Vec::<(AssetId, (ImportSpecifier, DependencyKind))>::from(vec![(
@@ -135,8 +131,6 @@ pub fn transform(
 
   println!("Asset {}", asset_map.len());
 
-  asset_map_ref.insert(asset_map);
-  dependency_map_ref.insert(dependency_map);
   Ok(())
 }
 

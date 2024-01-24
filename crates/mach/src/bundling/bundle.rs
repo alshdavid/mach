@@ -2,7 +2,6 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::Script;
 
 use crate::platform::hash::hash_string_sha_256;
-use crate::platform::Container;
 use crate::platform::hash::truncate;
 use crate::public;
 use crate::public::Asset;
@@ -14,14 +13,10 @@ use crate::public::JavaScriptBundle;
 
 pub fn bundle(
   config: &public::Config,
-  asset_map_ref: &mut Container<AssetMap>,
-  dependency_map_ref: &mut Container<DependencyMap>,
-  bundle_map_ref: &mut Container<BundleMap>,
+  asset_map: &AssetMap,
+  dependency_map: &DependencyMap,
+  bundle_map: &mut BundleMap,
 ) -> Result<(), String> {
-  let asset_map = asset_map_ref.take();
-  let dependency_map = dependency_map_ref.take();
-  let mut bundle_map = bundle_map_ref.take();
-
   // For now, generate a single javascript bundle
   // Someone smarter than I am can probably figure out a better bundling strategy
   let mut bundle = JavaScriptBundle {
@@ -87,8 +82,5 @@ pub fn bundle(
 
   bundle_map.insert(Bundle::JavaScript(bundle));
 
-  asset_map_ref.insert(asset_map);
-  dependency_map_ref.insert(dependency_map);
-  bundle_map_ref.insert(bundle_map);
   Ok(())
 }

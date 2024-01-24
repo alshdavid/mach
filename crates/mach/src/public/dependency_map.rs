@@ -59,3 +59,9 @@ impl DependencyMap {
     return self.dependencies.iter_mut();
   }
 }
+
+impl Default for DependencyMap {
+  fn default() -> Self {
+      return DependencyMap::new();
+  }
+}
