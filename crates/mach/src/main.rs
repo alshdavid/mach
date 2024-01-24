@@ -23,8 +23,7 @@ use crate::transformation::transform;
 fn main() {
   let config = app_config().expect("Could not parse CLI args");
 
-  // Data structures are stored in containers that allow the
-  // internal values to be extracted. Helps with multi-threading.
+  // Bundle state
   let mut asset_map = AssetMap::new();
   let mut dependency_map = DependencyMap::new();
   let mut bundle_map = BundleMap::new();
