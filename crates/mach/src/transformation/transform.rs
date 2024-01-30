@@ -24,13 +24,13 @@ pub fn transform(
   source_map: Arc<SourceMap>,
 ) -> Result<(), String> {
   let asset_filepath_reference = HashMap::<PathBuf, AssetId>::new();
+  let mut queue = Vec::<(AssetId, (ImportSpecifier, DependencyKind))>::new();
 
   let entry_specifier = ImportSpecifier::from(config.entry_point.to_str().unwrap());
-  let first_job = (
+  queue.push((
     AssetId::default(),
     (entry_specifier, DependencyKind::Static),
-  );
-  let mut queue = Vec::<(AssetId, (ImportSpecifier, DependencyKind))>::from(vec![first_job]);
+  ));
 
   while let Some((parent_asset_id, (import_specifier, dependency_kind))) = queue.pop() {
     // Get filepath to parent asset
