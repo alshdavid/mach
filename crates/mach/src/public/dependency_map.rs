@@ -62,6 +62,6 @@ impl DependencyMap {
 
 impl Default for DependencyMap {
   fn default() -> Self {
-      return DependencyMap::new();
+    return DependencyMap::new();
   }
 }

@@ -1,13 +1,19 @@
 // Taken from: https://github.com/parcel-bundler/parcel/blob/v2/packages/transformers/js/core/src/env_replacer.rs
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+use std::collections::HashSet;
 use std::vec;
 
-use swc_core::common::{Mark, DUMMY_SP, Span};
+use swc_core::common::Mark;
+use swc_core::common::Span;
+use swc_core::common::DUMMY_SP;
 use swc_core::ecma::ast;
-use swc_core::ecma::atoms::{js_word, JsWord};
-use swc_core::ecma::visit::{Fold, FoldWith};
-use swc_core::ecma::visit::{Visit, VisitWith};
+use swc_core::ecma::atoms::js_word;
+use swc_core::ecma::atoms::JsWord;
+use swc_core::ecma::visit::Fold;
+use swc_core::ecma::visit::FoldWith;
+use swc_core::ecma::visit::Visit;
+use swc_core::ecma::visit::VisitWith;
 
 use ast::*;
 
@@ -327,7 +333,9 @@ pub fn match_member_expr(expr: &ast::MemberExpr, idents: Vec<&str>, decls: &Hash
     match &*member.obj {
       Expr::Member(m) => member = m,
       Expr::Ident(id) => {
-        return idents.len() == 1 && &id.sym == idents.pop().unwrap() && !decls.contains(&id.to_id());
+        return idents.len() == 1
+          && &id.sym == idents.pop().unwrap()
+          && !decls.contains(&id.to_id());
       }
       _ => return false,
     }

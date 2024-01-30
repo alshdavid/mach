@@ -22,9 +22,7 @@ pub fn emit(
     };
     let rendered = render(&bundle.output, source_map.clone(), config.optimize.clone());
     fs::write(
-      config
-        .dist_dir
-        .join(format!("{}.js", bundle.name)),
+      config.dist_dir.join(format!("{}.js", bundle.name)),
       rendered,
     )
     .unwrap();

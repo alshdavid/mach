@@ -16,8 +16,8 @@ impl AssetMap {
   }
 
   pub fn insert(&mut self, asset: Asset) -> AssetId {
-    let asset_id = asset.id();
-    self.assets.insert(asset.id(), asset);
+    let asset_id = asset.id.clone();
+    self.assets.insert(asset_id.clone(), asset);
     return asset_id;
   }
 
@@ -43,11 +43,11 @@ impl AssetMap {
 
   pub fn pop(&mut self) -> Option<Asset> {
     let mut first_key = None;
-    
+
     for (k, _) in self.assets.iter() {
       first_key.replace(k.clone());
       break;
-    };
+    }
 
     let Some(first_key) = first_key else {
       return None;

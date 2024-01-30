@@ -4,8 +4,8 @@ build *ARGS:
 run *ARGS:
 	cargo run {{ARGS}}
 
-format:
-  rustfmt +nightly ./src/*.rs ./src/**/*.rs ./src/**/**/*.rs ./src/**/**/**/*.rs
+fmt:
+  cargo +nightly fmt
 
 test:
 	@echo "coming soon"

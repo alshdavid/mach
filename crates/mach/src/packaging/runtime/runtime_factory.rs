@@ -125,10 +125,10 @@ impl RuntimeFactory {
   }
 
   pub fn bootstrap_script(&self, entry_module_id: &str) -> Script {
-    return Script{ 
+    return Script {
       span: Span::default(),
       body: vec![self.bootstrap(entry_module_id)],
-      shebang: None, 
+      shebang: None,
     };
   }
 

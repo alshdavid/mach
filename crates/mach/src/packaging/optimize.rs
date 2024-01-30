@@ -17,7 +17,11 @@ use swc_core::ecma::visit::FoldWith;
 use crate::default_plugins::transformers::javascript::parse_program;
 use crate::emitting::render_program;
 
-pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap>) -> Result<Program, String> {
+pub fn optimize(
+  program: Program,
+  file_path: &PathBuf,
+  source_map: Arc<SourceMap>,
+) -> Result<Program, String> {
   let asset = swc_core::common::GLOBALS.set(&Globals::new(), move || {
     // TODO figure out why this doesn't work
     // looks like the transformations before this break it
@@ -27,7 +31,6 @@ pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap
     let parse_result = parse_program(&file_path, &rendered, sm.clone()).unwrap();
     let mut program = parse_result.program;
 
-    
     // return swc_core::common::errors::HANDLER.set(&handler, || {
     let comments: Option<&dyn Comments> = None;
     let top_level_mark = Mark::fresh(Mark::root());
@@ -35,11 +38,14 @@ pub fn optimize(program: Program, file_path: &PathBuf, source_map: Arc<SourceMap
 
     program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
 
-    program = program.fold_with(&mut simplifier(unresolved_mark, SimplifyConfig{
-    	dce: Default::default(),
-    	inlining: Default::default(),
-    	expr: Default::default()
-    }));
+    program = program.fold_with(&mut simplifier(
+      unresolved_mark,
+      SimplifyConfig {
+        dce: Default::default(),
+        inlining: Default::default(),
+        expr: Default::default(),
+      },
+    ));
 
     let compress_options_default = minifier::option::CompressOptions::default();
 

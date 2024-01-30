@@ -49,14 +49,11 @@ fn main() {
     return;
   }
 
+  println!("Assets:      {}", asset_map.len());
+
   // This phase reads the dependency graph and produces multiple bundles,
   // each bundle representing and output file
-  if let Err(err) = bundle(
-    &config,
-    &asset_map,
-    &dependency_map,
-    &mut bundle_map,
-  ) {
+  if let Err(err) = bundle(&config, &asset_map, &dependency_map, &mut bundle_map) {
     println!("Bundling Error");
     println!("{}", err);
     return;
@@ -77,11 +74,7 @@ fn main() {
   }
 
   // // This phase writes the bundles to disk
-  if let Err(err) = emit(
-    &config,
-    &bundle_map,
-    source_map.clone(),
-  ) {
+  if let Err(err) = emit(&config, &bundle_map, source_map.clone()) {
     println!("Emitting Error");
     println!("{}", err);
     return;

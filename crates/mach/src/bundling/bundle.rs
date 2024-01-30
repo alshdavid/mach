@@ -4,7 +4,6 @@ use swc_core::ecma::ast::Script;
 use crate::platform::hash::hash_string_sha_256;
 use crate::platform::hash::truncate;
 use crate::public;
-use crate::public::Asset;
 use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleMap;
@@ -32,9 +31,6 @@ pub fn bundle(
 
   // all assets go into this bundle
   for asset in asset_map.iter() {
-    let Asset::JavaScript(asset) = asset else {
-      continue;
-    };
     bundle.assets.push(asset.id.clone());
   }
 
@@ -43,7 +39,7 @@ pub fn bundle(
   let mut hash_calc = String::new();
 
   for asset_id in &bundle.assets {
-    let Asset::JavaScript(asset) = asset_map.get(asset_id).unwrap() else { panic!() };
+    let asset = asset_map.get(asset_id).unwrap();
     hash_calc.push_str(&asset.id);
     hash_calc.push_str(&asset.source_content_hash);
   }
@@ -55,9 +51,9 @@ pub fn bundle(
     for dependency in dependencies.iter() {
       if dependency.parent_asset_id == "" {
         let asset = asset_map.get(&dependency.target_asset_id).unwrap();
-        bundle.entry = Some(asset.id());
+        bundle.entry = Some(asset.id.clone());
 
-        let file_path = asset.file_path();
+        let file_path = &asset.file_path;
         let file_name = file_path.file_name().unwrap().to_str().unwrap().to_string();
         let file_extension = file_path.extension().unwrap().to_str().unwrap().to_string();
         bundle.name = format!(
@@ -71,10 +67,7 @@ pub fn bundle(
   }
 
   if config.optimize {
-    bundle.name = format!(
-      "{}-min",
-      bundle.name
-    );
+    bundle.name = format!("{}-min", bundle.name);
   }
 
   // Temporary
