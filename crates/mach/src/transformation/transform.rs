@@ -25,13 +25,12 @@ pub fn transform(
 ) -> Result<(), String> {
   let asset_filepath_reference = HashMap::<PathBuf, AssetId>::new();
 
-  let mut queue = Vec::<(AssetId, (ImportSpecifier, DependencyKind))>::from(vec![(
+  let entry_specifier = ImportSpecifier::from(config.entry_point.to_str().unwrap());
+  let first_job = (
     AssetId::default(),
-    (
-      config.entry_point.to_str().unwrap().to_string(),
-      DependencyKind::Static,
-    ),
-  )]);
+    (entry_specifier, DependencyKind::Static),
+  );
+  let mut queue = Vec::<(AssetId, (ImportSpecifier, DependencyKind))>::from(vec![first_job]);
 
   while let Some((parent_asset_id, (import_specifier, dependency_kind))) = queue.pop() {
     // Get filepath to parent asset

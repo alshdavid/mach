@@ -104,7 +104,10 @@ impl RuntimeFactory {
     return self.module_header_stmt.clone();
   }
 
-  pub fn bootstrap(&self, entry_module_id: &str) -> Stmt {
+  pub fn bootstrap(
+    &self,
+    entry_module_id: &str,
+  ) -> Stmt {
     let mut template = self.bootstrap_stmt.clone();
 
     let arg = template.expr.as_mut_unary().unwrap();
@@ -124,7 +127,10 @@ impl RuntimeFactory {
     return Stmt::Expr(template);
   }
 
-  pub fn bootstrap_script(&self, entry_module_id: &str) -> Script {
+  pub fn bootstrap_script(
+    &self,
+    entry_module_id: &str,
+  ) -> Script {
     return Script {
       span: Span::default(),
       body: vec![self.bootstrap(entry_module_id)],
@@ -133,7 +139,12 @@ impl RuntimeFactory {
   }
 
   /// Mints a module wrapper
-  pub fn module(&self, specifier: &str, has_exports: bool, body: Vec<Stmt>) -> Stmt {
+  pub fn module(
+    &self,
+    specifier: &str,
+    has_exports: bool,
+    body: Vec<Stmt>,
+  ) -> Stmt {
     let mut stmt = self.module_wrapper_stmt.clone();
 
     let Stmt::Expr(expr) = &mut stmt else {
@@ -194,7 +205,10 @@ impl RuntimeFactory {
 
   /// Mints an import statement with no assignment
   /// import "./foo"
-  pub fn import(&self, specifier: &str) -> Stmt {
+  pub fn import(
+    &self,
+    specifier: &str,
+  ) -> Stmt {
     let expr = self.import_call_expr(specifier);
 
     return Stmt::Expr(ExprStmt {
@@ -203,7 +217,10 @@ impl RuntimeFactory {
     });
   }
 
-  pub fn import_call_expr(&self, specifier: &str) -> CallExpr {
+  pub fn import_call_expr(
+    &self,
+    specifier: &str,
+  ) -> CallExpr {
     let mut expr = self.import_stmt.clone();
 
     let arg = &mut expr.args[0];
@@ -217,7 +234,10 @@ impl RuntimeFactory {
     return expr;
   }
 
-  pub fn import_dynamic_call_expr(&self, specifier: &str) -> CallExpr {
+  pub fn import_dynamic_call_expr(
+    &self,
+    specifier: &str,
+  ) -> CallExpr {
     let mut expr = self.import_dynamic_stmt.clone();
 
     let promise_arg = &mut expr.args[0];
@@ -237,7 +257,11 @@ impl RuntimeFactory {
 
   /// Mints an import statement with named imports assigned
   /// import { bar } from './foo'
-  pub fn import_named(&self, specifier: &str, assignments: &Vec<ImportNamed>) -> Stmt {
+  pub fn import_named(
+    &self,
+    specifier: &str,
+    assignments: &Vec<ImportNamed>,
+  ) -> Stmt {
     let mut imports = Vec::<ObjectPatProp>::new();
 
     for assignment in assignments {
@@ -317,7 +341,11 @@ impl RuntimeFactory {
 
   /// Mints an import statement with all exports assigned to a single variable
   /// import * as foo from './foo'
-  pub fn import_star(&self, specifier: &str, assignment: &str) -> Stmt {
+  pub fn import_star(
+    &self,
+    specifier: &str,
+    assignment: &str,
+  ) -> Stmt {
     let import_expr = self.import(specifier);
 
     let Stmt::Expr(import_expr) = import_expr else {
@@ -346,13 +374,20 @@ impl RuntimeFactory {
 
   /// Mints an export statement of a previously declared identifier
   /// export { foo }
-  pub fn export(&self, key: &str) -> Stmt {
+  pub fn export(
+    &self,
+    key: &str,
+  ) -> Stmt {
     return self.export_renamed(key, key);
   }
 
   /// Mints an export statement of a previously declared identifier, renaming the export
   /// export { foo as bar }
-  pub fn export_renamed(&self, key: &str, exported_as: &str) -> Stmt {
+  pub fn export_renamed(
+    &self,
+    key: &str,
+    exported_as: &str,
+  ) -> Stmt {
     let stmt = Expr::Assign(AssignExpr {
       span: Span::default(),
       op: AssignOp::Assign,
@@ -386,7 +421,10 @@ impl RuntimeFactory {
 
   /// Mints a default export for a previously declared identifier
   /// export default foo
-  pub fn export_default(&self, key: &str) -> Stmt {
+  pub fn export_default(
+    &self,
+    key: &str,
+  ) -> Stmt {
     let stmt = Expr::Assign(AssignExpr {
       span: Span::default(),
       op: AssignOp::Assign,
@@ -420,7 +458,10 @@ impl RuntimeFactory {
 
   /// Mints a default export for an anonymous expression, like a class or function
   /// export default 'hello'
-  pub fn export_default_expr(&self, stmt: Box<Expr>) -> Stmt {
+  pub fn export_default_expr(
+    &self,
+    stmt: Box<Expr>,
+  ) -> Stmt {
     let stmt = Expr::Assign(AssignExpr {
       span: Span::default(),
       op: AssignOp::Assign,
@@ -450,7 +491,10 @@ impl RuntimeFactory {
 
   /// Mints an unnamed export for an expression
   /// module.exports = 'hello'
-  pub fn require_export_default(&self, stmt: Box<Expr>) -> Stmt {
+  pub fn require_export_default(
+    &self,
+    stmt: Box<Expr>,
+  ) -> Stmt {
     let mut template = self.export_all_require_stmt.clone();
 
     let expr = template.as_mut_expr().unwrap();
@@ -464,7 +508,11 @@ impl RuntimeFactory {
 
   /// Mints a named export for an expression
   /// module.exports.a = 'hello'
-  pub fn require_export_named(&self, key: &str, stmt: Box<Expr>) -> Stmt {
+  pub fn require_export_named(
+    &self,
+    key: &str,
+    stmt: Box<Expr>,
+  ) -> Stmt {
     let mut template = self.export_all_require_stmt.clone();
 
     let expr = template.as_mut_expr().unwrap();
@@ -487,7 +535,10 @@ impl RuntimeFactory {
 
   /// Mints an export statement that reexports all exports from a target module
   /// export * from './foo'
-  pub fn reexport_all(&self, specifier: &str) -> Stmt {
+  pub fn reexport_all(
+    &self,
+    specifier: &str,
+  ) -> Stmt {
     let mut stmt = self.export_all_stmt.clone();
 
     let Stmt::Expr(expr) = &mut stmt else {
@@ -511,7 +562,11 @@ impl RuntimeFactory {
 
   /// Mints an export statement that reexports all exports from a target module under a namespace
   /// export * as bar from './foo'
-  pub fn reexport_all_rename(&self, specifier: &str, rename: &str) -> Stmt {
+  pub fn reexport_all_rename(
+    &self,
+    specifier: &str,
+    rename: &str,
+  ) -> Stmt {
     let import_expr = self.import(specifier);
 
     let Stmt::Expr(import_expr) = import_expr else {
@@ -552,13 +607,22 @@ impl RuntimeFactory {
 
   /// Mints an export statement for a single property from a target module
   /// export { bar } from './foo'
-  pub fn reexport(&self, specifier: &str, import_key: &str) -> Stmt {
+  pub fn reexport(
+    &self,
+    specifier: &str,
+    import_key: &str,
+  ) -> Stmt {
     return self.reexport_rename(specifier, import_key, import_key);
   }
 
   /// Mints an export statement for a single property from a target module, renaming the export
   /// export { foo as bar } from './foo'
-  pub fn reexport_rename(&self, specifier: &str, import_key: &str, export_as: &str) -> Stmt {
+  pub fn reexport_rename(
+    &self,
+    specifier: &str,
+    import_key: &str,
+    export_as: &str,
+  ) -> Stmt {
     let import_expr = self.import(specifier);
 
     let Stmt::Expr(import_expr) = import_expr else {

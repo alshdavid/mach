@@ -21,7 +21,10 @@ pub struct ApplyRuntimeCommonJs {
 }
 
 impl Fold for ApplyRuntimeCommonJs {
-  fn fold_call_expr(&mut self, call_expr: CallExpr) -> CallExpr {
+  fn fold_call_expr(
+    &mut self,
+    call_expr: CallExpr,
+  ) -> CallExpr {
     let call_expr = call_expr.fold_children_with(self);
     match &call_expr.callee {
       /*
@@ -58,7 +61,10 @@ impl Fold for ApplyRuntimeCommonJs {
     module.exports.a = ''
     exports.a = ''
   */
-  fn fold_assign_expr(&mut self, assign_expr: AssignExpr) -> AssignExpr {
+  fn fold_assign_expr(
+    &mut self,
+    assign_expr: AssignExpr,
+  ) -> AssignExpr {
     let assign_expr = assign_expr.fold_children_with(self);
 
     let v = assign_expr.clone();

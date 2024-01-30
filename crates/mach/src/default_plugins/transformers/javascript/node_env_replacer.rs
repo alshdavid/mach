@@ -28,7 +28,10 @@ pub struct NodeEnvReplacer<'a> {
 }
 
 impl<'a> Fold for NodeEnvReplacer<'a> {
-  fn fold_expr(&mut self, node: Expr) -> Expr {
+  fn fold_expr(
+    &mut self,
+    node: Expr,
+  ) -> Expr {
     // Replace assignments to process.browser with `true`
     // TODO: this seems questionable but we did it in the JS version??
     if let Expr::Assign(ref assign) = node {
@@ -173,7 +176,10 @@ impl<'a> Fold for NodeEnvReplacer<'a> {
     node.fold_children_with(self)
   }
 
-  fn fold_var_decl(&mut self, node: VarDecl) -> VarDecl {
+  fn fold_var_decl(
+    &mut self,
+    node: VarDecl,
+  ) -> VarDecl {
     if !self.replace_env {
       return node.fold_children_with(self);
     }
@@ -202,7 +208,11 @@ impl<'a> Fold for NodeEnvReplacer<'a> {
 }
 
 impl<'a> NodeEnvReplacer<'a> {
-  fn replace(&mut self, sym: &JsWord, fallback_undefined: bool) -> Option<Expr> {
+  fn replace(
+    &mut self,
+    sym: &JsWord,
+    fallback_undefined: bool,
+  ) -> Option<Expr> {
     if let Some(val) = self.env.get(sym) {
       self.used_env.insert(sym.clone());
       if val == "true" {
@@ -241,7 +251,11 @@ impl<'a> NodeEnvReplacer<'a> {
     None
   }
 
-  fn collect_pat_bindings(&mut self, pat: &Pat, decls: &mut Vec<VarDeclarator>) {
+  fn collect_pat_bindings(
+    &mut self,
+    pat: &Pat,
+    decls: &mut Vec<VarDeclarator>,
+  ) {
     match pat {
       Pat::Object(object) => {
         for prop in &object.props {
@@ -309,7 +323,11 @@ impl<'a> NodeEnvReplacer<'a> {
   }
 }
 
-pub fn match_member_expr(expr: &ast::MemberExpr, idents: Vec<&str>, decls: &HashSet<Id>) -> bool {
+pub fn match_member_expr(
+  expr: &ast::MemberExpr,
+  idents: Vec<&str>,
+  decls: &HashSet<Id>,
+) -> bool {
   let mut member = expr;
   let mut idents = idents;
   while idents.len() > 1 {
@@ -389,7 +407,10 @@ struct DeclCollector {
 }
 
 impl Visit for DeclCollector {
-  fn visit_decl(&mut self, node: &ast::Decl) {
+  fn visit_decl(
+    &mut self,
+    node: &ast::Decl,
+  ) {
     use ast::Decl::*;
 
     match node {
@@ -409,7 +430,10 @@ impl Visit for DeclCollector {
     node.visit_children_with(self);
   }
 
-  fn visit_var_declarator(&mut self, node: &ast::VarDeclarator) {
+  fn visit_var_declarator(
+    &mut self,
+    node: &ast::VarDeclarator,
+  ) {
     self.in_var = true;
     node.name.visit_with(self);
     self.in_var = false;
@@ -418,13 +442,19 @@ impl Visit for DeclCollector {
     }
   }
 
-  fn visit_binding_ident(&mut self, node: &ast::BindingIdent) {
+  fn visit_binding_ident(
+    &mut self,
+    node: &ast::BindingIdent,
+  ) {
     if self.in_var {
       self.decls.insert((node.id.sym.clone(), node.id.span.ctxt));
     }
   }
 
-  fn visit_assign_pat_prop(&mut self, node: &ast::AssignPatProp) {
+  fn visit_assign_pat_prop(
+    &mut self,
+    node: &ast::AssignPatProp,
+  ) {
     if self.in_var {
       self
         .decls
@@ -432,7 +462,10 @@ impl Visit for DeclCollector {
     }
   }
 
-  fn visit_function(&mut self, node: &ast::Function) {
+  fn visit_function(
+    &mut self,
+    node: &ast::Function,
+  ) {
     self.in_var = true;
     for param in &node.params {
       param.visit_with(self);
@@ -442,7 +475,10 @@ impl Visit for DeclCollector {
     node.body.visit_with(self);
   }
 
-  fn visit_arrow_expr(&mut self, node: &ast::ArrowExpr) {
+  fn visit_arrow_expr(
+    &mut self,
+    node: &ast::ArrowExpr,
+  ) {
     self.in_var = true;
     for param in &node.params {
       param.visit_with(self);
@@ -452,7 +488,10 @@ impl Visit for DeclCollector {
     node.body.visit_with(self);
   }
 
-  fn visit_import_specifier(&mut self, node: &ast::ImportSpecifier) {
+  fn visit_import_specifier(
+    &mut self,
+    node: &ast::ImportSpecifier,
+  ) {
     use ast::ImportSpecifier::*;
     swc_core::ecma::visit::visit_import_specifier(self, node);
 

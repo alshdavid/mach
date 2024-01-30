@@ -15,7 +15,10 @@ impl Fold for ApplyRuntimeCommonJsReuse {
     const foo = exports.a;
     const foo = module.exports.a;
   */
-  fn fold_member_expr(&mut self, n: MemberExpr) -> MemberExpr {
+  fn fold_member_expr(
+    &mut self,
+    n: MemberExpr,
+  ) -> MemberExpr {
     let mut n = n.clone();
     let Some(ident) = n.obj.as_mut_ident() else {
       return n;

@@ -40,7 +40,10 @@ impl CommandArgs {
     return Some(file_path.normalize());
   }
 
-  pub fn get_string(&self, key: &str) -> Option<String> {
+  pub fn get_string(
+    &self,
+    key: &str,
+  ) -> Option<String> {
     let Some(mut values) = self.get_strings(key) else {
       return None;
     };
@@ -50,11 +53,17 @@ impl CommandArgs {
     return None;
   }
 
-  pub fn get_strings(&self, key: &str) -> Option<Vec<String>> {
+  pub fn get_strings(
+    &self,
+    key: &str,
+  ) -> Option<Vec<String>> {
     return self.get_all_strings(&[key]);
   }
 
-  pub fn get_all_strings(&self, keys: &[&str]) -> Option<Vec<String>> {
+  pub fn get_all_strings(
+    &self,
+    keys: &[&str],
+  ) -> Option<Vec<String>> {
     let mut collection = Vec::<Vec<String>>::new();
 
     for key in keys {
@@ -71,7 +80,10 @@ impl CommandArgs {
     return Some(collection.concat());
   }
 
-  pub fn get_num(&self, key: &str) -> CommandLineParseResult<usize> {
+  pub fn get_num(
+    &self,
+    key: &str,
+  ) -> CommandLineParseResult<usize> {
     match self.get_nums(key) {
       CommandLineParseResult::Ok(v) => {
         if v.len() > 0 {
@@ -91,11 +103,17 @@ impl CommandArgs {
     };
   }
 
-  pub fn get_nums(&self, key: &str) -> CommandLineParseResult<Vec<usize>> {
+  pub fn get_nums(
+    &self,
+    key: &str,
+  ) -> CommandLineParseResult<Vec<usize>> {
     return self.get_all_nums(&[key]);
   }
 
-  pub fn get_all_nums(&self, keys: &[&str]) -> CommandLineParseResult<Vec<usize>> {
+  pub fn get_all_nums(
+    &self,
+    keys: &[&str],
+  ) -> CommandLineParseResult<Vec<usize>> {
     let Some(values) = self.get_all_strings(keys) else {
       return CommandLineParseResult::MissingKey;
     };
@@ -114,11 +132,17 @@ impl CommandArgs {
     return CommandLineParseResult::Ok(nums);
   }
 
-  pub fn get_bool(&self, key: &str) -> bool {
+  pub fn get_bool(
+    &self,
+    key: &str,
+  ) -> bool {
     return self.get_all_bool(&[key]);
   }
 
-  pub fn get_all_bool(&self, keys: &[&str]) -> bool {
+  pub fn get_all_bool(
+    &self,
+    keys: &[&str],
+  ) -> bool {
     for key in keys {
       let Some(values) = self.args.get(*key) else {
         continue;
@@ -134,7 +158,10 @@ impl CommandArgs {
     return false;
   }
 
-  pub fn get_filepath(&self, key: &str) -> Result<PathBuf, String> {
+  pub fn get_filepath(
+    &self,
+    key: &str,
+  ) -> Result<PathBuf, String> {
     let mut values = match self.get_filepaths(key) {
       Ok(v) => v,
       Err(e) => return Err(e),
@@ -142,11 +169,17 @@ impl CommandArgs {
     return Ok(values.pop().unwrap());
   }
 
-  pub fn get_filepaths(&self, key: &str) -> Result<Vec<PathBuf>, String> {
+  pub fn get_filepaths(
+    &self,
+    key: &str,
+  ) -> Result<Vec<PathBuf>, String> {
     return self.get_all_filepaths(&[key]);
   }
 
-  pub fn get_all_filepaths(&self, keys: &[&str]) -> Result<Vec<PathBuf>, String> {
+  pub fn get_all_filepaths(
+    &self,
+    keys: &[&str],
+  ) -> Result<Vec<PathBuf>, String> {
     let Some(values) = self.get_all_strings(keys) else {
       return Err(format!("ArgsGetFilePath: Missing keys: {:?}", keys));
     };

@@ -7,7 +7,10 @@ use std::path::PathBuf;
 use oxc_resolver::ResolveOptions;
 use oxc_resolver::Resolver;
 
-pub fn resolve(from_raw: &PathBuf, specifier: &str) -> Result<PathBuf, String> {
+pub fn resolve(
+  from_raw: &PathBuf,
+  specifier: &str,
+) -> Result<PathBuf, String> {
   let from = {
     if from_raw.is_file() {
       from_raw.parent().unwrap()
@@ -52,7 +55,10 @@ pub fn resolve(from_raw: &PathBuf, specifier: &str) -> Result<PathBuf, String> {
   ));
 }
 
-fn resolve_oxc(specifier: &str, from: &Path) -> Result<PathBuf, String> {
+fn resolve_oxc(
+  specifier: &str,
+  from: &Path,
+) -> Result<PathBuf, String> {
   let options = ResolveOptions {
     alias_fields: vec![],
     alias: vec![],

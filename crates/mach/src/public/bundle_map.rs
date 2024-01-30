@@ -14,15 +14,24 @@ impl BundleMap {
     };
   }
 
-  pub fn insert(&mut self, bundle: Bundle) {
+  pub fn insert(
+    &mut self,
+    bundle: Bundle,
+  ) {
     self.bundles.insert(bundle.name(), bundle);
   }
 
-  pub fn get_mut(&mut self, name: &String) -> Option<&mut Bundle> {
+  pub fn get_mut(
+    &mut self,
+    name: &String,
+  ) -> Option<&mut Bundle> {
     return self.bundles.get_mut(name);
   }
 
-  pub fn get(&mut self, name: &String) -> Option<&Bundle> {
+  pub fn get(
+    &mut self,
+    name: &String,
+  ) -> Option<&Bundle> {
     return self.bundles.get(name);
   }
 

@@ -3,3 +3,4 @@ indent_style = "Block"
 hard_tabs = false
 unstable_features = false
 tab_spaces = 2
+fn_params_layout = "Vertical"

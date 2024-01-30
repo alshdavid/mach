@@ -6,7 +6,10 @@ use swc_core::ecma::codegen::text_writer::JsWriter;
 use swc_core::ecma::codegen::Config;
 use swc_core::ecma::codegen::Emitter;
 
-pub fn render_program(module: &Program, cm: Lrc<SourceMap>) -> String {
+pub fn render_program(
+  module: &Program,
+  cm: Lrc<SourceMap>,
+) -> String {
   let mut buf = vec![];
   let writer = Box::new(JsWriter::new(cm.clone(), "\n", &mut buf, None));
 
@@ -25,7 +28,11 @@ pub fn render_program(module: &Program, cm: Lrc<SourceMap>) -> String {
   return String::from_utf8(buf).unwrap();
 }
 
-pub fn render(module: &Script, cm: Lrc<SourceMap>, minify: bool) -> String {
+pub fn render(
+  module: &Script,
+  cm: Lrc<SourceMap>,
+  minify: bool,
+) -> String {
   let mut buf = vec![];
   let writer = Box::new(JsWriter::new(cm.clone(), "\n", &mut buf, None));
 

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use super::Asset;
 use super::AssetId;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct AssetMap {
   assets: HashMap<AssetId, Asset>,
 }
@@ -15,17 +15,26 @@ impl AssetMap {
     };
   }
 
-  pub fn insert(&mut self, asset: Asset) -> AssetId {
+  pub fn insert(
+    &mut self,
+    asset: Asset,
+  ) -> AssetId {
     let asset_id = asset.id.clone();
     self.assets.insert(asset_id.clone(), asset);
     return asset_id;
   }
 
-  pub fn get_mut(&mut self, asset_id: &AssetId) -> Option<&mut Asset> {
+  pub fn get_mut(
+    &mut self,
+    asset_id: &AssetId,
+  ) -> Option<&mut Asset> {
     return self.assets.get_mut(asset_id);
   }
 
-  pub fn get(&self, asset_id: &AssetId) -> Option<&Asset> {
+  pub fn get(
+    &self,
+    asset_id: &AssetId,
+  ) -> Option<&Asset> {
     return self.assets.get(asset_id);
   }
 

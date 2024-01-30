@@ -28,7 +28,10 @@ struct Walker {
 
 impl Visit for Walker {
   // Recursive
-  fn visit_module(&mut self, n: &Module) {
+  fn visit_module(
+    &mut self,
+    n: &Module,
+  ) {
     n.visit_children_with(self);
   }
 
@@ -36,7 +39,10 @@ impl Visit for Walker {
   // import {} from "specifier"
   // import * as foo from "specifier"
   // import foo from "specifier"
-  fn visit_import_decl(&mut self, node: &ImportDecl) {
+  fn visit_import_decl(
+    &mut self,
+    node: &ImportDecl,
+  ) {
     if node.type_only {
       return;
     }
@@ -47,7 +53,10 @@ impl Visit for Walker {
   }
 
   // export * as foo from "specifier"
-  fn visit_export_all(&mut self, node: &ExportAll) {
+  fn visit_export_all(
+    &mut self,
+    node: &ExportAll,
+  ) {
     if node.type_only {
       return;
     }
@@ -58,7 +67,10 @@ impl Visit for Walker {
   }
 
   // export {} from "specifier"
-  fn visit_named_export(&mut self, node: &NamedExport) {
+  fn visit_named_export(
+    &mut self,
+    node: &NamedExport,
+  ) {
     if node.type_only {
       return;
     }
@@ -72,7 +84,10 @@ impl Visit for Walker {
 
   // import("specifier")
   // require("specifier")
-  fn visit_call_expr(&mut self, node: &CallExpr) {
+  fn visit_call_expr(
+    &mut self,
+    node: &CallExpr,
+  ) {
     node.visit_children_with(self);
 
     match &node.callee {

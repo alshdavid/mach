@@ -57,7 +57,10 @@ fn get_entry(args: &CommandArgs) -> Option<PathBuf> {
   return Some(filepaths[0].clone());
 }
 
-fn get_dist_dir(args: &CommandArgs, project_root: &PathBuf) -> PathBuf {
+fn get_dist_dir(
+  args: &CommandArgs,
+  project_root: &PathBuf,
+) -> PathBuf {
   let Ok(filepaths) = args.get_all_filepaths(&["o", "dist-dir"]) else {
     return project_root.join("dist");
   };
@@ -124,7 +127,7 @@ fn find_project_root(entry: &PathBuf) -> PathBuf {
 }
 
 fn find_project_workspace(
-  project_root: &PathBuf,
+  project_root: &PathBuf
 ) -> Result<(Option<PathBuf>, WorkspaceKind), String> {
   let mut current_test = project_root.clone();
 

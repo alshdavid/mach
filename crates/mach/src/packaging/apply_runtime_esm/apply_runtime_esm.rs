@@ -22,7 +22,10 @@ pub struct ApplyRuntimeEsm {
 }
 
 impl Fold for ApplyRuntimeEsm {
-  fn fold_module(&mut self, module: Module) -> Module {
+  fn fold_module(
+    &mut self,
+    module: Module,
+  ) -> Module {
     let mut module = module.fold_children_with(self);
 
     let mut statements = Vec::<Stmt>::new();
@@ -204,7 +207,10 @@ impl Fold for ApplyRuntimeEsm {
     return module;
   }
 
-  fn fold_call_expr(&mut self, call_expr: CallExpr) -> CallExpr {
+  fn fold_call_expr(
+    &mut self,
+    call_expr: CallExpr,
+  ) -> CallExpr {
     let call_expr = call_expr.fold_children_with(self);
 
     match &call_expr.callee {

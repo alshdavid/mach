@@ -39,7 +39,11 @@ impl DependencyMap {
     ));
   }
 
-  pub fn insert_many(&mut self, asset_id: &AssetId, dependencies: Vec<Dependency>) {
+  pub fn insert_many(
+    &mut self,
+    asset_id: &AssetId,
+    dependencies: Vec<Dependency>,
+  ) {
     let Some(current_dependencies) = self.dependencies.get_mut(asset_id) else {
       self.dependencies.insert(asset_id.clone(), dependencies);
       return;
@@ -47,7 +51,11 @@ impl DependencyMap {
     current_dependencies.extend(dependencies);
   }
 
-  pub fn insert(&mut self, asset_id: &AssetId, dependency: Dependency) {
+  pub fn insert(
+    &mut self,
+    asset_id: &AssetId,
+    dependency: Dependency,
+  ) {
     self.insert_many(asset_id, vec![dependency]);
   }
 
