@@ -8,6 +8,7 @@ mod public;
 mod transformation;
 
 use std::sync::Arc;
+use std::time::SystemTime;
 
 use swc_core::common::SourceMap;
 
@@ -21,6 +22,7 @@ use crate::public::DependencyMap;
 use crate::transformation::transform;
 
 fn main() {
+  let start_time = SystemTime::now();
   let config = app_config().expect("Could not parse CLI args");
 
   // Bundle state
@@ -29,12 +31,12 @@ fn main() {
   let mut bundle_map = BundleMap::new();
   let source_map = Arc::new(SourceMap::default());
 
-  println!("Entry:       {}", config.entry_point.to_str().unwrap());
-  println!("Root:        {}", config.project_root.to_str().unwrap());
-  println!("Workspace:   {:?}", config.workspace_root);
-  println!("Out Dir:     {}", config.dist_dir.to_str().unwrap());
-  println!("Optimize:    {}", config.optimize);
-  println!("Threads:     {}", config.threads);
+  println!("Entry:         {}", config.entry_point.to_str().unwrap());
+  println!("Root:          {}", config.project_root.to_str().unwrap());
+  println!("Workspace:     {:?}", config.workspace_root);
+  println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
+  println!("Optimize:      {}", config.optimize);
+  println!("Threads:       {}", config.threads);
 
   // This phase reads source files and transforms them. New imports
   // are discovered as files are parsed, looping until no more imports exist
@@ -49,7 +51,7 @@ fn main() {
     return;
   }
 
-  println!("Assets:      {}", asset_map.len());
+  println!("Assets:        {}", asset_map.len());
 
   // This phase reads the dependency graph and produces multiple bundles,
   // each bundle representing and output file
@@ -79,4 +81,6 @@ fn main() {
     println!("{}", err);
     return;
   }
+
+  println!("Finished in:   {:.3}s", start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
 }

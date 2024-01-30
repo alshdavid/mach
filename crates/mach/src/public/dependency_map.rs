@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use super::AssetId;
 use super::Dependency;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct DependencyMap {
   pub dependencies: HashMap<AssetId, Vec<Dependency>>,
 }
@@ -65,11 +65,5 @@ impl DependencyMap {
 
   pub fn iter_mut(&mut self) -> impl Iterator<Item = (&AssetId, &mut Vec<Dependency>)> {
     return self.dependencies.iter_mut();
-  }
-}
-
-impl Default for DependencyMap {
-  fn default() -> Self {
-    return DependencyMap::new();
   }
 }

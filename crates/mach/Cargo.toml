@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 crossbeam-channel = "0.5.10"
 glob-match = "0.2.1"
+kanal = "0.1.0-pre8"
 normalize-path = "0.2.1"
 num_cpus = "1.16.0"
 once_cell = "1.19.0"
