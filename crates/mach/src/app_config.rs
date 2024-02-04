@@ -36,6 +36,11 @@ pub fn app_config() -> Result<Config, String> {
     Err(err) => return Err(err),
   };
 
+  let node_workers = match get_node_workers(&args) {
+    Ok(v) => v,
+    Err(err) => return Err(err),
+  };
+
   let optimize = get_optimize(&args);
 
   let file_index = find_file_by_name(&project_root, &["package.json", ".machrc", "pnpm-workspace.yaml"]);
@@ -48,6 +53,7 @@ pub fn app_config() -> Result<Config, String> {
     workspace_kind,
     project_root,
     threads,
+    node_workers,
     optimize,
     env: get_env(),
     package_json: None,
@@ -103,6 +109,36 @@ fn get_threads(args: &CommandArgs) -> Result<usize, String> {
   };
 
   return Ok(num_cpus::get());
+}
+
+fn get_node_workers(args: &CommandArgs) -> Result<usize, String> {
+  // Use env
+  if let Ok(threads_env) = env::var("MACH_NODE_WORKERS") {
+    let Ok(parse_res) = threads_env.parse::<usize>() else {
+      return Err(format!("Unable to parse workers from env: {}", threads_env));
+    };
+    return Ok(parse_res);
+  };
+
+  // From CLI
+  match args.get_all_nums(&["node_workers"]) {
+    CommandLineParseResult::Ok(threads_cli) => {
+      if threads_cli.len() > 0 {
+        return Ok(threads_cli[0]);
+      }
+    }
+    CommandLineParseResult::Err(err) => {
+      return Err(format!("Unable to parse threads from cli args: {}", err))
+    }
+    CommandLineParseResult::MissingValue => {
+      return Err(format!(
+        "Unable to parse threads from cli args: missing value"
+      ))
+    }
+    CommandLineParseResult::MissingKey => {}
+  };
+
+  return Ok(1);
 }
 
 fn get_optimize(args: &CommandArgs) -> bool {

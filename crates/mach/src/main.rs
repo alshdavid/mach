@@ -6,6 +6,7 @@ mod packaging;
 mod platform;
 mod public;
 mod transformation;
+mod node_workers;
 
 use std::sync::Arc;
 use std::time::SystemTime;
@@ -20,6 +21,7 @@ use crate::public::AssetMap;
 use crate::public::BundleMap;
 use crate::public::DependencyMap;
 use crate::transformation::transform;
+use crate::node_workers::NodeInstance;
 
 fn main() {
   let start_time = SystemTime::now();
@@ -30,6 +32,7 @@ fn main() {
   let mut dependency_map = DependencyMap::new();
   let mut bundle_map = BundleMap::new();
   let source_map = Arc::new(SourceMap::default());
+  let node_workers = NodeInstance::new();
 
   // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());
@@ -43,6 +46,7 @@ fn main() {
   println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
   println!("Optimize:      {}", config.optimize);
   println!("Threads:       {}", config.threads);
+  println!("Node Workers:  {}", config.node_workers);
 
   // This phase reads source files and transforms them. New imports
   // are discovered as files are parsed, looping until no more imports exist

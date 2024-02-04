@@ -20,6 +20,7 @@ pub struct Config {
   pub package_json: Option<serde_json::Value>,
   pub mach_config: Option<Machrc>,
   pub threads: usize,
+  pub node_workers: usize,
   pub optimize: bool,
   pub env: HashMap<String, String>,
 }
