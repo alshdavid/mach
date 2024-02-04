@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use super::AssetId;
-use super::Dependency;
+use super::DependencyLegacy;
 
 #[derive(Debug, Default)]
 pub struct DependencyMap {
-  pub dependencies: HashMap<AssetId, Vec<Dependency>>,
+  pub dependencies: HashMap<AssetId, Vec<DependencyLegacy>>,
 }
 
 impl DependencyMap {
@@ -42,7 +42,7 @@ impl DependencyMap {
   pub fn insert_many(
     &mut self,
     asset_id: &AssetId,
-    dependencies: Vec<Dependency>,
+    dependencies: Vec<DependencyLegacy>,
   ) {
     let Some(current_dependencies) = self.dependencies.get_mut(asset_id) else {
       self.dependencies.insert(asset_id.clone(), dependencies);
@@ -54,16 +54,16 @@ impl DependencyMap {
   pub fn insert(
     &mut self,
     asset_id: &AssetId,
-    dependency: Dependency,
+    dependency: DependencyLegacy,
   ) {
     self.insert_many(asset_id, vec![dependency]);
   }
 
-  pub fn iter(&self) -> impl Iterator<Item = (&AssetId, &Vec<Dependency>)> {
+  pub fn iter(&self) -> impl Iterator<Item = (&AssetId, &Vec<DependencyLegacy>)> {
     return self.dependencies.iter();
   }
 
-  pub fn iter_mut(&mut self) -> impl Iterator<Item = (&AssetId, &mut Vec<Dependency>)> {
+  pub fn iter_mut(&mut self) -> impl Iterator<Item = (&AssetId, &mut Vec<DependencyLegacy>)> {
     return self.dependencies.iter_mut();
   }
 }
