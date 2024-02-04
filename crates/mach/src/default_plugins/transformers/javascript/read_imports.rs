@@ -5,13 +5,16 @@ use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
 use crate::public::DependencyKind;
+use crate::public::DependencyPriority;
+use crate::public::SpecifierType;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 
 #[derive(Debug)]
 pub struct ImportReadResult {
   pub specifier: String,
-  pub kind: DependencyKind,
+  pub specifier_type: SpecifierType,
+  pub priority: DependencyPriority,
 }
 
 pub fn read_imports(module: &Program) -> Vec<ImportReadResult> {
@@ -48,7 +51,8 @@ impl Visit for Walker {
     }
     self.imports.push(ImportReadResult {
       specifier: node.src.value.to_string(),
-      kind: DependencyKind::Static,
+      specifier_type: SpecifierType::ESM,
+      priority: DependencyPriority::Sync,
     })
   }
 
@@ -62,7 +66,8 @@ impl Visit for Walker {
     }
     self.imports.push(ImportReadResult {
       specifier: node.src.value.to_string(),
-      kind: DependencyKind::Static,
+      specifier_type: SpecifierType::ESM,
+      priority: DependencyPriority::Sync,
     })
   }
 
@@ -77,8 +82,9 @@ impl Visit for Walker {
     if let Some(src) = &node.src {
       self.imports.push(ImportReadResult {
         specifier: src.value.to_string(),
-        kind: DependencyKind::Static,
-      })
+        specifier_type: SpecifierType::ESM,
+      priority: DependencyPriority::Sync,
+    })
     }
   }
 
@@ -104,7 +110,8 @@ impl Visit for Walker {
         };
         self.imports.push(ImportReadResult {
           specifier: import_specifier.value.to_string(),
-          kind: DependencyKind::Dynamic,
+          specifier_type: SpecifierType::ESM,
+          priority: DependencyPriority::Lazy,
         });
       }
       // require("specifier")
@@ -123,7 +130,8 @@ impl Visit for Walker {
         };
         self.imports.push(ImportReadResult {
           specifier: import_specifier.value.to_string(),
-          kind: DependencyKind::Require,
+          specifier_type: SpecifierType::Commonjs,
+          priority: DependencyPriority::Sync,
         });
       }
       Callee::Super(_) => {}

@@ -1,17 +1,23 @@
 use std::path::PathBuf;
 
-use crate::public::{DependencyPriority, SpecifierType};
+use crate::public::{Config, DependencyPriority, SpecifierType};
 
 pub trait Transformer {
-  fn transform(&self);
+  fn transform(&self, asset: MutableAsset, config: Config) -> Result<(), String>;
 }
 
+#[derive(Debug)]
 pub struct MutableAsset<'a> {
+  pub file_path: PathBuf,
   code: &'a mut String,
   dependencies: &'a mut Vec<DependencyOptions>,
 }
 
 impl<'a> MutableAsset<'a> {
+  pub fn get_code(&self) -> &String {
+    return self.code;
+  }
+
   pub fn set_code(&mut self, code: &str) {
     *self.code = code.to_string();
   }
@@ -21,6 +27,7 @@ impl<'a> MutableAsset<'a> {
   }
 }
 
+#[derive(Clone, Debug)]
 pub struct DependencyOptions {
   pub specifier: String,
   pub specifier_type: SpecifierType,

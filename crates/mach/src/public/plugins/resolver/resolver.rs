@@ -11,6 +11,7 @@ pub trait Resolver {
     ) -> Result<Option<ResolveResult>, String>;
 }
 
+#[derive(Clone, Debug)]
 pub struct ResolveResult {
   pub file_path: PathBuf
 }
