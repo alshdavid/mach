@@ -32,7 +32,7 @@ fn main() {
   let mut dependency_map = DependencyMap::new();
   let mut bundle_map = BundleMap::new();
   let source_map = Arc::new(SourceMap::default());
-  let node_workers = NodeInstance::new();
+  let _node_workers = NodeInstance::new();
 
   // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());
