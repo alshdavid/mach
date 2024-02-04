@@ -31,9 +31,15 @@ fn main() {
   let mut bundle_map = BundleMap::new();
   let source_map = Arc::new(SourceMap::default());
 
+  // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());
   println!("Root:          {}", config.project_root.to_str().unwrap());
   println!("Workspace:     {:?}", config.workspace_root);
+  if let Some(machrc) = &config.mach_config {
+    println!("Mach Config:   {:?}", Some(machrc.file_path.clone()));
+  } else {
+    println!("Mach Config:   {:?}",&config.mach_config);
+  }
   println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
   println!("Optimize:      {}", config.optimize);
   println!("Threads:       {}", config.threads);

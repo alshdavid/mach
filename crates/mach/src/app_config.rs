@@ -9,7 +9,10 @@ use normalize_path::NormalizePath;
 use crate::platform::CommandArgs;
 use crate::platform::CommandLineParseResult;
 use crate::public::Config;
+use crate::public::Machrc;
 use crate::public::WorkspaceKind;
+
+type FileIndex = HashMap<String, Vec<PathBuf>>;
 
 pub fn app_config() -> Result<Config, String> {
   let args = CommandArgs::from_args(env::args());
@@ -35,6 +38,9 @@ pub fn app_config() -> Result<Config, String> {
 
   let optimize = get_optimize(&args);
 
+  let file_index = find_file_by_name(&project_root, &["package.json", ".machrc", "pnpm-workspace.yaml"]);
+  let mach_config = parse_machrc(&file_index).unwrap();
+
   return Ok(Config {
     entry_point,
     dist_dir,
@@ -44,6 +50,8 @@ pub fn app_config() -> Result<Config, String> {
     threads,
     optimize,
     env: get_env(),
+    package_json: None,
+    mach_config,
   });
 }
 
@@ -126,8 +134,9 @@ fn find_project_root(entry: &PathBuf) -> PathBuf {
   return current_test;
 }
 
+// TODO use index to figure this out
 fn find_project_workspace(
-  project_root: &PathBuf
+  project_root: &PathBuf,
 ) -> Result<(Option<PathBuf>, WorkspaceKind), String> {
   let mut current_test = project_root.clone();
 
@@ -135,10 +144,7 @@ fn find_project_workspace(
     // PNPM Workspaces
     let possible_pnpm_yaml = current_test.join("pnpm-workspace.yaml");
     if possible_pnpm_yaml.exists() {
-      let Ok(pnpm_yaml_file) = fs::read_to_string(possible_pnpm_yaml) else {
-        return Err("Unable to read file".to_string());
-      };
-      let Ok(yaml) = serde_yaml::from_str::<serde_yaml::Value>(&pnpm_yaml_file) else {
+      let Ok(yaml) = parse_yaml_file(&possible_pnpm_yaml) else {
         return Err("Unable to parse json".to_string());
       };
       let Some(workspaces_value) = yaml.get("packages") else {
@@ -166,10 +172,7 @@ fn find_project_workspace(
     // Yarn and NPM Workspaces
     let possible_package_json = current_test.join("package.json");
     if possible_package_json.exists() {
-      let Ok(package_json_file) = fs::read_to_string(possible_package_json) else {
-        return Err("Unable to read file".to_string());
-      };
-      let Ok(json) = serde_json::from_str::<serde_json::Value>(&package_json_file) else {
+      let Ok(json) = parse_json_file(&possible_package_json) else {
         return Err("Unable to parse json".to_string());
       };
       let Some(workspaces_value) = json.get("workspaces") else {
@@ -196,6 +199,112 @@ fn find_project_workspace(
 
     if !current_test.pop() {
       return Ok((None, WorkspaceKind::None));
+    }
+  }
+}
+
+fn parse_machrc(file_index: &FileIndex) -> Result<Option<Machrc>, String> {
+  let Some(mach_configs) = file_index.get(".machrc") else {
+    return Ok(None);
+  };
+
+  if mach_configs.len() == 0 {
+    return Ok(None);
+  }
+
+  let file_path = mach_configs[0].clone();
+
+  let mut mach_config = Machrc {
+    file_path,
+    resolvers: None,
+  };
+
+  let json = parse_json_file(&mach_config.file_path).unwrap();
+
+  if let Some(resolvers_value) = json.get("resolvers") {
+    let mut resolvers = Vec::<String>::new();
+    let Some(resolvers_values) = resolvers_value.as_array() else {
+      return Err("'resolvers' should be array".to_string());
+    };
+    for resolver_value in resolvers_values {
+      let Some(resolver_value) = resolver_value.as_str() else {
+        return Err("'resolvers[n]' should be string".to_string());
+      };
+      resolvers.push(resolver_value.to_string());
+    }
+    mach_config.resolvers = Some(resolvers);
+  };
+
+  return Ok(Some(mach_config));
+}
+
+fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
+  let Ok(json_file) = fs::read_to_string(target) else {
+    return Err("Unable to read file".to_string());
+  };
+  let Ok(json) = serde_json::from_str::<serde_json::Value>(&json_file) else {
+    return Err("Unable to parse json".to_string());
+  };
+  return Ok(json);
+}
+
+fn parse_yaml_file(target: &PathBuf) -> Result<serde_yaml::Value, String> {
+  let Ok(yaml_file) = fs::read_to_string(target) else {
+    return Err("Unable to read file".to_string());
+  };
+  let Ok(yaml) = serde_yaml::from_str::<serde_yaml::Value>(&yaml_file) else {
+    return Err("Unable to parse json".to_string());
+  };
+  return Ok(yaml);
+}
+
+fn find_file_by_name(start_path: &PathBuf, targets: &[&str]) -> FileIndex {
+  let mut found = FileIndex::new();
+  let mut current_test = start_path.clone();
+
+  for target in targets {
+    found.insert(target.to_string(), vec![]);
+  }
+
+  for target in targets {
+    let Some(file_name) = current_test.file_name() else {
+      break;
+    };
+
+    let target = target.to_string();
+
+    if file_name.to_str().unwrap() == target {
+      found.get_mut(&target).unwrap().push(current_test.clone());
+      if !current_test.pop() {
+        return found;
+      }
+      break;
+    }
+  }
+  
+  loop {
+    let Ok(ls) = current_test.read_dir() else {
+      return found;
+    };
+
+    for item in ls {
+      let Ok(item) = item else {
+        continue;
+      };
+
+      let file_name = item.file_name();
+
+      for target in targets {
+        let target = target.to_string();
+        if file_name.to_str().unwrap() == target {
+          found.get_mut(&target).unwrap().push(current_test.join(target));
+          continue;
+        }
+      }
+    }
+
+    if !current_test.pop() {
+      return found;
     }
   }
 }
