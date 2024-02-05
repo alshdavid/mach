@@ -61,6 +61,13 @@ pub fn transform(
       continue;
     };
 
+    dependency_map.insert(&dependency.source_asset_id.clone(), DependencyLegacy{
+      parent_asset_id: dependency.source_asset_id.clone(),
+      target_asset_id: result.file_path.to_str().unwrap().to_string(),//clone(),
+      import_specifier: dependency.specifier.clone(),
+      kind: DependencyKind::Static,
+    });
+
     if !done_files.insert(result.file_path.clone()) {
       continue;
     }
@@ -90,12 +97,6 @@ pub fn transform(
     ));
 
     while let Some(dependency_options) = dependencies.pop() {
-      dependency_map.insert(&new_asset_id, DependencyLegacy{
-        parent_asset_id: dependency.source_asset_id.clone(),
-        target_asset_id: new_asset_id.clone(),
-        import_specifier: dependency_options.specifier.clone(),
-        kind: DependencyKind::Static,
-      });
       queue.push(Dependency{
         id: "".to_string(),
         specifier: dependency_options.specifier.clone(),

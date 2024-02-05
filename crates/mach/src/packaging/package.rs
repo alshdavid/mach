@@ -8,6 +8,7 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
 use crate::default_plugins::transformers::javascript::parse_program;
+use crate::default_plugins::transformers::javascript::render_program;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetMap;
@@ -37,11 +38,11 @@ pub fn package(
     let dependency_map_arc = dependency_map_arc.clone();
     let runtime_factory = runtime_factory.clone();
     let source_map = source_map.clone();
-    let mut program = parse_program(&asset.file_path, &asset.code, source_map.clone()).unwrap().program;
+    let program = parse_program(&asset.file_path, &asset.code, source_map.clone()).unwrap().program;
     let asset_id = asset.id.clone();
     let asset_file_path = asset.file_path.clone();
 
-    let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+    let (program, source_map) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let mut program = program.fold_with(&mut apply_runtime_esm(
         asset_id.clone(),
         dependency_map_arc.clone(),
@@ -82,8 +83,10 @@ pub fn package(
         program = result;
       }
 
-      return program;
+      return (program, source_map);
     });
+
+    asset.code = render_program(&program, source_map.clone());
 
     updated_assets.push(asset);
   }
@@ -101,6 +104,8 @@ pub fn package(
 
     for asset_id in &bundle.assets {
       let asset = asset_map.get(asset_id).unwrap();
+      let program = parse_program(&asset.file_path, &asset.code, source_map.clone()).unwrap().program;
+
       let mut program = program.clone();
 
       match &mut program {

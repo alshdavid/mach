@@ -26,7 +26,7 @@ impl Asset {
     let relative_path = pathdiff::diff_paths(asset_filepath_absolute, root_path).unwrap();
     let relative_path_hash = hash_path_buff_sha_256(&relative_path);
     let source_content_hash = hash_string_sha_256(&code);
-    let id = relative_path.to_str().unwrap().to_string();
+    let id = asset_filepath_absolute.to_str().unwrap().to_string();
 
     return Asset {
       id,
