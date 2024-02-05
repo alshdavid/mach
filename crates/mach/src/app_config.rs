@@ -253,6 +253,7 @@ fn parse_machrc(file_index: &FileIndex) -> Result<Option<Machrc>, String> {
   let mut mach_config = Machrc {
     file_path,
     resolvers: None,
+    transformers: None,
   };
 
   let json = parse_json_file(&mach_config.file_path).unwrap();
@@ -270,6 +271,27 @@ fn parse_machrc(file_index: &FileIndex) -> Result<Option<Machrc>, String> {
     }
     mach_config.resolvers = Some(resolvers);
   };
+
+  if let Some(transformers_value) = json.get("transformers") {
+    let mut transformers = HashMap::<String, Vec<String>>::new();
+    let Some(transformers_value) = transformers_value.as_object() else {
+      return Err("'transformers' should be object".to_string());
+    };
+    for (key, value) in transformers_value {
+      let mut values = Vec::<String>::new();
+      let Some(value) = value.as_array() else {
+        return Err("'transformers[key]' should be array".to_string());
+      };
+      for value in value {
+        let Some(value) = value.as_str() else {
+          return Err("'transformers[key][n]' should be string".to_string());
+        };
+        values.push(value.to_string());
+      }
+      transformers.insert(key.clone(), values);
+    }
+    mach_config.transformers = Some(transformers);
+  }
 
   return Ok(Some(mach_config));
 }

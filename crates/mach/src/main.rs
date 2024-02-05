@@ -62,6 +62,7 @@ fn main() {
   }
 
   println!("Assets:        {}", asset_map.len());
+  dbg!(&dependency_map);
 
   // This phase reads the dependency graph and produces multiple bundles,
   // each bundle representing and output file

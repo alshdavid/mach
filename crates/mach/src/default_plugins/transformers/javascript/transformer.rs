@@ -31,7 +31,7 @@ use crate::public::{MutableAsset, Transformer};
 pub struct DefaultJSTransformer {}
 
 impl Transformer for DefaultJSTransformer {
-    fn transform(&self, mut asset: MutableAsset, config: Config) -> Result<(), String> {
+    fn transform(&self, mut asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
       let source_map_og = Arc::new(SourceMap::default());
       let Ok(result) = parse_program(
         &asset.file_path,
@@ -45,17 +45,6 @@ impl Transformer for DefaultJSTransformer {
       let comments = result.comments;
       let source_map = source_map_og.clone();
       let file_extension = asset.file_path.extension().unwrap().to_str().unwrap().to_string();
-      let dependencies = read_imports(&program);
-
-      for dependency in dependencies {
-        asset.add_dependency(DependencyOptions{
-            specifier: dependency.specifier,
-            specifier_type: dependency.specifier_type,
-            priority: dependency.priority,
-            resolve_from: asset.file_path.clone(),
-            imported_symbols: vec![],
-        });
-      }
 
       let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
         let top_level_mark = Mark::fresh(Mark::root());
@@ -103,6 +92,18 @@ impl Transformer for DefaultJSTransformer {
     
         return program;
       });
+
+      let dependencies = read_imports(&program);
+
+      for dependency in dependencies {
+        asset.add_dependency(DependencyOptions{
+            specifier: dependency.specifier,
+            specifier_type: dependency.specifier_type,
+            priority: dependency.priority,
+            resolve_from: asset.file_path.clone(),
+            imported_symbols: vec![],
+        });
+      }
 
       render_program(&program, source_map_og.clone());
       return Ok(());

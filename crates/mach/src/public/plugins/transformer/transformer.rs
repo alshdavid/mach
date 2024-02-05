@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use crate::public::{Config, DependencyPriority, SpecifierType};
 
 pub trait Transformer {
-  fn transform(&self, asset: MutableAsset, config: Config) -> Result<(), String>;
+  fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String>;
 }
 
 #[derive(Debug)]
@@ -14,6 +14,18 @@ pub struct MutableAsset<'a> {
 }
 
 impl<'a> MutableAsset<'a> {
+  pub fn new(
+    file_path: PathBuf,
+    code: &'a mut String,
+    dependencies: &'a mut Vec<DependencyOptions>,
+  ) -> Self {
+    return MutableAsset {
+        file_path,
+        code,
+        dependencies,
+    }
+  }
+
   pub fn get_code(&self) -> &String {
     return self.code;
   }

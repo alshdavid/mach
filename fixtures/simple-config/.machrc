@@ -1,5 +1,10 @@
 {
   "resolvers": [
-    "mach:default"
-  ]
+    "mach:resolver"
+  ],
+  "transformers": {
+    "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
+      "mach:transformers/javascript"
+    ]
+  }
 }

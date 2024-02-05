@@ -38,6 +38,13 @@ impl AssetMap {
     return self.assets.get(asset_id);
   }
 
+  pub fn contains_key(
+    &self,
+    asset_id: &AssetId,
+  ) -> bool {
+    return self.assets.contains_key(asset_id);
+  }
+
   pub fn len(&self) -> usize {
     return self.assets.len();
   }

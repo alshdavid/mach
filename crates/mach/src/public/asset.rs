@@ -14,19 +14,18 @@ pub struct Asset {
   pub file_path_relative: PathBuf,
   pub file_path_relative_hash: String,
   pub source_content_hash: String,
-  pub program: Program,
+  pub code: String,
 }
 
 impl Asset {
   pub fn new(
     root_path: &PathBuf,
     asset_filepath_absolute: &PathBuf,
-    asset_contents: &String,
-    program: Program,
+    code: String,
   ) -> Self {
     let relative_path = pathdiff::diff_paths(asset_filepath_absolute, root_path).unwrap();
     let relative_path_hash = hash_path_buff_sha_256(&relative_path);
-    let source_content_hash = hash_string_sha_256(asset_contents);
+    let source_content_hash = hash_string_sha_256(&code);
     let id = relative_path.to_str().unwrap().to_string();
 
     return Asset {
@@ -34,7 +33,7 @@ impl Asset {
       file_path: asset_filepath_absolute.clone(),
       file_path_relative: relative_path,
       file_path_relative_hash: relative_path_hash,
-      program,
+      code,
       source_content_hash,
     };
   }

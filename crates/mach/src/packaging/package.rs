@@ -1,11 +1,13 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use swc_core::common::util::take::Take;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
+use crate::default_plugins::transformers::javascript::parse_program;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetMap;
@@ -29,25 +31,30 @@ pub fn package(
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 
   let mut updated_assets = Vec::<Asset>::new();
+  let mut program = Program::Module(Module::dummy());
+
   while let Some(mut asset) = asset_map.pop() {
     let dependency_map_arc = dependency_map_arc.clone();
     let runtime_factory = runtime_factory.clone();
     let source_map = source_map.clone();
+    let mut program = parse_program(&asset.file_path, &asset.code, source_map.clone()).unwrap().program;
+    let asset_id = asset.id.clone();
+    let asset_file_path = asset.file_path.clone();
 
-    let asset = swc_core::common::GLOBALS.set(&Globals::new(), move || {
-      asset.program = asset.program.fold_with(&mut apply_runtime_esm(
-        asset.id.clone(),
+    let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+      let mut program = program.fold_with(&mut apply_runtime_esm(
+        asset_id.clone(),
         dependency_map_arc.clone(),
         runtime_factory.clone(),
       ));
 
-      asset.program = asset.program.fold_with(&mut apply_runtime_cjs(
-        asset.id.clone(),
+      program = program.fold_with(&mut apply_runtime_cjs(
+        asset_id.clone(),
         dependency_map_arc.clone(),
         runtime_factory.clone(),
       ));
 
-      match &mut asset.program {
+      match &mut program {
         Program::Module(m) => {
           let mut stmts = Vec::<Stmt>::new();
           for mi in &mut m.body {
@@ -56,7 +63,7 @@ pub fn package(
             };
             stmts.push(s.clone());
           }
-          let wrapped = runtime_factory.module(&asset.id, true, stmts);
+          let wrapped = runtime_factory.module(&asset_id, true, stmts);
           m.body = vec![ModuleItem::Stmt(wrapped)];
         }
         Program::Script(s) => {
@@ -64,18 +71,18 @@ pub fn package(
           for s in &s.body {
             stmts.push(s.clone());
           }
-          let wrapped = runtime_factory.module(&asset.id, true, stmts);
+          let wrapped = runtime_factory.module(&asset_id, true, stmts);
           s.body = vec![wrapped];
         }
       }
 
       if config.optimize {
-        let result = optimize(asset.program, &asset.file_path, source_map.clone())
+        let result = optimize(program, &asset_file_path, source_map.clone())
           .expect("failed to optimize");
-        asset.program = result;
+        program = result;
       }
 
-      return asset;
+      return program;
     });
 
     updated_assets.push(asset);
@@ -94,7 +101,7 @@ pub fn package(
 
     for asset_id in &bundle.assets {
       let asset = asset_map.get(asset_id).unwrap();
-      let mut program = asset.program.clone();
+      let mut program = program.clone();
 
       match &mut program {
         Program::Module(m) => {
