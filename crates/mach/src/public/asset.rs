@@ -1,7 +1,5 @@
 use std::path::PathBuf;
 
-use swc_core::ecma::ast::Program;
-
 use crate::platform::hash::hash_path_buff_sha_256;
 use crate::platform::hash::hash_string_sha_256;
 
@@ -11,30 +9,18 @@ pub type AssetId = String;
 pub struct Asset {
   pub id: AssetId,
   pub file_path: PathBuf,
-  pub file_path_relative: PathBuf,
-  pub file_path_relative_hash: String,
-  pub source_content_hash: String,
   pub code: String,
 }
 
 impl Asset {
-  pub fn new(
+  pub fn generate_id(
     root_path: &PathBuf,
     asset_filepath_absolute: &PathBuf,
-    code: String,
-  ) -> Self {
+    code: &str,
+  ) -> String {
     let relative_path = pathdiff::diff_paths(asset_filepath_absolute, root_path).unwrap();
     let relative_path_hash = hash_path_buff_sha_256(&relative_path);
     let source_content_hash = hash_string_sha_256(&code);
-    let id = asset_filepath_absolute.to_str().unwrap().to_string();
-
-    return Asset {
-      id,
-      file_path: asset_filepath_absolute.clone(),
-      file_path_relative: relative_path,
-      file_path_relative_hash: relative_path_hash,
-      code,
-      source_content_hash,
-    };
+    return hash_string_sha_256(&format!("{}{}", relative_path_hash, source_content_hash));
   }
 }

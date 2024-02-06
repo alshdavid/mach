@@ -1,25 +1,16 @@
 mod app_config;
-mod bundling;
 mod default_plugins;
-mod emitting;
-mod packaging;
 mod platform;
 mod public;
 mod transformation;
 mod node_workers;
 
-use std::sync::Arc;
 use std::time::SystemTime;
 
-use swc_core::common::SourceMap;
-
 use crate::app_config::app_config;
-use crate::bundling::bundle;
-use crate::emitting::emit;
-use crate::packaging::package;
+use crate::public::AssetGraph;
 use crate::public::AssetMap;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
+use crate::public::DependencyGraph;
 use crate::transformation::transform;
 use crate::node_workers::NodeInstance;
 
@@ -29,9 +20,8 @@ fn main() {
 
   // Bundle state
   let mut asset_map = AssetMap::new();
-  let mut dependency_map = DependencyMap::new();
-  let mut bundle_map = BundleMap::new();
-  let source_map = Arc::new(SourceMap::default());
+  let mut asset_graph = AssetGraph::new();
+  let mut dependency_graph = DependencyGraph::new();
   let _node_workers = NodeInstance::new();
 
   // TODO move this into a "reporter" plugin
@@ -53,8 +43,8 @@ fn main() {
   if let Err(err) = transform(
     &config,
     &mut asset_map,
-    &mut dependency_map,
-    source_map.clone(),
+    &mut asset_graph,
+    &mut dependency_graph,
   ) {
     println!("Transformation Error");
     println!("{}", err);
@@ -63,36 +53,8 @@ fn main() {
 
   println!("Assets:        {}", asset_map.len());
   dbg!(&asset_map);
-  dbg!(&dependency_map);
-
-  // This phase reads the dependency graph and produces multiple bundles,
-  // each bundle representing and output file
-  if let Err(err) = bundle(&config, &asset_map, &dependency_map, &mut bundle_map) {
-    println!("Bundling Error");
-    println!("{}", err);
-    return;
-  }
-
-  // // This phase reads the bundle graph and applies the "runtime" code,
-  // // to the assets. This is things like rewriting import statements
-  if let Err(err) = package(
-    &config,
-    &mut asset_map,
-    &mut dependency_map,
-    &mut bundle_map,
-    source_map.clone(),
-  ) {
-    println!("Packaging Error:");
-    println!("{}", err);
-    return;
-  }
-
-  // // This phase writes the bundles to disk
-  if let Err(err) = emit(&config, &bundle_map, source_map.clone()) {
-    println!("Emitting Error");
-    println!("{}", err);
-    return;
-  }
+  dbg!(&asset_graph);
+  dbg!(&dependency_graph);
 
   println!("Finished in:   {:.3}s", start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
 }

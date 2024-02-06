@@ -4,7 +4,6 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
-use crate::public::DependencyKind;
 use crate::public::DependencyPriority;
 use crate::public::SpecifierType;
 
@@ -15,6 +14,7 @@ pub struct ImportReadResult {
   pub specifier: String,
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
+  pub imported_symbols: Vec<String>,
 }
 
 pub fn read_imports(module: &Program) -> Vec<ImportReadResult> {
@@ -53,6 +53,7 @@ impl Visit for Walker {
       specifier: node.src.value.to_string(),
       specifier_type: SpecifierType::ESM,
       priority: DependencyPriority::Sync,
+      imported_symbols: vec![],
     })
   }
 
@@ -68,6 +69,7 @@ impl Visit for Walker {
       specifier: node.src.value.to_string(),
       specifier_type: SpecifierType::ESM,
       priority: DependencyPriority::Sync,
+      imported_symbols: vec![],
     })
   }
 
@@ -83,8 +85,9 @@ impl Visit for Walker {
       self.imports.push(ImportReadResult {
         specifier: src.value.to_string(),
         specifier_type: SpecifierType::ESM,
-      priority: DependencyPriority::Sync,
-    })
+        priority: DependencyPriority::Sync,
+        imported_symbols: vec![],
+      })
     }
   }
 
@@ -112,6 +115,7 @@ impl Visit for Walker {
           specifier: import_specifier.value.to_string(),
           specifier_type: SpecifierType::ESM,
           priority: DependencyPriority::Lazy,
+          imported_symbols: vec![],
         });
       }
       // require("specifier")
@@ -132,6 +136,7 @@ impl Visit for Walker {
           specifier: import_specifier.value.to_string(),
           specifier_type: SpecifierType::Commonjs,
           priority: DependencyPriority::Sync,
+          imported_symbols: vec![],
         });
       }
       Callee::Super(_) => {}

@@ -1,11 +1,8 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::path::PathBuf;
-use std::rc::Rc;
 use std::sync::Arc;
 
 use swc_core::atoms::JsWord;
-use swc_core::common::source_map;
 use swc_core::common::Globals;
 use swc_core::common::Mark;
 use swc_core::common::SourceMap;
@@ -24,14 +21,13 @@ use crate::public::Config;
 use crate::public::DependencyOptions;
 
 use super::collect_decls;
-use super::ImportReadResult;
 use super::NodeEnvReplacer;
 use crate::public::{MutableAsset, Transformer};
 
 pub struct DefaultJSTransformer {}
 
 impl Transformer for DefaultJSTransformer {
-    fn transform(&self, mut asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
+    fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
       let source_map_og = Arc::new(SourceMap::default());
       let Ok(result) = parse_program(
         &asset.file_path,
@@ -105,7 +101,7 @@ impl Transformer for DefaultJSTransformer {
         });
       }
 
-      render_program(&program, source_map_og.clone());
+      asset.set_code(&render_program(&program, source_map_og.clone()));
       return Ok(());
     }
 }

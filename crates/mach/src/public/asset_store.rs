@@ -1,17 +1,22 @@
+#![allow(dead_code)]
 use std::collections::HashMap;
+use std::fmt::Debug;
+use std::path::PathBuf;
 
 use super::Asset;
 use super::AssetId;
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct AssetMap {
   assets: HashMap<AssetId, Asset>,
+  assets_index: HashMap<PathBuf, AssetId>,
 }
 
 impl AssetMap {
   pub fn new() -> Self {
     return AssetMap {
       assets: HashMap::new(),
+      assets_index: HashMap::new(),
     };
   }
 
@@ -20,7 +25,9 @@ impl AssetMap {
     asset: Asset,
   ) -> AssetId {
     let asset_id = asset.id.clone();
+    let asset_path = asset.file_path.clone();
     self.assets.insert(asset_id.clone(), asset);
+    self.assets_index.insert(asset_path, asset_id.clone());
     return asset_id;
   }
 
@@ -35,6 +42,16 @@ impl AssetMap {
     &self,
     asset_id: &AssetId,
   ) -> Option<&Asset> {
+    return self.assets.get(asset_id);
+  }
+
+  pub fn get_file(
+    &self,
+    file_path: &PathBuf,
+  ) -> Option<&Asset> {
+    let Some(asset_id) = self.assets_index.get(file_path) else {
+      return None;
+    };
     return self.assets.get(asset_id);
   }
 
@@ -70,5 +87,16 @@ impl AssetMap {
     };
 
     return Some(self.assets.remove(&first_key).unwrap());
+  }
+}
+
+impl Debug for AssetMap {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    let values = self.assets.values().collect::<Vec<&Asset>>();
+    f.debug_list().entries(&values).finish()
+    // f.debug_struct("AssetMap").field("assets", &self.assets).finish()
   }
 }

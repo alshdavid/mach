@@ -1,25 +1,8 @@
 use std::path::PathBuf;
 
+use crate::platform::hash::hash_string_sha_256;
+
 use super::AssetId;
-
-#[derive(Debug, Clone)]
-pub enum DependencyKind {
-  Static,
-  Dynamic,
-  Require,
-}
-
-#[derive(Debug, Clone)]
-pub struct DependencyLegacy {
-  /// Id of the consumer
-  pub parent_asset_id: AssetId,
-  /// Id of the dependency
-  pub target_asset_id: AssetId,
-  /// import foo from 'import_specifier'
-  ///    This part -> |----------------|
-  pub import_specifier: String,
-  pub kind: DependencyKind,
-}
 
 #[derive(Debug, Clone)]
 pub enum SpecifierType {
@@ -51,4 +34,13 @@ pub struct Dependency {
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this path
   pub imported_symbols: Vec<String>,
+}
+
+impl Dependency {
+  pub fn generate_id(
+    source_asset_id: &AssetId,
+    specifier: &String,
+  ) -> String {
+    return hash_string_sha_256(&format!("{}{}", source_asset_id, specifier));
+  }
 }

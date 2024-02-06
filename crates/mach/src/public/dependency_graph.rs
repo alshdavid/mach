@@ -1,19 +1,36 @@
-use std::collections::HashMap;
 
-use super::AssetId;
-use super::DependencyLegacy;
+use super::Dependency;
+use std::fmt::Debug;
 
-#[derive(Debug, Default)]
-pub struct DependencyMap {
-  pub dependencies: HashMap<AssetId, Vec<DependencyLegacy>>,
+#[derive(Default)]
+pub struct DependencyGraph {
+  pub dependencies: Vec<Dependency>,
 }
 
-impl DependencyMap {
+impl DependencyGraph {
   pub fn new() -> Self {
-    return DependencyMap {
-      dependencies: HashMap::new(),
+    return DependencyGraph {
+      dependencies: Vec::new(),
     };
   }
+  
+
+  pub fn insert(
+    &mut self,
+    dependency: Dependency,
+  ) {
+    self.dependencies.push(dependency);
+  }
+}
+
+impl Debug for DependencyGraph {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      f.debug_list().entries(&self.dependencies).finish()
+  }
+}
+
+
+/*
 
   pub fn lookup_dependency_by_specifier(
     &self,
@@ -39,25 +56,7 @@ impl DependencyMap {
     ));
   }
 
-  pub fn insert_many(
-    &mut self,
-    asset_id: &AssetId,
-    dependencies: Vec<DependencyLegacy>,
-  ) {
-    let Some(current_dependencies) = self.dependencies.get_mut(asset_id) else {
-      self.dependencies.insert(asset_id.clone(), dependencies);
-      return;
-    };
-    current_dependencies.extend(dependencies);
-  }
 
-  pub fn insert(
-    &mut self,
-    asset_id: &AssetId,
-    dependency: DependencyLegacy,
-  ) {
-    self.insert_many(asset_id, vec![dependency]);
-  }
 
   pub fn iter(&self) -> impl Iterator<Item = (&AssetId, &Vec<DependencyLegacy>)> {
     return self.dependencies.iter();
@@ -66,4 +65,4 @@ impl DependencyMap {
   pub fn iter_mut(&mut self) -> impl Iterator<Item = (&AssetId, &mut Vec<DependencyLegacy>)> {
     return self.dependencies.iter_mut();
   }
-}
+*/
