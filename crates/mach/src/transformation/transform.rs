@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 
@@ -8,7 +6,6 @@ use crate::default_plugins::transformers::javascript::DefaultJSTransformer;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;
-use crate::public::AssetId;
 use crate::public::AssetMap;
 use crate::public::Dependency;
 use crate::public::DependencyGraph;
@@ -25,9 +22,6 @@ pub fn transform(
   asset_graph: &mut AssetGraph,
   dependency_graph: &mut DependencyGraph,
 ) -> Result<(), String> {
-  let mut done_assets = HashSet::<PathBuf>::new();
-  let mut asset_index = HashMap::<PathBuf, AssetId>::new();
-
   let mut queue = Vec::<Dependency>::new();
   queue.push(Dependency {
     id:  Dependency::generate_id(
@@ -74,17 +68,12 @@ pub fn transform(
       continue;
     };
 
-    let parent_asset_id = {
-      if let Some(v) = asset_map.get(&dependency.source_asset_id) {
-        v.id.clone()
-      } else {
-        "".to_string()
-      }
-    };
+    let parent_asset_id = dependency.source_asset_id.clone();
+
     dependency_graph.insert(dependency);
 
     if let Some(target_asset) = asset_map.get_file(&resolve_result.file_path) {
-      asset_graph.add_edge(target_asset.id.clone(), parent_asset_id.clone());
+      asset_graph.add_edge(parent_asset_id.clone(), target_asset.id.clone());
       continue;
     }
 
@@ -97,7 +86,7 @@ pub fn transform(
       &resolve_result.file_path,
       &code,
     );
-    asset_graph.add_edge(new_asset_id.clone(), parent_asset_id.clone());
+    asset_graph.add_edge(parent_asset_id.clone(), new_asset_id.clone());
 
 
     let mut dependencies = Vec::<DependencyOptions>::new();

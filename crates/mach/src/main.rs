@@ -1,4 +1,5 @@
-mod app_config;
+mod args;
+mod config;
 mod default_plugins;
 mod platform;
 mod public;
@@ -7,31 +8,28 @@ mod node_workers;
 
 use std::time::SystemTime;
 
-use crate::app_config::app_config;
+use crate::config::parse_config;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::DependencyGraph;
 use crate::transformation::transform;
-use crate::node_workers::NodeInstance;
 
 fn main() {
   let start_time = SystemTime::now();
-  let config = app_config().expect("Could not parse CLI args");
+  let config = parse_config().expect("Could not parse CLI args");
 
   // Bundle state
   let mut asset_map = AssetMap::new();
   let mut asset_graph = AssetGraph::new();
   let mut dependency_graph = DependencyGraph::new();
-  let _node_workers = NodeInstance::new();
 
   // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());
   println!("Root:          {}", config.project_root.to_str().unwrap());
-  println!("Workspace:     {:?}", config.workspace_root);
   if let Some(machrc) = &config.mach_config {
-    println!("Mach Config:   {:?}", Some(machrc.file_path.clone()));
+    println!("Mach Config:   {}", machrc.file_path.to_str().unwrap());
   } else {
-    println!("Mach Config:   {:?}",&config.mach_config);
+    println!("Mach Config:   None");
   }
   println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
   println!("Optimize:      {}", config.optimize);

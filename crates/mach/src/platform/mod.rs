@@ -1,5 +1,4 @@
-mod command_line;
+#![allow(dead_code)]
 pub mod hash;
 pub mod subject;
 
-pub use crate::platform::command_line::*;
