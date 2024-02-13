@@ -1,24 +1,18 @@
 use std::path::PathBuf;
 
+use serde::{Deserialize, Serialize};
+
 use crate::platform::hash::hash_string_sha_256;
 
 use super::AssetId;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SpecifierType {
   ESM,
   Commonjs,
 }
 
-#[derive(Debug, Clone)]
-pub enum DependencyPriority {
-  /// Static import
-  Sync,
-  /// Dynamic import
-  Lazy,
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Dependency {
   pub id: String,
   /// Identifier of the import 

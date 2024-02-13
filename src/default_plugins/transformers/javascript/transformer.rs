@@ -24,9 +24,10 @@ use super::collect_decls;
 use super::NodeEnvReplacer;
 use crate::public::{MutableAsset, Transformer};
 
-pub struct DefaultJSTransformer {}
+#[derive(Debug)]
+pub struct DefaultTransformerJs {}
 
-impl Transformer for DefaultJSTransformer {
+impl Transformer for DefaultTransformerJs {
     fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
       let source_map_og = Arc::new(SourceMap::default());
       let Ok(result) = parse_program(

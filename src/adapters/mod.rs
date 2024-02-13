@@ -1,1 +1,1 @@
-mod node_js;
+pub mod node_js;

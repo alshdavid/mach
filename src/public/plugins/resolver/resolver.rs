@@ -1,11 +1,13 @@
-use std::path::PathBuf;
+use std::{fmt::Debug, path::PathBuf};
 
+use async_trait::async_trait;
 use dependency::Dependency;
 
 use crate::public::dependency;
 
-pub trait Resolver {
-    fn resolve(
+#[async_trait]
+pub trait Resolver: Debug + Send + Sync {
+    async fn resolve(
       &self,
       dependency: &Dependency
     ) -> Result<Option<ResolveResult>, String>;

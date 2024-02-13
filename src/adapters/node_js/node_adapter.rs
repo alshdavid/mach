@@ -17,14 +17,14 @@ use super::spawn::spawn_node_js;
 use super::NodeWorker;
 
 #[derive(Debug)]
-pub struct NodeInstance {
+pub struct NodeAdapter {
   send_to: Arc<Mutex<usize>>,
   tx_shutdown: UnboundedSender<()>,
   workers: Vec<NodeWorker>,
 }
 
-impl NodeInstance {
-  pub async fn new(worker_count: usize) -> NodeInstance {
+impl NodeAdapter {
+  pub async fn new(worker_count: usize) -> NodeAdapter {
     // Create socket for Node.js to connect to
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
@@ -118,7 +118,7 @@ impl NodeInstance {
       child.wait().await.unwrap();
     });
 
-    return NodeInstance {
+    return NodeAdapter {
       send_to: Arc::new(Mutex::new(0)),
       tx_shutdown,
       workers,
@@ -174,7 +174,7 @@ impl NodeInstance {
   }
 }
 
-impl Drop for NodeInstance {
+impl Drop for NodeAdapter {
   fn drop(&mut self) {
     self.shutdown().ok();
   }

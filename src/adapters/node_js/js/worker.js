@@ -24,7 +24,7 @@
 */
 const { Socket } = require('net')
 
-/** @type {Record<string, Function>} */
+/** @type {Record<string, Record<string, Function>>} */
 const resolvers = {}
 
 /**
@@ -38,12 +38,15 @@ function load_resolver({ specifier }) {
 /**
  * @param {Object} param0 
  *   @param {string} param0.resolver_key
- *   @param {string} param0.from_path
- *   @param {string} param0.specifier
+ *   @param {Object} param0.dependency
  * @returns {Promise<any>}
  */
-async function run_resolver({ resolver_key, from_path, specifier }) {
-  return await resolvers[resolver_key]({ from_path, specifier })
+async function run_resolver({ resolver_key, dependency }) {
+  const result = await resolvers[resolver_key].resolve({ dependency })
+  if (result === null || result === undefined) {
+    return {}
+  }
+  return result
 }
 
 /** @type {Record<string, Function>} */
@@ -96,4 +99,4 @@ client.on('end', () => process.exit())
 client.on('close', () => process.exit());
 
 // @ts-expect-error
-client.connect('__MACH__PORT__', '127.0.0.1');
+client.connect(__MACH__PORT__, '127.0.0.1');

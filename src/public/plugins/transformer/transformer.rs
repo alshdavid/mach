@@ -1,8 +1,11 @@
+use std::fmt::Debug;
 use std::path::PathBuf;
 
-use crate::public::{Config, DependencyPriority, SpecifierType};
+use serde::{Deserialize, Serialize};
 
-pub trait Transformer {
+use crate::public::{Config, SpecifierType};
+
+pub trait Transformer: Debug + Send + Sync {
   fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String>;
 }
 
@@ -46,4 +49,12 @@ pub struct DependencyOptions {
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
   pub imported_symbols: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum DependencyPriority {
+  /// Static import
+  Sync,
+  /// Dynamic import
+  Lazy,
 }

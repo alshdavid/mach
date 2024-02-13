@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
+use std::time::SystemTime;
 
 use clap::Parser;
 use normalize_path::NormalizePath;
@@ -11,6 +12,8 @@ use crate::args::Args;
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
 pub fn parse_config() -> Result<Config, String> {
+  let start_time = SystemTime::now();
+
   let args = Args::parse();
   
   // Ignore multiple entries for now
@@ -53,6 +56,7 @@ pub fn parse_config() -> Result<Config, String> {
   };
 
   return Ok(Config{
+    start_time,
     entry_point,
     dist_dir,
     // TODO
@@ -61,7 +65,7 @@ pub fn parse_config() -> Result<Config, String> {
     workspace_kind: None,
     project_root,
     package_json,
-    mach_config,
+    machrc: mach_config,
     threads,
     node_workers: args.node_workers.unwrap(),
     optimize: args.optimize.unwrap(),

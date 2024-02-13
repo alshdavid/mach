@@ -1,8 +1,8 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::default_plugins::resolver::DefaultResolver;
-use crate::default_plugins::transformers::javascript::DefaultJSTransformer;
+use crate::default_plugins::transformers::javascript::DefaultTransformerJs;
+use crate::plugins::Plugins;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;
@@ -12,15 +12,15 @@ use crate::public::DependencyGraph;
 use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::ResolveResult;
-use crate::public::Resolver;
 use crate::public::SpecifierType;
 use crate::public::Transformer;
 
-pub fn transform(
+pub async fn transform(
   config: &public::Config,
   asset_map: &mut AssetMap,
   asset_graph: &mut AssetGraph,
   dependency_graph: &mut DependencyGraph,
+  plugins: &Plugins,
 ) -> Result<(), String> {
   let mut queue = Vec::<Dependency>::new();
   queue.push(Dependency {
@@ -39,18 +39,14 @@ pub fn transform(
 
   // Load transformer plugins
   let mut transformers = Vec::<Box<dyn Transformer>>::new();
-  transformers.push(Box::new(DefaultJSTransformer{}));
-
-  // Load resolver plugins
-  let mut resolvers = Vec::<Box<dyn Resolver>>::new();
-  resolvers.push(Box::new(DefaultResolver{}));
+  transformers.push(Box::new(DefaultTransformerJs{}));
 
   while let Some(dependency) = queue.pop() {
     // Run Resolvers
     let mut resolve_result: Option<ResolveResult> = None;
 
-    for resolver in &resolvers {
-      let result = resolver.resolve(&dependency);
+    for resolver in &plugins.resolvers {
+      let result = resolver.resolve(&dependency).await;
       let result = match result {
           Ok(result) => result,
           Err(err) => {
@@ -58,7 +54,7 @@ pub fn transform(
           },
       };
       let Some(result) = result else {
-        break;
+        continue;
       };
       resolve_result = Some(result);
       break;
