@@ -1,10 +1,10 @@
+mod adapters;
 mod args;
 mod config;
 mod default_plugins;
 mod platform;
 mod public;
 mod transformation;
-mod node_workers;
 
 use std::time::SystemTime;
 
@@ -50,9 +50,9 @@ fn main() {
   }
 
   println!("Assets:        {}", asset_map.len());
-  dbg!(&asset_map);
-  dbg!(&asset_graph);
-  dbg!(&dependency_graph);
+  // dbg!(&asset_map);
+  // dbg!(&asset_graph);
+  // dbg!(&dependency_graph);
 
   println!("Finished in:   {:.3}s", start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
 }
