@@ -6,8 +6,9 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
-use crate::public::{Config, Machrc};
 use crate::args::Args;
+use crate::public::Config;
+use crate::public::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
@@ -15,17 +16,25 @@ pub fn parse_config() -> Result<Config, String> {
   let start_time = SystemTime::now();
 
   let args = Args::parse();
-  
+
   // Ignore multiple entries for now
   let entry_point = get_absolute_path(&args.entry[0].clone());
 
   // Find these points of interest
-  let file_index = find_file_by_name(&entry_point, &["package.json", ".machrc", "pnpm-workspace.yaml"]);
+  let file_index = find_file_by_name(
+    &entry_point,
+    &["package.json", ".machrc", "pnpm-workspace.yaml"],
+  );
 
   let mach_config = parse_machrc(&file_index).expect("Cannot parse .machrc");
 
   // Project root is the location of the first package.json
-  let package_json_path = file_index.get("package.json").unwrap().get(0).unwrap().clone();
+  let package_json_path = file_index
+    .get("package.json")
+    .unwrap()
+    .get(0)
+    .unwrap()
+    .clone();
   let package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
 
   let project_root = package_json_path.parent().unwrap().to_path_buf();
@@ -55,7 +64,7 @@ pub fn parse_config() -> Result<Config, String> {
     vars
   };
 
-  return Ok(Config{
+  return Ok(Config {
     start_time,
     entry_point,
     dist_dir,
@@ -150,7 +159,10 @@ fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
 //   return Ok(yaml);
 // }
 
-fn find_file_by_name(start_path: &PathBuf, targets: &[&str]) -> FileIndex {
+fn find_file_by_name(
+  start_path: &PathBuf,
+  targets: &[&str],
+) -> FileIndex {
   let mut found = FileIndex::new();
   for target in targets {
     found.insert(target.to_string(), vec![]);
@@ -200,7 +212,7 @@ fn find_file_by_name(start_path: &PathBuf, targets: &[&str]) -> FileIndex {
           }
         }
       }
-    }    
+    }
   }
   return found;
 }

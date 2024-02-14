@@ -2,13 +2,19 @@ use std::fmt::Debug;
 use std::path::PathBuf;
 
 use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::public::{Config, SpecifierType};
+use crate::public::Config;
+use crate::public::SpecifierType;
 
 #[async_trait]
 pub trait Transformer: Debug + Send + Sync {
-  async fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String>;
+  async fn transform(
+    &self,
+    asset: &mut MutableAsset,
+    config: &Config,
+  ) -> Result<(), String>;
 }
 
 #[derive(Debug)]
@@ -25,21 +31,27 @@ impl<'a> MutableAsset<'a> {
     dependencies: &'a mut Vec<DependencyOptions>,
   ) -> Self {
     return MutableAsset {
-        file_path,
-        code,
-        dependencies,
-    }
+      file_path,
+      code,
+      dependencies,
+    };
   }
 
   pub fn get_code(&self) -> &String {
     return self.code;
   }
 
-  pub fn set_code(&mut self, code: &str) {
+  pub fn set_code(
+    &mut self,
+    code: &str,
+  ) {
     *self.code = code.to_string();
   }
 
-  pub fn add_dependency(&mut self, options: DependencyOptions) {
+  pub fn add_dependency(
+    &mut self,
+    options: DependencyOptions,
+  ) {
     self.dependencies.push(options);
   }
 }

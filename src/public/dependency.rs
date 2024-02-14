@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::platform::hash::hash_string_sha_256;
 
@@ -15,10 +16,10 @@ pub enum SpecifierType {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Dependency {
   pub id: String,
-  /// Identifier of the import 
+  /// Identifier of the import
   pub specifier: String,
   pub specifier_type: SpecifierType,
-  /// Whether the dependency is an entry 
+  /// Whether the dependency is an entry
   pub is_entry: bool,
   /// The AssetId of the file importing this dependency
   pub source_asset_id: AssetId,

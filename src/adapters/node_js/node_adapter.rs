@@ -76,7 +76,7 @@ impl NodeAdapter {
           }
           line.pop();
           let value = std::mem::take(&mut line);
-          
+
           if incoming_msg_ref == "" {
             incoming_msg_ref = value;
             continue;
@@ -159,7 +159,11 @@ impl NodeAdapter {
     T: ?Sized + Serialize,
   {
     for worker in &self.workers {
-      if worker.send::<T, serde_json::Value>(action, data).await.is_err() {
+      if worker
+        .send::<T, serde_json::Value>(action, data)
+        .await
+        .is_err()
+      {
         return Err(());
       }
     }

@@ -9,21 +9,21 @@ use swc_core::common::Mark;
 use swc_core::common::SourceMap;
 use swc_core::ecma::ast::Program;
 use swc_core::ecma::codegen::text_writer::JsWriter;
+use swc_core::ecma::codegen::Config as SWCConfig;
 use swc_core::ecma::codegen::Emitter;
 use swc_core::ecma::transforms::base::resolver;
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
-use swc_core::ecma::codegen::Config as SWCConfig;
 
 use crate::public::Config;
 use crate::public::DependencyOptions;
-use crate::public::Transformer;
 use crate::public::MutableAsset;
+use crate::public::Transformer;
 
+use super::collect_decls;
 use super::parse_program;
 use super::read_imports;
-use super::collect_decls;
 use super::NodeEnvReplacer;
 
 #[derive(Debug)]
@@ -31,83 +31,90 @@ pub struct DefaultTransformerJs {}
 
 #[async_trait]
 impl Transformer for DefaultTransformerJs {
-    async fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
-      let source_map_og = Arc::new(SourceMap::default());
-      let Ok(result) = parse_program(
-        &asset.file_path,
-        asset.get_code(),
-        source_map_og.clone(),
-      ) else {
-        return Err(format!("SWC Parse Error"));
-      };
+  async fn transform(
+    &self,
+    asset: &mut MutableAsset,
+    config: &Config,
+  ) -> Result<(), String> {
+    let source_map_og = Arc::new(SourceMap::default());
+    let Ok(result) = parse_program(&asset.file_path, asset.get_code(), source_map_og.clone())
+    else {
+      return Err(format!("SWC Parse Error"));
+    };
 
-      let program = result.program;
-      let comments = result.comments;
-      let source_map = source_map_og.clone();
-      let file_extension = asset.file_path.extension().unwrap().to_str().unwrap().to_string();
+    let program = result.program;
+    let comments = result.comments;
+    let source_map = source_map_og.clone();
+    let file_extension = asset
+      .file_path
+      .extension()
+      .unwrap()
+      .to_str()
+      .unwrap()
+      .to_string();
 
-      let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
-        let top_level_mark = Mark::fresh(Mark::root());
-        let unresolved_mark = Mark::fresh(Mark::root());
-    
-        let mut program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
-    
-        let decls = collect_decls(&program);
-    
-        program = program.fold_with(&mut NodeEnvReplacer {
-          replace_env: true,
-          env: &get_env(&config.env),
-          is_browser: true,
-          decls: &decls,
-          used_env: &mut HashSet::new(),
-          source_map: &source_map.clone(),
-          unresolved_mark,
-        });
-    
-        if file_extension == "jsx" {
-          program = program.fold_with(&mut react_transforms::react(
-            source_map.clone(),
-            Some(&comments),
-            react_transforms::Options::default(),
-            top_level_mark,
-            unresolved_mark,
-          ));
-        }
-    
-        if file_extension == "tsx" {
-          program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
-    
-          program = program.fold_with(&mut typescript_transforms::tsx(
-            source_map.clone(),
-            Default::default(),
-            typescript_transforms::TsxConfig::default(),
-            Some(&comments),
-            top_level_mark,
-          ));
-        }
-    
-        if file_extension == "ts" {
-          program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
-        }
-    
-        return program;
+    let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+      let top_level_mark = Mark::fresh(Mark::root());
+      let unresolved_mark = Mark::fresh(Mark::root());
+
+      let mut program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
+
+      let decls = collect_decls(&program);
+
+      program = program.fold_with(&mut NodeEnvReplacer {
+        replace_env: true,
+        env: &get_env(&config.env),
+        is_browser: true,
+        decls: &decls,
+        used_env: &mut HashSet::new(),
+        source_map: &source_map.clone(),
+        unresolved_mark,
       });
 
-      let dependencies = read_imports(&program);
-
-      for dependency in dependencies {
-        asset.add_dependency(DependencyOptions{
-            specifier: dependency.specifier,
-            specifier_type: dependency.specifier_type,
-            priority: dependency.priority,
-            resolve_from: asset.file_path.clone(),
-            imported_symbols: vec![],
-        });
+      if file_extension == "jsx" {
+        program = program.fold_with(&mut react_transforms::react(
+          source_map.clone(),
+          Some(&comments),
+          react_transforms::Options::default(),
+          top_level_mark,
+          unresolved_mark,
+        ));
       }
 
-      asset.set_code(&render_program(&program, source_map_og.clone()));
-      return Ok(());
+      if file_extension == "tsx" {
+        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
+
+        program = program.fold_with(&mut typescript_transforms::tsx(
+          source_map.clone(),
+          Default::default(),
+          typescript_transforms::TsxConfig::default(),
+          Some(&comments),
+          top_level_mark,
+        ));
+      }
+
+      if file_extension == "ts" {
+        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
+      }
+
+      return program;
+    });
+
+    let dependencies = read_imports(&program);
+
+    for dependency in dependencies {
+      asset.add_dependency(DependencyOptions {
+        specifier: dependency.specifier,
+        specifier_type: dependency.specifier_type,
+        priority: dependency.priority,
+        resolve_from: asset.file_path.clone(),
+        imported_symbols: vec![],
+      });
     }
+
+    asset.set_code(&render_program(&program, source_map_og.clone()));
+    return Ok(());
+  }
 }
 
 fn get_env(config_env: &HashMap<String, String>) -> HashMap<JsWord, JsWord> {

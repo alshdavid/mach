@@ -22,8 +22,8 @@ pub async fn transform(
 ) -> Result<(), String> {
   let mut queue = Vec::<Dependency>::new();
   queue.push(Dependency {
-    id:  Dependency::generate_id(
-      &"".into(), 
+    id: Dependency::generate_id(
+      &"".into(),
       &config.entry_point.to_str().unwrap().to_string(),
     ),
     specifier: config.entry_point.to_str().unwrap().to_string(),
@@ -42,10 +42,10 @@ pub async fn transform(
     for resolver in &plugins.resolvers {
       let result = resolver.resolve(&dependency).await;
       let result = match result {
-          Ok(result) => result,
-          Err(err) => {
-            return Err(err);
-          },
+        Ok(result) => result,
+        Err(err) => {
+          return Err(err);
+        }
       };
       let Some(result) = result else {
         continue;
@@ -58,7 +58,6 @@ pub async fn transform(
       continue;
     };
     // Resolve Done
-
 
     // Dependency Graph
     let parent_asset_id = dependency.source_asset_id.clone();
@@ -74,18 +73,14 @@ pub async fn transform(
       return Err("Unable to read file".to_string());
     };
 
-    let new_asset_id = Asset::generate_id(
-      &config.project_root,
-      &resolve_result.file_path,
-      &code,
-    );
+    let new_asset_id = Asset::generate_id(&config.project_root, &resolve_result.file_path, &code);
     asset_graph.add_edge(parent_asset_id.clone(), new_asset_id.clone());
     // Dependency Graph Done
 
     // Transformation
     let mut dependencies = Vec::<DependencyOptions>::new();
 
-    let mut mutable_asset = MutableAsset::new( 
+    let mut mutable_asset = MutableAsset::new(
       resolve_result.file_path.clone(),
       &mut code,
       &mut dependencies,
@@ -100,21 +95,18 @@ pub async fn transform(
         return Err(msg);
       }
     }
-    
-    let new_asset_id = asset_map.insert(Asset{
-        id: new_asset_id,
-        file_path: resolve_result.file_path.clone(),
-        code,
+
+    let new_asset_id = asset_map.insert(Asset {
+      id: new_asset_id,
+      file_path: resolve_result.file_path.clone(),
+      code,
     });
     // Transformation Done
 
     // Add new items to the queue
     while let Some(dependency_options) = dependencies.pop() {
-      queue.push(Dependency{
-        id: Dependency::generate_id(
-          &new_asset_id, 
-          &dependency_options.specifier,
-        ),
+      queue.push(Dependency {
+        id: Dependency::generate_id(&new_asset_id, &dependency_options.specifier),
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,
         is_entry: false,

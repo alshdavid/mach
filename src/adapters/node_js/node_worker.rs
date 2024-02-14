@@ -5,8 +5,8 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 use tokio::sync::mpsc::UnboundedSender;
-use tokio::sync::Mutex;
 use tokio::sync::oneshot;
+use tokio::sync::Mutex;
 
 #[derive(Debug)]
 pub struct NodeWorker {
@@ -26,7 +26,11 @@ impl NodeWorker {
   {
     let (tx, rx) = oneshot::channel::<String>();
     let msg_ref: String = snowflake::ProcessUniqueId::new().to_string();
-    self.pending_messages.lock().await.insert(msg_ref.clone(), tx);
+    self
+      .pending_messages
+      .lock()
+      .await
+      .insert(msg_ref.clone(), tx);
 
     let data = serde_json::to_string::<T>(data).unwrap();
     self

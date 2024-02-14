@@ -2,18 +2,18 @@ mod adapters;
 mod args;
 mod config;
 mod platform;
-mod public;
 mod plugins;
+mod public;
 mod transformation;
 
 use std::sync::Arc;
 
 use crate::adapters::node_js::NodeAdapter;
-use crate::plugins::load_plugins;
-use crate::public::Config;
 use crate::config::parse_config;
+use crate::plugins::load_plugins;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
+use crate::public::Config;
 use crate::public::DependencyGraph;
 use crate::transformation::transform;
 
@@ -22,7 +22,7 @@ async fn main_async(config: Config) {
   let mut asset_map = AssetMap::new();
   let mut asset_graph = AssetGraph::new();
   let mut dependency_graph = DependencyGraph::new();
-  
+
   // Adapters
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
 
@@ -38,12 +38,9 @@ async fn main_async(config: Config) {
   println!("Optimize:      {}", config.optimize);
   println!("Threads:       {}", config.threads);
   println!("Node Workers:  {}", config.node_workers);
-  
+
   // Initialize plugins
-  let Ok(plugins) = load_plugins(
-    &config.machrc,
-    node_adapter.clone()
-  ).await else {
+  let Ok(plugins) = load_plugins(&config.machrc, node_adapter.clone()).await else {
     panic!("Unable to initalize plugins");
   };
 
@@ -55,7 +52,9 @@ async fn main_async(config: Config) {
     &mut asset_graph,
     &mut dependency_graph,
     &plugins,
-  ).await {
+  )
+  .await
+  {
     println!("Transformation Error");
     println!("{}", err);
     return;
@@ -65,7 +64,10 @@ async fn main_async(config: Config) {
 
   dbg!(asset_map);
 
-  println!("Finished in:   {:.3}s", config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
+  println!(
+    "Finished in:   {:.3}s",
+    config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
+  );
 }
 
 fn main() {

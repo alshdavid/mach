@@ -1,5 +1,5 @@
-use std::fmt::Debug;
 use std::collections::HashSet;
+use std::fmt::Debug;
 
 use super::AssetId;
 
@@ -11,9 +11,9 @@ pub struct AssetGraph {
 
 impl AssetGraph {
   pub fn new() -> Self {
-    return AssetGraph{
-        edges: HashSet::new(),
-    };                         
+    return AssetGraph {
+      edges: HashSet::new(),
+    };
   }
 
   pub fn add_edge(

@@ -3,13 +3,13 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 
-use crate::public::Dependency;
-use crate::public::ResolveResult;
-use crate::public::Resolver;
-use crate::adapters::node_js::NodeAdapter;
 use crate::adapters::node_js::requests::LoadPluginRequest;
 use crate::adapters::node_js::requests::RunResolverRequest;
 use crate::adapters::node_js::requests::RunResolverResponse;
+use crate::adapters::node_js::NodeAdapter;
+use crate::public::Dependency;
+use crate::public::ResolveResult;
+use crate::public::Resolver;
 
 pub struct ResolverNodeJs {
   specifier: String,
@@ -41,20 +41,21 @@ impl ResolverNodeJs {
 
 #[async_trait]
 impl Resolver for ResolverNodeJs {
-  async fn resolve(&self, dependency: &Dependency) -> Result<Option<ResolveResult>, String> {
+  async fn resolve(
+    &self,
+    dependency: &Dependency,
+  ) -> Result<Option<ResolveResult>, String> {
     let req = RunResolverRequest {
       plugin_key: self.plugin_key.clone(),
       dependency: dependency.clone(),
     };
     let result: RunResolverResponse = self.node_adapter.send("run_resolver", &req).await.unwrap();
     if let Some(file_path) = result.file_path {
-      return Ok(Some(ResolveResult{
-        file_path,
-      }));
+      return Ok(Some(ResolveResult { file_path }));
     }
     return Ok(None);
   }
-} 
+}
 
 impl Debug for ResolverNodeJs {
   fn fmt(

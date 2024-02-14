@@ -1,4 +1,3 @@
-
 use super::Dependency;
 use std::fmt::Debug;
 
@@ -13,7 +12,6 @@ impl DependencyGraph {
       dependencies: Vec::new(),
     };
   }
-  
 
   pub fn insert(
     &mut self,
@@ -24,11 +22,13 @@ impl DependencyGraph {
 }
 
 impl Debug for DependencyGraph {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      f.debug_list().entries(&self.dependencies).finish()
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_list().entries(&self.dependencies).finish()
   }
 }
-
 
 /*
 

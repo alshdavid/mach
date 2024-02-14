@@ -1,7 +1,8 @@
-use std::process::Stdio;
 use std::path::Path;
+use std::process::Stdio;
 
-use tokio::{io::AsyncWriteExt, process::Command};
+use tokio::io::AsyncWriteExt;
+use tokio::process::Command;
 
 /// Warning, very slow, do not use unless you have to
 /// spawns a Node.js process and resolves a module
