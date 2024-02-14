@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::default_plugins::transformers::javascript::DefaultTransformerJs;
+use crate::plugins::builtin::transformer_javascript::DefaultTransformerJs;
 use crate::plugins::Plugins;
 use crate::public;
 use crate::public::Asset;

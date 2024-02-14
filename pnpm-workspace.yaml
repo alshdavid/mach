@@ -1,3 +1,4 @@
 packages:
   - 'fixtures/*'
-  - 'crates/mach/src/node_workers/js'
+  - 'packages/*'
+  - 'src/adapters/node_js/js'

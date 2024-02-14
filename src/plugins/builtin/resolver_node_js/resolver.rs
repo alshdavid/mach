@@ -6,14 +6,13 @@ use crate::public::Dependency;
 use crate::public::ResolveResult;
 use crate::public::Resolver;
 use crate::adapters::node_js::NodeAdapter;
-
-use super::requests::LoadResolverRequest;
-use super::requests::RunResolverRequest;
-use super::requests::RunResolverResponse;
+use crate::adapters::node_js::requests::LoadPluginRequest;
+use crate::adapters::node_js::requests::RunResolverRequest;
+use crate::adapters::node_js::requests::RunResolverResponse;
 
 #[derive(Debug)]
 pub struct ResolverNodeJs {
-  resolver_key: String,
+  plugin_key: String,
   node_adapter: Arc<NodeAdapter>,
 }
 
@@ -22,15 +21,18 @@ impl ResolverNodeJs {
     node_adapter: Arc<NodeAdapter>,
     specifier: &str,
   ) -> Self {
-    let req = LoadResolverRequest {
+    let plugin_key = snowflake::ProcessUniqueId::new().to_string();
+
+    let req = LoadPluginRequest {
+      plugin_key: plugin_key.clone(),
       specifier: specifier.to_string(),
     };
 
-    node_adapter.send_all("load_resolver", &req).await.unwrap();
+    node_adapter.send_all("load_plugin", &req).await.unwrap();
 
     return ResolverNodeJs {
       node_adapter,
-      resolver_key: specifier.to_string(),
+      plugin_key,
     };
   }
 }
@@ -39,7 +41,7 @@ impl ResolverNodeJs {
 impl Resolver for ResolverNodeJs {
   async fn resolve(&self, dependency: &Dependency) -> Result<Option<ResolveResult>, String> {
     let req = RunResolverRequest {
-      resolver_key: self.resolver_key.clone(),
+      plugin_key: self.plugin_key.clone(),
       dependency: dependency.clone(),
     };
     let result: RunResolverResponse = self.node_adapter.send("run_resolver", &req).await.unwrap();

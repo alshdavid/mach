@@ -1,7 +1,6 @@
 mod adapters;
 mod args;
 mod config;
-mod default_plugins;
 mod platform;
 mod public;
 mod plugins;
@@ -25,7 +24,7 @@ async fn main_async(config: Config) {
   let mut dependency_graph = DependencyGraph::new();
   
   // Adapters
-  let node_adapter = Arc::new(NodeAdapter::new(1).await);
+  let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
 
   // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());

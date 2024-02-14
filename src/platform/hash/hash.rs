@@ -17,13 +17,3 @@ pub fn hash_string_sha_256(input: &str) -> String {
 pub fn hash_path_buff_sha_256(input: &PathBuf) -> String {
   return hash_string_sha_256(input.to_str().unwrap());
 }
-
-pub fn truncate(
-  s: &str,
-  max_chars: usize,
-) -> String {
-  match s.char_indices().nth(max_chars) {
-    None => s.to_string(),
-    Some((idx, _)) => s[..idx].to_string(),
-  }
-}

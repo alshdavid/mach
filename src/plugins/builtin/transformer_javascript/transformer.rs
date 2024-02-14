@@ -15,14 +15,15 @@ use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 use swc_core::ecma::codegen::Config as SWCConfig;
 
-use crate::default_plugins::transformers::javascript::parse_program;
-use crate::default_plugins::transformers::javascript::read_imports;
 use crate::public::Config;
 use crate::public::DependencyOptions;
+use crate::public::Transformer;
+use crate::public::MutableAsset;
 
+use super::parse_program;
+use super::read_imports;
 use super::collect_decls;
 use super::NodeEnvReplacer;
-use crate::public::{MutableAsset, Transformer};
 
 #[derive(Debug)]
 pub struct DefaultTransformerJs {}

@@ -21,7 +21,7 @@ pub struct Args {
     #[arg(short = 't', long = "threads", env = "MACH_THREADS")]
     pub threads: Option<usize>,
 
-    /// How many Node.js instances to spawn for plugins
-    #[arg(long = "node-workers", env = "MACH_NODE_WORKERS", default_value = "4")]
+    /// How many Node.js workers to spawn for plugins
+    #[arg(long = "node-workers", env = "MACH_NODE_WORKERS", default_value = "1")]
     pub node_workers: Option<usize>,
 }

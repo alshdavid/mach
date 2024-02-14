@@ -4,13 +4,14 @@ use std::sync::Arc;
 use normalize_path::NormalizePath;
 
 use crate::adapters::node_js::native_node_resolve;
-use crate::default_plugins::resolver_node_js::ResolverNodeJs;
-use crate::default_plugins::transformers::javascript::DefaultTransformerJs;
 use crate::public::Machrc;
 use crate::public::Resolver;
-use crate::default_plugins::resolver::DefaultResolver;
 use crate::adapters::node_js::NodeAdapter;
 use crate::public::Transformer;
+
+use super::builtin::resolver::DefaultResolver;
+use super::builtin::resolver_node_js::ResolverNodeJs;
+use super::builtin::transformer_javascript::DefaultTransformerJs;
 
 #[derive(Default, Debug)]
 pub struct Plugins {

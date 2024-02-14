@@ -24,25 +24,30 @@
 */
 const { Socket } = require('net')
 
-/** @type {Record<string, Record<string, Function>>} */
-const resolvers = {}
+/** @type {Record<string, any>} */
+const plugins = {}
 
 /**
- * @param {{ specifier: string }} param0 
- * @returns {void}
+ * @param {Object} param0 
+ *   @param {string} param0.plugin_key
+ *   @param {string} param0.specifier
+ * @returns {Promise<void>}
  */
-function load_resolver({ specifier }) {
-  resolvers[specifier] = require(specifier)
+async function load_plugin({ plugin_key, specifier }) {
+  const module = await import(specifier)
+  plugins[plugin_key] = module.default
 }
 
 /**
  * @param {Object} param0 
- *   @param {string} param0.resolver_key
- *   @param {Object} param0.dependency
+ *   @param {string} param0.plugin_key
+ *   @param {any} param0.dependency
  * @returns {Promise<any>}
  */
-async function run_resolver({ resolver_key, dependency }) {
-  const result = await resolvers[resolver_key].resolve({ dependency })
+async function run_resolver({ plugin_key, dependency }) {
+  /** @type {import('@alshdavid/mach').Resolver} */
+  let resolver = plugins[plugin_key]
+  const result = await resolver.init.resolve({ dependency })
   if (result === null || result === undefined) {
     return {}
   }
@@ -51,10 +56,11 @@ async function run_resolver({ resolver_key, dependency }) {
 
 /** @type {Record<string, Function>} */
 const actions = {
-  load_resolver,
+  load_plugin,
   run_resolver,
 }
 
+{
 const client = new Socket();
 
 let incoming_msg_ref = ''
@@ -100,3 +106,17 @@ client.on('close', () => process.exit());
 
 // @ts-expect-error
 client.connect(__MACH__PORT__, '127.0.0.1');
+}
+
+{
+  class Resolver {
+    init
+    // @ts-expect-error
+    constructor(init) {
+      this.init = init
+    }
+  }
+
+  // @ts-expect-error
+  globalThis.Resolver = Resolver
+}
