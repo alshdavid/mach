@@ -1,4 +1,3 @@
-// @ts-check
 /*
   Protocol is text separated by the \n character:
     message_ref
@@ -24,26 +23,13 @@
 */
 const { Socket } = require('net')
 
-/** @type {Record<string, any>} */
 const plugins = {}
 
-/**
- * @param {Object} param0 
- *   @param {string} param0.plugin_key
- *   @param {string} param0.specifier
- * @returns {Promise<void>}
- */
 async function load_plugin({ plugin_key, specifier }) {
   const module = await import(specifier)
   plugins[plugin_key] = module.default
 }
 
-/**
- * @param {Object} param0 
- *   @param {string} param0.plugin_key
- *   @param {any} param0.dependency
- * @returns {Promise<any>}
- */
 async function run_resolver({ plugin_key, dependency }) {
   /** @type {import('@alshdavid/mach').Resolver} */
   let resolver = plugins[plugin_key]
@@ -54,10 +40,44 @@ async function run_resolver({ plugin_key, dependency }) {
   return result
 }
 
+async function run_transformer({ plugin_key, config, file_path, code }) {
+  let resolver = plugins[plugin_key]
+  
+  let updated = false
+  const dependencies = []
+  const asset = new class MutableAsset {
+    async get_code() {
+      return code
+    }
+    async set_code(/** @type {string} */ value) {
+      updated = true
+      code = value
+    }
+    add_dependency(options) {
+      updated = true
+      dependencies.push(options)
+    }
+  }()
+  const result = await resolver.init.transform({ config, asset })
+  if (!updated) {
+    return {
+      updated: false,
+      dependencies: [],
+      code: ''
+    }
+  }
+  return {
+    updated: true,
+    dependencies,
+    code,
+  }
+}
+
 /** @type {Record<string, Function>} */
 const actions = {
   load_plugin,
   run_resolver,
+  run_transformer,
 }
 
 {
@@ -111,12 +131,19 @@ client.connect(__MACH__PORT__, '127.0.0.1');
 {
   class Resolver {
     init
-    // @ts-expect-error
     constructor(init) {
       this.init = init
     }
   }
 
-  // @ts-expect-error
   globalThis.Resolver = Resolver
+
+  class Transformer {
+    init
+    constructor(init) {
+      this.init = init
+    }
+  }
+
+  globalThis.Transformer = Transformer
 }

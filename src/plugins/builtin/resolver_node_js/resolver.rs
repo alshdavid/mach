@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::sync::Arc;
 
 use async_trait::async_trait;
@@ -10,8 +11,8 @@ use crate::adapters::node_js::requests::LoadPluginRequest;
 use crate::adapters::node_js::requests::RunResolverRequest;
 use crate::adapters::node_js::requests::RunResolverResponse;
 
-#[derive(Debug)]
 pub struct ResolverNodeJs {
+  specifier: String,
   plugin_key: String,
   node_adapter: Arc<NodeAdapter>,
 }
@@ -31,6 +32,7 @@ impl ResolverNodeJs {
     node_adapter.send_all("load_plugin", &req).await.unwrap();
 
     return ResolverNodeJs {
+      specifier: specifier.to_string(),
       node_adapter,
       plugin_key,
     };
@@ -53,3 +55,12 @@ impl Resolver for ResolverNodeJs {
     return Ok(None);
   }
 } 
+
+impl Debug for ResolverNodeJs {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.write_str(&format!("ResolverNodeJs({})", self.specifier))
+  }
+}

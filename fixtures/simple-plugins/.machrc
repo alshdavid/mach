@@ -5,6 +5,7 @@
   ],
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
+      "node:./plugins/transformer.mjs",
       "mach:transformers/javascript"
     ]
   }

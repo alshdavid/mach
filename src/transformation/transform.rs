@@ -1,8 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::plugins::builtin::transformer_javascript::DefaultTransformerJs;
-use crate::plugins::Plugins;
+use crate::plugins::PluginContainer;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;
@@ -13,14 +12,13 @@ use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::ResolveResult;
 use crate::public::SpecifierType;
-use crate::public::Transformer;
 
 pub async fn transform(
   config: &public::Config,
   asset_map: &mut AssetMap,
   asset_graph: &mut AssetGraph,
   dependency_graph: &mut DependencyGraph,
-  plugins: &Plugins,
+  plugins: &PluginContainer,
 ) -> Result<(), String> {
   let mut queue = Vec::<Dependency>::new();
   queue.push(Dependency {
@@ -37,12 +35,8 @@ pub async fn transform(
     imported_symbols: Vec::new(),
   });
 
-  // Load transformer plugins
-  let mut transformers = Vec::<Box<dyn Transformer>>::new();
-  transformers.push(Box::new(DefaultTransformerJs{}));
-
   while let Some(dependency) = queue.pop() {
-    // Run Resolvers
+    // Resolve Start
     let mut resolve_result: Option<ResolveResult> = None;
 
     for resolver in &plugins.resolvers {
@@ -63,7 +57,10 @@ pub async fn transform(
     let Some(resolve_result) = resolve_result else {
       continue;
     };
+    // Resolve Done
 
+
+    // Dependency Graph
     let parent_asset_id = dependency.source_asset_id.clone();
 
     dependency_graph.insert(dependency);
@@ -83,8 +80,9 @@ pub async fn transform(
       &code,
     );
     asset_graph.add_edge(parent_asset_id.clone(), new_asset_id.clone());
+    // Dependency Graph Done
 
-
+    // Transformation
     let mut dependencies = Vec::<DependencyOptions>::new();
 
     let mut mutable_asset = MutableAsset::new( 
@@ -93,8 +91,12 @@ pub async fn transform(
       &mut dependencies,
     );
 
-    for transformer in &transformers {
-      if let Err(msg) = transformer.transform(&mut mutable_asset, &config) {
+    let Some(transformers) = plugins.transformers.get(&resolve_result.file_path.clone()) else {
+      panic!("No transformer found");
+    };
+
+    for transformer in transformers {
+      if let Err(msg) = transformer.transform(&mut mutable_asset, &config).await {
         return Err(msg);
       }
     }
@@ -104,7 +106,9 @@ pub async fn transform(
         file_path: resolve_result.file_path.clone(),
         code,
     });
+    // Transformation Done
 
+    // Add new items to the queue
     while let Some(dependency_options) = dependencies.pop() {
       queue.push(Dependency{
         id: Dependency::generate_id(

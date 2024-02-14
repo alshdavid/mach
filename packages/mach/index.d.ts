@@ -14,7 +14,7 @@ export type ResolveOptions = {
 }
 
 export type ResolveResult = {
-  filePath: string
+  file_path: string
 }
 
 export type ResolverInit = {
@@ -24,4 +24,32 @@ export type ResolverInit = {
 export class Resolver {
   init: ResolverInit
   constructor(init: ResolverInit)
+}
+
+export type DependencyOptions = {
+  specifier: string,
+  specifier_type: string,
+  priority: string,
+  resolve_from: string,
+  imported_symbols: Array<string>,
+}
+
+export class MutableAsset {
+  file_path: string
+  get_code(): Promise<string>
+  set_code(value: string): Promise<void>
+  add_dependency(options: DependencyOptions): void
+}
+
+export type TransformOptions = {
+  asset: MutableAsset
+}
+
+export type TransformerInit = {
+  transform(options: TransformOptions): (MutableAsset | null | undefined) | Promise<MutableAsset | null | undefined>
+}
+
+export class Transformer {
+  init: TransformerInit
+  constructor(init: TransformerInit)
 }

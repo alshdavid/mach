@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
+use serde::Serialize;
+
 use super::Machrc;
 
 // #[derive(Clone, Debug)]
@@ -10,7 +12,7 @@ use super::Machrc;
 //   NpmOrYarn,
 // }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Config {
   pub start_time: SystemTime,
   pub entry_point: PathBuf,

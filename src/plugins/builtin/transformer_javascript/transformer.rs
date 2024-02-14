@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::sync::Arc;
 
+use async_trait::async_trait;
 use swc_core::atoms::JsWord;
 use swc_core::common::Globals;
 use swc_core::common::Mark;
@@ -28,8 +29,9 @@ use super::NodeEnvReplacer;
 #[derive(Debug)]
 pub struct DefaultTransformerJs {}
 
+#[async_trait]
 impl Transformer for DefaultTransformerJs {
-    fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
+    async fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String> {
       let source_map_og = Arc::new(SourceMap::default());
       let Ok(result) = parse_program(
         &asset.file_path,

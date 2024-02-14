@@ -62,9 +62,8 @@ async fn main_async(config: Config) {
   }
 
   println!("Assets:        {}", asset_map.len());
-  // dbg!(&asset_map);
-  // dbg!(&asset_graph);
-  // dbg!(&dependency_graph);
+
+  dbg!(asset_map);
 
   println!("Finished in:   {:.3}s", config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
 }

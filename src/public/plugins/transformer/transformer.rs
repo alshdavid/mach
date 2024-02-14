@@ -1,12 +1,14 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 use crate::public::{Config, SpecifierType};
 
+#[async_trait]
 pub trait Transformer: Debug + Send + Sync {
-  fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String>;
+  async fn transform(&self, asset: &mut MutableAsset, config: &Config) -> Result<(), String>;
 }
 
 #[derive(Debug)]
@@ -42,7 +44,7 @@ impl<'a> MutableAsset<'a> {
   }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DependencyOptions {
   pub specifier: String,
   pub specifier_type: SpecifierType,
