@@ -29,10 +29,13 @@ async fn main_async(config: Config) {
   // TODO move this into a "reporter" plugin
   println!("Entry:         {}", config.entry_point.to_str().unwrap());
   println!("Root:          {}", config.project_root.to_str().unwrap());
-  if let Some(machrc) = &config.machrc {
-    println!("Mach Config:   {}", machrc.file_path.to_str().unwrap());
+  if !&config.machrc.is_default {
+    println!(
+      "Mach Config:   {}",
+      config.machrc.file_path.to_str().unwrap()
+    );
   } else {
-    println!("Mach Config:   None");
+    println!("Mach Config:   Default");
   }
   println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
   println!("Optimize:      {}", config.optimize);

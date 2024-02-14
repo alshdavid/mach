@@ -26,7 +26,7 @@ pub fn parse_config() -> Result<Config, String> {
     &["package.json", ".machrc", "pnpm-workspace.yaml"],
   );
 
-  let mach_config = parse_machrc(&file_index).expect("Cannot parse .machrc");
+  let machrc = parse_machrc(&file_index).expect("Cannot parse .machrc");
 
   // Project root is the location of the first package.json
   let package_json_path = file_index
@@ -74,7 +74,7 @@ pub fn parse_config() -> Result<Config, String> {
     workspace_kind: None,
     project_root,
     package_json,
-    machrc: mach_config,
+    machrc,
     threads,
     node_workers: args.node_workers.unwrap(),
     optimize: args.optimize.unwrap(),
@@ -82,18 +82,19 @@ pub fn parse_config() -> Result<Config, String> {
   });
 }
 
-fn parse_machrc(file_index: &FileIndex) -> Result<Option<Machrc>, String> {
+fn parse_machrc(file_index: &FileIndex) -> Result<Machrc, String> {
   let Some(mach_configs) = file_index.get(".machrc") else {
-    return Ok(None);
+    return Ok(Machrc::default());
   };
 
   if mach_configs.len() == 0 {
-    return Ok(None);
+    return Ok(Machrc::default());
   }
 
   let file_path = mach_configs[0].clone();
 
   let mut mach_config = Machrc {
+    is_default: false,
     file_path,
     resolvers: None,
     transformers: None,
@@ -136,7 +137,7 @@ fn parse_machrc(file_index: &FileIndex) -> Result<Option<Machrc>, String> {
     mach_config.transformers = Some(transformers);
   }
 
-  return Ok(Some(mach_config));
+  return Ok(mach_config);
 }
 
 fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {

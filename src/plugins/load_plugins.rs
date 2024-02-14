@@ -15,13 +15,9 @@ use super::builtin::transformer_node_js::TransformerNodeJs;
 use super::PluginContainer;
 
 pub async fn load_plugins(
-  machrc: &Option<Machrc>,
+  machrc: &Machrc,
   node_adapter: Arc<NodeAdapter>,
 ) -> Result<PluginContainer, ()> {
-  let Some(machrc) = machrc else {
-    todo!();
-  };
-
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
 
