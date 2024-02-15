@@ -12,6 +12,7 @@ use super::builtin::resolver::DefaultResolver;
 use super::builtin::resolver_node_js::ResolverNodeJs;
 use super::builtin::transformer_javascript::DefaultTransformerJs;
 use super::builtin::transformer_node_js::TransformerNodeJs;
+use super::builtin::transformer_noop::DefaultTransformerNoop;
 use super::PluginContainer;
 
 pub async fn load_plugins(
@@ -49,8 +50,13 @@ pub async fn load_plugins(
           return Err(());
         };
 
-        if engine == "mach" && specifier == "transformers/javascript" {
+        if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(DefaultTransformerJs {}));
+          continue;
+        }
+
+        if engine == "mach" && specifier == "transformer/noop" {
+          transformers.push(Box::new(DefaultTransformerNoop {}));
           continue;
         }
 

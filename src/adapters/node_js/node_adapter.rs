@@ -25,6 +25,15 @@ pub struct NodeAdapter {
 
 impl NodeAdapter {
   pub async fn new(worker_count: usize) -> NodeAdapter {
+    // Don't initialize Nodejs if no workers are needed
+    if worker_count == 0 {
+      let (tx,_) = unbounded_channel::<()>();
+      return NodeAdapter {
+        send_to: Arc::new(Mutex::new(0)),
+        tx_shutdown: tx,
+        workers: vec![],
+      };
+    }
     // Create socket for Node.js to connect to
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();

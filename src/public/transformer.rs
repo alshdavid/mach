@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::fs;
 use std::path::PathBuf;
 
 use async_trait::async_trait;
@@ -20,32 +21,32 @@ pub trait Transformer: Debug + Send + Sync {
 #[derive(Debug)]
 pub struct MutableAsset<'a> {
   pub file_path: PathBuf,
-  code: &'a mut String,
+  content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
 }
 
 impl<'a> MutableAsset<'a> {
   pub fn new(
     file_path: PathBuf,
-    code: &'a mut String,
+    content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
   ) -> Self {
     return MutableAsset {
       file_path,
-      code,
+      content,
       dependencies,
     };
   }
 
-  pub fn get_code(&self) -> &String {
-    return self.code;
+  pub fn get_code(&mut self) -> String {
+    return String::from_utf8(self.content.to_owned()).unwrap();
   }
 
   pub fn set_code(
     &mut self,
     code: &str,
   ) {
-    *self.code = code.to_string();
+    *self.content = code.as_bytes().to_vec();
   }
 
   pub fn add_dependency(

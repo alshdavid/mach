@@ -35,6 +35,8 @@ pub async fn transform(
     imported_symbols: Vec::new(),
   });
 
+  let mut skipped = 0;
+
   while let Some(dependency) = queue.pop() {
     // Resolve Start
     let mut resolve_result: Option<ResolveResult> = None;
@@ -44,17 +46,20 @@ pub async fn transform(
       let result = match result {
         Ok(result) => result,
         Err(err) => {
-          return Err(err);
+          // println!("{}", err);
+          skipped += 1;
+          continue;
+          // return Err(err);
         }
       };
-      let Some(result) = result else {
-        continue;
-      };
-      resolve_result = Some(result);
-      break;
+      resolve_result = result;
+      if resolve_result.is_some() {
+        break;
+      }
     }
 
     let Some(resolve_result) = resolve_result else {
+      skipped += 1;
       continue;
     };
     // Resolve Done
@@ -69,25 +74,27 @@ pub async fn transform(
       continue;
     }
 
-    let Ok(mut code) = fs::read_to_string(&resolve_result.file_path) else {
-      return Err("Unable to read file".to_string());
-    };
-
-    let new_asset_id = Asset::generate_id(&config.project_root, &resolve_result.file_path, &code);
+    let new_asset_id = Asset::generate_id(&config.project_root, &resolve_result.file_path);
     asset_graph.add_edge(parent_asset_id.clone(), new_asset_id.clone());
     // Dependency Graph Done
 
     // Transformation
+    let Ok(mut content) = fs::read(&resolve_result.file_path) else {
+      return Err(format!("Unable to read file: {:?}", resolve_result.file_path));
+    };
+
     let mut dependencies = Vec::<DependencyOptions>::new();
 
     let mut mutable_asset = MutableAsset::new(
       resolve_result.file_path.clone(),
-      &mut code,
+      &mut content,
       &mut dependencies,
     );
 
-    let Some(transformers) = plugins.transformers.get(&resolve_result.file_path.clone()) else {
-      panic!("No transformer found");
+    let Some(transformers) = plugins.transformers.get(&resolve_result.file_path) else {
+      skipped += 1;
+      // println!("No transformer found {:?}", resolve_result.file_path);
+      continue;
     };
 
     for transformer in transformers {
@@ -99,7 +106,7 @@ pub async fn transform(
     let new_asset_id = asset_map.insert(Asset {
       id: new_asset_id,
       file_path: resolve_result.file_path.clone(),
-      code,
+      content,
     });
     // Transformation Done
 
@@ -117,6 +124,9 @@ pub async fn transform(
       });
     }
   }
+
+  println!("Skipped: {}", skipped);
+
 
   Ok(())
 }

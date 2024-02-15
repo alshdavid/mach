@@ -8,6 +8,7 @@ use serde::Serialize;
 pub struct Machrc {
   pub is_default: bool,
   pub file_path: PathBuf,
+  pub engines: Vec<String>,
   pub resolvers: Option<Vec<String>>,
   pub transformers: Option<HashMap<String, Vec<String>>>,
 }
@@ -17,11 +18,18 @@ impl Default for Machrc {
     Self {
       is_default: true,
       file_path: env::current_exe().unwrap(),
+      engines: vec!["mach".to_string()],
       resolvers: Some(vec!["mach:resolver".to_string()]),
-      transformers: Some(HashMap::from_iter([(
-        "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}".to_string(),
-        vec!["mach:transformer/javascript".to_string()],
-      )])),
+      transformers: Some(HashMap::from_iter([
+        (
+          "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}".to_string(),
+          vec!["mach:transformer/javascript".to_string()],
+        ),
+        (
+          "*.{svg,png}".to_string(),
+          vec!["mach:transformer/noop".to_string()],
+        ),
+      ])),
     }
   }
 }

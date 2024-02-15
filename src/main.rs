@@ -1,5 +1,6 @@
 mod adapters;
 mod args;
+mod bundling;
 mod config;
 mod platform;
 mod plugins;
@@ -65,7 +66,7 @@ async fn main_async(config: Config) {
 
   println!("Assets:        {}", asset_map.len());
 
-  dbg!(asset_map);
+  // dbg!(asset_map);
 
   println!(
     "Finished in:   {:.3}s",
