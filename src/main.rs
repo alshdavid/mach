@@ -48,7 +48,7 @@ async fn main_async(config: Config) {
 
   // Initialize plugins
   let Ok(plugins) = load_plugins(&config.machrc, node_adapter.clone()).await else {
-    panic!("Unable to initalize plugins");
+    panic!("Unable to initialize plugins");
   };
 
   // This phase reads source files and transforms them. New imports
@@ -68,8 +68,6 @@ async fn main_async(config: Config) {
   }
 
   println!("Assets:        {}", asset_map.len());
-
-
 
   if let Err(err) = bundle(
     &config,

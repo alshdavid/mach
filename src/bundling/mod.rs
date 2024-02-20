@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 
@@ -13,14 +12,13 @@ use crate::public::ENTRY_ASSET;
 pub fn bundle(
   _config: &public::Config,
   _asset_map: &mut AssetMap,
-  dependency_map: &mut DependencyMap,
+  _dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
 ) -> Result<(), String> {  
   // Create one bundle
   let (_, entry_asset_id) = *asset_graph.get_dependencies(&ENTRY_ASSET).unwrap().get(0).unwrap();
   let mut bundle = Bundle { 
-    // used_exports: HashMap::new(),
     assets: HashSet::new(), 
     entry_asset: entry_asset_id.clone() 
   };
@@ -34,13 +32,7 @@ pub fn bundle(
       continue;
     };
 
-    for (dependency_id, asset_id) in dependencies {
-      let dependency = dependency_map.get(dependency_id).unwrap();
-
-      // for imported_symbol in &dependency.imported_symbols {
-      //   bundle.add_used_export(asset_id, imported_symbol.clone());
-      // }
-
+    for (_, asset_id) in dependencies {
       q.push(asset_id.clone());
     }
   }
