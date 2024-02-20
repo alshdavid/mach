@@ -101,7 +101,7 @@ impl Transformer for DefaultTransformerJs {
       return program;
     });
 
-    let dependencies = read_imports(&program);
+    let dependencies = read_imports(&program, &asset.file_path);
 
     for dependency in dependencies {
       asset.add_dependency(DependencyOptions {
@@ -109,7 +109,8 @@ impl Transformer for DefaultTransformerJs {
         specifier_type: dependency.specifier_type,
         priority: dependency.priority,
         resolve_from: asset.file_path.clone(),
-        imported_symbols: vec![],
+        imported_symbols: dependency.imported_symbols,
+        bundle_behavior: crate::public::BundleBehavior::Inline,
       });
     }
 

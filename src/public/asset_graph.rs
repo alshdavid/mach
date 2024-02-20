@@ -1,27 +1,30 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
+use std::path::PathBuf;
 
-use super::AssetId;
-
-pub type AssetEdge = (AssetId, AssetId);
+pub type AssetEdge = (PathBuf, (String, PathBuf));
 
 pub struct AssetGraph {
-  edges: HashSet<AssetEdge>,
+  edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
 }
 
 impl AssetGraph {
   pub fn new() -> Self {
     return AssetGraph {
-      edges: HashSet::new(),
+      edges: HashMap::new(),
     };
   }
 
   pub fn add_edge(
     &mut self,
-    from: AssetId,
-    to: AssetId,
+    from: PathBuf,
+    to: (String, PathBuf),
   ) {
-    self.edges.insert((from, to));
+    if let Some(edges) = self.edges.get_mut(&from) {
+      edges.insert(to);
+    } else {
+      self.edges.insert(from, HashSet::from([to]));
+    }
   }
 }
 
@@ -30,6 +33,6 @@ impl Debug for AssetGraph {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    f.debug_list().entries(&self.edges).finish()
+    f.debug_map().entries(&self.edges).finish()
   }
 }

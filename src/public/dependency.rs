@@ -3,9 +3,24 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::platform::hash::hash_string_sha_256;
-
-use super::AssetId;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Dependency {
+  /// Identifier of the import
+  pub specifier: String,
+  pub specifier_type: SpecifierType,
+  /// Whether the dependency is an entry
+  pub is_entry: bool,
+  /// When the dependency should be loaded
+  pub priority: DependencyPriority,
+  /// Path to the file that imported this dependency
+  pub source_path: PathBuf,
+  /// Path to resolve the specifier from
+  pub resolve_from: PathBuf,
+  /// Symbols that are imported from this path
+  pub imported_symbols: Vec<ImportSymbolType>,
+  /// Where to place the dependency within the bundle
+  pub bundle_behavior: BundleBehavior,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SpecifierType {
@@ -14,28 +29,23 @@ pub enum SpecifierType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Dependency {
-  pub id: String,
-  /// Identifier of the import
-  pub specifier: String,
-  pub specifier_type: SpecifierType,
-  /// Whether the dependency is an entry
-  pub is_entry: bool,
-  /// The AssetId of the file importing this dependency
-  pub source_asset_id: AssetId,
-  /// Path to the file that imported this dependency
-  pub source_path: PathBuf,
-  /// Path to resolve the specifier from
-  pub resolve_from: PathBuf,
-  /// Symbols that are imported from this path
-  pub imported_symbols: Vec<String>,
+pub enum DependencyPriority {
+  /// Static import
+  Sync,
+  /// Dynamic import
+  Lazy,
 }
 
-impl Dependency {
-  pub fn generate_id(
-    source_asset_id: &AssetId,
-    specifier: &String,
-  ) -> String {
-    return hash_string_sha_256(&format!("{}{}", source_asset_id, specifier));
-  }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ImportSymbolType {
+  Named(String),
+  Default,
+  Namespace,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum BundleBehavior {
+  Inline,
+  Isolated,
 }

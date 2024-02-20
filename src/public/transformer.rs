@@ -9,6 +9,10 @@ use serde::Serialize;
 use crate::public::Config;
 use crate::public::SpecifierType;
 
+use super::BundleBehavior;
+use super::DependencyPriority;
+use super::ImportSymbolType;
+
 #[async_trait]
 pub trait Transformer: Debug + Send + Sync {
   async fn transform(
@@ -63,13 +67,6 @@ pub struct DependencyOptions {
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
-  pub imported_symbols: Vec<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum DependencyPriority {
-  /// Static import
-  Sync,
-  /// Dynamic import
-  Lazy,
+  pub imported_symbols: Vec<ImportSymbolType>,
+  pub bundle_behavior: BundleBehavior,
 }

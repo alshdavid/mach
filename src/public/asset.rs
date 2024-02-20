@@ -1,23 +1,17 @@
 use std::path::PathBuf;
+use std::fmt::Debug;
 
-use crate::platform::hash::hash_path_buff_sha_256;
+use super::BundleBehavior;
 
-pub type AssetId = String;
-
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Asset {
-  pub id: AssetId,
   pub file_path: PathBuf,
   pub content: Vec<u8>,
+  pub bundle_behavior: BundleBehavior,
 }
 
-impl Asset {
-  pub fn generate_id(
-    root_path: &PathBuf,
-    asset_filepath_absolute: &PathBuf,
-  ) -> String {
-    let relative_path = pathdiff::diff_paths(asset_filepath_absolute, root_path).unwrap();
-    let relative_path_hash = hash_path_buff_sha_256(&relative_path);
-    return relative_path_hash;
-  }
+impl Debug for Asset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Asset").field("file_path", &self.file_path).field("bundle_behavior", &self.bundle_behavior).finish()
+    }
 }

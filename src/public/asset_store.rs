@@ -1,65 +1,49 @@
 #![allow(dead_code)]
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::Asset;
-use super::AssetId;
 
 #[derive(Default)]
 pub struct AssetMap {
-  assets: HashMap<AssetId, Asset>,
-  assets_index: HashMap<PathBuf, AssetId>,
+  assets: HashMap<PathBuf, Asset>,
 }
 
 impl AssetMap {
   pub fn new() -> Self {
     return AssetMap {
       assets: HashMap::new(),
-      assets_index: HashMap::new(),
     };
   }
 
   pub fn insert(
     &mut self,
     asset: Asset,
-  ) -> AssetId {
-    let asset_id = asset.id.clone();
+  ) {
     let asset_path = asset.file_path.clone();
-    self.assets.insert(asset_id.clone(), asset);
-    self.assets_index.insert(asset_path, asset_id.clone());
-    return asset_id;
+    self.assets.insert(asset_path.clone(), asset);
   }
 
   pub fn get_mut(
     &mut self,
-    asset_id: &AssetId,
+    file_path: &Path,
   ) -> Option<&mut Asset> {
-    return self.assets.get_mut(asset_id);
+    return self.assets.get_mut(file_path);
   }
 
   pub fn get(
     &self,
-    asset_id: &AssetId,
+    file_path: &Path,
   ) -> Option<&Asset> {
-    return self.assets.get(asset_id);
-  }
-
-  pub fn get_file(
-    &self,
-    file_path: &PathBuf,
-  ) -> Option<&Asset> {
-    let Some(asset_id) = self.assets_index.get(file_path) else {
-      return None;
-    };
-    return self.assets.get(asset_id);
+    return self.assets.get(file_path);
   }
 
   pub fn contains_key(
     &self,
-    asset_id: &AssetId,
+    file_path: &Path,
   ) -> bool {
-    return self.assets.contains_key(asset_id);
+    return self.assets.contains_key(file_path);
   }
 
   pub fn len(&self) -> usize {

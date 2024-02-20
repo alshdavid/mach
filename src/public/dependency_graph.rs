@@ -1,32 +1,39 @@
+use crate::platform::hash::hash_string_sha_256;
+
 use super::Dependency;
 use std::fmt::Debug;
+use std::collections::HashMap;
 
 #[derive(Default)]
-pub struct DependencyGraph {
-  pub dependencies: Vec<Dependency>,
+pub struct DependencyMap {
+  pub dependencies: HashMap<String, Dependency>,
 }
 
-impl DependencyGraph {
+impl DependencyMap {
   pub fn new() -> Self {
-    return DependencyGraph {
-      dependencies: Vec::new(),
-    };
+    DependencyMap {
+      dependencies: HashMap::new(),
+    }
   }
 
   pub fn insert(
     &mut self,
     dependency: Dependency,
-  ) {
-    self.dependencies.push(dependency);
+  ) -> String {
+    // TODO this can be done faster
+    let key = format!("{}:{:?}:{}:{:?}:{:?}", dependency.resolve_from.to_str().unwrap(), dependency.specifier_type, dependency.specifier, dependency.priority, dependency.imported_symbols);
+    let dependency_id = hash_string_sha_256(&key);
+    self.dependencies.insert(dependency_id.clone(), dependency);
+    dependency_id
   }
 }
 
-impl Debug for DependencyGraph {
+impl Debug for DependencyMap {
   fn fmt(
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    f.debug_list().entries(&self.dependencies).finish()
+    f.debug_map().entries(&self.dependencies).finish()
   }
 }
 
