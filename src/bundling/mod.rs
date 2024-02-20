@@ -15,12 +15,16 @@ pub fn bundle(
   _dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
-) -> Result<(), String> {  
+) -> Result<(), String> {
   // Create one bundle
-  let (_, entry_asset_id) = *asset_graph.get_dependencies(&ENTRY_ASSET).unwrap().get(0).unwrap();
-  let mut bundle = Bundle { 
-    assets: HashSet::new(), 
-    entry_asset: entry_asset_id.clone() 
+  let (_, entry_asset_id) = *asset_graph
+    .get_dependencies(&ENTRY_ASSET)
+    .unwrap()
+    .get(0)
+    .unwrap();
+  let mut bundle = Bundle {
+    assets: HashSet::new(),
+    entry_asset: entry_asset_id.clone(),
   };
 
   let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);

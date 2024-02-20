@@ -38,8 +38,7 @@ impl Transformer for DefaultTransformerJs {
   ) -> Result<(), String> {
     let source_map_og = Arc::new(SourceMap::default());
     let code = asset.get_code();
-    let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone())
-    else {
+    let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
       return Err(format!("SWC Parse Error"));
     };
 

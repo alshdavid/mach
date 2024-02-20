@@ -1,7 +1,8 @@
 #![allow(dead_code)]
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 use super::Asset;
 

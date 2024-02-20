@@ -5,14 +5,11 @@ use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
-use crate::public::BundleBehavior;
 use crate::public::Dependency;
 use crate::public::DependencyMap;
 use crate::public::DependencyOptions;
-use crate::public::DependencyPriority;
 use crate::public::ExportSymbol;
 use crate::public::MutableAsset;
-use crate::public::SpecifierType;
 use crate::public::ENTRY_ASSET;
 
 pub async fn transform(
@@ -27,13 +24,10 @@ pub async fn transform(
   // Entry Asset
   queue.push(Dependency {
     specifier: config.entry_point.to_str().unwrap().to_string(),
-    specifier_type: SpecifierType::ESM,
     is_entry: true,
-    priority: DependencyPriority::Sync,
     source_path: ENTRY_ASSET.clone(),
     resolve_from: ENTRY_ASSET.clone(),
-    imported_symbols: Vec::new(),
-    bundle_behavior: BundleBehavior::Inline,
+    ..Dependency::default()
   });
 
   while let Some(dependency) = queue.pop() {
@@ -52,14 +46,18 @@ pub async fn transform(
     let dependency_source_path = dependency.source_path.clone();
     let dependency_bundle_behavior = dependency.bundle_behavior.clone();
     let dependency_id = dependency_map.insert(dependency);
-    asset_graph.add_edge(dependency_source_path.clone(), (dependency_id, resolve_result.file_path.clone()));
+    asset_graph.add_edge(
+      dependency_source_path.clone(),
+      (dependency_id, resolve_result.file_path.clone()),
+    );
     if asset_map.contains_key(&resolve_result.file_path) {
       continue;
     }
     // Dependency Graph Done
 
     // Transformation
-    let mut content = fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+    let mut content =
+      fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
 
     let mut dependencies = Vec::<DependencyOptions>::new();
     let mut exports = Vec::<ExportSymbol>::new();
@@ -72,7 +70,10 @@ pub async fn transform(
     );
 
     let Some(transformers) = plugins.transformers.get(&resolve_result.file_path) else {
-      return Err(format!("No transformer found {:?}", resolve_result.file_path));
+      return Err(format!(
+        "No transformer found {:?}",
+        resolve_result.file_path
+      ));
     };
 
     for transformer in transformers {

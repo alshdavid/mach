@@ -17,9 +17,24 @@ pub struct Dependency {
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this path
-  pub imported_symbols: Vec<ImportSymbol>,
+  pub imported_symbols: Vec<ImportSymbolType>,
   /// Where to place the dependency within the bundle
   pub bundle_behavior: BundleBehavior,
+}
+
+impl Default for Dependency {
+  fn default() -> Self {
+    Self {
+      specifier: Default::default(),
+      specifier_type: SpecifierType::ESM,
+      is_entry: Default::default(),
+      priority: DependencyPriority::Sync,
+      source_path: Default::default(),
+      resolve_from: Default::default(),
+      imported_symbols: Default::default(),
+      bundle_behavior: BundleBehavior::Inline,
+    }
+  }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -36,9 +51,8 @@ pub enum DependencyPriority {
   Lazy,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
-pub enum ImportSymbol {
+pub enum ImportSymbolType {
   // import './foo'
   Unnamed,
   // import { foo } from './foo'

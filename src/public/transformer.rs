@@ -11,7 +11,7 @@ use crate::public::SpecifierType;
 use super::BundleBehavior;
 use super::DependencyPriority;
 use super::ExportSymbol;
-use super::ImportSymbol;
+use super::ImportSymbolType;
 
 #[async_trait]
 pub trait Transformer: Debug + Send + Sync {
@@ -77,6 +77,6 @@ pub struct DependencyOptions {
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
-  pub imported_symbols: Vec<ImportSymbol>,
+  pub imported_symbols: Vec<ImportSymbolType>,
   pub bundle_behavior: BundleBehavior,
 }

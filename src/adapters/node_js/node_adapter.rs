@@ -27,7 +27,7 @@ impl NodeAdapter {
   pub async fn new(worker_count: usize) -> NodeAdapter {
     // Don't initialize Nodejs if no workers are needed
     if worker_count == 0 {
-      let (tx,_) = unbounded_channel::<()>();
+      let (tx, _) = unbounded_channel::<()>();
       return NodeAdapter {
         send_to: Arc::new(Mutex::new(0)),
         tx_shutdown: tx,

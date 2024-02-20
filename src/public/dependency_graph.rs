@@ -1,8 +1,8 @@
 use crate::platform::hash::hash_string_sha_256;
 
 use super::Dependency;
-use std::fmt::Debug;
 use std::collections::HashMap;
+use std::fmt::Debug;
 
 #[derive(Default)]
 pub struct DependencyMap {
@@ -21,13 +21,23 @@ impl DependencyMap {
     dependency: Dependency,
   ) -> String {
     // TODO this can be done faster
-    let key = format!("{}:{:?}:{}:{:?}:{:?}", dependency.resolve_from.to_str().unwrap(), dependency.specifier_type, dependency.specifier, dependency.priority, dependency.imported_symbols);
+    let key = format!(
+      "{}:{:?}:{}:{:?}:{:?}",
+      dependency.resolve_from.to_str().unwrap(),
+      dependency.specifier_type,
+      dependency.specifier,
+      dependency.priority,
+      dependency.imported_symbols
+    );
     let dependency_id = hash_string_sha_256(&key);
     self.dependencies.insert(dependency_id.clone(), dependency);
     dependency_id
   }
 
-  pub fn _get(&self, dependency_id: &str) -> Option<&Dependency> {
+  pub fn _get(
+    &self,
+    dependency_id: &str,
+  ) -> Option<&Dependency> {
     return self.dependencies.get(dependency_id);
   }
 }

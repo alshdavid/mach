@@ -1,6 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fmt::Debug;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 pub struct AssetGraph {
   edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
@@ -25,7 +27,10 @@ impl AssetGraph {
     }
   }
 
-  pub fn get_dependencies(&self, asset_id: &Path) -> Option<Vec<(&String, &PathBuf)>> {
+  pub fn get_dependencies(
+    &self,
+    asset_id: &Path,
+  ) -> Option<Vec<(&String, &PathBuf)>> {
     let Some(dependencies) = self.edges.get(asset_id) else {
       return None;
     };

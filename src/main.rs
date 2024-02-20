@@ -10,6 +10,7 @@ mod transformation;
 use std::sync::Arc;
 
 use crate::adapters::node_js::NodeAdapter;
+use crate::bundling::bundle;
 use crate::config::parse_config;
 use crate::plugins::load_plugins;
 use crate::public::AssetGraph;
@@ -18,7 +19,6 @@ use crate::public::Bundles;
 use crate::public::Config;
 use crate::public::DependencyMap;
 use crate::transformation::transform;
-use crate::bundling::bundle;
 
 async fn main_async(config: Config) {
   // Bundle state

@@ -11,7 +11,7 @@ use swc_core::ecma::visit::VisitWith;
 
 use crate::public::DependencyPriority;
 use crate::public::ExportSymbol;
-use crate::public::ImportSymbol;
+use crate::public::ImportSymbolType;
 use crate::public::SpecifierType;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
@@ -21,7 +21,7 @@ pub struct ImportReadResult {
   pub specifier: String,
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
-  pub imported_symbols: Vec<ImportSymbol>,
+  pub imported_symbols: Vec<ImportSymbolType>,
 }
 
 pub fn read_imports_exports(
@@ -73,9 +73,9 @@ pub fn read_imports_exports(
 #[derive(Debug)]
 struct Walker {
   file_path: PathBuf,
-  imports_sync: HashMap<String, Vec<ImportSymbol>>,
-  imports_lazy: HashMap<String, Vec<ImportSymbol>>,
-  imports_require: HashMap<String, Vec<ImportSymbol>>,
+  imports_sync: HashMap<String, Vec<ImportSymbolType>>,
+  imports_lazy: HashMap<String, Vec<ImportSymbolType>>,
+  imports_require: HashMap<String, Vec<ImportSymbolType>>,
   exports: Vec<ExportSymbol>,
 }
 
@@ -97,7 +97,7 @@ impl Walker {
   fn insert_import_sync(
     &mut self,
     specifier: &str,
-    import_symbol: ImportSymbol,
+    import_symbol: ImportSymbolType,
   ) {
     let specifier = self.normalize_specifier(specifier);
 
@@ -113,7 +113,7 @@ impl Walker {
   fn insert_import_lazy(
     &mut self,
     specifier: &str,
-    import_symbol: ImportSymbol,
+    import_symbol: ImportSymbolType,
   ) {
     let specifier = self.normalize_specifier(specifier);
 
@@ -129,7 +129,7 @@ impl Walker {
   fn insert_import_require(
     &mut self,
     specifier: &str,
-    import_symbol: ImportSymbol,
+    import_symbol: ImportSymbolType,
   ) {
     let specifier = self.normalize_specifier(specifier);
 
@@ -167,7 +167,7 @@ impl Visit for Walker {
 
               // import './foo'
               if decl.specifiers.len() == 0 {
-                self.insert_import_sync(import_specifier, ImportSymbol::Unnamed);
+                self.insert_import_sync(import_specifier, ImportSymbolType::Unnamed);
                 continue 'module_loop;
               }
 
@@ -177,16 +177,19 @@ impl Visit for Walker {
                   ImportSpecifier::Named(name) => {
                     self.insert_import_sync(
                       import_specifier,
-                      ImportSymbol::Named(name.local.sym.to_string()),
+                      ImportSymbolType::Named(name.local.sym.to_string()),
                     );
                   }
                   // import foo from './foo'
                   ImportSpecifier::Default(_) => {
-                    self.insert_import_sync(import_specifier, ImportSymbol::Default);
+                    self.insert_import_sync(import_specifier, ImportSymbolType::Default);
                   }
                   // import * as foo from './foo'
                   ImportSpecifier::Namespace(decl) => {
-                    self.insert_import_sync(import_specifier, ImportSymbol::Namespace(decl.local.sym.to_string()));
+                    self.insert_import_sync(
+                      import_specifier,
+                      ImportSymbolType::Namespace(decl.local.sym.to_string()),
+                    );
                   }
                 }
               }
@@ -286,18 +289,20 @@ impl Visit for Walker {
                   ExportSpecifier::Namespace(name) => {
                     match &name.name {
                       ModuleExportName::Ident(ident) => {
-                        self.insert_import_sync(&import_specifier, ImportSymbol::Namespace(ident.sym.to_string()));
-                        
+                        self.insert_import_sync(
+                          &import_specifier,
+                          ImportSymbolType::Namespace(ident.sym.to_string()),
+                        );
+
                         self
                           .exports
                           .push(ExportSymbol::Named(ident.sym.to_string()));
-
                       }
                       ModuleExportName::Str(_) => todo!(),
                     };
                   }
                   ExportSpecifier::Default(_) => {
-                    self.insert_import_sync(&import_specifier, ImportSymbol::Default);
+                    self.insert_import_sync(&import_specifier, ImportSymbolType::Default);
                     self.exports.push(ExportSymbol::Default);
                     panic!("I don't think this can happen");
                   }
@@ -306,7 +311,7 @@ impl Visit for Walker {
                     ModuleExportName::Ident(ident) => {
                       self.insert_import_sync(
                         &import_specifier,
-                        ImportSymbol::Named(ident.sym.to_string()),
+                        ImportSymbolType::Named(ident.sym.to_string()),
                       );
                     }
                     ModuleExportName::Str(_) => todo!(),
@@ -335,7 +340,7 @@ impl Visit for Walker {
               }
               // dbg!(&decl);
               let import_specifier = decl.src.value.to_string();
-              self.insert_import_sync(&import_specifier, ImportSymbol::Reexport);
+              self.insert_import_sync(&import_specifier, ImportSymbolType::Reexport);
               self.exports.push(ExportSymbol::ExportAll(import_specifier));
             }
             ModuleDecl::TsImportEquals(_) => panic!("Should not see TS"),
@@ -370,7 +375,7 @@ impl Visit for Walker {
         };
         self.insert_import_lazy(
           &import_specifier.value.to_string(),
-          ImportSymbol::Dynamic,
+          ImportSymbolType::Dynamic,
         );
       }
       // require("specifier")
@@ -389,7 +394,7 @@ impl Visit for Walker {
         };
         self.insert_import_require(
           &import_specifier.value.to_string(),
-          ImportSymbol::Commonjs,
+          ImportSymbolType::Commonjs,
         );
       }
       Callee::Super(_) => {}

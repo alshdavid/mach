@@ -4,7 +4,6 @@ use crate::public::Config;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
-
 #[derive(Debug)]
 pub struct DefaultTransformerNoop {}
 
