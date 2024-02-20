@@ -26,6 +26,10 @@ impl DependencyMap {
     self.dependencies.insert(dependency_id.clone(), dependency);
     dependency_id
   }
+
+  pub fn get(&self, dependency_id: &str) -> Option<&Dependency> {
+    return self.dependencies.get(dependency_id);
+  }
 }
 
 impl Debug for DependencyMap {

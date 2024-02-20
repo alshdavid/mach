@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::PathBuf;
 
 use crate::plugins::PluginContainer;
 use crate::public;
@@ -13,6 +12,7 @@ use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
 use crate::public::MutableAsset;
 use crate::public::SpecifierType;
+use crate::public::ENTRY_ASSET;
 
 pub async fn transform(
   config: &public::Config,
@@ -29,8 +29,8 @@ pub async fn transform(
     specifier_type: SpecifierType::ESM,
     is_entry: true,
     priority: DependencyPriority::Sync,
-    source_path: PathBuf::new(),
-    resolve_from: PathBuf::new(),
+    source_path: ENTRY_ASSET.clone(),
+    resolve_from: ENTRY_ASSET.clone(),
     imported_symbols: Vec::new(),
     bundle_behavior: BundleBehavior::Inline,
   });

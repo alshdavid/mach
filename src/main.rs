@@ -14,15 +14,18 @@ use crate::config::parse_config;
 use crate::plugins::load_plugins;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
+use crate::public::Bundles;
 use crate::public::Config;
 use crate::public::DependencyMap;
 use crate::transformation::transform;
+use crate::bundling::bundle;
 
 async fn main_async(config: Config) {
   // Bundle state
   let mut asset_map = AssetMap::new();
   let mut dependency_map = DependencyMap::new();
   let mut asset_graph = AssetGraph::new();
+  let mut bundles = Bundles::new();
 
   // Adapters
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
@@ -66,9 +69,24 @@ async fn main_async(config: Config) {
 
   println!("Assets:        {}", asset_map.len());
 
-  dbg!(asset_map);
-  dbg!(asset_graph);
-  dbg!(dependency_map);
+
+
+  if let Err(err) = bundle(
+    &config,
+    &mut asset_map,
+    &mut dependency_map,
+    &mut asset_graph,
+    &mut bundles,
+  ) {
+    println!("Bundling Error");
+    println!("{}", err);
+    return;
+  }
+
+  dbg!(&asset_map);
+  dbg!(&asset_graph);
+  dbg!(&dependency_map);
+  dbg!(&bundles);
 
   println!(
     "Finished in:   {:.3}s",

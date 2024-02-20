@@ -44,6 +44,7 @@ impl Transformer for DefaultTransformerJs {
     };
 
     let program = result.program;
+
     let comments = result.comments;
     let source_map = source_map_og.clone();
     let file_extension = asset

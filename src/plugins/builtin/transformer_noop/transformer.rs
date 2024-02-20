@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 
 use crate::public::Config;
-use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
@@ -13,8 +12,8 @@ pub struct DefaultTransformerNoop {}
 impl Transformer for DefaultTransformerNoop {
   async fn transform(
     &self,
-    asset: &mut MutableAsset,
-    config: &Config,
+    _asset: &mut MutableAsset,
+    _config: &Config,
   ) -> Result<(), String> {
     return Ok(());
   }

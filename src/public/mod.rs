@@ -7,6 +7,8 @@ mod dependency_graph;
 mod machrc;
 mod resolver;
 mod transformer;
+mod constants;
+mod bundle;
 
 pub use crate::public::asset::*;
 pub use crate::public::asset_graph::*;
@@ -17,3 +19,5 @@ pub use crate::public::dependency_graph::*;
 pub use crate::public::machrc::*;
 pub use crate::public::resolver::*;
 pub use crate::public::transformer::*;
+pub use crate::public::constants::*;
+pub use crate::public::bundle::*;

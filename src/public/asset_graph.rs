@@ -1,8 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
-use std::path::PathBuf;
-
-pub type AssetEdge = (PathBuf, (String, PathBuf));
+use std::path::{Path, PathBuf};
 
 pub struct AssetGraph {
   edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
@@ -25,6 +23,20 @@ impl AssetGraph {
     } else {
       self.edges.insert(from, HashSet::from([to]));
     }
+  }
+
+  pub fn get_dependencies(&self, asset_id: &Path) -> Option<Vec<(&String, &PathBuf)>> {
+    let Some(dependencies) = self.edges.get(asset_id) else {
+      return None;
+    };
+
+    let mut result = Vec::<(&String, &PathBuf)>::new();
+
+    for (dependency_id, resolved_asset) in dependencies {
+      result.push((dependency_id, resolved_asset));
+    }
+
+    return Some(result);
   }
 }
 

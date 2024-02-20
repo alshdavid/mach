@@ -37,7 +37,7 @@ pub enum DependencyPriority {
 }
 
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub enum ImportSymbolType {
   Named(String),
   Default,
