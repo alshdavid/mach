@@ -17,7 +17,7 @@ pub struct Dependency {
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this path
-  pub imported_symbols: Vec<ImportSymbolType>,
+  pub imported_symbols: Vec<ImportSymbol>,
   /// Where to place the dependency within the bundle
   pub bundle_behavior: BundleBehavior,
 }
@@ -38,10 +38,22 @@ pub enum DependencyPriority {
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
-pub enum ImportSymbolType {
+pub enum ImportSymbol {
+  // import './foo'
+  Unnamed,
+  // import { foo } from './foo'
+  // import { foo: bar } from './foo'
   Named(String),
+  // import foo from './foo'
   Default,
-  Namespace,
+  // import * as foo from './foo'
+  Namespace(String),
+  // export * from './foo'
+  Reexport,
+  // import('./foo')
+  Dynamic,
+  // require('./foo')
+  Commonjs,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

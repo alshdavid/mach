@@ -10,7 +10,8 @@ use crate::public::SpecifierType;
 
 use super::BundleBehavior;
 use super::DependencyPriority;
-use super::ImportSymbolType;
+use super::ExportSymbol;
+use super::ImportSymbol;
 
 #[async_trait]
 pub trait Transformer: Debug + Send + Sync {
@@ -26,6 +27,7 @@ pub struct MutableAsset<'a> {
   pub file_path: PathBuf,
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
+  exports: &'a mut Vec<ExportSymbol>,
 }
 
 impl<'a> MutableAsset<'a> {
@@ -33,11 +35,13 @@ impl<'a> MutableAsset<'a> {
     file_path: PathBuf,
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
+    exports: &'a mut Vec<ExportSymbol>,
   ) -> Self {
     return MutableAsset {
       file_path,
       content,
       dependencies,
+      exports,
     };
   }
 
@@ -58,6 +62,13 @@ impl<'a> MutableAsset<'a> {
   ) {
     self.dependencies.push(options);
   }
+
+  pub fn define_export(
+    &mut self,
+    export: ExportSymbol,
+  ) {
+    self.exports.push(export);
+  }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -66,6 +77,6 @@ pub struct DependencyOptions {
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
-  pub imported_symbols: Vec<ImportSymbolType>,
+  pub imported_symbols: Vec<ImportSymbol>,
   pub bundle_behavior: BundleBehavior,
 }

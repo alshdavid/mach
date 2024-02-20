@@ -10,6 +10,7 @@ use crate::public::Dependency;
 use crate::public::DependencyMap;
 use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
+use crate::public::ExportSymbol;
 use crate::public::MutableAsset;
 use crate::public::SpecifierType;
 use crate::public::ENTRY_ASSET;
@@ -61,11 +62,13 @@ pub async fn transform(
     let mut content = fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
 
     let mut dependencies = Vec::<DependencyOptions>::new();
+    let mut exports = Vec::<ExportSymbol>::new();
 
     let mut mutable_asset = MutableAsset::new(
       resolve_result.file_path.clone(),
       &mut content,
       &mut dependencies,
+      &mut exports,
     );
 
     let Some(transformers) = plugins.transformers.get(&resolve_result.file_path) else {
@@ -80,6 +83,7 @@ pub async fn transform(
       file_path: resolve_result.file_path.clone(),
       content,
       bundle_behavior: dependency_bundle_behavior,
+      exports,
     });
     // Transformation Done
 

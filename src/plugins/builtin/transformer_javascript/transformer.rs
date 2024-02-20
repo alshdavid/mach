@@ -23,7 +23,7 @@ use crate::public::Transformer;
 
 use super::collect_decls;
 use super::parse_program;
-use super::read_imports;
+use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
 #[derive(Debug)]
@@ -102,7 +102,7 @@ impl Transformer for DefaultTransformerJs {
       return program;
     });
 
-    let dependencies = read_imports(&program, &asset.file_path);
+    let (dependencies, exports) = read_imports_exports(&program, &asset.file_path);
 
     for dependency in dependencies {
       asset.add_dependency(DependencyOptions {
@@ -113,6 +113,10 @@ impl Transformer for DefaultTransformerJs {
         imported_symbols: dependency.imported_symbols,
         bundle_behavior: crate::public::BundleBehavior::Inline,
       });
+    }
+
+    for export in exports {
+      asset.define_export(export);
     }
 
     asset.set_code(&render_program(&program, source_map_og.clone()));
