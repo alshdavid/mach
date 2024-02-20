@@ -34,7 +34,7 @@ impl DependencyMap {
     dependency_id
   }
 
-  pub fn _get(
+  pub fn get(
     &self,
     dependency_id: &str,
   ) -> Option<&Dependency> {
