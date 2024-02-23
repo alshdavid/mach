@@ -25,6 +25,7 @@ pub trait Transformer: Debug + Send + Sync {
 #[derive(Debug)]
 pub struct MutableAsset<'a> {
   pub file_path: PathBuf,
+  pub kind: &'a mut String,
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
   exports: &'a mut Vec<ExportSymbol>,
@@ -33,12 +34,14 @@ pub struct MutableAsset<'a> {
 impl<'a> MutableAsset<'a> {
   pub fn new(
     file_path: PathBuf,
+    kind: &'a mut String,
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
     exports: &'a mut Vec<ExportSymbol>,
   ) -> Self {
     return MutableAsset {
       file_path,
+      kind,
       content,
       dependencies,
       exports,

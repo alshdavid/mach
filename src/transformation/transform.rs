@@ -11,6 +11,7 @@ use crate::public::DependencyOptions;
 use crate::public::ExportSymbol;
 use crate::public::MutableAsset;
 use crate::public::ENTRY_ASSET;
+use crate::plugins::TransformerTarget;
 
 pub async fn transform(
   config: &public::Config,
@@ -56,40 +57,57 @@ pub async fn transform(
     // Dependency Graph Done
 
     // Transformation
+    let mut file_target = TransformerTarget::new(&resolve_result.file_path);
+
     let mut content =
       fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
-
-    let mut dependencies = Vec::<DependencyOptions>::new();
-    let mut exports = Vec::<ExportSymbol>::new();
+    let mut asset_dependencies = Vec::<DependencyOptions>::new();
+    let mut asset_kind = file_target.file_extension.clone();
+    let mut asset_exports = Vec::<ExportSymbol>::new();
 
     let mut mutable_asset = MutableAsset::new(
       resolve_result.file_path.clone(),
+      &mut asset_kind,
       &mut content,
-      &mut dependencies,
-      &mut exports,
+      &mut asset_dependencies,
+      &mut asset_exports,
     );
 
-    let Some(transformers) = plugins.transformers.get(&resolve_result.file_path) else {
-      return Err(format!(
-        "No transformer found {:?}",
-        resolve_result.file_path
-      ));
-    };
+    let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
 
-    for transformer in transformers {
+    let mut i = transformers.len();
+    while i != 0 {
+      let Some(transformer) = transformers.get(i - 1) else {
+        break;
+      };
       transformer.transform(&mut mutable_asset, &config).await?;
+      if *mutable_asset.kind == file_target.file_extension {
+        i -= 1;
+        continue;
+      }
+      // If the file type and pattern changes restart transformers
+      file_target.update(mutable_asset.kind);
+      let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
+      if new_pattern != pattern {
+        transformers = new_transformers;
+        pattern = new_pattern;
+        i = transformers.len();
+        continue;
+      }
+      i -= 1;
     }
 
     asset_map.insert(Asset {
       file_path: resolve_result.file_path.clone(),
       content,
+      kind: asset_kind,
       bundle_behavior: dependency_bundle_behavior,
-      exports,
+      exports: asset_exports,
     });
     // Transformation Done
 
     // Add new items to the queue
-    while let Some(dependency_options) = dependencies.pop() {
+    while let Some(dependency_options) = asset_dependencies.pop() {
       queue.push(Dependency {
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,

@@ -24,34 +24,34 @@ use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerJs {}
+pub struct DefaultTransformerJavaScript {}
 
 #[async_trait]
-impl Transformer for DefaultTransformerJs {
+impl Transformer for DefaultTransformerJavaScript {
   async fn transform(
     &self,
     asset: &mut MutableAsset,
     config: &Config,
   ) -> Result<(), String> {
-    let source_map_og = Arc::new(SourceMap::default());
-    let code = asset.get_code();
-    let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
-      return Err(format!("SWC Parse Error"));
-    };
+    return swc_core::common::GLOBALS.set(&Globals::new(), move || {
+      let source_map_og = Arc::new(SourceMap::default());
+      let code = asset.get_code();
+      let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
+        return Err(format!("SWC Parse Error"));
+      };
 
-    let program = result.program;
+      let program = result.program;
 
-    let comments = result.comments;
-    let source_map = source_map_og.clone();
-    let file_extension = asset
-      .file_path
-      .extension()
-      .unwrap()
-      .to_str()
-      .unwrap()
-      .to_string();
+      let comments = result.comments;
+      let source_map = source_map_og.clone();
+      let file_extension = asset
+        .file_path
+        .extension()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    let program = swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let top_level_mark = Mark::fresh(Mark::root());
       let unresolved_mark = Mark::fresh(Mark::root());
 
@@ -89,34 +89,36 @@ impl Transformer for DefaultTransformerJs {
           Some(&comments),
           top_level_mark,
         ));
+
+        *asset.kind = "js".to_string();
       }
 
       if file_extension == "ts" {
         program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
+        *asset.kind = "js".to_string();
       }
 
-      return program;
+      let (dependencies, exports) = read_imports_exports(&program, &asset.file_path);
+
+      for dependency in dependencies {
+        asset.add_dependency(DependencyOptions {
+          specifier: dependency.specifier,
+          specifier_type: dependency.specifier_type,
+          priority: dependency.priority,
+          resolve_from: asset.file_path.clone(),
+          imported_symbols: dependency.imported_symbols,
+          bundle_behavior: crate::public::BundleBehavior::Inline,
+        });
+      }
+
+      for export in exports {
+        asset.define_export(export);
+      }
+
+      asset.set_code(&render_program(&program, source_map_og.clone()));
+
+      return Ok(());
     });
-
-    let (dependencies, exports) = read_imports_exports(&program, &asset.file_path);
-
-    for dependency in dependencies {
-      asset.add_dependency(DependencyOptions {
-        specifier: dependency.specifier,
-        specifier_type: dependency.specifier_type,
-        priority: dependency.priority,
-        resolve_from: asset.file_path.clone(),
-        imported_symbols: dependency.imported_symbols,
-        bundle_behavior: crate::public::BundleBehavior::Inline,
-      });
-    }
-
-    for export in exports {
-      asset.define_export(export);
-    }
-
-    asset.set_code(&render_program(&program, source_map_og.clone()));
-    return Ok(());
   }
 }
 

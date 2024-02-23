@@ -49,9 +49,9 @@ pub fn resolve(
   }
 
   return Err(format!(
-    "Unable to resolve: \n\t{}\n\t{}",
+    "Unable to resolve:\n\tSpecifier: {}\n\tFrom:      {}",
+    specifier,
     from_raw.to_str().unwrap(),
-    specifier
   ));
 }
 

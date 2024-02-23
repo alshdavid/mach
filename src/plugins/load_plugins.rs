@@ -10,7 +10,8 @@ use crate::public::Transformer;
 
 use super::builtin::resolver::DefaultResolver;
 use super::builtin::resolver_node_js::ResolverNodeJs;
-use super::builtin::transformer_javascript::DefaultTransformerJs;
+use super::builtin::transformer_css::DefaultTransformerCSS;
+use super::builtin::transformer_javascript::DefaultTransformerJavaScript;
 use super::builtin::transformer_node_js::TransformerNodeJs;
 use super::builtin::transformer_noop::DefaultTransformerNoop;
 use super::PluginContainer;
@@ -51,7 +52,12 @@ pub async fn load_plugins(
         };
 
         if engine == "mach" && specifier == "transformer/javascript" {
-          transformers.push(Box::new(DefaultTransformerJs {}));
+          transformers.push(Box::new(DefaultTransformerJavaScript {}));
+          continue;
+        }
+
+        if engine == "mach" && specifier == "transformer/css" {
+          transformers.push(Box::new(DefaultTransformerCSS {}));
           continue;
         }
 
