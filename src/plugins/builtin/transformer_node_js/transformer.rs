@@ -50,6 +50,7 @@ impl Transformer for TransformerNodeJs {
       plugin_key: self.plugin_key.clone(),
       file_path: asset.file_path.clone(),
       code: asset.get_code().clone(),
+      kind: asset.kind.clone(),
       config: config.clone(),
     };
 

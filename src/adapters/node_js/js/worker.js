@@ -1,4 +1,6 @@
 /*
+  TODO migrate this to a NAPI module
+
   Protocol is text separated by the \n character:
     message_ref
     action_type
@@ -40,12 +42,22 @@ async function run_resolver({ plugin_key, dependency }) {
   return result
 }
 
-async function run_transformer({ plugin_key, config, file_path, code }) {
+async function run_transformer({ plugin_key, config, file_path, kind, code }) {
   let resolver = plugins[plugin_key]
   
   let updated = false
   const dependencies = []
   const asset = new class MutableAsset {
+    file_path = file_path;
+    get kind() {
+      return kind
+    }
+
+    set kind(value) {
+      updated = true
+      kind = value
+    }
+
     async get_code() {
       return code
     }

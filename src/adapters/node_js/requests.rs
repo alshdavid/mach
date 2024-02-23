@@ -29,6 +29,7 @@ pub struct RunTransformerRequest {
   pub plugin_key: String,
   pub config: Config,
   pub file_path: PathBuf,
+  pub kind: String,
   pub code: String,
 }
 
