@@ -11,8 +11,8 @@ pub struct DefaultTransformerCSS {}
 impl Transformer for DefaultTransformerCSS {
   async fn transform(
     &self,
-    asset: &mut MutableAsset,
-    config: &Config,
+    _asset: &mut MutableAsset,
+    _config: &Config,
   ) -> Result<(), String> {
     return Ok(());
   }

@@ -36,6 +36,7 @@ impl Debug for Asset {
     f.debug_struct("Asset")
       .field("file_path", &self.file_path)
       .field("bundle_behavior", &self.bundle_behavior)
+      .field("kind", &self.kind)
       .field("exports", &self.exports)
       .finish()
   }
