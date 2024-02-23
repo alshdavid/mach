@@ -1,6 +1,7 @@
 use std::fs;
 
 use crate::plugins::PluginContainer;
+use crate::plugins::TransformerTarget;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;
@@ -11,7 +12,6 @@ use crate::public::DependencyOptions;
 use crate::public::ExportSymbol;
 use crate::public::MutableAsset;
 use crate::public::ENTRY_ASSET;
-use crate::plugins::TransformerTarget;
 
 pub async fn transform(
   config: &public::Config,

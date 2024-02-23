@@ -2,11 +2,11 @@ mod adapters;
 mod args;
 mod bundling;
 mod config;
+mod packaging;
 mod platform;
 mod plugins;
 mod public;
 mod transformation;
-mod packaging;
 
 use std::sync::Arc;
 
@@ -73,7 +73,7 @@ async fn main_async(config: Config) {
   // dbg!(&asset_map);
   // dbg!(&asset_graph);
   // dbg!(&dependency_map);
-  
+
   if let Err(err) = bundle(
     &config,
     &mut asset_map,

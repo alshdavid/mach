@@ -14,7 +14,6 @@ impl Transformer for DefaultTransformerCSS {
     asset: &mut MutableAsset,
     config: &Config,
   ) -> Result<(), String> {
-    
     return Ok(());
   }
 }

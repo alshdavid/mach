@@ -25,10 +25,7 @@ impl TransformerMap {
         return Ok((pattern.clone(), transformers));
       }
     }
-    return Err(format!(
-      "No transformer found {:?}",
-      file_target.file_path,
-    ));
+    return Err(format!("No transformer found {:?}", file_target.file_path,));
   }
 }
 

@@ -107,14 +107,14 @@ impl RuntimeFactory {
       let name = PathBuf::from("wrapper");
       let result = parse_script(&name, JS_WRAPPER, source_map.clone()).unwrap();
       result.script.body[0]
-      .to_owned()
-      .as_expr()
-      .unwrap()
-      .to_owned()
-      .expr
-      .as_call()
-      .unwrap()
-      .to_owned()
+        .to_owned()
+        .as_expr()
+        .unwrap()
+        .to_owned()
+        .expr
+        .as_call()
+        .unwrap()
+        .to_owned()
     };
 
     return Self {
@@ -142,14 +142,20 @@ impl RuntimeFactory {
       raw: Some(Atom::from(format!("\"{}\"", export_key))),
     })));
 
-    let Expr::Arrow(arrow) = &mut *define_export.args[1].expr else { panic!() };
-    let BlockStmtOrExpr::Expr(block) = &mut *arrow.body else { panic!() };
-    let Expr::Ident(ident) = &mut **block else { panic!() };
+    let Expr::Arrow(arrow) = &mut *define_export.args[1].expr else {
+      panic!()
+    };
+    let BlockStmtOrExpr::Expr(block) = &mut *arrow.body else {
+      panic!()
+    };
+    let Expr::Ident(ident) = &mut **block else {
+      panic!()
+    };
     ident.sym = Atom::from(export_identifier);
 
     Stmt::Expr(ExprStmt {
       span: Span::default(),
-      expr: Box::new(Expr::Call(define_export))
+      expr: Box::new(Expr::Call(define_export)),
     })
   }
 
@@ -188,13 +194,25 @@ impl RuntimeFactory {
   ) -> Stmt {
     let mut module = self.module.clone();
 
-    let Stmt::Expr(expr) = &mut module else { panic!() };
-    let Expr::Assign(assign) = &mut *expr.expr else { panic!() };
+    let Stmt::Expr(expr) = &mut module else {
+      panic!()
+    };
+    let Expr::Assign(assign) = &mut *expr.expr else {
+      panic!()
+    };
     {
-      let PatOrExpr::Pat(pat) = &mut assign.left else { panic!() };
-      let Pat::Expr(expr) = &mut **pat else { panic!() };
-      let Expr::Member(member) = &mut **expr else { panic!() };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      let PatOrExpr::Pat(pat) = &mut assign.left else {
+        panic!()
+      };
+      let Pat::Expr(expr) = &mut **pat else {
+        panic!()
+      };
+      let Expr::Member(member) = &mut **expr else {
+        panic!()
+      };
+      let MemberProp::Computed(prop) = &mut member.prop else {
+        panic!()
+      };
 
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
@@ -204,7 +222,9 @@ impl RuntimeFactory {
     }
 
     {
-      let Expr::Arrow(arrow) = &mut *assign.right else { panic!() };
+      let Expr::Arrow(arrow) = &mut *assign.right else {
+        panic!()
+      };
       arrow.body = Box::new(BlockStmtOrExpr::BlockStmt(BlockStmt {
         span: Span::default(),
         stmts: contents.to_vec(),
@@ -220,16 +240,32 @@ impl RuntimeFactory {
   ) -> Stmt {
     let mut prelude = self.prelude.clone();
 
-    let Stmt::Decl(decl) = &mut prelude.stmts[0] else { panic!(); };
-    let Decl::Var(var) = &mut *decl else { panic!(); };
-    let Some(decl) = &mut var.decls[0].init else { panic!(); };
-    let Expr::Assign(assign) = &mut **decl else { panic!(); };
+    let Stmt::Decl(decl) = &mut prelude.stmts[0] else {
+      panic!();
+    };
+    let Decl::Var(var) = &mut *decl else {
+      panic!();
+    };
+    let Some(decl) = &mut var.decls[0].init else {
+      panic!();
+    };
+    let Expr::Assign(assign) = &mut **decl else {
+      panic!();
+    };
 
     {
-      let PatOrExpr::Pat(pat) = &mut assign.left else { panic!(); };
-      let Pat::Expr(expr) = &mut **pat else { panic!(); };
-      let Expr::Member(member) = &mut **expr else { panic!(); };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!(); };
+      let PatOrExpr::Pat(pat) = &mut assign.left else {
+        panic!();
+      };
+      let Pat::Expr(expr) = &mut **pat else {
+        panic!();
+      };
+      let Expr::Member(member) = &mut **expr else {
+        panic!();
+      };
+      let MemberProp::Computed(prop) = &mut member.prop else {
+        panic!();
+      };
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
         value: Atom::from(format!("{}", project_identifier)),
@@ -238,9 +274,15 @@ impl RuntimeFactory {
     }
 
     {
-      let Expr::Bin(bin) = &mut *assign.right else { panic!(); };
-      let Expr::Member(member) = &mut *bin.left else { panic!(); };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!(); };
+      let Expr::Bin(bin) = &mut *assign.right else {
+        panic!();
+      };
+      let Expr::Member(member) = &mut *bin.left else {
+        panic!();
+      };
+      let MemberProp::Computed(prop) = &mut member.prop else {
+        panic!();
+      };
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
         value: Atom::from(format!("{}", project_identifier)),
@@ -251,9 +293,7 @@ impl RuntimeFactory {
     Stmt::Block(prelude)
   }
 
-  pub fn prelude_require_async(
-    &self,
-  ) -> Stmt {
+  pub fn prelude_require_async(&self) -> Stmt {
     self.prelude_require_async.clone()
   }
 
@@ -264,9 +304,11 @@ impl RuntimeFactory {
   ) -> Stmt {
     let mut require_async = self.require_async.clone();
 
-    let Expr::Array(array) = &mut *require_async.args[0].expr else { panic!() };
+    let Expr::Array(array) = &mut *require_async.args[0].expr else {
+      panic!()
+    };
     for bundle_id in bundle_ids {
-      array.elems.push(Some(ExprOrSpread{
+      array.elems.push(Some(ExprOrSpread {
         spread: None,
         expr: Box::new(Expr::Lit(Lit::Str(Str {
           span: Span::default(),
@@ -276,7 +318,7 @@ impl RuntimeFactory {
       }))
     }
 
-    require_async.args[1] = ExprOrSpread{
+    require_async.args[1] = ExprOrSpread {
       spread: None,
       expr: Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
@@ -287,7 +329,7 @@ impl RuntimeFactory {
 
     Stmt::Expr(ExprStmt {
       span: Span::default(),
-      expr: Box::new(Expr::Call(require_async))
+      expr: Box::new(Expr::Call(require_async)),
     })
   }
 
@@ -297,12 +339,20 @@ impl RuntimeFactory {
   ) -> Stmt {
     let mut wrapper = self.wrapper.clone();
 
-    let Callee::Expr(expr) = &mut wrapper.callee else { panic!() };
-    let Expr::Paren(paren) = &mut **expr else { panic!() };
-    let Expr::Arrow(arrow) = &mut *paren.expr else { panic!() };
-    let BlockStmtOrExpr::BlockStmt(block) = &mut *arrow.body else { panic!() };
+    let Callee::Expr(expr) = &mut wrapper.callee else {
+      panic!()
+    };
+    let Expr::Paren(paren) = &mut **expr else {
+      panic!()
+    };
+    let Expr::Arrow(arrow) = &mut *paren.expr else {
+      panic!()
+    };
+    let BlockStmtOrExpr::BlockStmt(block) = &mut *arrow.body else {
+      panic!()
+    };
     let current_body = std::mem::take(&mut block.stmts);
-    
+
     for stmt in stmts {
       block.stmts.push(stmt.clone());
     }
@@ -311,9 +361,9 @@ impl RuntimeFactory {
       block.stmts.push(stmt.clone());
     }
 
-    Stmt::Expr(ExprStmt { 
+    Stmt::Expr(ExprStmt {
       span: Span::default(),
-      expr: Box::new(Expr::Call(wrapper)), 
+      expr: Box::new(Expr::Call(wrapper)),
     })
   }
 }
