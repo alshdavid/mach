@@ -3,6 +3,6 @@
   that are cache invalidated when there are chantges
 
   example:
-    Object.assign(parcel_manifest, JSON.parse('{"7ysn3":"/index.js","k2FQA": "/foo.js"}'))
+    Object.assign(mach_manifest, JSON.parse('{"7ysn3":"/index.js","k2FQA": "/foo.js"}'))
 */
-Object.assign(parcel_manifest, JSON.parse('MANIFEST_JSON'))
+Object.assign(mach_manifest, JSON.parse('MANIFEST_JSON'))
