@@ -45,7 +45,7 @@ pub fn bundle(
       q.push(asset_id.clone());
 
       let asset = asset_map.get(asset_id).unwrap();
-      let dependency =  dependency_map.get(dependency_id).unwrap();
+      let dependency = dependency_map.get(dependency_id).unwrap();
 
       for import in &dependency.imported_symbols {
         match import {
@@ -59,12 +59,12 @@ pub fn bundle(
               }
             }
             return Err(format!("{:?} does not export {:?}", asset_id, name));
-          },
+          }
           public::ImportSymbolType::Unnamed => {
             for export in &asset.exports {
               bundle.insert_export_symbol(asset_id, export.clone());
             }
-          },
+          }
           public::ImportSymbolType::Default => 'exports: {
             for export in &asset.exports {
               if let ExportSymbol::Default = &export {
@@ -73,27 +73,27 @@ pub fn bundle(
               }
             }
             return Err(format!("{:?} does not have a default export", asset_id));
-          },
+          }
           public::ImportSymbolType::Namespace(_) => {
             for export in &asset.exports {
               bundle.insert_export_symbol(asset_id, export.clone());
             }
-          },
+          }
           public::ImportSymbolType::Reexport => {
             for export in &asset.exports {
               bundle.insert_export_symbol(asset_id, export.clone());
             }
-          },
+          }
           public::ImportSymbolType::Dynamic => {
             for export in &asset.exports {
               bundle.insert_export_symbol(asset_id, export.clone());
             }
-          },
+          }
           public::ImportSymbolType::Commonjs => {
             for export in &asset.exports {
               bundle.insert_export_symbol(asset_id, export.clone());
             }
-          },
+          }
         };
       }
     }

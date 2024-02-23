@@ -6,6 +6,7 @@ mod platform;
 mod plugins;
 mod public;
 mod transformation;
+mod packaging;
 
 use std::sync::Arc;
 

@@ -17,6 +17,7 @@ node_modules/
 
 # dist
 /dist
+scratch/
 
 # editors
 .idea

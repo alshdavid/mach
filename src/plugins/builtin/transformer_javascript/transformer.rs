@@ -7,22 +7,19 @@ use swc_core::atoms::JsWord;
 use swc_core::common::Globals;
 use swc_core::common::Mark;
 use swc_core::common::SourceMap;
-use swc_core::ecma::ast::Program;
-use swc_core::ecma::codegen::text_writer::JsWriter;
-use swc_core::ecma::codegen::Config as SWCConfig;
-use swc_core::ecma::codegen::Emitter;
 use swc_core::ecma::transforms::base::resolver;
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
+use crate::platform::swc::parse_program;
+use crate::platform::swc::render_program;
 use crate::public::Config;
 use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
 use super::collect_decls;
-use super::parse_program;
 use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
@@ -132,26 +129,4 @@ fn get_env(config_env: &HashMap<String, String>) -> HashMap<JsWord, JsWord> {
     );
   }
   return env;
-}
-
-pub fn render_program(
-  module: &Program,
-  cm: Arc<SourceMap>,
-) -> String {
-  let mut buf = vec![];
-  let writer = Box::new(JsWriter::new(cm.clone(), "\n", &mut buf, None));
-
-  let mut config = SWCConfig::default();
-  config.minify = true;
-
-  let mut emitter = Emitter {
-    cfg: config,
-    comments: None,
-    cm: cm.clone(),
-    wr: writer,
-  };
-
-  emitter.emit_program(&module).unwrap();
-
-  return String::from_utf8(buf).unwrap();
 }

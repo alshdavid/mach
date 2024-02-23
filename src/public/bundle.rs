@@ -1,5 +1,7 @@
-use std::collections::{HashMap, HashSet};
-use std::path::{Path, PathBuf};
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::path::Path;
+use std::path::PathBuf;
 
 use super::ExportSymbol;
 
@@ -11,12 +13,18 @@ pub struct Bundle {
 }
 
 impl Bundle {
-  pub fn insert_export_symbol(&mut self, asset_id: &Path, export_symbol: ExportSymbol) {
+  pub fn insert_export_symbol(
+    &mut self,
+    asset_id: &Path,
+    export_symbol: ExportSymbol,
+  ) {
     if let Some(export_symbols) = self.export_symbols.get_mut(asset_id) {
       export_symbols.insert(export_symbol);
     } else {
       let export_symbols = HashSet::<ExportSymbol>::from([export_symbol]);
-      self.export_symbols.insert(asset_id.to_path_buf(), export_symbols);
+      self
+        .export_symbols
+        .insert(asset_id.to_path_buf(), export_symbols);
     }
   }
 }
