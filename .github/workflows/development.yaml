@@ -48,12 +48,13 @@ jobs:
 
   publish-github-release:
     runs-on: ubuntu-latest
-    needs: [macos-arm64, macos-amd64]
+    needs: [generate-tag, macos-arm64, macos-amd64]
     steps:
       - uses: actions/download-artifact@v4
       - name: Create Github Release
         run: |
           ls -l
+          ls -l generate-tag.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
