@@ -40,8 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -76,8 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -113,8 +111,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -148,8 +145,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -190,8 +186,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -225,8 +220,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-          with: 
-            path: .release_tag
+        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
