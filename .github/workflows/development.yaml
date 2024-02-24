@@ -54,7 +54,7 @@ jobs:
       - name: Create Github Release
         run: |
           ls -l
-          ls -l generate-tag.txt
+          ls -l release-tag.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
