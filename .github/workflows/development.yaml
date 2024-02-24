@@ -249,19 +249,15 @@ jobs:
         run: |
           TAG=$(cat release_tag.txt/release_tag.txt)
 
-          ls -l
-          echo asdsa
-          ls -l linux-amd64.tar.gz
-
           gh release create $TAG --draft --notes "Automatically built binaries"
           gh release edit $TAG --prerelease
 
-          gh release upload $TAG linux-amd64.tar.gz/linux-amd64.tar.gz
-          gh release upload $TAG linux-arm64.tar.gz/linux-arm64.tar.gz
-          gh release upload $TAG macos-amd6.tar.gz/macos-amd6.tar.gz
-          gh release upload $TAG macos-arm64.tar.gz/macos-arm64.tar.gz
-          gh release upload $TAG windows-amd64.tar.gz/windows-amd64.tar.gz
-          gh release upload $TAG windows-arm64.tar.gz/windows-arm64.tar.gz
+          gh release upload $TAG linux-amd64.tar.gz/mach-linux-amd64.tar.gz
+          gh release upload $TAG linux-arm64.tar.gz/mach-linux-arm64.tar.gz
+          gh release upload $TAG macos-amd6.tar.gz/mach-macos-amd6.tar.gz
+          gh release upload $TAG macos-arm64.tar.gz/mach-macos-arm64.tar.gz
+          gh release upload $TAG windows-amd64.tar.gz/mach-windows-amd64.tar.gz
+          gh release upload $TAG windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
           gh release edit $TAG --draft=false
         env:
