@@ -80,12 +80,13 @@ jobs:
         run: |
           npm install -g npm pnpm
           pnpm install
-          sudo apt-get install gcc-aarch64-linux-gnu
+          sudo apt-get install gcc-aarch64-linux-gnu build-essential
           rustup target add aarch64-unknown-linux-gnu
           aarch64-linux-gnu-gcc --version
 
       - name: Build
         run: |
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
           export CC=aarch64-linux-gnu-gcc
           node .github/scripts/run.mjs build --release --target aarch64-unknown-linux-gnu
 
