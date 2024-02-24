@@ -23,21 +23,27 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Setup Dependencies
         run: |
-          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
           npm install -g npm pnpm
+          pnpm install
+          rustup target add x86_64-unknown-linux-gnu
 
       - name: Build
         run: |
-          rustup target add x86_64-unknown-linux-gnu
-          cargo build --release --target x86_64-unknown-linux-gnu
+          pnpm run build --release --target x86_64-unknown-linux-gnu
+          cd target/linux-amd64
+          mv release mach
+          tar -czvf mach-linux-amd64.tar.gz mach
 
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.job }}
-          path: target/x86_64-unknown-linux-gnu/release/mach
+          path: target/linux-amd64/mach-linux-amd64.tar.gz
           if-no-files-found: error
           retention-days: 1
       
