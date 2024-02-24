@@ -4,6 +4,9 @@
   "main": "lib/index.js",
   "types": "types/index.d.js",
   "bin": "./bin/bin.cmd",
+  "mach": {
+    "bin": "workspace"
+  },
   "scripts": {
     "postinstall": "node ./_scripts/postinstall/postinstall.mjs",
     "prepack": "node ./_scripts/prepack/prepack.mjs"
