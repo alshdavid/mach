@@ -37,10 +37,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { name: release_tag.txt }
       - run: |
-          ls -l
-          ls -l release_tag.txt
-          ls -l release_tag.txt/release_tag.txt
-          cat release_tag.txt/release_tag.txt/release_tag.txt
+          cat release_tag.txt
 
   linux-amd64:
     runs-on: ubuntu-latest
