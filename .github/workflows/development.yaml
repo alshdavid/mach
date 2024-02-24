@@ -12,7 +12,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - name: Test
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Generate
         run: |
           echo "dev.${GITHUB_SHA::12}" > .release_tag
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
@@ -48,7 +48,7 @@ jobs:
 
       - name: Setup Dependencies
         run: |
-          cat .release_tag
+          ls -l .release_tag
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
@@ -110,7 +110,7 @@ jobs:
     runs-on: macos-13
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
@@ -143,7 +143,7 @@ jobs:
     runs-on: macos-13
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
@@ -183,7 +183,7 @@ jobs:
     runs-on: windows-latest
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
@@ -216,7 +216,7 @@ jobs:
     runs-on: windows-latest
     needs: [test, generate-tag]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { path: .release_tag }
       - uses: actions/setup-node@v4
