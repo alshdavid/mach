@@ -249,6 +249,8 @@ jobs:
         run: |
           TAG=$(cat release_tag.txt/release_tag.txt)
 
+          ls -l
+
           gh release create $TAG --draft --notes "Automatically built binaries"
           gh release edit $TAG --prerelease
 
