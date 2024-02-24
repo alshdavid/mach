@@ -1,0 +1,12 @@
+{
+  "name": "@workspace/root",
+  "private": true,
+  "scripts": {
+    "build": "node .github/scripts/run.mjs build",
+    "run": "node .github/scripts/run.mjs run",
+    "fmt": "node .github/scripts/run.mjs fmt",
+    "test": "node .github/scripts/run.mjs test",
+    "serve-fixture": "node .github/scripts/run.mjs serve-fixture",
+    "build-fixture": "node .github/scripts/run.mjs build-fixture"
+  }
+}

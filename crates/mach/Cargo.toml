@@ -3,10 +3,6 @@ name = "mach"
 version = "0.0.1"
 edition = "2021"
 
-[profile.release-lto]
-inherits = "release"
-lto = true
-
 [dependencies]
 glob-match = "0.2.1"
 normalize-path = "0.2.1"

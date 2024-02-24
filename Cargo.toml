@@ -4,3 +4,7 @@ resolver = "1"
 members = [
     "crates/*",
 ]
+
+[profile.release-lto]
+inherits = "release"
+lto = true
