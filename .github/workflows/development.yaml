@@ -25,8 +25,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate
         run: |
-          echo "dev.${GITHUB_SHA::12}" > .release_tag
-          cat .release_tag
+          echo "dev.${GITHUB_SHA::12}" > release_tag.txt
+          cat release_tag.txt
 
       - uses: actions/upload-artifact@v4
         with:
