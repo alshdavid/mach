@@ -1,8 +1,8 @@
 name: Compile and Publish
-on:
-  push:
-    branches:
-      - development
+# on:
+#   push:
+#     branches:
+#       - development
 
 concurrency:
   group: ${{ github.ref }}
@@ -23,7 +23,7 @@ jobs:
   generate-tag:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "$(date -u +"%Y-%m-%d")_${GITHUB_SHA::6}" > release_tag.txt; cat release_tag.txt
+      - run: echo "0.0.1-development.0" > release_tag.txt; cat release_tag.txt
       - uses: actions/upload-artifact@v4
         with:
           name: release_tag.txt
