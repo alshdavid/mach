@@ -254,7 +254,7 @@ jobs:
 
           gh release upload $TAG linux-amd64.tar.gz/mach-linux-amd64.tar.gz
           gh release upload $TAG linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-          gh release upload $TAG macos-amd6.tar.gz/mach-macos-amd6.tar.gz
+          gh release upload $TAG macos-amd64.tar.gz/mach-macos-amd64.tar.gz
           gh release upload $TAG macos-arm64.tar.gz/mach-macos-arm64.tar.gz
           gh release upload $TAG windows-amd64.tar.gz/mach-windows-amd64.tar.gz
           gh release upload $TAG windows-arm64.tar.gz/mach-windows-arm64.tar.gz
