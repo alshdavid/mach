@@ -9,10 +9,18 @@ on:
         description: 'Prerelease Build'
         required: true
         type: boolean
+      publish-bin:
+        description: 'Publish Binaries'
+        required: true
+        type: boolean
       bin-version:
         description: 'Bin Version'
         required: true
         type: string
+      publish-npm:
+        description: 'Publish NPM'
+        required: true
+        type: boolean
       npm-version:
         description: 'NPM Version'
         required: true
