@@ -1,11 +1,10 @@
 {
   "name": "@alshdavid/mach",
   "version": "0.0.0",
-  "main": "index.js",
-  "types": "index.d.js",
-  "bin": "./index.js",
-  "bin2": "./mach/bin/mach",
+  "main": "lib/index.js",
+  "types": "types/index.d.js",
+  "bin": "./bin/bin.cmd",
   "scripts": {
-    "install": "node ./postinstall.js"
+    "postinstall": "node ./_postinstall/postinstall.mjs"
   }
 }
