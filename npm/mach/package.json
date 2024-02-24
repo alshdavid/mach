@@ -5,6 +5,6 @@
   "types": "index.d.js",
   "bin": "./foo",
   "scripts": {
-    "preinstall": "node ./postinstall.js"
+    "install": "node ./postinstall.js"
   }
 }

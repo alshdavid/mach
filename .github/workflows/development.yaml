@@ -250,6 +250,8 @@ jobs:
           TAG=$(cat release_tag.txt/release_tag.txt)
 
           ls -l
+          echo asdsa
+          ls -l linux-amd64.tar.gz
 
           gh release create $TAG --draft --notes "Automatically built binaries"
           gh release edit $TAG --prerelease
