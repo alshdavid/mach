@@ -276,7 +276,7 @@ jobs:
             exit 1
           fi
 
-          cd npm/mack
+          cd npm/mach
           echo $NPM_VERSION > _scripts/prepack/npm_version.txt
           echo $NPM_BIN_TARGET > _scripts/postinstall/npm-bin-target.txt
           pnpm pack
