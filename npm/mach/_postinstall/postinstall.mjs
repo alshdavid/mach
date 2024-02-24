@@ -5,12 +5,11 @@ import * as url from "node:url";
 import * as child_process from "node:child_process";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, './package.json'), 'utf8'))
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'))
 
 const BUILD_TAG = '{{BUILD_TAG}}'
 
 if (packageJson.version === '0.0.0' || process.env.MACH_SKIP_INSTALL === 'true') {
-  console.log('skip download')
   process.exit(0) 
 }
 
