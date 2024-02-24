@@ -22,16 +22,11 @@ jobs:
   generate-tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate
-        run: |
-          echo "dev.${GITHUB_SHA::12}" > release_tag.txt
-          cat release_tag.txt
-
+        run: echo "dev.${GITHUB_SHA::12}" > release_tag.txt; cat release_tag.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: release_tag
-          path: release_tag.txt
+          name: release_tag.txt
+          path: .
           if-no-files-found: error
           retention-days: 1
 
