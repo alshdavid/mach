@@ -152,7 +152,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ github.job }}
-          path: target/aarch64-apple-darwin/release/mach
+          path: target/macos-arm64/mach-macos-arm64.tar.gz
           if-no-files-found: error
           retention-days: 1
 
