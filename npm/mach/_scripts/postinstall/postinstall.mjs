@@ -5,11 +5,12 @@ import * as url from "node:url";
 import * as child_process from "node:child_process";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'))
 
-const BUILD_TAG = '0.0.0-bin-development.0'
+const BUILD_TAG = fs.existsSync(path.join(__dirname, 'bin_version.txt')) 
+  ? fs.readFileSync(path.join(__dirname, 'bin_version.txt'), 'utf8') 
+  : ''
 
-if (packageJson.version === '0.0.0' || process.env.MACH_SKIP_INSTALL === 'true') {
+if (BUILD_TAG == '' || process.env.MACH_SKIP_INSTALL === 'true') {
   process.exit(0) 
 }
 
@@ -30,16 +31,16 @@ if (!ARCH || !OS) {
 }
 
 const BIN_URL = `https://github.com/alshdavid/mach/releases/download/${BUILD_TAG}/mach-${OS}-${ARCH}.tar.gz`;
-const DOWNLOAD_TO = path.join(__dirname, "..", "mach.tar.gz")
+const DOWNLOAD_TO = path.join(__dirname, "..", '..', "mach.tar.gz")
 
 if (process.platform === 'win32') {
-  fs.appendFileSync(path.join(__dirname, '..', 'bin.cmd'), fs.readFileSync(path.join(__dirname, 'bin.cmd')))
+  fs.appendFileSync(path.join(__dirname, '..', '..', 'bin', 'bin.cmd'), fs.readFileSync(path.join(__dirname, 'bin.cmd')))
 } else {
-  fs.appendFileSync(path.join(__dirname, '..', 'bin.cmd'), fs.readFileSync(path.join(__dirname, 'bin.bash')))
+  fs.appendFileSync(path.join(__dirname, '..', '..', 'bin', 'bin.cmd'), fs.readFileSync(path.join(__dirname, 'bin.bash')))
 }
 
-fs.rmSync(path.join(__dirname, "..", "mach"), { force: true });
-fs.rmSync(path.join(__dirname, "..", "mach.tar.gz"), { force: true });
+fs.rmSync(path.join(__dirname, "..", '..', "mach"), { force: true });
+fs.rmSync(path.join(__dirname, "..", '..', "mach.tar.gz"), { force: true });
 
 function download_file_legacy(target_url, download_to) {
   let buffer = undefined
