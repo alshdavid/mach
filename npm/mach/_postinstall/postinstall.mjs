@@ -5,7 +5,7 @@ import * as url from "node:url";
 import * as child_process from "node:child_process";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-const packageJson = require('./package.json')
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, './package.json'), 'utf8'))
 
 const BUILD_TAG = '{{BUILD_TAG}}'
 
