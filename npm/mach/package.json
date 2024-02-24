@@ -5,7 +5,7 @@
   "types": "types/index.d.js",
   "bin": "./bin/bin.cmd",
   "mach": {
-    "bin": "workspace"
+    "bin": ""
   },
   "scripts": {
     "postinstall": "node ./_scripts/postinstall/postinstall.mjs",
