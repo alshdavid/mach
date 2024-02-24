@@ -6,9 +6,9 @@ Mach is a zero configuration bundler for web applications.
 
 ### Current Status
 
-#### 24 Feb 2024
+#### 25 Feb 2024
 
-The latest branch `0.1.0` reworks a large portion of the bundler internals, adding support for JS plugins, changing the browser runtime code, and adds many other features.
+The latest branch `development` reworks a large portion of the bundler internals, adding support for JS plugins, changing the browser runtime code, and adds many other features.
 
 It will be merged as soon as it produces a working bundle.
 
