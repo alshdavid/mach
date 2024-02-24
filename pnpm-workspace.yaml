@@ -1,4 +1,5 @@
 packages:
-  - 'fixtures/*'
-  - 'packages/*'
-  - 'src/adapters/node_js/js'
+  - '.github/scripts'
+  - 'testing/fixtures/*'
+  - 'npm/*'
+  - 'crates/mach/src/adapters/node_js/js'

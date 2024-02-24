@@ -6,8 +6,9 @@ build/
 publish/
 temp/
 target/
+.target/
 .parcel-cache/
-pnpm-lock.yaml
+/release_tag.txt
 
 # dependencies
 node_modules/

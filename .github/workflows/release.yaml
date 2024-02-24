@@ -1,12 +1,14 @@
-name: Publish
+name: Release
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 on: 
   workflow_dispatch:
-    branches:
-      - main
-      - development
     inputs:
-      prerelease:
-        description: 'Prerelease'
+      publish-npm:
+        description: 'Publish NPM'
         required: true
         default: false
         type: boolean
@@ -15,49 +17,54 @@ on:
         required: true
         default: false
         type: boolean
-      bin-version:
-        description: 'Bin Version'
-        required: false
-        default: ''
-        type: string
-      publish-npm:
-        description: 'Publish NPM'
-        required: true
-        default: false
-        type: boolean
-      npm-version:
-        description: 'NPM Version'
-        required: false
-        default: ''
-        type: string
-      npm-bin-target:
-        description: 'NPM Bin Target Version'
-        required: false
-        default: ''
-        type: string
 
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+env:
+  PUBLISH_NPM: ${{ inputs.publish-npm }}
+  PUBLISH_BIN: ${{ inputs.publish-bin }}
 
 jobs:
-  test:
+  vars:
+    name: Generate Variables
     runs-on: ubuntu-latest
+    outputs:
+      BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
+      NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
+      NEXT_NPM_VERSION: ${{ steps.step1.outputs.NEXT_NPM_VERSION }}
+      NEXT_BIN_VERSION: ${{ steps.step1.outputs.NEXT_BIN_VERSION }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - name: Test
+      - id: step1
         run: |
-          node .github/scripts/run.mjs test
+          npm install -g pnpm && pnpm i
+          
+          export BRANCH_NAME=${GITHUB_REF##*/}
+
+          export NPM_TAG=$BRANCH_NAME
+          if [ $NPM_TAG = "main" ]; then
+            export NPM_TAG="latest"
+          fi
+
+          if [ "$PUBLISH_NPM" = "true" ]; then
+            NEXT_NPM_VERSION="$(node .github/scripts/ci/next-npm-version.mjs)"
+            echo "NEXT_NPM_VERSION=$NEXT_NPM_VERSION" >> $GITHUB_OUTPUT
+            echo NEXT_NPM_VERSION = $NEXT_NPM_VERSION
+          fi
+
+          if [ "$PUBLISH_BIN" = "true" ]; then
+            NEXT_BIN_VERSION="$(node .github/scripts/ci/next-github-release.mjs)"
+            echo "NEXT_BIN_VERSION=$NEXT_BIN_VERSION" >> $GITHUB_OUTPUT
+            echo NEXT_BIN_VERSION = $NEXT_BIN_VERSION
+          fi
+
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
 
   linux-amd64:
+    name: "Build: linux-amd64"
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -68,6 +75,8 @@ jobs:
           rustup target add x86_64-unknown-linux-gnu
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-unknown-linux-gnu
 
@@ -83,14 +92,13 @@ jobs:
           path: target/linux-amd64/mach-linux-amd64.tar.gz
           if-no-files-found: error
           retention-days: 1
-      
+
   linux-arm64:
+    name: "Build: linux-arm64"
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -103,6 +111,8 @@ jobs:
           aarch64-linux-gnu-gcc --version
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           export CC=aarch64-linux-gnu-gcc
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-unknown-linux-gnu
@@ -121,12 +131,11 @@ jobs:
           retention-days: 1
 
   macos-amd64:
+    name: "Build: macos-amd64"
     runs-on: macos-13
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -137,6 +146,8 @@ jobs:
           rustup target add x86_64-apple-darwin
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-apple-darwin
 
@@ -154,12 +165,11 @@ jobs:
           retention-days: 1
       
   macos-arm64:
+    name: "Build: macos-arm64"
     runs-on: macos-13
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -170,6 +180,8 @@ jobs:
           rustup target add aarch64-apple-darwin
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-apple-darwin
 
@@ -194,12 +206,11 @@ jobs:
           retention-days: 1
 
   windows-amd64:
+    name: "Build: windows-amd64"
     runs-on: windows-latest
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -210,6 +221,8 @@ jobs:
           rustup target add x86_64-pc-windows-msvc
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-pc-windows-msvc
 
@@ -227,12 +240,11 @@ jobs:
           retention-days: 1
 
   windows-arm64:
+    name: "Build: windows-arm64"
     runs-on: windows-latest
-    needs: [test]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -243,6 +255,8 @@ jobs:
           rustup target add aarch64-pc-windows-msvc
 
       - name: Build
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
 
@@ -259,37 +273,36 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  build-npm-package:
+  npm-package:
+    name: "Build: NPM"
     runs-on: ubuntu-latest
-    needs: [test, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-
-      - name: Setup Dependencies
+      - name: Build NPM
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+          NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
+          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
+          
           npm install -g npm pnpm
           pnpm install
 
-      - name: Build
-        run: |
           node .github/scripts/run.mjs build
 
-      - name: Package
-        run: |
-          cd npm/mack
-          echo $NPM_VERSION > _scripts/prepack/npm_version.txt
-          echo $BIN_VERSION > _scripts/postinstall/bin_version.txt
-          pnpm pack
+          echo "NPM_VERSION = $NPM_VERSION"
+          echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
+          cd npm/mach
+          node ./_scripts/prepack/prepack.mjs
+          rm -rf ./_scripts/prepack
+          npm pack
           mv *.tgz ../../mach-npm.tgz
-
-        env:
-          PRERELEASE: ${{ inputs.prerelease }}
-          NPM_VERSION: ${{ inputs.npm-version }}
-          BIN_VERSION: ${{ inputs.bin-version }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -299,28 +312,30 @@ jobs:
           retention-days: 1
 
   publish-github-release:
+    name: "Publish: Binaries"
     runs-on: ubuntu-latest
-    needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
       - name: Publish` Github Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
-          TAG=$BIN_VERSION
-
-          if [ "$PUBLISH_BIN" == "false" ]; then
+          if [ "$PUBLISH_BIN" != "true" ]; then
             echo Skipping publish
             exit 0
           fi
-          if [ "$BIN_VERSION" == "" ]; then
-            echo Skipping publish - No bin version
-            exit 0
-          fi
-
 
           gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
-          if [ "$PRERELEASE" == "true" ]; then
+
+          if [ "$BRANCH_NAME" == "main" ]; then
+            gh release edit $BIN_VERSION --title "🚀 Mach"
+          else
             gh release edit $BIN_VERSION --prerelease
+            gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
           gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
@@ -331,24 +346,31 @@ jobs:
           gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
           gh release edit $BIN_VERSION --draft=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRERELEASE: ${{ inputs.prerelease }}
-          PUBLISH_BIN: ${{ inputs.publish-bin }}
-          BIN_VERSION: ${{ inputs.bin-version }}
 
   publish-npm-package:
+    name: "Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
       - name: Publish NPM Package
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
-          
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          PRERELEASE: ${{ inputs.prerelease }}
-          NPM_VERSION: ${{ inputs.npm-version }}
+          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+        run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
+
+          npm install -g npm pnpm
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
+
+          if [ "$BRANCH_NAME" == "main" ]; then
+            echo Publishing latest tag
+            npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
+          else
+            echo Publishing $BRANCH_NAME tag
+            npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
+          fi

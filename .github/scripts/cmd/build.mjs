@@ -17,12 +17,13 @@ export function main(args) {
     child_process.execSync(`pnpm install`, { cwd: Paths.Root, stdio: 'inherit' })
   }
 
+  const BIN_VERSION = process.env.BIN_VERSION || ''
   const PROFILE = args.profile ? args.profile : args.release ? 'release' : 'debug'
   const TARGET = args.target
   const TARGET_DIR = target_map[TARGET] || TARGET
 
   if (TARGET) {
-    console.table({ PROFILE, TARGET, ARGS: args._raw, ARGV: process.argv.join(' ') })
+    console.table({ PROFILE, TARGET, BIN_VERSION, ARGS: args._raw })
   }
 
   const __cargo_output = path.join(Paths.CargoOutput, ...[TARGET, PROFILE].filter(x => x))
@@ -30,6 +31,16 @@ export function main(args) {
   const __output = path.join(Paths.Output, ...[TARGET_DIR, PROFILE].filter(x => x))
 
   fs.rmSync(__output, { force: true, recursive: true })
+
+  if (BIN_VERSION) {
+    console.log("Updating bin version", BIN_VERSION)
+    const [branch, buildno] = BIN_VERSION.split('.')
+    const verno = branch === 'main' ? `0.0.${buildno}` : `0.0.${buildno}-${branch}`
+    console.log(verno)
+    const toml = fs.readFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), 'utf8')
+    const updated = toml.replace('version = "0.0.0-local"', `version = "${verno}"`)
+    fs.writeFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), updated, 'utf8')
+  }
 
   child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.Root, stdio: 'inherit' })
 
