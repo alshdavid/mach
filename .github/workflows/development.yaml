@@ -30,8 +30,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: .release_tag
-          path: .release_tag
+          name: release_tag.txt
+          path: release_tag.txt
           if-no-files-found: error
           retention-days: 1
 
@@ -47,7 +47,9 @@ jobs:
 
       - name: Setup Dependencies
         run: |
-          ls -l .release_tag
+          ls -l
+          ls -l release_tag.txt
+          cat release_tag.txt
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
