@@ -26,9 +26,20 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: release_tag.txt
-          path: .
+          path: release_tag.txt
           if-no-files-found: error
           retention-days: 1
+
+  read-tag:
+    runs-on: ubuntu-latest
+    needs: [generate-tag]
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: .release_tag }
+      - run: |
+          ls -l
+          ls -l release_tag.ext
+          cat release_tag.txt/release_tag.txt
 
   linux-amd64:
     runs-on: ubuntu-latest
@@ -42,9 +53,6 @@ jobs:
 
       - name: Setup Dependencies
         run: |
-          ls -l
-          ls -l release_tag
-          cat release_tag/release_tag.txt
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
