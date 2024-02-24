@@ -22,7 +22,7 @@ jobs:
   generate-tag:
     runs-on: ubuntu-latest
     steps:
-        run: echo "dev.${GITHUB_SHA::12}" > release_tag.txt; cat release_tag.txt
+      - run: echo "dev.${GITHUB_SHA::12}" > release_tag.txt; cat release_tag.txt
       - uses: actions/upload-artifact@v4
         with:
           name: release_tag.txt
