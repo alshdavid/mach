@@ -13,6 +13,6 @@ if (!NPM_VERSION || !NPM_BIN_TARGET) {
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'))
 
 packageJson.version = process.env.NPM_VERSION
-packageJson.machBinVersion = process.env.NPM_BIN_TARGET
+packageJson.mach = { bin: process.env.NPM_BIN_TARGET }
 
 fs.writeFileSync(path.join(__dirname, '..', '..', 'package.json'), JSON.stringify(packageJson, null, 2), 'utf8')
