@@ -1,8 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as http from "node:https";
 import * as url from "node:url";
-import * as child_process from "node:child_process";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 

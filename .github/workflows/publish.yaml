@@ -261,7 +261,7 @@ jobs:
 
   build-npm-package:
     runs-on: ubuntu-latest
-    needs: [test, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [test]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -280,16 +280,27 @@ jobs:
 
       - name: Package
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit
+          fi
+          if [ "$NPM_VERSION" == "" ]; then
+            exit 1
+          fi
+          if [ "$NPM_BIN_TARGET" == "" ]; then
+            exit 1
+          fi
+
           cd npm/mack
           echo $NPM_VERSION > _scripts/prepack/npm_version.txt
-          echo $BIN_VERSION > _scripts/postinstall/bin_version.txt
+          echo $NPM_BIN_TARGET > _scripts/postinstall/npm-bin-target.txt
           pnpm pack
           mv *.tgz ../../mach-npm.tgz
 
         env:
           PRERELEASE: ${{ inputs.prerelease }}
           NPM_VERSION: ${{ inputs.npm-version }}
-          BIN_VERSION: ${{ inputs.bin-version }}
+          NPM_BIN_TARGET: ${{ inputs.npm-bin-target }}
+          PUBLISH_NPM: ${{ inputs.publish-npm }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -308,15 +319,14 @@ jobs:
         run: |
           TAG=$BIN_VERSION
 
-          if [ "$PUBLISH_BIN" == "false" ]; then
+          if [ "$PUBLISH_BIN" != "true" ]; then
             echo Skipping publish
             exit 0
           fi
           if [ "$BIN_VERSION" == "" ]; then
-            echo Skipping publish - No bin version
-            exit 0
+            echo Missing bin version
+            exit 1
           fi
-
 
           gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
           if [ "$PRERELEASE" == "true" ]; then
@@ -339,16 +349,34 @@ jobs:
 
   publish-npm-package:
     runs-on: ubuntu-latest
-    needs: [linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [build-npm-package]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
       - name: Publish NPM Package
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit
+          fi
+          if [ "$NPM_VERSION" == "" ]; then
+            exit 1
+          fi
+          if [ "$NPM_BIN_TARGET" == "" ]; then
+            exit 1
+          fi
+
+          npm install -g npm pnpm
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
+
+          if [ "$PRERELEASE" == "true" ]; then
+            pnpm publish --tag development --access=public ./mach-npm.tgz/mach-npm.tgz
+          else
+            pnpm publish --access=public ./mach-npm.tgz/mach-npm.tgz
+          fi
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           PRERELEASE: ${{ inputs.prerelease }}
           NPM_VERSION: ${{ inputs.npm-version }}
+          PUBLISH_NPM: ${{ inputs.publish-npm }}
