@@ -12,6 +12,7 @@ on:
       publish-bin:
         description: 'Publish Binaries'
         required: true
+        default: false
         type: boolean
       bin-version:
         description: 'Bin Version'
@@ -20,6 +21,7 @@ on:
       publish-npm:
         description: 'Publish NPM'
         required: true
+        default: false
         type: boolean
       npm-version:
         description: 'NPM Version'
