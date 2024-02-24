@@ -356,9 +356,9 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
           if [ "$PRERELEASE" == "true" ]; then
-            pnpm publish --tag development --access=public ./mach-npm.tgz/mach-npm.tgz
+            pnpm publish --tag development --access=public ./mach-npm.tgz/mach-npm.tgz --no-git-checks
           else
-            pnpm publish --access=public ./mach-npm.tgz/mach-npm.tgz
+            pnpm publish --access=public ./mach-npm.tgz/mach-npm.tgz --no-git-checks
           fi
           
         env:
