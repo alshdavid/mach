@@ -1,0 +1,136 @@
+name: Compile and Publish
+on:
+  push:
+    branches:
+      - nightly
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Test
+        run: |
+          cargo test
+
+  linux-amd64:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Dependencies
+        run: |
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          npm install -g npm pnpm
+
+      - name: Build
+        run: |
+          rustup target add x86_64-unknown-linux-gnu
+          cargo build --release --target x86_64-unknown-linux-gnu
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.job }}
+          path: target/x86_64-unknown-linux-gnu/release/mach
+          if-no-files-found: error
+          retention-days: 1
+      
+  # linux-arm64:
+  #   runs-on: ubuntu-latest
+  #   needs: [test]
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Build
+  #       run: |
+  #         sudo apt-get install gcc-aarch64-linux-gnu
+  #         rustup target add aarch64-unknown-linux-gnu
+  #         cargo build \
+  #           --release \
+  #           --target aarch64-unknown-linux-gnu \
+  #           --config target.aarch64-unknown-linux-gnu.linker=\"aarch64-linux-gnu-gcc\"
+      
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/aarch64-unknown-linux-gnu/release/mach
+  #         if-no-files-found: error
+  #         retention-days: 1
+
+  # macos-amd64:
+  #   runs-on: macos-13
+  #   needs: [test]
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Build
+  #       run: |
+  #         rustup target add x86_64-apple-darwin
+  #         cargo build --release --target x86_64-apple-darwin
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/x86_64-apple-darwin/release/mach
+  #         if-no-files-found: error
+  #         retention-days: 1
+      
+  # macos-arm64:
+  #   runs-on: macos-13
+  #   needs: [test]
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Build
+  #       run: |
+  #         rustup target add aarch64-apple-darwin
+  #         cargo build --release --target aarch64-apple-darwin
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/aarch64-apple-darwin/release/mach
+  #         if-no-files-found: error
+  #         retention-days: 1
+
+  # windows-amd64:
+  #   runs-on: windows-latest
+  #   needs: [test]
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Build
+  #       run: |
+  #         rustup target add x86_64-pc-windows-msvc
+  #         cargo build --release --target x86_64-pc-windows-msvc
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/x86_64-pc-windows-msvc/release/mach.exe
+  #         if-no-files-found: error
+  #         retention-days: 1
+
+  # windows-arm64:
+  #   runs-on: windows-latest
+  #   needs: [test]
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Build
+  #       run: |
+  #         rustup target add aarch64-pc-windows-msvc
+  #         cargo build --release --target aarch64-pc-windows-msvc
+
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/aarch64-pc-windows-msvc/release/mach.exe
+  #         if-no-files-found: error
+  #         retention-days: 1
