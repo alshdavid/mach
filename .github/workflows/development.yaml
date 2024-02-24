@@ -39,7 +39,8 @@ jobs:
       - run: |
           ls -l
           ls -l release_tag.txt
-          cat release_tag.txt/release_tag.txt
+          ls -l release_tag.txt/release_tag.txt
+          cat release_tag.txt/release_tag.txt/release_tag.txt
 
   linux-amd64:
     runs-on: ubuntu-latest
