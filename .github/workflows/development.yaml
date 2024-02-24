@@ -35,7 +35,7 @@ jobs:
     needs: [generate-tag]
     steps:
       - uses: actions/download-artifact@v4
-        with: { path: release_tag.txt }
+        with: { name: release_tag.txt }
       - run: |
           ls -l
           ls -l release_tag.txt
