@@ -10,9 +10,19 @@ pub struct Bundle {
   pub export_symbols: HashMap<PathBuf, HashSet<ExportSymbol>>,
   pub assets: HashSet<PathBuf>,
   pub entry_asset: PathBuf,
+  pub kind: String,
 }
 
 impl Bundle {
+  pub fn new(kind: &str) -> Self {
+    return Self {
+      export_symbols: HashMap::new(),
+      assets: HashSet::new(),
+      entry_asset: PathBuf::new(),
+      kind: kind.to_string(),
+    };
+  }
+
   pub fn insert_export_symbol(
     &mut self,
     asset_id: &Path,

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::public;
@@ -18,6 +16,9 @@ pub fn bundle(
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
 ) -> Result<(), String> {
+  let mut css_bundle = Bundle::new("css");
+  let mut js_bundle = Bundle::new("js");
+
   // Create one bundle for now
   let (_, entry_asset_id) = *asset_graph
     .get_dependencies(&ENTRY_ASSET)
@@ -25,16 +26,19 @@ pub fn bundle(
     .get(0)
     .unwrap();
 
-  let mut bundle = Bundle {
-    export_symbols: HashMap::new(),
-    assets: HashSet::new(),
-    entry_asset: entry_asset_id.clone(),
-  };
+  js_bundle.entry_asset = entry_asset_id.clone();
 
   let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);
 
   while let Some(asset_id) = q.pop() {
-    bundle.assets.insert(asset_id.clone());
+    let current_asset = asset_map.get(&asset_id).unwrap();
+    if current_asset.kind == "js" {
+      js_bundle.assets.insert(asset_id.clone());
+    } else if current_asset.kind == "css" {
+      css_bundle.assets.insert(asset_id.clone());
+    } else {
+      continue;
+    }
 
     let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
       continue;
@@ -53,7 +57,7 @@ pub fn bundle(
             for export in &asset.exports {
               if let ExportSymbol::Named(export_name) = &export {
                 if export_name == name {
-                  bundle.insert_export_symbol(asset_id, export.clone());
+                  js_bundle.insert_export_symbol(asset_id, export.clone());
                   break 'exports;
                 }
               }
@@ -62,13 +66,13 @@ pub fn bundle(
           }
           public::ImportSymbolType::Unnamed => {
             for export in &asset.exports {
-              bundle.insert_export_symbol(asset_id, export.clone());
+              js_bundle.insert_export_symbol(asset_id, export.clone());
             }
           }
           public::ImportSymbolType::Default => 'exports: {
             for export in &asset.exports {
               if let ExportSymbol::Default = &export {
-                bundle.insert_export_symbol(asset_id, export.clone());
+                js_bundle.insert_export_symbol(asset_id, export.clone());
                 break 'exports;
               }
             }
@@ -76,22 +80,22 @@ pub fn bundle(
           }
           public::ImportSymbolType::Namespace(_) => {
             for export in &asset.exports {
-              bundle.insert_export_symbol(asset_id, export.clone());
+              js_bundle.insert_export_symbol(asset_id, export.clone());
             }
           }
           public::ImportSymbolType::Reexport => {
             for export in &asset.exports {
-              bundle.insert_export_symbol(asset_id, export.clone());
+              js_bundle.insert_export_symbol(asset_id, export.clone());
             }
           }
           public::ImportSymbolType::Dynamic => {
             for export in &asset.exports {
-              bundle.insert_export_symbol(asset_id, export.clone());
+              js_bundle.insert_export_symbol(asset_id, export.clone());
             }
           }
           public::ImportSymbolType::Commonjs => {
             for export in &asset.exports {
-              bundle.insert_export_symbol(asset_id, export.clone());
+              js_bundle.insert_export_symbol(asset_id, export.clone());
             }
           }
         };
@@ -99,6 +103,9 @@ pub fn bundle(
     }
   }
 
-  bundles.push(bundle);
+  bundles.push(js_bundle);
+  if css_bundle.assets.len() != 0 {
+    bundles.push(css_bundle);
+  }
   return Ok(());
 }

@@ -32,7 +32,7 @@ impl Default for Dependency {
       source_path: Default::default(),
       resolve_from: Default::default(),
       imported_symbols: Default::default(),
-      bundle_behavior: BundleBehavior::Inline,
+      bundle_behavior: BundleBehavior::Default,
     }
   }
 }
@@ -72,6 +72,7 @@ pub enum ImportSymbolType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum BundleBehavior {
+  Default,
   Inline,
   Isolated,
 }
