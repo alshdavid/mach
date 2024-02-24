@@ -1,5 +1,16 @@
 name: Compile and Publish
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      bin-version:
+        description: 'Bin Version'
+        required: true
+        type: string
+      npm-version:
+        description: 'NPM Version'
+        required: true
+        type: string
+
 # on:
 #   push:
 #     branches:
