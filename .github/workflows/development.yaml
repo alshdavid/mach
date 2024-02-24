@@ -48,7 +48,7 @@ jobs:
     steps:
       - run: |
           mkdir -p target/macos-amd64
-          echo "dev.${GITHUB_SHA::12}" > target/macos-arm64/macos-amd64.tar.gz
+          echo "dev.${GITHUB_SHA::12}" > target/macos-amd64/macos-amd64.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: macos-amd64.tar.gz
