@@ -56,8 +56,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -89,8 +87,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -125,8 +121,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -158,8 +152,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -198,8 +190,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -231,8 +221,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
@@ -264,8 +252,6 @@ jobs:
     needs: [test]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
