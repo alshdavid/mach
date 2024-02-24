@@ -6,9 +6,8 @@ import * as child_process from "node:child_process";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
-const BUILD_TAG = fs.existsSync(path.join(__dirname, 'npm-bin-target.txt')) 
-  ? fs.readFileSync(path.join(__dirname, 'npm-bin-target.txt'), 'utf8') 
-  : ''
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'))
+const BUILD_TAG = packageJson.machBinVersion
 
 if (BUILD_TAG == '' || process.env.MACH_SKIP_INSTALL === 'true') {
   process.exit(0) 
