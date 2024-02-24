@@ -1,6 +1,9 @@
 name: Publish
 on: 
   workflow_dispatch:
+    branches:
+      - main
+      - development
     inputs:
       prerelease:
         description: 'Prerelease Build'
