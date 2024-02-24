@@ -2,6 +2,10 @@ name: Publish
 on: 
   workflow_dispatch:
     inputs:
+      prerelease:
+        description: 'Prerelease Build'
+        required: true
+        type: boolean
       bin-version:
         description: 'Bin Version'
         required: true
@@ -10,11 +14,6 @@ on:
         description: 'NPM Version'
         required: true
         type: string
-
-# on:
-#   push:
-#     branches:
-#       - development
 
 concurrency:
   group: ${{ github.ref }}
@@ -35,7 +34,9 @@ jobs:
   generate-tag:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "0.0.1-development.0" > release_tag.txt; cat release_tag.txt
+      - run: echo "$BIN_VERSION" > release_tag.txt; cat release_tag.txt
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
       - uses: actions/upload-artifact@v4
         with:
           name: release_tag.txt
@@ -262,8 +263,10 @@ jobs:
           TAG=$(cat release_tag.txt/release_tag.txt)
 
           gh release create $TAG --draft --notes "Automatically built binaries"
-          gh release edit $TAG --prerelease
-
+          if [ "$PRERELEASE" == "true" ]; then
+            gh release edit $TAG --prerelease
+          fi
+          
           gh release upload $TAG linux-amd64.tar.gz/mach-linux-amd64.tar.gz
           gh release upload $TAG linux-arm64.tar.gz/mach-linux-arm64.tar.gz
           gh release upload $TAG macos-amd64.tar.gz/mach-macos-amd64.tar.gz
@@ -274,3 +277,4 @@ jobs:
           gh release edit $TAG --draft=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRERELEASE: ${{ inputs.prerelease }}
