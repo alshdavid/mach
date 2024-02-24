@@ -30,38 +30,38 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  linux-amd64:
-    runs-on: ubuntu-latest
-    needs: [test, generate-tag]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # linux-amd64:
+  #   runs-on: ubuntu-latest
+  #   needs: [test, generate-tag]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with: { name: release_tag.txt }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add x86_64-unknown-linux-gnu
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add x86_64-unknown-linux-gnu
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build --release --target x86_64-unknown-linux-gnu
+  #     - name: Build
+  #       run: |
+  #         node .github/scripts/run.mjs build --release --target x86_64-unknown-linux-gnu
 
-      - name: Package
-        run: |
-          cd target/linux-amd64
-          mv release mach
-          tar -czvf mach-linux-amd64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/linux-amd64
+  #         mv release mach
+  #         tar -czvf mach-linux-amd64.tar.gz mach
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/linux-amd64/mach-linux-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/linux-amd64/mach-linux-amd64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
       
   linux-arm64:
     runs-on: ubuntu-latest
@@ -101,141 +101,141 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  macos-amd64:
-    runs-on: macos-13
-    needs: [test, generate-tag]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # macos-amd64:
+  #   runs-on: macos-13
+  #   needs: [test, generate-tag]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with: { name: release_tag.txt }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add x86_64-apple-darwin
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add x86_64-apple-darwin
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build --release --target x86_64-apple-darwin
+  #     - name: Build
+  #       run: |
+  #         node .github/scripts/run.mjs build --release --target x86_64-apple-darwin
 
-      - name: Package
-        run: |
-          cd target/macos-amd64
-          mv release mach
-          tar -czvf mach-macos-amd64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/macos-amd64
+  #         mv release mach
+  #         tar -czvf mach-macos-amd64.tar.gz mach
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/macos-amd64/mach-macos-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/macos-amd64/mach-macos-amd64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
       
-  macos-arm64:
-    runs-on: macos-13
-    needs: [test, generate-tag]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # macos-arm64:
+  #   runs-on: macos-13
+  #   needs: [test, generate-tag]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with: { name: release_tag.txt }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-apple-darwin
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add aarch64-apple-darwin
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build --release --target aarch64-apple-darwin
+  #     - name: Build
+  #       run: |
+  #         node .github/scripts/run.mjs build --release --target aarch64-apple-darwin
 
-      - name: Package
-        run: |
-          cd target/macos-arm64
-          mv release mach
-          tar -czvf mach-macos-arm64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/macos-arm64
+  #         mv release mach
+  #         tar -czvf mach-macos-arm64.tar.gz mach
       
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/macos-arm64/mach-macos-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/macos-arm64/mach-macos-arm64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/macos-arm64/mach-macos-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/macos-arm64/mach-macos-arm64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-  windows-amd64:
-    runs-on: windows-latest
-    needs: [test, generate-tag]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # windows-amd64:
+  #   runs-on: windows-latest
+  #   needs: [test, generate-tag]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with: { name: release_tag.txt }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add x86_64-pc-windows-msvc
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add x86_64-pc-windows-msvc
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build --release --target x86_64-pc-windows-msvc
+  #     - name: Build
+  #       run: |
+  #         node .github/scripts/run.mjs build --release --target x86_64-pc-windows-msvc
 
-      - name: Package
-        run: |
-          cd target/windows-amd64
-          mv release mach
-          tar -czvf mach-windows-amd64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/windows-amd64
+  #         mv release mach
+  #         tar -czvf mach-windows-amd64.tar.gz mach
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/windows-amd64/mach-windows-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/windows-amd64/mach-windows-amd64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-  windows-arm64:
-    runs-on: windows-latest
-    needs: [test, generate-tag]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: release_tag.txt }
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # windows-arm64:
+  #   runs-on: windows-latest
+  #   needs: [test, generate-tag]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #       with: { name: release_tag.txt }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-pc-windows-msvc
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add aarch64-pc-windows-msvc
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build --release --target aarch64-pc-windows-msvc
+  #     - name: Build
+  #       run: |
+  #         node .github/scripts/run.mjs build --release --target aarch64-pc-windows-msvc
 
-      - name: Package
-        run: |
-          cd target/windows-arm64
-          mv release mach
-          tar -czvf mach-windows-arm64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/windows-arm64
+  #         mv release mach
+  #         tar -czvf mach-windows-arm64.tar.gz mach
       
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: target/windows-arm64/mach-windows-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}
+  #         path: target/windows-arm64/mach-windows-arm64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
