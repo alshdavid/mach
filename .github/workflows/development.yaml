@@ -35,10 +35,10 @@ jobs:
     needs: [generate-tag]
     steps:
       - uses: actions/download-artifact@v4
-        with: { path: .release_tag }
+        with: { path: release_tag.txt }
       - run: |
           ls -l
-          ls -l release_tag.ext
+          ls -l release_tag.txt
           cat release_tag.txt/release_tag.txt
 
   linux-amd64:
@@ -79,8 +79,6 @@ jobs:
     needs: [test, generate-tag]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { path: .release_tag }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
 
