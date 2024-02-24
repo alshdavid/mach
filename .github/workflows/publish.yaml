@@ -318,7 +318,7 @@ jobs:
           cd npm/mach
           echo $NPM_VERSION > _scripts/prepack/npm_version.txt
           echo $NPM_BIN_TARGET > _scripts/postinstall/npm-bin-target.txt
-          pnpm pack
+          npm pack
           mv *.tgz ../../mach-npm.tgz
 
         env:
@@ -357,10 +357,10 @@ jobs:
 
           if [ "$PRERELEASE" == "true" ]; then
             echo Publishing development tag
-            pnpm publish --tag development --access=public ./mach-npm.tgz/mach-npm.tgz --no-git-checks
+            npm publish --access=public --tag=development ./mach-npm.tgz/mach-npm.tgz
           else
             echo Publishing latest tag
-            pnpm publish --access=public ./mach-npm.tgz/mach-npm.tgz --no-git-checks
+            npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
           fi
           
         env:
