@@ -8,6 +8,7 @@ temp/
 target/
 .target/
 .parcel-cache/
+.release_tag
 
 # dependencies
 node_modules/
