@@ -1,7 +1,7 @@
 'use strict'
 
 // A linked list to keep track of recently-used-ness
-const Yallist = require('yallist')
+const Yallist = require('../yallist/yallist')
 
 const MAX = Symbol('max')
 const LENGTH = Symbol('length')
