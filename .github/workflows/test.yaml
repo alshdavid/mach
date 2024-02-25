@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate Variables
         run: |
-          echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "branch_name=test" >> $GITHUB_ENV
           echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_ENV
           echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_ENV
 
