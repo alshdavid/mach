@@ -58,6 +58,7 @@ if (!bin_url) {
 const buffer = await http_get(bin_url)
 
 fs.writeFileSync(DOWNLOAD_TO, Buffer.from(buffer));
+fs.writeFileSync(path.join(__dirname, 'bin_details.txt'), bin_url, 'utf8');
 
 try {
   child_process.execSync(`tar -xzf mach.tar.gz`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })

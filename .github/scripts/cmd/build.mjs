@@ -33,6 +33,7 @@ export function main(args) {
   fs.rmSync(__output, { force: true, recursive: true })
 
   if (BIN_VERSION) {
+    console.log("Updating bin version", BIN_VERSION)
     const toml = fs.readFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), 'utf8')
     const updated = toml.replace('version = "0.0.0-local"', `version = "${BIN_VERSION}"`)
     fs.writeFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), updated, 'utf8')
