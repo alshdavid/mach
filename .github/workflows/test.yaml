@@ -45,8 +45,8 @@ jobs:
           UPDATE_NPM=false
 
           if [ -f sha1.txt ]; then
-            if [ "$(cat sha1.txt" = $NPM_HASH ]; then
-              UPDATE_NPM=false
+            if ! [ "$(cat sha1.txt)" = $NPM_HASH ]; then
+              UPDATE_NPM=true
             fi
           fi
 
