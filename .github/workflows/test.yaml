@@ -25,12 +25,12 @@ jobs:
 
   print-variables:
     runs-on: ubuntu-latest
-    needs: [vars]
+    needs: vars
     steps:
       - uses: actions/checkout@v4
       - name: Print Variables
         run: |
-          echo "${{ vars.output.branch_name }}"
-          echo "${{ vars.output.bin_hash }}"
-          echo "${{ vars.output.npm_hash }}"
+          echo "${{ needs.vars.output.branch_name }}"
+          echo "${{ needs.vars.output.bin_hash }}"
+          echo "${{ needs.vars.output.npm_hash }}"
   
