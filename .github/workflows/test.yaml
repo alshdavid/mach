@@ -10,24 +10,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  - name: Generate Vars
-    id: vars
+  generate-variables:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-          echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
-          echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
+      - name: Generate Variables
+        run: |
+          echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_ENV
+          echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_ENV
 
-  - name: Print Vars
-    id: print-vars
+  print-variables:
     runs-on: ubuntu-latest
-    needs: [vars]
+    needs: [generate-variables]
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          echo "${{ steps.vars.outputs.branch_name }}"
-          echo "${{ steps.vars.outputs.bin_hash }}"
-          echo "${{ steps.vars.outputs.npm_hash }}"
+      - name: Print Variables
+        run: |
+          echo "${{ env.branch_name }}"
+          echo "${{ env.bin_hash }}"
+          echo "${{ env.npm_hash }}"
   
