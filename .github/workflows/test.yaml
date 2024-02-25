@@ -13,12 +13,13 @@ jobs:
   vars:
     runs-on: ubuntu-latest
     outputs:
-      branch_name: ${{ steps[0].outputs.branch_name }}
-      bin_hash: ${{ steps[0].outputs.bin_hash }}
-      npm_hash: ${{ steps[0].outputs.npm_hash }}
+      branch_name: ${{ steps.step1.outputs.branch_name }}
+      bin_hash: ${{ steps.step1.outputs.bin_hash }}
+      npm_hash: ${{ steps.step1.outputs.npm_hash }}
     steps:
       - uses: actions/checkout@v4
-      - run: |
+      - id: step1
+        run: |
           echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
           echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
           echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
