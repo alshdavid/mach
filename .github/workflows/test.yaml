@@ -35,9 +35,15 @@ jobs:
             console.log(JSON.parse('$(curl -s https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG})' || {})?.dist?.tarball || '')\
           ")
 
-          echo $NPM_TARBALL
+          wget $NPM_TARBALL -O npm.tar.gz
+
+          ls -l
+          tar -xzf npm.tar.gz
+
+          ls -l
           
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "BIN_HASH=$BIN_HASH" >> $GITHUB_OUTPUT
           echo "NPM_HASH=$NPM_HASH" >> $GITHUB_OUTPUT
           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
+
