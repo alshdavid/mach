@@ -17,6 +17,7 @@ jobs:
       BIN_HASH: ${{ steps.step1.outputs.BIN_HASH }}
       NPM_HASH: ${{ steps.step1.outputs.NPM_HASH }}
       NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
+      UPDATE_NPM: ${{ steps.step1.outputs.UPDATE_NPM }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,15 +40,21 @@ jobs:
           cd sha1
 
           wget $NPM_TARBALL -O npm.tar.gz
-
-          ls -l
           tar -xzf npm.tar.gz
 
-          ls -l
-          ls -l package
+          UPDATE_NPM=false
+
+          if [ -f sha1.txt ]; then
+            if [ "$(cat sha1.txt" = $NPM_HASH ]; then
+              UPDATE_NPM=false
+            fi
+          fi
+
+          echo $UPDATE_NPM
 
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "BIN_HASH=$BIN_HASH" >> $GITHUB_OUTPUT
           echo "NPM_HASH=$NPM_HASH" >> $GITHUB_OUTPUT
           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
+          echo "UPDATE_NPM=$UPDATE_NPM" >> $GITHUB_OUTPUT
 
