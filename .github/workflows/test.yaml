@@ -21,8 +21,8 @@ jobs:
       - id: step1
         run: |
           echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-          echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
-          echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
+          echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1)" >> $GITHUB_OUTPUT
+          echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1)" >> $GITHUB_OUTPUT
 
   print-variables:
     runs-on: ubuntu-latest
