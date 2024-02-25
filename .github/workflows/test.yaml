@@ -10,14 +10,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  generate-variables:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - name: Test
+      - name: Generate Variables
         run: |
-          echo ${GITHUB_REF##*/}
-          cd crates
-          find mach -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum
+          echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+          echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
+          echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
+
+  print-variables:
+    runs-on: ubuntu-latest
+    needs: [generate-variables]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print Variables
+        run: |
+          echo "${{ steps.generate-variables.outputs.branch_name }}"
+          echo "${{ steps.generate-variables.outputs.bin_hash }}"
+          echo "${{ steps.generate-variables.outputs.npm_hash }}"
+  
