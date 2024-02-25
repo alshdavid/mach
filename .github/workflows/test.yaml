@@ -42,11 +42,11 @@ jobs:
           wget $NPM_TARBALL -O npm.tar.gz
           tar -xzf npm.tar.gz
 
-          UPDATE_NPM=false
+          UPDATE_NPM=true
 
           if [ -f sha1.txt ]; then
-            if ! [ "$(cat sha1.txt)" = $NPM_HASH ]; then
-              UPDATE_NPM=true
+            if [ "$(cat sha1.txt)" = $NPM_HASH ]; then
+              UPDATE_NPM=false
             fi
           fi
 
