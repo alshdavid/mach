@@ -35,6 +35,9 @@ jobs:
             console.log(JSON.parse('$(curl -s https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG})' || {})?.dist?.tarball || '')\
           ")
 
+          mkdir sha1 
+          cd sha1
+
           wget $NPM_TARBALL -O npm.tar.gz
 
           ls -l
