@@ -13,9 +13,10 @@ jobs:
   vars:
     runs-on: ubuntu-latest
     outputs:
-      branch_name: ${{ steps.step1.outputs.branch_name }}
-      bin_hash: ${{ steps.step1.outputs.bin_hash }}
-      npm_hash: ${{ steps.step1.outputs.npm_hash }}
+      BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
+      BIN_HASH: ${{ steps.step1.outputs.BIN_HASH }}
+      NPM_HASH: ${{ steps.step1.outputs.NPM_HASH }}
+      NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
