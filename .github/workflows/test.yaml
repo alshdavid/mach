@@ -31,9 +31,9 @@ jobs:
             NPM_TAG="latest"
           fi
 
-          NPM_TARBALL=node -e "\
+          NPM_TARBALL=$(node -e "\
             console.log(JSON.parse('$(curl -s https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG})' || {})?.dist?.tarball || '')\
-          "
+          ")
 
           echo $NPM_TARBALL
           
