@@ -269,16 +269,21 @@ jobs:
 
       - name: Setup Dependencies
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
           npm install -g npm pnpm
           pnpm install
 
       - name: Build
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
           node .github/scripts/run.mjs build
 
       - name: Package
         run: |
-          echo "PUBLISH_NPM = $PUBLISH_NPM"
           if [ "$PUBLISH_NPM" != "true" ]; then
             exit 0
           fi
@@ -355,7 +360,7 @@ jobs:
       - name: Publish NPM Package
         run: |
           if [ "$PUBLISH_NPM" != "true" ]; then
-            exit
+            exit 0
           fi
           if [ "$NPM_VERSION" == "" ]; then
             exit 1
