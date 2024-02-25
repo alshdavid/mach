@@ -278,8 +278,9 @@ jobs:
 
       - name: Package
         run: |
+          echo "PUBLISH_NPM = $PUBLISH_NPM"
           if [ "$PUBLISH_NPM" != "true" ]; then
-            exit
+            exit 0
           fi
           if [ "$NPM_VERSION" == "" ]; then
             exit 1
