@@ -526,7 +526,7 @@ dependencies = [
 
 [[package]]
 name = "mach"
-version = "0.0.0"
+version = "0.0.0-local"
 dependencies = [
  "async-trait",
  "base64",

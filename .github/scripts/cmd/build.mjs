@@ -17,6 +17,7 @@ export function main(args) {
     child_process.execSync(`pnpm install`, { cwd: Paths.Root, stdio: 'inherit' })
   }
 
+  const BIN_VERSION = process.env.BIN_VERSION || ''
   const PROFILE = args.profile ? args.profile : args.release ? 'release' : 'debug'
   const TARGET = args.target
   const TARGET_DIR = target_map[TARGET] || TARGET
@@ -30,6 +31,12 @@ export function main(args) {
   const __output = path.join(Paths.Output, ...[TARGET_DIR, PROFILE].filter(x => x))
 
   fs.rmSync(__output, { force: true, recursive: true })
+
+  if (BIN_VERSION) {
+    const toml = fs.readFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), 'utf8')
+    const updated = toml.replace('version = "0.0.0-local"', `version = "${BIN_VERSION}"`)
+    fs.writeFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), updated, 'utf8')
+  }
 
   child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.Root, stdio: 'inherit' })
 

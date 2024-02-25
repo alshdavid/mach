@@ -68,6 +68,8 @@ jobs:
       - name: Build
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-unknown-linux-gnu
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
@@ -102,6 +104,8 @@ jobs:
         run: |
           export CC=aarch64-linux-gnu-gcc
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-unknown-linux-gnu
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
@@ -133,6 +137,8 @@ jobs:
       - name: Build
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-apple-darwin
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
@@ -164,6 +170,8 @@ jobs:
       - name: Build
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-apple-darwin
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
@@ -202,6 +210,8 @@ jobs:
       - name: Build
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-pc-windows-msvc
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
@@ -233,6 +243,8 @@ jobs:
       - name: Build
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
+        env:
+          BIN_VERSION: ${{ inputs.bin-version }}
 
       - name: Package
         run: |
