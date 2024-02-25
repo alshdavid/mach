@@ -10,24 +10,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  generate-variables:
+  - name: Generate Vars
     id: vars
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate Variables
-        run: |
+      - run: |
           echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
           echo "bin_hash=$(git ls-files crates/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
           echo "npm_hash=$(git ls-files npm/mach | xargs sha256sum | cut -d" " -f1 | sha256sum | cut -d" " -f1) >> $GITHUB_OUTPUT
 
-  print-variables:
+  - name: Print Vars
     runs-on: ubuntu-latest
-    needs: [generate-variables]
+    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - name: Print Variables
-        run: |
+      - run: |
           echo "${{ steps.vars.outputs.branch_name }}"
           echo "${{ steps.vars.outputs.bin_hash }}"
           echo "${{ steps.vars.outputs.npm_hash }}"
