@@ -44,7 +44,8 @@ jobs:
           tar -xzf npm.tar.gz
 
           ls -l
-          
+          ls -l package
+
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "BIN_HASH=$BIN_HASH" >> $GITHUB_OUTPUT
           echo "NPM_HASH=$NPM_HASH" >> $GITHUB_OUTPUT
