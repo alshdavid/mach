@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Print Variables
         run: |
-          echo "${{ jobs.vars.outputs.branch_name }}"
-          echo "${{ jobs.vars.outputs.bin_hash }}"
-          echo "${{ jobs.vars.outputs.npm_hash }}"
+          echo "${{ needs.vars.outputs.branch_name }}"
+          echo "${{ needs.vars.outputs.bin_hash }}"
+          echo "${{ needs.vars.outputs.npm_hash }}"
   
