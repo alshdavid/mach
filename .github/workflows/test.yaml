@@ -1,5 +1,9 @@
 name: New Publish
-on: workflow_dispatch
+# on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.ref }}
@@ -9,9 +13,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v4
-      # - uses: actions/setup-node@v4
-        # with: { node-version: 20 }
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
       - name: Test
         run: |
           echo ${GITHUB_REF##*/}
