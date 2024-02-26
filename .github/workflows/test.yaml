@@ -83,10 +83,10 @@ jobs:
           rustup target add x86_64-unknown-linux-gnu
 
       - name: Build
-        run: |
-          node .github/scripts/run.mjs build --profile release-lto --target x86_64-unknown-linux-gnu
         env:
           BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+        run: |
+          node .github/scripts/run.mjs build --profile release-lto --target x86_64-unknown-linux-gnu
 
       - name: Package
         run: |
@@ -114,23 +114,22 @@ jobs:
           npm install -g npm pnpm
           pnpm install
 
-      - name: Build
-        run: |
-          node .github/scripts/run.mjs build
+      # - name: Build
+      #   run: |
+      #     node .github/scripts/run.mjs build
 
       - name: Package
+        env:
+          NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
+          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
           echo "NPM_VERSION = $NPM_VERSION"
           echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
           cd npm/mach
-          node ./prepack/prepack.mjs
-          rm -rf prepack
+          node ./_scripts/prepack/prepack.mjs
+          rm -rf ./_scripts/prepack
           npm pack
           mv *.tgz ../../mach-npm.tgz
-
-        env:
-          NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
-          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -147,6 +146,10 @@ jobs:
   #     - uses: actions/checkout@v4
   #     - uses: actions/download-artifact@v4
   #     - name: Publish` Github Release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
   #       run: |
   #         if [ "$PUBLISH_BIN" != "true" ]; then
   #           echo Skipping publish
@@ -170,10 +173,6 @@ jobs:
   #         # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
   #         gh release edit $BIN_VERSION --draft=false
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
 
   # publish-npm-package:
   #   runs-on: ubuntu-latest
@@ -183,6 +182,10 @@ jobs:
   #     - uses: actions/checkout@v4
   #     - uses: actions/download-artifact@v4
   #     - name: Publish NPM Package
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
   #       run: |
   #         if [ "$PUBLISH_NPM" != "true" ]; then
   #           exit 0
@@ -199,7 +202,3 @@ jobs:
   #           npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
   #         fi
           
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
