@@ -281,23 +281,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-
-      - name: Setup Dependencies
+      - name: Build NPM
+        env:
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+          NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
+          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
           npm install -g npm pnpm
           pnpm install
 
-      - name: Build
-        env:
-          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-        run: |
           node .github/scripts/run.mjs build
 
-      - name: Package
-        env:
-          NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
-          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
-        run: |
           echo "NPM_VERSION = $NPM_VERSION"
           echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
           cd npm/mach
