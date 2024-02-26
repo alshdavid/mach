@@ -334,10 +334,10 @@ jobs:
           gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
 
           if [ "$BRANCH_NAME" == "main" ]; then
-            gh release edit $BIN_VERSION --title "Mach"
+            gh release edit $BIN_VERSION --title "🚀 Mach"
           else
             gh release edit $BIN_VERSION --prerelease
-            gh release edit $BIN_VERSION --title "Branch: $BRANCH_NAME"
+            gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
           gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
