@@ -34,8 +34,11 @@ export function main(args) {
 
   if (BIN_VERSION) {
     console.log("Updating bin version", BIN_VERSION)
+    const [branch, buildno] = BIN_VERSION.split('-')
+    const verno = branch === 'main' ? `0.0.${buildno}` : `0.0.${buildno}-${branch}`
+    console.log(verno)
     const toml = fs.readFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), 'utf8')
-    const updated = toml.replace('version = "0.0.0-local"', `version = "${BIN_VERSION}"`)
+    const updated = toml.replace('version = "0.0.0-local"', `version = "${verno}"`)
     fs.writeFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), updated, 'utf8')
   }
 
