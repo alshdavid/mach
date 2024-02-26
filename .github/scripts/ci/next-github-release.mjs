@@ -30,15 +30,15 @@ async function* get_releases() {
   }
 }
 
-const tag_exists = !!(await get_release(`${BRANCH_NAME}-1`))
+const tag_exists = !!(await get_release(`${BRANCH_NAME}.1`))
 if (!tag_exists) {
-  console.log(`${BRANCH_NAME}-1`)
+  console.log(`${BRANCH_NAME}.1`)
   process.exit(0)
 }
 
 for await (const release of get_releases()) {
-  if (release.tag_name.startsWith(BRANCH_NAME)) {
-    const [,build] = release.tag_name.split('-')
+  if (release.tag_name.startsWith(`${BRANCH_NAME}.`)) {
+    const [,build] = release.tag_name.split('.')
     console.log(`${BRANCH_NAME}-${parseInt(build, 10) + 1}`)
     break
   }

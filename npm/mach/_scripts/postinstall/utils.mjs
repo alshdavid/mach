@@ -86,3 +86,32 @@ export async function http_get_json(url) {
   const str = enc.decode(buff)
   return JSON.parse(str)
 }
+
+export async function get_gh_release(URL_BASE, tag) {
+  const response = await fetch(`${URL_BASE}/releases/tags/${tag}`)
+  if (response.status === 404) {
+    return undefined
+  }
+  if (!response.ok) {
+    throw new Error(await response.text())
+  }
+  return await response.json()
+}
+
+export async function* get_gh_releases(URL_BASE) {
+  let page = 1
+  while (true) {
+    const response = await fetch(`${URL_BASE}/releases?per_page=100&page=${page}`)
+    if (!response.ok) {
+      throw new Error(await response.text())
+    }
+    const results = await response.json()
+    if (!results.length) {
+      break
+    }
+    for (const result of results) {
+      yield result
+    }
+    page += 1
+  }
+}

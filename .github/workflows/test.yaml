@@ -138,67 +138,67 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # publish-github-release:
-  #   runs-on: ubuntu-latest
-  #   needs: [build-npm-package, linux-amd64]
-  #   # needs: [build-npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #     - name: Publish` Github Release
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-  #       run: |
-  #         if [ "$PUBLISH_BIN" != "true" ]; then
-  #           echo Skipping publish
-  #           exit 0
-  #         fi
+  publish-github-release:
+    runs-on: ubuntu-latest
+    needs: [build-npm-package, linux-amd64]
+    # needs: [build-npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - name: Publish` Github Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+        run: |
+          if [ "$PUBLISH_BIN" != "true" ]; then
+            echo Skipping publish
+            exit 0
+          fi
 
-  #         gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
+          gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
 
-  #         if [ "$BRANCH_NAME" == "main" ]; then
-  #           gh release edit $BIN_VERSION --prerelease
-  #           gh release edit $BIN_VERSION --title "Mach"
-  #         else
-  #           gh release edit $BIN_VERSION --title "Branch: $BRANCH_NAME"
-  #         fi
+          if [ "$BRANCH_NAME" == "main" ]; then
+            gh release edit $BIN_VERSION --prerelease
+            gh release edit $BIN_VERSION --title "Mach"
+          else
+            gh release edit $BIN_VERSION --title "Branch: $BRANCH_NAME"
+          fi
           
-  #         gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-  #         # gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-  #         # gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-  #         # gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-  #         # gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-  #         # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
+          # gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
+          # gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
+          # gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
+          # gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
+          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
-  #         gh release edit $BIN_VERSION --draft=false
+          gh release edit $BIN_VERSION --draft=false
 
-  # publish-npm-package:
-  #   runs-on: ubuntu-latest
-  #   # needs: [build-npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-  #   needs: [build-npm-package, linux-amd64]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #     - name: Publish NPM Package
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-  #       run: |
-  #         if [ "$PUBLISH_NPM" != "true" ]; then
-  #           exit 0
-  #         fi
+  publish-npm-package:
+    runs-on: ubuntu-latest
+    # needs: [build-npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [build-npm-package, linux-amd64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - name: Publish NPM Package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+        run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
 
-  #         npm install -g npm pnpm
-  #         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
+          npm install -g npm pnpm
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
-  #         if [ "$BRANCH_NAME" == "main" ]; then
-  #           echo Publishing latest tag
-  #           npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
-  #         else
-  #           echo Publishing $BRANCH_NAME tag
-  #           npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
-  #         fi
+          if [ "$BRANCH_NAME" == "main" ]; then
+            echo Publishing latest tag
+            npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
+          else
+            echo Publishing $BRANCH_NAME tag
+            npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
+          fi
           
