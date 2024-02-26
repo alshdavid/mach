@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::public;
@@ -9,12 +7,7 @@ use crate::public::Bundle;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
 use crate::public::ENTRY_ASSET;
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum ExportSymbol {
-  Named(String),
-  Default,
-}
+use crate::public::NO_ASSET;
 
 pub fn bundle(
   _config: &public::Config,
@@ -47,6 +40,9 @@ pub fn bundle(
         bundle.kind = "js".to_string();
       } else if current_asset.kind == "css" {
         css_bundle.assets.insert(asset_id.clone());
+        if css_bundle.entry_asset == *NO_ASSET {
+          css_bundle.entry_asset = asset_id.clone();
+        }
       } else if current_asset.kind == "html" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "html".to_string();
@@ -78,6 +74,7 @@ pub fn bundle(
   return Ok(());
 }
 
+/* 
 // Infer JS exports from imports
 // I guess this is the start of tree shaking
 // I have enough information to drop unused named exports
@@ -85,41 +82,49 @@ pub fn bundle(
 // figuring out reexports or namespace exports
 // I'm trying to see how far I can get without making
 // the transformer tell me what exports are available
-// fn _infer_exports(
-//   asset_map: &mut AssetMap,
-//   dependency_map: &mut DependencyMap,
-//   asset_graph: &mut AssetGraph,
-// ) -> HashMap<PathBuf, HashSet<ExportSymbol>> {
-//   let mut export_map = HashMap::<PathBuf, HashSet<ExportSymbol>>::new();
 
-//   for (asset_id, dependencies) in asset_graph.iter() {
-//     let asset = asset_map.get(asset_id).unwrap();
-//     if asset.kind != "js" {
-//       continue;
-//     }
-//     for (dependency_id, target_asset_id) in dependencies.iter() {
-//       if !export_map.contains_key(target_asset_id) {
-//         export_map.insert(target_asset_id.clone(), HashSet::new());
-//       }
-//       let exports = export_map.get_mut(target_asset_id).unwrap();
-//       let dependency = dependency_map.get(&dependency_id).unwrap();
-//       for sym in &dependency.imported_symbols {
-//         match sym {
-//           public::ImportSymbolType::Unnamed => {}
-//           public::ImportSymbolType::Named(key) => {
-//             exports.insert(ExportSymbol::Named(key.clone()));
-//           }
-//           public::ImportSymbolType::Default => {
-//             exports.insert(ExportSymbol::Default);
-//           }
-//           public::ImportSymbolType::Namespace(_) => {}
-//           public::ImportSymbolType::Reexport => {}
-//           public::ImportSymbolType::Dynamic => {}
-//           public::ImportSymbolType::Commonjs => {}
-//         }
-//       }
-//     }
-//   }
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum ExportSymbol {
+  Named(String),
+  Default,
+}
 
-//   return export_map;
-// }
+fn _infer_exports(
+  asset_map: &mut AssetMap,
+  dependency_map: &mut DependencyMap,
+  asset_graph: &mut AssetGraph,
+) -> HashMap<PathBuf, HashSet<ExportSymbol>> {
+  let mut export_map = HashMap::<PathBuf, HashSet<ExportSymbol>>::new();
+
+  for (asset_id, dependencies) in asset_graph.iter() {
+    let asset = asset_map.get(asset_id).unwrap();
+    if asset.kind != "js" {
+      continue;
+    }
+    for (dependency_id, target_asset_id) in dependencies.iter() {
+      if !export_map.contains_key(target_asset_id) {
+        export_map.insert(target_asset_id.clone(), HashSet::new());
+      }
+      let exports = export_map.get_mut(target_asset_id).unwrap();
+      let dependency = dependency_map.get(&dependency_id).unwrap();
+      for sym in &dependency.imported_symbols {
+        match sym {
+          public::ImportSymbolType::Unnamed => {}
+          public::ImportSymbolType::Named(key) => {
+            exports.insert(ExportSymbol::Named(key.clone()));
+          }
+          public::ImportSymbolType::Default => {
+            exports.insert(ExportSymbol::Default);
+          }
+          public::ImportSymbolType::Namespace(_) => {}
+          public::ImportSymbolType::Reexport => {}
+          public::ImportSymbolType::Dynamic => {}
+          public::ImportSymbolType::Commonjs => {}
+        }
+      }
+    }
+  }
+
+  return export_map;
+}
+*/
