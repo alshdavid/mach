@@ -43,6 +43,10 @@ impl AssetGraph {
 
     return Some(result);
   }
+
+  pub fn _iter(&self) -> impl Iterator<Item = (&PathBuf, &HashSet<(String, PathBuf)>)> {
+    self.edges.iter()
+  }
 }
 
 impl Debug for AssetGraph {

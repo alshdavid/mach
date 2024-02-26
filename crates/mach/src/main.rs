@@ -71,7 +71,7 @@ async fn main_async(config: Config) {
   println!("Assets:        {}", asset_map.len());
 
   dbg!(&asset_map);
-  // dbg!(&asset_graph);
+  dbg!(&asset_graph);
   dbg!(&dependency_map);
 
   if let Err(err) = bundle(

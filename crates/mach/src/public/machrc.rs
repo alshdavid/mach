@@ -30,6 +30,10 @@ impl Default for Machrc {
           vec!["mach:transformer/css".to_string()],
         ),
         (
+          "*.html".to_string(),
+          vec!["mach:transformer/noop".to_string()],
+        ),
+        (
           "*.{svg,png}".to_string(),
           vec!["mach:transformer/noop".to_string()],
         ),

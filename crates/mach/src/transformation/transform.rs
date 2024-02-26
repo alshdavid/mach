@@ -9,7 +9,6 @@ use crate::public::AssetMap;
 use crate::public::Dependency;
 use crate::public::DependencyMap;
 use crate::public::DependencyOptions;
-use crate::public::ExportSymbol;
 use crate::public::MutableAsset;
 use crate::public::ENTRY_ASSET;
 
@@ -63,14 +62,12 @@ pub async fn transform(
       fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
     let mut asset_dependencies = Vec::<DependencyOptions>::new();
     let mut asset_kind = file_target.file_extension.clone();
-    let mut asset_exports = Vec::<ExportSymbol>::new();
 
     let mut mutable_asset = MutableAsset::new(
       resolve_result.file_path.clone(),
       &mut asset_kind,
       &mut content,
       &mut asset_dependencies,
-      &mut asset_exports,
     );
 
     let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
@@ -102,7 +99,6 @@ pub async fn transform(
       content,
       kind: asset_kind,
       bundle_behavior: dependency_bundle_behavior,
-      exports: asset_exports,
     });
     // Transformation Done
 

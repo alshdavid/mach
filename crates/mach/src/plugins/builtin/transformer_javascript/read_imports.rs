@@ -10,7 +10,6 @@ use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
 use crate::public::DependencyPriority;
-use crate::public::ExportSymbol;
 use crate::public::ImportSymbolType;
 use crate::public::SpecifierType;
 
@@ -400,4 +399,19 @@ impl Visit for Walker {
       Callee::Super(_) => {}
     }
   }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum ExportSymbol {
+  // export const foo = ''
+  // export const { foo, bar } = foobar
+  //               |---||---|
+  // export { foo }
+  // export { foo as bar }
+  //                |---|
+  Named(String),
+  // export default foo
+  Default,
+  // export * from './foo'
+  ExportAll(String),
 }

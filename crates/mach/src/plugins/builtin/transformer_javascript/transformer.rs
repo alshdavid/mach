@@ -98,7 +98,7 @@ impl Transformer for DefaultTransformerJavaScript {
         *asset.kind = "js".to_string();
       }
 
-      let (dependencies, exports) = read_imports_exports(&program, &asset.file_path);
+      let (dependencies, _) = read_imports_exports(&program, &asset.file_path);
 
       for dependency in dependencies {
         asset.add_dependency(DependencyOptions {
@@ -107,12 +107,8 @@ impl Transformer for DefaultTransformerJavaScript {
           priority: dependency.priority,
           resolve_from: asset.file_path.clone(),
           imported_symbols: dependency.imported_symbols,
-          bundle_behavior: crate::public::BundleBehavior::Inline,
+          bundle_behavior: crate::public::BundleBehavior::Default,
         });
-      }
-
-      for export in exports {
-        asset.define_export(export);
       }
 
       asset.set_code(&render_program(&program, source_map_og.clone()));

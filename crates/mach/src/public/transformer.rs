@@ -10,7 +10,6 @@ use crate::public::SpecifierType;
 
 use super::BundleBehavior;
 use super::DependencyPriority;
-use super::ExportSymbol;
 use super::ImportSymbolType;
 
 #[async_trait]
@@ -28,7 +27,6 @@ pub struct MutableAsset<'a> {
   pub kind: &'a mut String,
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
-  exports: &'a mut Vec<ExportSymbol>,
 }
 
 impl<'a> MutableAsset<'a> {
@@ -37,14 +35,12 @@ impl<'a> MutableAsset<'a> {
     kind: &'a mut String,
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
-    exports: &'a mut Vec<ExportSymbol>,
   ) -> Self {
     return MutableAsset {
       file_path,
       kind,
       content,
       dependencies,
-      exports,
     };
   }
 
@@ -64,13 +60,6 @@ impl<'a> MutableAsset<'a> {
     options: DependencyOptions,
   ) {
     self.dependencies.push(options);
-  }
-
-  pub fn define_export(
-    &mut self,
-    export: ExportSymbol,
-  ) {
-    self.exports.push(export);
   }
 }
 

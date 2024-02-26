@@ -15,6 +15,7 @@ export function main(args) {
   const { binary_path } = build(parse(CARGO_ARGS.split(' ')))
 
   const TESTS = [
+    path.join(FIXTURE_DIR, 'src', 'index.html'),
     path.join(FIXTURE_DIR, 'src', 'index.js'),
     path.join(FIXTURE_DIR, 'src', 'index.jsx'),
     path.join(FIXTURE_DIR, 'src', 'index.ts'),

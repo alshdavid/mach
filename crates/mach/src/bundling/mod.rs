@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::public;
@@ -6,8 +8,13 @@ use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
-use crate::public::ExportSymbol;
 use crate::public::ENTRY_ASSET;
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum ExportSymbol {
+  Named(String),
+  Default,
+}
 
 pub fn bundle(
   _config: &public::Config,
@@ -16,96 +23,103 @@ pub fn bundle(
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
 ) -> Result<(), String> {
-  let mut css_bundle = Bundle::new("css");
-  let mut js_bundle = Bundle::new("js");
+  let mut css_bundle = Bundle::default();
+  css_bundle.kind = "css".to_string();
 
-  // Create one bundle for now
-  let (_, entry_asset_id) = *asset_graph
+  let mut entries: Vec<PathBuf> = asset_graph
     .get_dependencies(&ENTRY_ASSET)
-    .unwrap()
-    .get(0)
-    .unwrap();
+    .expect("no entry assets")
+    .iter()
+    .map(|x| x.1.clone())
+    .collect();
 
-  js_bundle.entry_asset = entry_asset_id.clone();
+  while let Some(entry_asset_id) = entries.pop() {
+    let mut bundle = Bundle::default();
+    bundle.entry_asset = entry_asset_id.clone();
 
-  let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);
+    let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);
 
-  while let Some(asset_id) = q.pop() {
-    let current_asset = asset_map.get(&asset_id).unwrap();
-    if current_asset.kind == "js" {
-      js_bundle.assets.insert(asset_id.clone());
-    } else if current_asset.kind == "css" {
-      css_bundle.assets.insert(asset_id.clone());
-    } else {
-      continue;
-    }
+    while let Some(asset_id) = q.pop() {
+      let current_asset = asset_map.get(&asset_id).unwrap();
 
-    let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
-      continue;
-    };
+      if current_asset.kind == "js" {
+        bundle.assets.insert(asset_id.clone());
+        bundle.kind = "js".to_string();
+      } else if current_asset.kind == "css" {
+        css_bundle.assets.insert(asset_id.clone());
+      } else if current_asset.kind == "html" {
+        bundle.assets.insert(asset_id.clone());
+        bundle.kind = "html".to_string();
+      }else {
+        continue;
+      }
 
-    // tree shaking
-    for (dependency_id, asset_id) in dependencies {
-      q.push(asset_id.clone());
+      let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
+        continue;
+      };
 
-      let asset = asset_map.get(asset_id).unwrap();
-      let dependency = dependency_map.get(dependency_id).unwrap();
-
-      for import in &dependency.imported_symbols {
-        match import {
-          public::ImportSymbolType::Named(name) => 'exports: {
-            for export in &asset.exports {
-              if let ExportSymbol::Named(export_name) = &export {
-                if export_name == name {
-                  js_bundle.insert_export_symbol(asset_id, export.clone());
-                  break 'exports;
-                }
-              }
-            }
-            return Err(format!("{:?} does not export {:?}", asset_id, name));
+      for (dependency_id, asset_id) in dependencies {
+        let dependency = dependency_map.get(dependency_id).unwrap();
+        match dependency.priority {
+          public::DependencyPriority::Sync => {
+            q.push(asset_id.clone());
           }
-          public::ImportSymbolType::Unnamed => {
-            for export in &asset.exports {
-              js_bundle.insert_export_symbol(asset_id, export.clone());
-            }
+          public::DependencyPriority::Lazy => {
+            entries.push(asset_id.clone());
           }
-          public::ImportSymbolType::Default => 'exports: {
-            for export in &asset.exports {
-              if let ExportSymbol::Default = &export {
-                js_bundle.insert_export_symbol(asset_id, export.clone());
-                break 'exports;
-              }
-            }
-            return Err(format!("{:?} does not have a default export", asset_id));
-          }
-          public::ImportSymbolType::Namespace(_) => {
-            for export in &asset.exports {
-              js_bundle.insert_export_symbol(asset_id, export.clone());
-            }
-          }
-          public::ImportSymbolType::Reexport => {
-            for export in &asset.exports {
-              js_bundle.insert_export_symbol(asset_id, export.clone());
-            }
-          }
-          public::ImportSymbolType::Dynamic => {
-            for export in &asset.exports {
-              js_bundle.insert_export_symbol(asset_id, export.clone());
-            }
-          }
-          public::ImportSymbolType::Commonjs => {
-            for export in &asset.exports {
-              js_bundle.insert_export_symbol(asset_id, export.clone());
-            }
-          }
-        };
+        }
       }
     }
+
+    bundles.push(bundle);
   }
 
-  bundles.push(js_bundle);
-  if css_bundle.assets.len() != 0 {
-    bundles.push(css_bundle);
-  }
+  bundles.push(css_bundle);
   return Ok(());
 }
+
+// Infer JS exports from imports
+// I guess this is the start of tree shaking
+// I have enough information to drop unused named exports
+// but I don't know if I have enough information here for
+// figuring out reexports or namespace exports
+// I'm trying to see how far I can get without making
+// the transformer tell me what exports are available
+// fn _infer_exports(
+//   asset_map: &mut AssetMap,
+//   dependency_map: &mut DependencyMap,
+//   asset_graph: &mut AssetGraph,
+// ) -> HashMap<PathBuf, HashSet<ExportSymbol>> {
+//   let mut export_map = HashMap::<PathBuf, HashSet<ExportSymbol>>::new();
+
+//   for (asset_id, dependencies) in asset_graph.iter() {
+//     let asset = asset_map.get(asset_id).unwrap();
+//     if asset.kind != "js" {
+//       continue;
+//     }
+//     for (dependency_id, target_asset_id) in dependencies.iter() {
+//       if !export_map.contains_key(target_asset_id) {
+//         export_map.insert(target_asset_id.clone(), HashSet::new());
+//       }
+//       let exports = export_map.get_mut(target_asset_id).unwrap();
+//       let dependency = dependency_map.get(&dependency_id).unwrap();
+//       for sym in &dependency.imported_symbols {
+//         match sym {
+//           public::ImportSymbolType::Unnamed => {}
+//           public::ImportSymbolType::Named(key) => {
+//             exports.insert(ExportSymbol::Named(key.clone()));
+//           }
+//           public::ImportSymbolType::Default => {
+//             exports.insert(ExportSymbol::Default);
+//           }
+//           public::ImportSymbolType::Namespace(_) => {}
+//           public::ImportSymbolType::Reexport => {}
+//           public::ImportSymbolType::Dynamic => {}
+//           public::ImportSymbolType::Commonjs => {}
+//         }
+//       }
+//     }
+//   }
+
+//   return export_map;
+// }

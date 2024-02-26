@@ -53,20 +53,20 @@ pub enum DependencyPriority {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub enum ImportSymbolType {
-  // import './foo'
+  /// import './foo'
   Unnamed,
-  // import { foo } from './foo'
-  // import { foo: bar } from './foo'
+  /// import { foo } from './foo'
+  /// import { foo: bar } from './foo'
   Named(String),
-  // import foo from './foo'
+  /// import foo from './foo'
   Default,
-  // import * as foo from './foo'
+  /// import * as foo from './foo'
   Namespace(String),
-  // export * from './foo'
+  /// export * from './foo'
   Reexport,
-  // import('./foo')
+  /// import('./foo')
   Dynamic,
-  // require('./foo')
+  /// require('./foo')
   Commonjs,
 }
 

@@ -10,22 +10,6 @@ pub struct Asset {
   pub kind: String,
   pub content: Vec<u8>,
   pub bundle_behavior: BundleBehavior,
-  pub exports: Vec<ExportSymbol>,
-}
-
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum ExportSymbol {
-  // export const foo = ''
-  // export const { foo, bar } = foobar
-  //               |---||---|
-  // export { foo }
-  // export { foo as bar }
-  //                |---|
-  Named(String),
-  // export default foo
-  Default,
-  // export * from './foo'
-  ExportAll(String),
 }
 
 impl Debug for Asset {
@@ -37,7 +21,6 @@ impl Debug for Asset {
       .field("file_path", &self.file_path)
       .field("bundle_behavior", &self.bundle_behavior)
       .field("kind", &self.kind)
-      .field("exports", &self.exports)
       .finish()
   }
 }
