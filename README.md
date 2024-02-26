@@ -56,7 +56,6 @@ $ ls ./dist
 
 <h3 align="center">Special Thanks</h3>
 <br>
-<br>
 
 <p align="center">
   <img height="30px" src="./.docs/assets/logo-parcel.svg" />
