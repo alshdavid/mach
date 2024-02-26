@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href=".docs/CONTRIBUTING.md">Contributing Guidelines</a>
-  <a href="issues">Submit an Issue</a>
-  <a href="discussions">Ask a Question</a>
+  <a href="https://github.com/alshdavid/mach/issues">Submit an Issue</a>
+  <a href="https://github.com/alshdavid/mach/discussions">Ask a Question</a>
 </p>
 
 <p align="center">
