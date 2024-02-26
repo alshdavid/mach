@@ -1,30 +1,30 @@
 name: New Publish
-# on: 
-#   workflow_dispatch:
-#     inputs:
-#       publish-npm:
-#         description: 'Publish NPM'
-#         required: true
-#         default: false
-#         type: boolean
-#       publish-bin:
-#         description: 'Publish Binaries'
-#         required: true
-#         default: false
-#         type: boolean
+on: 
+  workflow_dispatch:
+    inputs:
+      publish-npm:
+        description: 'Publish NPM'
+        required: true
+        default: false
+        type: boolean
+      publish-bin:
+        description: 'Publish Binaries'
+        required: true
+        default: false
+        type: boolean
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  PUBLISH_NPM: 'true'
-  PUBLISH_BIN: 'true'
+  PUBLISH_NPM: ${{ inputs.publish-npm }}
+  PUBLISH_BIN: ${{ inputs.publish-bin }}
 
 jobs:
   vars:
@@ -50,8 +50,8 @@ jobs:
 
           NEXT_BIN_VERSION="$(node .github/scripts/ci/next-github-release.mjs)"
 
-          echo PUBLISH_BIN = $PUBLISH_BIN
 
+          echo PUBLISH_BIN = $PUBLISH_BIN
           echo NEXT_NPM_VERSION = $NEXT_NPM_VERSION
           echo NEXT_BIN_VERSION = $NEXT_BIN_VERSION
 
