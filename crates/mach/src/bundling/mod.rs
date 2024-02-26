@@ -46,6 +46,7 @@ pub fn bundle(
         css_bundle.assets.insert(asset_id.clone());
         if css_bundle.entry_asset == *NO_ASSET {
           css_bundle.entry_asset = asset_id.clone();
+          css_bundle.name = current_asset.name.clone();
         }
       } else if current_asset.kind == "html" {
         bundle.assets.insert(asset_id.clone());

@@ -17,10 +17,17 @@ on:
         required: true
         default: false
         type: boolean
+      bin-codename:
+        # Use the names of planes in increasing increments of speed
+        description: 'Binary Release Codename'
+        required: false
+        default: ""
+        type: string
 
 env:
   PUBLISH_NPM: ${{ inputs.publish-npm }}
   PUBLISH_BIN: ${{ inputs.publish-bin }}
+  BIN_CODENAME: ${{ inputs.bin-codename }}
 
 jobs:
   vars:
@@ -332,7 +339,11 @@ jobs:
           gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
 
           if [ "$BRANCH_NAME" == "main" ]; then
-            gh release edit $BIN_VERSION --title "🚀 Mach"
+            if [ "$BIN_CODENAME" != "" ]; then
+              gh release edit $BIN_VERSION --title "🚀 Mach - $BIN_CODENAME"
+            else
+              gh release edit $BIN_VERSION --title "🚀 Mach"
+            fi
           else
             gh release edit $BIN_VERSION --prerelease
             gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
