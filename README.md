@@ -36,55 +36,38 @@ npx mach --version
 
 [Read more here](.docs/usage.md)
 
+#### Simple Build
+
 ```bash
-$ mach build ./src/index.js
+$ mach build ./src/index.html
 > Build Success
 
 $ ls ./dist
 > index.js
 ```
 
-## CLI Arguments
+#### Dev Server
 
-|Arguments|Description|
-|-|-|
-|`-z` `--optimize`| Optimize the output, minifying, tree shaking and so on |
-| `-t` `--threads` | Set the number of threads to use for building |
-| `--node-workers` | Set the number of worker threads Node will spawn to execute JS plugins with |
+```bash
+$ mach dev ./src/index.html
+> Serving on http://localhost:4242
+```
 
-<br>
+## Special Thanks
 
-<h3 align="center">Special Thanks</h3>
-<br>
-
-<p align="center">
-  <img height="30px" src="./.docs/assets/logo-parcel.svg" />
-  <br> 
-  Mach is heavily inspired by Parcel.<br>
-  It derives learnings, approaches and adapts code directly from the project.<br>
-  <br>
-  <a href="https://parceljs.org/">Check it out here</a><br>
-</p>
+<img align="right" height="40px" src="./.docs/assets/logo-parcel.svg" />
+Mach is heavily inspired by Parcel. It derives learnings, approaches and adapts code directly from the project.<br>
+<a href="https://parceljs.org/">Check it out here</a><br>
 
 ---
 
-<p align="center">
-  <img height="50px" src="./.docs/assets/logo-atlassian.svg" />
-  <br> 
-  Special thanks to Atlassian for supporting my independent development<br>
-  of this project during my employment with them.<br>
-  <br>
-  <a href="https://www.atlassian.com/">Learn about Atlassian</a><br>
-</p>
+<img align="right" height="50px" src="./.docs/assets/logo-atlassian.svg" />
+Special thanks to Atlassian for supporting my independent development
+of this project during my employment with them.<br>
+<a href="https://www.atlassian.com/">Learn about Atlassian</a>
 
 ---
 
-<p align="center">
-  <img height="80px" src="./.docs/assets/logo-rust-discord.png" />
-  <br>
-  Special thanks to the Rust Community Discord<br>
-  An amazing community of people who were always available to help me<br>
-  with any questions I had, no matter how dumb.<br>
-  <br>
-  <a href="https://github.com/rust-community-discord">Join here</a><br>
-</p>
+<img align="right" height="80px" src="./.docs/assets/logo-rust-discord.png" />
+Special thanks to the Rust Community Discord, an amazing community of talented engineers who were <br>welcoming and always happy to help out.<br>
+<a href="https://github.com/rust-community-discord">Join the Discord Here</a>
