@@ -1,10 +1,8 @@
 # Installation
 
-Right now Mach is distributed as a binary. 
+You can install Mach from npm or directly as a [binary](#binary)
 
-In the future I'll look at publishing it on the various package managers.
-
-## NPM (coming soon)
+## NPM
 
 ```bash
 npm install @alshdavid/mach
@@ -21,9 +19,9 @@ curl -L --url https://github.com/alshdavid/mach/releases/latest/download/macos-a
 export PATH=$HOME/.local/mach
 ```
 
-Add the following to your `~/.zshrc`
+Add the following to your `~/.zshrc` and/or `~/.bashrc`
 ```bash
-export PATH=$HOME/.local/mach
+export PATH=$HOME/.local/mach:$PATH
 ```
 
 ### Linux (Install and Update)
@@ -36,7 +34,7 @@ curl -L --url https://github.com/alshdavid/mach/releases/latest/download/linux-a
 
 Add the following to your `~/.zshrc`
 ```bash
-export PATH=$HOME/.local/mach
+export PATH=$HOME/.local/mach:$PATH
 ```
 
 ### Windows (Install and Update)

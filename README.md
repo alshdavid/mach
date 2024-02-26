@@ -1,31 +1,38 @@
-# 🌏️ Mach 🚀
+<h1 align="center">🌏️ Mach 🚀</h1>
 
-## The Bundler from Down Under
+<h3 align="center"><i>
+  Zero Configuration Bundler For The Modern Web
+</i></h3>
 
-Mach is a zero configuration bundler for web applications.
+<p align="center"><i>
+  Mach is a super fast bundler written in Rust that is<br>
+  inspired by the <a href="https://parceljs.org/">Parcel bundler</a>
+</i></p>
 
-### Current Status
+<p align="center">
+  <a href=".docs/CONTRIBUTING.md">Contributing Guidelines</a>
+  <a href="issues">Submit an Issue</a>
+  <a href="discussions">Ask a Question</a>
+</p>
 
-#### 25 Feb 2024
+<p align="center">
+  <img src="https://img.shields.io/npm/v/@alshdavid/mach">
+  <img src="https://img.shields.io/badge/dependencies-0-green">
+</p>
 
-The latest branch `development` reworks a large portion of the bundler internals, adding support for JS plugins, changing the browser runtime code, and adds many other features.
+---
 
-It will be merged as soon as it produces a working bundle.
+## Installation
 
-### Installation
+You can install Mach from npm or directly as a [binary](.docs/install.md)
 
-Right now Mach is distributed as a binary. In the future I'll look at publishing it on the various package managers.
-
-[Installing Mach binary](.docs/install.md)
-
-```
-## coming soon
+```bash
 npm install @alshdavid/mach
 ```
 
-### Usage
+## Usage
 
-```
+```bash
 $ mach build ./src/index.js
 > Build Success
 
@@ -33,7 +40,7 @@ $ ls ./dist
 > index.js
 ```
 
-#### Options
+## CLI Arguments
 
 |Arguments|Description|
 |-|-|
@@ -41,7 +48,7 @@ $ ls ./dist
 | `-t` `--threads` | Set the number of threads to use for building |
 | `--node-workers` | Set the number of worker threads Node will spawn to execute JS plugins with |
 
-### Plugins
+## Plugins
 
 Mach aims to support part of the [Parcel Plugin API](https://parceljs.org/features/plugins/)
 

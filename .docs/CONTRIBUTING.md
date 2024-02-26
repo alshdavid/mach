@@ -2,21 +2,28 @@
 
 This project welcomes contributions, feel free to raise a PR.
 
+## Dependencies
+
+- Node.js 18+
+- PNPM
+- Rust
+
 ## Building
 
-```
-just build
-just build --release
+```bash
+pnpm run build
+pnpm run build --release
 ```
 
 ## Running Locally
 
-```
-just run ./fixtures/simple/src/index.js
+```bash
+# Will build /testing/fixtures/simple
+pnpm run build-fixture simple
 ```
 
 ## Testing
 
-```
-just test
+```bash
+pnpm run build
 ```
