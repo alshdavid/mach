@@ -121,13 +121,12 @@ jobs:
       - name: Package
         run: |
           cd npm/mach
-          echo $BRANCH_NAME > _scripts/postinstall/npm-bin-target.txt
           npm pack
           mv *.tgz ../../mach-npm.tgz
 
         env:
           NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
-          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+          NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -145,32 +144,29 @@ jobs:
   #     - uses: actions/download-artifact@v4
   #     - name: Publish` Github Release
   #       run: |
-  #         TAG=$BIN_VERSION
-
   #         if [ "$PUBLISH_BIN" != "true" ]; then
   #           echo Skipping publish
   #           exit 0
   #         fi
-  #         if [ "$BIN_VERSION" == "" ]; then
-  #           echo Missing bin version
-  #           exit 1
-  #         fi
 
   #         gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
-  #         if [ "$PRERELEASE" == "true" ]; then
+
+  #         if [ "$BRANCH_NAME" == "main" ]; then
   #           gh release edit $BIN_VERSION --prerelease
+  #           gh release edit $BIN_VERSION --title "Mach"
+  #         else
+  #           gh release edit $BIN_VERSION --title "Branch: $BRANCH_NAME"
   #         fi
           
   #         gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-  #         gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-  #         gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-  #         gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-  #         gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-  #         gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+  #         # gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
+  #         # gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
+  #         # gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
+  #         # gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
+  #         # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
   #         gh release edit $BIN_VERSION --draft=false
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         PRERELEASE: ${{ inputs.prerelease }}
-  #         PUBLISH_BIN: ${{ inputs.publish-bin }}
-  #         BIN_VERSION: ${{ inputs.bin-version }}
+  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}

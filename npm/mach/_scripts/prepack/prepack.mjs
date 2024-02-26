@@ -5,6 +5,8 @@ import * as url from "node:url";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const { NPM_VERSION, NPM_BIN_TARGET } = process.env
 
+console.table({ NPM_VERSION, NPM_BIN_TARGET })
+
 if (!NPM_VERSION || !NPM_BIN_TARGET) {
   console.log('skipping pack')
   process.exit(1) 
