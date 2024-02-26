@@ -1,8 +1,6 @@
 <h1 align="center">🌏️ Mach 🚀</h1>
 
-<h3 align="center"><i>
-  Zero Configuration Bundler For The Modern Web
-</i></h3>
+<h3 align="center">Zero Configuration Bundler For The Modern Web</h3>
 
 <p align="center"><i>
   Mach is a super fast bundler written in Rust that is<br>
