@@ -2,7 +2,7 @@ const BRANCH_NAME = process.env.BRANCH_NAME
 const URL_BASE = 'https://api.github.com/repos/alshdavid/mach'
 
 async function get_release(tag) {
-  const response = await fetch(`${URL_BASE}/releases/tags/${tag}`, options)
+  const response = await fetch(`${URL_BASE}/releases/tags/${tag}`)
   if (response.status === 404) {
     return undefined
   }
@@ -15,7 +15,7 @@ async function get_release(tag) {
 async function* get_releases() {
   let page = 1
   while (true) {
-    const response = await fetch(`${URL_BASE}/releases?per_page=100&page=${page}`, options)
+    const response = await fetch(`${URL_BASE}/releases?per_page=100&page=${page}`)
     if (!response.ok) {
       throw new Error(await response.text())
     }
