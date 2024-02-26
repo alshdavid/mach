@@ -8,7 +8,6 @@
     "bin": ""
   },
   "scripts": {
-    "postinstall": "node ./_scripts/postinstall/postinstall.mjs",
-    "prepack": "node ./_scripts/prepack/prepack.mjs"
+    "postinstall": "node ./_scripts/postinstall/postinstall.mjs"
   }
 }

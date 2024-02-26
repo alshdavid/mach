@@ -123,6 +123,8 @@ jobs:
           echo "NPM_VERSION = $NPM_VERSION"
           echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
           cd npm/mach
+          node ./prepack/prepack.mjs
+          rm -rf prepack
           npm pack
           mv *.tgz ../../mach-npm.tgz
 
@@ -171,4 +173,33 @@ jobs:
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+
+  # publish-npm-package:
+  #   runs-on: ubuntu-latest
+  #   # needs: [build-npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+  #   needs: [build-npm-package, linux-amd64]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/download-artifact@v4
+  #     - name: Publish NPM Package
+  #       run: |
+  #         if [ "$PUBLISH_NPM" != "true" ]; then
+  #           exit 0
+  #         fi
+
+  #         npm install -g npm pnpm
+  #         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
+
+  #         if [ "$BRANCH_NAME" == "main" ]; then
+  #           echo Publishing latest tag
+  #           npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
+  #         else
+  #           echo Publishing $BRANCH_NAME tag
+  #           npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
+  #         fi
+          
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
