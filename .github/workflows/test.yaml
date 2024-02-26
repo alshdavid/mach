@@ -53,13 +53,13 @@ jobs:
             export NPM_TAG="latest"
           fi
 
-          if [ "PUBLISH_NPM" = "true" ]; then
+          if [ "$PUBLISH_NPM" = "true" ]; then
             NEXT_NPM_VERSION="$(node .github/scripts/ci/next-npm-version.mjs)"
             echo "NEXT_NPM_VERSION=$NEXT_NPM_VERSION" >> $GITHUB_OUTPUT
             echo NEXT_NPM_VERSION = $NEXT_NPM_VERSION
           fi
 
-          if [ "PUBLISH_BIN" = "true" ]; then
+          if [ "$PUBLISH_BIN" = "true" ]; then
             NEXT_BIN_VERSION="$(node .github/scripts/ci/next-github-release.mjs)"
             echo "NEXT_BIN_VERSION=$NEXT_BIN_VERSION" >> $GITHUB_OUTPUT
             echo NEXT_BIN_VERSION = $NEXT_BIN_VERSION
