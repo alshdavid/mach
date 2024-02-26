@@ -23,7 +23,7 @@ export function main(args) {
   const TARGET_DIR = target_map[TARGET] || TARGET
 
   if (TARGET) {
-    console.table({ PROFILE, TARGET, ARGS: args._raw, ARGV: process.argv.join(' ') })
+    console.table({ PROFILE, TARGET, BIN_VERSION, ARGS: args._raw })
   }
 
   const __cargo_output = path.join(Paths.CargoOutput, ...[TARGET, PROFILE].filter(x => x))
