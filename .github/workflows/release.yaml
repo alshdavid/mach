@@ -60,7 +60,7 @@ jobs:
           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
 
   linux-amd64:
-    name: "Build: ${{ github.job }}"
+    name: "Build: linux-amd64"
     runs-on: ubuntu-latest
     needs: [vars]
     steps:
@@ -94,7 +94,7 @@ jobs:
           retention-days: 1
 
   linux-arm64:
-    name: "Build: ${{ github.job }}"
+    name: "Build: linux-arm64"
     runs-on: ubuntu-latest
     needs: [vars]
     steps:
@@ -131,7 +131,7 @@ jobs:
           retention-days: 1
 
   macos-amd64:
-    name: "Build: ${{ github.job }}"
+    name: "Build: macos-amd64"
     runs-on: macos-13
     needs: [vars]
     steps:
@@ -164,8 +164,8 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       
-  macos-arm64:
-    name: "Build: ${{ github.job }}"
+  windows-amd64:
+    name: "Build: windows-amd64"
     runs-on: macos-13
     needs: [vars]
     steps:
@@ -206,7 +206,7 @@ jobs:
           retention-days: 1
 
   windows-amd64:
-    name: "Build: ${{ github.job }}"
+    name: "Build: windows-amd64"
     runs-on: windows-latest
     needs: [vars]
     steps:
@@ -240,7 +240,7 @@ jobs:
           retention-days: 1
 
   windows-arm64:
-    name: "Build: ${{ github.job }}"
+    name: "Build: windows-arm64"
     runs-on: windows-latest
     needs: [vars]
     steps:
