@@ -54,8 +54,6 @@ $ ls ./dist
 
 <br>
 
----
-
 <h2 align="center">Special Thanks</h2>
 
 <p align="center">
