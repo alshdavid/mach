@@ -27,7 +27,7 @@ jobs:
           fi
 
           node -e "\
-            fetch(https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG}).then(r => r.json()) \
+            fetch("https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG}").then(r => r.json()) \
               .then(console.log)\
           "
 
