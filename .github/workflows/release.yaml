@@ -376,4 +376,3 @@ jobs:
             echo Publishing $BRANCH_NAME tag
             npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
           fi
-          
