@@ -10,28 +10,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  branch-name:
+  vars:
     runs-on: ubuntu-latest
     outputs:
       BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
       NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
+      NEXT_NPM_VERSION: ${{ steps.step1.outputs.NEXT_NPM_VERSION }}
+      NEXT_BIN_VERSION: ${{ steps.step1.outputs.NEXT_BIN_VERSION }}
     steps:
       - uses: actions/checkout@v4
       - id: step1
         run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
-          NPM_TAG=$BRANCH_NAME
+          export BRANCH_NAME=${GITHUB_REF##*/}
+          export NPM_TAG=$BRANCH_NAME
 
           if [ $NPM_TAG = "main" ]; then
             NPM_TAG="latest"
           fi
 
-          node -e "\
-            fetch('https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG}').then(r => r.json()) \
-              .then(console.log)\
-          "
+          NEXT_NPM_VERSION="$(node .github/scripts/ci/next-npm-version.mjs)"
+          NEXT_BIN_VERSION="$(node .github/scripts/ci/next-github-release.mjs)"
 
+          echo NEXT_NPM_VERSION = $NEXT_NPM_VERSION
+          echo NEXT_BIN_VERSION = $NEXT_BIN_VERSION
 
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
+          echo "NEXT_NPM_VERSION=$NEXT_NPM_VERSION" >> $GITHUB_OUTPUT
+          echo "NEXT_BIN_VERSION=$NEXT_BIN_VERSION" >> $GITHUB_OUTPUT
 
