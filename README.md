@@ -29,6 +29,7 @@ You can install Mach from npm or directly as a [binary](.docs/install.md)
 
 ```bash
 npm install @alshdavid/mach
+npx mach --version
 ```
 
 ## Usage
