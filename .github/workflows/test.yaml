@@ -27,10 +27,10 @@ jobs:
           fi
 
           node -e "\
-            fetch("https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG}").then(r => r.json()) \
+            fetch('https://registry.npmjs.org/@alshdavid/mach/${NPM_TAG}').then(r => r.json()) \
               .then(console.log)\
           "
-          
+
 
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
