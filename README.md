@@ -19,8 +19,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/npm/v/@alshdavid/mach">
-  <img src="https://img.shields.io/badge/dependencies-0-green">
   <img src="https://img.shields.io/npm/dm/@alshdavid/mach.svg">
+  <img src="https://img.shields.io/badge/install-dependencies-0-green">
 </p>
 
 ---
