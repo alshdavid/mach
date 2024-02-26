@@ -114,9 +114,9 @@ jobs:
           npm install -g npm pnpm
           pnpm install
 
-      # - name: Build
-      #   run: |
-      #     node .github/scripts/run.mjs build
+      - name: Build
+        run: |
+          node .github/scripts/run.mjs build
 
       - name: Package
         env:
