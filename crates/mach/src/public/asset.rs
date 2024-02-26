@@ -5,6 +5,7 @@ use super::BundleBehavior;
 
 #[derive(Clone)]
 pub struct Asset {
+  pub name: String,
   pub file_path: PathBuf,
   /// Describes the type of the Asset. Stars as the file extension
   pub kind: String,

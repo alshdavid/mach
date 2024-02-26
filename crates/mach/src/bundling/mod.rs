@@ -35,6 +35,10 @@ pub fn bundle(
     while let Some(asset_id) = q.pop() {
       let current_asset = asset_map.get(&asset_id).unwrap();
 
+      if bundle.name == "" {
+        bundle.name = current_asset.name.clone();
+      }
+
       if current_asset.kind == "js" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "js".to_string();

@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct Bundle {
+  pub name: String,
   pub kind: String,
   pub assets: HashSet<PathBuf>,
   pub entry_asset: PathBuf,

@@ -95,6 +95,7 @@ pub async fn transform(
     }
 
     asset_map.insert(Asset {
+      name: file_target.file_stem.clone(),
       file_path: resolve_result.file_path.clone(),
       content,
       kind: asset_kind,
