@@ -164,8 +164,8 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       
-  windows-amd64:
-    name: "Build: windows-amd64"
+  macos-arm64:
+    name: "Build: macos-arm64"
     runs-on: macos-13
     needs: [vars]
     steps:
