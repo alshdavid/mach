@@ -287,6 +287,10 @@ jobs:
           NPM_VERSION: ${{ needs.vars.outputs.NEXT_NPM_VERSION }}
           NPM_BIN_TARGET: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
+          if [ "$PUBLISH_NPM" != "true" ]; then
+            exit 0
+          fi
+          
           npm install -g npm pnpm
           pnpm install
 
