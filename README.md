@@ -43,7 +43,7 @@ $ mach build ./src/index.html
 > Build Success
 
 $ ls ./dist
-> index.js
+> index.html index.js index.css
 ```
 
 #### Dev Server
