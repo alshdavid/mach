@@ -120,6 +120,8 @@ jobs:
 
       - name: Package
         run: |
+          echo "NPM_VERSION = $NPM_VERSION"
+          echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
           cd npm/mach
           npm pack
           mv *.tgz ../../mach-npm.tgz
