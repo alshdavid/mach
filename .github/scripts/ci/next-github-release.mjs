@@ -39,7 +39,7 @@ if (!tag_exists) {
 for await (const release of get_releases()) {
   if (release.tag_name.startsWith(`${BRANCH_NAME}.`)) {
     const [,build] = release.tag_name.split('.')
-    console.log(`${BRANCH_NAME}-${parseInt(build, 10) + 1}`)
+    console.log(`${BRANCH_NAME}.${parseInt(build, 10) + 1}`)
     break
   }
 }
