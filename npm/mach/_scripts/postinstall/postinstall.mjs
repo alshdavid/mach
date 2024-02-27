@@ -7,7 +7,9 @@ import * as child_process from "node:child_process"
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'))
-const { bin: BRANCH_NAME } = packageJson.mach || {}
+const BRANCH_NAME = process.env.MACH_NPM_INSTALL_BIN 
+  ? process.env.MACH_NPM_INSTALL_BIN
+  : packageJson.mach?.bin
 
 if (BRANCH_NAME == '' || process.env.MACH_SKIP_INSTALL === 'true') {
   process.exit(0) 
