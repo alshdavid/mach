@@ -16,6 +16,7 @@ pub struct Dependency {
   pub source_path: PathBuf,
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
+  pub resolve_from_rel: PathBuf,
   /// Symbols that are imported from this path
   pub imported_symbols: Vec<ImportSymbolType>,
   /// Where to place the dependency within the bundle
@@ -31,6 +32,7 @@ impl Default for Dependency {
       priority: DependencyPriority::Sync,
       source_path: Default::default(),
       resolve_from: Default::default(),
+      resolve_from_rel: Default::default(),
       imported_symbols: Default::default(),
       bundle_behavior: BundleBehavior::Default,
     }

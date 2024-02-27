@@ -1,6 +1,6 @@
-use crate::platform::hash::hash_string_sha_256;
+use crate::platform::hash::{hash_string_sha_256, truncate};
 
-use super::Dependency;
+use super::{Dependency, ID_TRUNC};
 use std::collections::HashMap;
 use std::fmt::Debug;
 
@@ -29,7 +29,7 @@ impl DependencyMap {
       dependency.priority,
       dependency.imported_symbols
     );
-    let dependency_id = hash_string_sha_256(&key);
+    let dependency_id = truncate(&hash_string_sha_256(&key), ID_TRUNC);
     self.dependencies.insert(dependency_id.clone(), dependency);
     dependency_id
   }
