@@ -1,11 +1,10 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Bundle;
+use crate::public::BundleGraph;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
 use crate::public::ENTRY_ASSET;
@@ -17,9 +16,9 @@ pub fn bundle(
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
+  bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
   let mut css_bundle = Bundle::new(NO_ASSET.as_path(), "css");
-  let mut bundle_graph = HashMap::<String, String>::new();
 
   let mut entries: Vec<(PathBuf, Option<String>)> = asset_graph
     .get_dependencies(&ENTRY_ASSET)
@@ -73,6 +72,7 @@ pub fn bundle(
         let dependency = dependency_map.get(dependency_id).unwrap();
         match dependency.priority {
           public::DependencyPriority::Sync => {
+            bundle_graph.insert(dependency_id.clone(), bundle.id.clone());
             q.push(asset_id.clone());
           }
           public::DependencyPriority::Lazy => {
@@ -88,7 +88,7 @@ pub fn bundle(
   if css_bundle.assets.len() > 0 {
     bundles.push(css_bundle);
   }
-  dbg!(&bundle_graph);
+
   return Ok(());
 }
 

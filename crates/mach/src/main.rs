@@ -7,19 +7,24 @@ mod platform;
 mod plugins;
 mod public;
 mod transformation;
+mod emit;
 
 use std::sync::Arc;
 
 use crate::adapters::node_js::NodeAdapter;
 use crate::bundling::bundle;
 use crate::config::parse_config;
+use crate::packaging::package;
 use crate::plugins::load_plugins;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
+use crate::public::BundleGraph;
 use crate::public::Bundles;
 use crate::public::Config;
 use crate::public::DependencyMap;
+use crate::public::Packages;
 use crate::transformation::transform;
+use crate::emit::emit;
 
 async fn main_async(config: Config) {
   // Bundle state
@@ -27,7 +32,9 @@ async fn main_async(config: Config) {
   let mut dependency_map = DependencyMap::new();
   let mut asset_graph = AssetGraph::new();
   let mut bundles = Bundles::new();
-
+  let mut bundle_graph = BundleGraph::new();
+  let mut packages = Packages::new();
+  
   // Adapters
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
 
@@ -80,6 +87,7 @@ async fn main_async(config: Config) {
     &mut dependency_map,
     &mut asset_graph,
     &mut bundles,
+    &mut bundle_graph,
   ) {
     println!("Bundling Error");
     println!("{}", err);
@@ -87,6 +95,33 @@ async fn main_async(config: Config) {
   }
 
   dbg!(&bundles);
+  dbg!(&bundle_graph);
+
+  if let Err(err) = package(
+    &config,
+    &mut asset_map,
+    &mut dependency_map,
+    &mut asset_graph,
+    &mut bundles,
+    &mut bundle_graph,
+    &mut packages,
+  ) {
+    println!("Packaging Error");
+    println!("{}", err);
+    return;
+  }
+
+  // dbg!(&packages);
+
+  if let Err(err) = emit(
+    &config,
+    &mut bundles,
+    &mut packages,
+  ) {
+    println!("Packaging Error");
+    println!("{}", err);
+    return;
+  }
 
   println!(
     "Finished in:   {:.3}s",

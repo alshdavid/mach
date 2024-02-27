@@ -9,6 +9,8 @@ mod dependency_graph;
 mod machrc;
 mod resolver;
 mod transformer;
+mod packager;
+mod packages;
 
 pub use crate::public::asset::*;
 pub use crate::public::asset_graph::*;
@@ -21,3 +23,5 @@ pub use crate::public::dependency_graph::*;
 pub use crate::public::machrc::*;
 pub use crate::public::resolver::*;
 pub use crate::public::transformer::*;
+pub use crate::public::packager::*;
+pub use crate::public::packages::*;

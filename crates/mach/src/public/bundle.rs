@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use crate::platform::hash::{hash_string_sha_256, truncate};
@@ -54,3 +54,4 @@ impl Bundle {
 }
 
 pub type Bundles = Vec<Bundle>;
+pub type BundleGraph = HashMap<String, String>;
