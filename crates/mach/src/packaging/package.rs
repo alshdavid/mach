@@ -7,7 +7,7 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
-use crate::platform::swc::parse_module;
+use crate::platform::swc::module_item_to_stmt;
 use crate::platform::swc::parse_program;
 use crate::public;
 use crate::public::AssetGraph;
@@ -51,7 +51,7 @@ pub fn package(
     }
     
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.prelude_require_async());
+      bundle_module_stmts.push(runtime_factory.prelude_mach_require());
       bundle_module_stmts.push(runtime_factory.import_script());
       bundle_module_stmts.push(runtime_factory.manifest(&manifest).unwrap());
     }
@@ -89,15 +89,7 @@ pub fn package(
           asset_graph: &asset_graph,
         });
 
-        let mut stmts = Vec::<Stmt>::new();
-        for item in module.body {
-          match item {
-            ModuleItem::ModuleDecl(_) => {},
-            ModuleItem::Stmt(stmt) => stmts.push(stmt),
-          }
-        }
-
-        runtime_factory.module(asset_id.to_str().unwrap(), stmts)
+        runtime_factory.module(asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
       });
 
       
@@ -105,7 +97,7 @@ pub fn package(
     }
 
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.require_async(&[], bundle.entry_asset.to_str().unwrap()));
+      bundle_module_stmts.push(runtime_factory.mach_require(&[], bundle.entry_asset.to_str().unwrap()));
     }
 
     let bundle_module = Module{ 

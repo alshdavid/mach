@@ -54,7 +54,8 @@ pub fn bundle(
         bundle.kind = "js".to_string();
 
         if bundle.output == "" {
-          bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
+          // bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
+          bundle.output = format!("{}.js", bundle.name);
         }
       } 
       
