@@ -1,5 +1,5 @@
 (async () => {
   // Code goes here
 
-  document.currentScript.loaded = 1
+  if (document.currentScript) document.currentScript.loaded = 1;
 })()

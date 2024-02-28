@@ -14,6 +14,10 @@ pub fn parse_module(
   source_map: Arc<SourceMap>,
 ) -> Result<ParseModuleResult, String> {
   let program = parse_program(file_name, code, source_map)?;
+  match program.program {
+    Program::Module(_) => println!("is module"),
+    Program::Script(_) => println!("is script"),
+  }
   let Program::Module(module) = program.program else {
     return Err("Incorrect type".to_string());
   };

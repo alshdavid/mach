@@ -1,3 +1,3 @@
-import { a } from './a.js'
+import foo from './a.js'
 
-console.log(a)
+console.log(foo)

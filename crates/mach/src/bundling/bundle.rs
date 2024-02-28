@@ -20,18 +20,24 @@ pub fn bundle(
 ) -> Result<(), String> {
   let mut css_bundle = Bundle::new(NO_ASSET.as_path(), "css");
 
-  let mut entries: Vec<(PathBuf, Option<String>)> = asset_graph
+  let mut entries: Vec<(PathBuf, bool, Option<String>)> = asset_graph
     .get_dependencies(&ENTRY_ASSET)
     .expect("no entry assets")
     .iter()
-    .map(|x| (x.1.clone(), None))
+    .map(|x| (x.1.clone(), false, None))
     .collect();
 
-  while let Some((entry_asset_id, from_bundle)) = entries.pop() {
+  while let Some((entry_asset_id, is_lazy, from_bundle)) = entries.pop() {
     let mut bundle = Bundle::new(&entry_asset_id, "");
 
     if let Some(from_dependency_id) = from_bundle {
       bundle_graph.insert(from_dependency_id.clone(), bundle.id.clone());
+    } else {
+      bundle.is_entry = true;
+    }
+
+    if is_lazy {
+      bundle.is_lazy = true
     }
 
     let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);
@@ -46,12 +52,20 @@ pub fn bundle(
       if current_asset.kind == "js" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "js".to_string();
+
+        if bundle.output == "" {
+          bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
+        }
       } 
       
       if current_asset.kind == "css" {
         css_bundle.assets.insert(asset_id.clone());
         if css_bundle.entry_asset == *NO_ASSET {
           css_bundle.update_entry(&asset_id);
+        }
+
+        if bundle.output == "" {
+          bundle.output = format!("{}.{}.css", bundle.name, bundle.id);
         }
       } 
       
@@ -76,7 +90,7 @@ pub fn bundle(
             q.push(asset_id.clone());
           }
           public::DependencyPriority::Lazy => {
-            entries.push((asset_id.clone(), Some(dependency_id.clone())));
+            entries.push((asset_id.clone(), true, Some(dependency_id.clone())));
           }
         }
       }

@@ -17,15 +17,17 @@ const JS_PRELUDE_REQUIRE_ASYNC: &str = include_str!("./js/prelude_require_async.
 const JS_REQUIRE_ASYNC: &str = include_str!("./js/require_async.js");
 const JS_WRAPPER: &str = include_str!("./js/wrapper.js");
 
+const SYMBOL_EXPORT_DEFAULT_KEY: &str = "default";
+
 pub struct RuntimeFactory {
-  define_export: CallExpr,
-  import_script: Stmt,
-  manifest: CallExpr,
-  module: Stmt,
-  prelude: BlockStmt,
-  prelude_require_async: Stmt,
-  require_async: CallExpr,
-  wrapper: CallExpr,
+  decl_define_export: CallExpr,
+  decl_import_script: Stmt,
+  decl_manifest: CallExpr,
+  decl_module: Stmt,
+  decl_prelude: BlockStmt,
+  decl_prelude_require_async: Stmt,
+  decl_require_async: CallExpr,
+  decl_wrapper: CallExpr,
 }
 
 impl RuntimeFactory {
@@ -118,14 +120,14 @@ impl RuntimeFactory {
     };
 
     return Self {
-      define_export,
-      import_script,
-      manifest,
-      module,
-      prelude,
-      prelude_require_async,
-      require_async,
-      wrapper,
+      decl_define_export: define_export,
+      decl_import_script: import_script,
+      decl_manifest: manifest,
+      decl_module: module,
+      decl_prelude: prelude,
+      decl_prelude_require_async: prelude_require_async,
+      decl_require_async: require_async,
+      decl_wrapper: wrapper,
     };
   }
 
@@ -134,7 +136,7 @@ impl RuntimeFactory {
     export_key: &str,
     export_identifier: &str,
   ) -> Stmt {
-    let mut define_export = self.define_export.clone();
+    let mut define_export = self.decl_define_export.clone();
 
     define_export.args[0].expr = Box::new(Expr::Lit(Lit::Str(Str {
       span: Span::default(),
@@ -160,14 +162,14 @@ impl RuntimeFactory {
   }
 
   pub fn import_script(&self) -> Stmt {
-    self.import_script.clone()
+    self.decl_import_script.clone()
   }
 
   pub fn manifest(
     &self,
     bundles: &HashMap<String, String>,
   ) -> Result<Stmt, String> {
-    let mut manifest = self.manifest.clone();
+    let mut manifest = self.decl_manifest.clone();
 
     let Ok(data) = serde_json::to_string(bundles) else {
       return Err("Unable to parse JSON".to_string());
@@ -192,7 +194,7 @@ impl RuntimeFactory {
     module_id: &str,
     contents: Vec<Stmt>,
   ) -> Stmt {
-    let mut module = self.module.clone();
+    let mut module = self.decl_module.clone();
 
     let Stmt::Expr(expr) = &mut module else {
       panic!()
@@ -237,8 +239,8 @@ impl RuntimeFactory {
   pub fn prelude(
     &self,
     project_identifier: &str,
-  ) -> Stmt {
-    let mut prelude = self.prelude.clone();
+  ) -> Vec<Stmt> {
+    let mut prelude = self.decl_prelude.clone();
 
     let Stmt::Decl(decl) = &mut prelude.stmts[0] else {
       panic!();
@@ -290,11 +292,11 @@ impl RuntimeFactory {
       })));
     }
 
-    Stmt::Block(prelude)
+    prelude.stmts
   }
 
   pub fn prelude_require_async(&self) -> Stmt {
-    self.prelude_require_async.clone()
+    self.decl_prelude_require_async.clone()
   }
 
   pub fn require_async(
@@ -302,7 +304,7 @@ impl RuntimeFactory {
     bundle_ids: &[&str],
     module_id: &str,
   ) -> Stmt {
-    let mut require_async = self.require_async.clone();
+    let mut require_async = self.decl_require_async.clone();
 
     let Expr::Array(array) = &mut *require_async.args[0].expr else {
       panic!()
@@ -333,11 +335,154 @@ impl RuntimeFactory {
     })
   }
 
+  pub fn require_async_awaited(
+    &self,
+    bundle_ids: &[&str],
+    module_id: &str,
+  ) -> AwaitExpr {
+    let require_async = self.require_async(bundle_ids, module_id);
+
+    let Stmt::Expr(require_async) = require_async else {
+      panic!("Unable to generate import");
+    };
+
+    let Expr::Call(require_async) = *require_async.expr else {
+      panic!("Unable to generate import");
+    };
+
+    AwaitExpr {
+        span: Span::default(),
+        arg: Box::new(Expr::Call(require_async)),
+    }
+  }
+  /// import { foo } from 'foobar'
+  /// import { foo as bar } from 'foobar'
+  /// import foo from 'foobar'
+  /// import foo, { bar } from 'foobar'
+  /// import foo, { foo as bar } from 'foobar'
+  pub fn require_async_named(
+    &self, 
+    bundle_ids: &[&str],
+    module_id: &str,
+    assignments: Vec<ImportNamed>) -> Stmt {
+    let import_expr = self.require_async_awaited(bundle_ids, module_id);
+
+    let mut imports = Vec::<ObjectPatProp>::new();
+
+    for assignment in assignments {
+      match assignment {
+        ImportNamed::Named(name) => {
+          imports.push(ObjectPatProp::Assign(AssignPatProp {
+            span: Span::default(),
+            key: Ident {
+              span: Span::default(),
+              sym: Atom::from(name.clone()),
+              optional: false,
+            },
+            value: None,
+          }))
+        },
+        ImportNamed::Renamed(key, key_as) => {
+          imports.push(ObjectPatProp::KeyValue(KeyValuePatProp {
+            key: PropName::Ident(Ident {
+              span: Span::default(),
+              sym: Atom::from(key.clone()),
+              optional: false,
+            }),
+            value: Box::new(Pat::Ident(BindingIdent {
+              id: Ident {
+                span: Span::default(),
+                sym: Atom::from(key_as.clone()),
+                optional: false,
+              },
+              type_ann: None,
+            })),
+          }));
+        },
+        ImportNamed::Default(name) => {
+          imports.push(ObjectPatProp::KeyValue(KeyValuePatProp {
+            key: PropName::Computed(ComputedPropName {
+              span: Span::default(),
+              expr: Box::new(Expr::Lit(Lit::Str(Str {
+                span: Span::default(),
+                value: Atom::from(SYMBOL_EXPORT_DEFAULT_KEY),
+                raw: Some(Atom::from(format!("\"{}\"", SYMBOL_EXPORT_DEFAULT_KEY))),
+              }))),
+            }),
+            value: Box::new(Pat::Ident(BindingIdent {
+              id: Ident {
+                span: Span::default(),
+                sym: Atom::from(name.clone()),
+                optional: false,
+              },
+              type_ann: None,
+            })),
+          }));
+        },
+      }
+    }
+    
+    return Stmt::Decl(Decl::Var(Box::new(VarDecl {
+      span: Span::default(),
+      kind: VarDeclKind::Const,
+      declare: false,
+      decls: vec![VarDeclarator {
+        span: Span::default(),
+        name: Pat::Object(ObjectPat {
+          span: Span::default(),
+          props: imports,
+          optional: false,
+          type_ann: None,
+        }),
+        init: Some(Box::new(Expr::Await(import_expr))),
+        definite: false,
+      }],
+    })));
+  }
+
+  /// import 'foobar'
+  /// import * as foobar from 'foobar'
+  pub fn require_async_namespace(
+    &self,
+    bundle_ids: &[&str],
+    module_id: &str,
+    named_as: Option<String>,
+  ) -> Stmt {
+    let import_expr = self.require_async_awaited(bundle_ids, module_id);
+    let await_expr = ExprStmt {
+      span: Span::default(),
+      expr: Box::new(Expr::Await(import_expr)),
+    };
+
+    let Some(assignment) = named_as else {
+      return Stmt::Expr(await_expr);
+    };
+
+    return Stmt::Decl(Decl::Var(Box::new(VarDecl {
+      span: Span::default(),
+      kind: VarDeclKind::Const,
+      declare: false,
+      decls: vec![VarDeclarator {
+        span: Span::default(),
+        name: Pat::Ident(BindingIdent {
+          id: Ident {
+            span: Span::default(),
+            sym: Atom::from(assignment),
+            optional: false,
+          },
+          type_ann: None,
+        }),
+        init: Some(await_expr.expr),
+        definite: false,
+      }],
+    })));
+  }
+
   pub fn wrapper(
     &self,
     stmts: Vec<Stmt>,
   ) -> Stmt {
-    let mut wrapper = self.wrapper.clone();
+    let mut wrapper = self.decl_wrapper.clone();
 
     let Callee::Expr(expr) = &mut wrapper.callee else {
       panic!()
@@ -366,4 +511,41 @@ impl RuntimeFactory {
       expr: Box::new(Expr::Call(wrapper)),
     })
   }
+
+  pub fn declare_var(&self, kind: VarDeclKind, name: &str, expr: Expr) -> Stmt {
+    let decl = VarDecl {
+        span: Span::default(),
+        kind,
+        declare: true,
+        decls: vec![VarDeclarator{ 
+          span: Span::default(), 
+          name: Pat::Ident(BindingIdent { 
+            id: Ident { 
+              span: Span::default(),
+              sym: Atom::from(name),
+              optional: false, 
+            }, 
+            type_ann: None 
+          }), 
+          init: Some(Box::new(expr)), 
+          definite: true, 
+        }],
+    };
+    return Stmt::Decl(Decl::Var(Box::new(decl)));
+  }
 }
+
+#[derive(Debug, Clone)]
+pub enum ImportNamed {
+  /// import { foo } from 'specifier'
+  ///          ---
+  Named(String),
+  /// import { foo as bar } from 'specifier'
+  ///          ----------
+  Renamed(String, String),
+  /// import foo from 'specifier'
+  ///        ---
+  Default(String),
+}
+
+pub type ExportNamed = ImportNamed;

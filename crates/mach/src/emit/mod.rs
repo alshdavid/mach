@@ -16,11 +16,10 @@ pub fn emit(
       public::PackageType::JavaScript((module, cm)) => {
         let bundle = bundles.iter().find(|x| x.id == *bundle_id).unwrap();
         let rendered = render_module(&module, cm.clone());
-        println!("{} {} {}", bundle.name, bundle.id, rendered);
         fs::write(
           config
             .dist_dir
-            .join(format!("{}.{}.js", bundle.name, bundle.id)),
+            .join(&bundle.output),
           rendered,
         )
         .unwrap();

@@ -5,11 +5,14 @@ use crate::platform::hash::{hash_string_sha_256, truncate};
 
 use super::ID_TRUNC;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Bundle {
   pub id: String,
   pub name: String,
+  pub output: String,
   pub kind: String,
+  pub is_entry: bool,
+  pub is_lazy: bool,
   pub assets: HashSet<PathBuf>,
   pub entry_asset: PathBuf,
 }
@@ -18,7 +21,13 @@ impl Bundle {
   pub fn new(entry_asset: &Path, kind: &str) -> Self {
     let mut bundle = Self {
       kind: kind.to_string(),
-      ..Default::default()
+      id: String::new(),
+      name: String::new(),
+      output: String::new(),
+      is_entry: false,
+      is_lazy: false,
+      assets: HashSet::new(),
+      entry_asset: PathBuf::new(),
     };
 
     bundle.update_entry(entry_asset);

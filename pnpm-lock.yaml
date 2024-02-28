@@ -18,13 +18,21 @@ importers:
     devDependencies:
       '@alshdavid/mach':
         specifier: workspace:*
-        version: link:../../../../../../npm/mach
+        version: link:../../../../../../npm/noop
 
   npm/mach: {}
 
   npm/node-adapter: {}
 
+  npm/noop: {}
+
   testing/fixtures/app-css:
+    devDependencies:
+      http-server:
+        specifier: ^14.1.1
+        version: 14.1.1
+
+  testing/fixtures/app-html:
     devDependencies:
       http-server:
         specifier: ^14.1.1
@@ -90,11 +98,17 @@ importers:
         specifier: ^14.1.1
         version: 14.1.1
 
+  testing/fixtures/simple-1:
+    devDependencies:
+      http-server:
+        specifier: ^14.1.1
+        version: 14.1.1
+
   testing/fixtures/simple-plugins:
     devDependencies:
       '@alshdavid/mach':
         specifier: workspace:*
-        version: link:../../../npm/mach
+        version: link:../../../npm/noop
       http-server:
         specifier: ^14.1.1
         version: 14.1.1
