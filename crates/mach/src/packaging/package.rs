@@ -20,7 +20,6 @@ use crate::public::PackageType;
 use crate::public::Packages;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
-use super::js_runtime::js_runtime::ModuleKind;
 use super::runtime_factory::RuntimeFactory;
 
 pub fn package(
@@ -53,9 +52,11 @@ pub fn package(
     }
     
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.import_script());
+      if bundles.len() > 1 {
+        bundle_module_stmts.push(runtime_factory.manifest(&manifest).unwrap());
+        bundle_module_stmts.push(runtime_factory.import_script());
+      }
       bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
-      bundle_module_stmts.push(runtime_factory.manifest(&manifest).unwrap());
     }
 
     let asset_map = &asset_map;

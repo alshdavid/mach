@@ -10,7 +10,7 @@ use crate::platform::swc::parse_script;
 
 const JS_DEFINE_EXPORT: &str = include_str!("./js/define_export.js");
 const JS_IMPORT_SCRIPT_CLASSIC: &str = include_str!("./js/import_script_classic.js");
-const JS_IMPORT_SCRIPT_ESM: &str = include_str!("./js/import_script_esm.js");
+const _JS_IMPORT_SCRIPT_ESM: &str = include_str!("./js/import_script_esm.js");
 const JS_MANIFEST: &str = include_str!("./js/manifest.js");
 const JS_MODULE: &str = include_str!("./js/module.js");
 const JS_PRELUDE: &str = include_str!("./js/prelude.js");
@@ -670,36 +670,6 @@ impl RuntimeFactory {
         Some(BlockStmtOrExpr::BlockStmt(self.decl_define_reexport_star.clone())),
       );
     }
-  }
-
-  /// var foo = ''
-  /// let foo = ''
-  /// const foo = ''
-  pub fn declare_var(
-    &self,
-    kind: VarDeclKind,
-    name: &str,
-    expr: Expr,
-  ) -> Stmt {
-    let decl = VarDecl {
-      span: Span::default(),
-      kind,
-      declare: false,
-      decls: vec![VarDeclarator {
-        span: Span::default(),
-        name: Pat::Ident(BindingIdent {
-          id: Ident {
-            span: Span::default(),
-            sym: Atom::from(name),
-            optional: false,
-          },
-          type_ann: None,
-        }),
-        init: Some(Box::new(expr)),
-        definite: true,
-      }],
-    };
-    return Stmt::Decl(Decl::Var(Box::new(decl)));
   }
 }
 

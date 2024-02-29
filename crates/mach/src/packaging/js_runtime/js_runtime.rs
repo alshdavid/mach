@@ -23,13 +23,6 @@ use super::read_import_assignments::ImportAssignment;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 
-#[derive(Debug, Clone)]
-pub enum ModuleKind {
-  Unknown,
-  ESM,
-  Commonjs,
-}
-
 pub struct JavaScriptRuntime<'a> {
   pub current_asset_id: &'a Path,
   pub current_bundle_id: &'a str,
@@ -288,50 +281,6 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     return module;
   }
 
-  // fn fold_call_expr(
-  //   &mut self,
-  //   call_expr: CallExpr,
-  // ) -> CallExpr {
-  //   let call_expr = call_expr.fold_children_with(self);
-
-  //   match &call_expr.callee {
-  //     /*
-  //        import("specifier")
-  //     */
-  //     Callee::Import(_) => {
-  //       if call_expr.args.len() == 0 {
-  //         return call_expr;
-  //       }
-  //       let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-  //         return call_expr;
-  //       };
-  //       let Lit::Str(import_specifier) = import_specifier_arg else {
-  //         return call_expr;
-  //       };
-  //       let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
-
-  //       let import_stmt = self
-  //         .runtime_factory
-  //         .mach_require(&asset_id, &bundle_ids);
-
-  //       let Stmt::Expr(import_stmt) = import_stmt else {
-  //         panic!("Unable to generate import");
-  //       };
-
-  //       let Expr::Call(import_stmt) = *import_stmt.expr else {
-  //         panic!("Unable to generate import");
-  //       };
-
-  //       return import_stmt;
-  //     }
-
-  //     Callee::Expr(_) => {}
-  //     Callee::Super(_) => {}
-  //   };
-
-  //   return call_expr;
-  // }
-
   /*
     require("specifier")
   */
@@ -385,7 +334,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           let Stmt::Expr(import_stmt) = import_stmt else {
             panic!("");
           };
-          return *import_stmt.expr;
+
+          let Expr::Await(import_stmt) = *import_stmt.expr else { panic!() };
+          return *import_stmt.arg;
         }
         Callee::Super(_) => {}
       };
