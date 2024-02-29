@@ -9,6 +9,7 @@ mod render_module;
 mod render_program;
 mod render_script;
 mod render_stmts;
+mod lookup_property_access;
 
 pub use crate::platform::swc::convert::*;
 pub use crate::platform::swc::parse_module::*;
@@ -18,3 +19,4 @@ pub use crate::platform::swc::render_module::*;
 pub use crate::platform::swc::render_program::*;
 pub use crate::platform::swc::render_script::*;
 pub use crate::platform::swc::render_stmts::*;
+pub use crate::platform::swc::lookup_property_access::*;

@@ -2,12 +2,15 @@ use std::path::Path;
 
 use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
+use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
 
 use crate::packaging::runtime_factory::ExportNamed;
 use crate::packaging::runtime_factory::ImportNamed;
+use crate::platform::hash::hash_string_sha_256;
+use crate::platform::swc::lookup_property_access;
 use crate::platform::swc::stmt_to_module_item;
 use crate::public::AssetGraph;
 use crate::public::BundleGraph;
@@ -281,7 +284,11 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
   }
 
   /*
+    import("specifier")
     require("specifier")
+    module.exports.a = value
+    module.exports = value
+    exports.a = value
   */
   fn fold_expr(
     &mut self,
@@ -346,6 +353,29 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
 
       return expr;
     };
+
+    if let Expr::Assign(assign) = &mut expr {
+      if let Some((key, expr)) = lookup_property_access(assign, &["module", "exports"]) {
+        let id = hash_string_sha_256(&format!("{}{:?}", key,&expr));
+        // let new_var = self.runtime_factory.declare_var(VarDeclKind::Let, &id, &expr).as_decl().unwrap().as_var().unwrap().clone();
+        let new_assignment = AssignExpr {
+            span: Span::default(),
+            op: AssignOp::Assign,
+            left: PatOrExpr::Expr(Box::new(Expr::Ident(Ident { 
+              span: Span::default(), 
+              sym: Atom::from(key.clone()), 
+              optional: false,
+            }))),
+            right: Box::new(expr),
+        };
+        let export = self.runtime_factory.define_export(&key, &id).as_expr().unwrap().expr.clone();
+        return *Expr::from_exprs(vec![
+          Box::new(Expr::Assign(new_assignment)),
+          export,
+        ]);
+        
+      };
+    }
 
     return expr;
   }

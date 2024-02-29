@@ -1,3 +1,3 @@
 // const b = 'b'
 
-// module.exports = { b }
+module.exports.b = 'b'

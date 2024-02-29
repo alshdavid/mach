@@ -192,6 +192,7 @@ impl RuntimeFactory {
     return self.define_export(SYMBOL_EXPORT_DEFAULT_KEY, export_identifier);
   }
 
+  // export { export_key } from "export_identifier"
   pub fn define_export(
     &self,
     export_key: &str,
@@ -672,6 +673,36 @@ impl RuntimeFactory {
         )),
       );
     }
+  }
+
+  /// var foo = ''
+  /// let foo = ''
+  /// const foo = ''
+  pub fn declare_var(
+    &self,
+    kind: VarDeclKind,
+    name: &str,
+    expr: Expr,
+  ) -> Stmt {
+    let decl = VarDecl {
+      span: Span::default(),
+      kind,
+      declare: false,
+      decls: vec![VarDeclarator {
+        span: Span::default(),
+        name: Pat::Ident(BindingIdent {
+          id: Ident {
+            span: Span::default(),
+            sym: Atom::from(name),
+            optional: false,
+          },
+          type_ann: None,
+        }),
+        init: Some(Box::new(expr)),
+        definite: true,
+      }],
+    };
+    return Stmt::Decl(Decl::Var(Box::new(decl)));
   }
 }
 
