@@ -54,10 +54,11 @@ pub fn bundle(
         bundle.kind = "js".to_string();
 
         if bundle.output == "" {
-          bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
+          // bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
+          bundle.output = format!("{}.js", bundle.name);
         }
-      } 
-      
+      }
+
       if current_asset.kind == "css" {
         css_bundle.assets.insert(asset_id.clone());
         if css_bundle.entry_asset == *NO_ASSET {
@@ -67,13 +68,13 @@ pub fn bundle(
         if bundle.output == "" {
           bundle.output = format!("{}.{}.css", bundle.name, bundle.id);
         }
-      } 
-      
+      }
+
       if current_asset.kind == "html" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "html".to_string();
       }
-      
+
       if bundle.kind == "" {
         continue;
       }
@@ -106,7 +107,7 @@ pub fn bundle(
   return Ok(());
 }
 
-/* 
+/*
 // Infer JS exports from imports
 // I guess this is the start of tree shaking
 // I have enough information to drop unused named exports

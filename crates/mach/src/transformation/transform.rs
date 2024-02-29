@@ -40,7 +40,8 @@ pub async fn transform(
       }
       return Err("Unable to resolve file".to_string());
     };
-    let file_path_rel = pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+    let file_path_rel =
+      pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
     // Resolve Done
 
     // Dependency Graph

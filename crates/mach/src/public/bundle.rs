@@ -1,7 +1,10 @@
-use std::collections::{HashMap, HashSet};
-use std::path::{Path, PathBuf};
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::path::Path;
+use std::path::PathBuf;
 
-use crate::platform::hash::{hash_string_sha_256, truncate};
+use crate::platform::hash::hash_string_sha_256;
+use crate::platform::hash::truncate;
 
 use super::ID_TRUNC;
 
@@ -18,7 +21,10 @@ pub struct Bundle {
 }
 
 impl Bundle {
-  pub fn new(entry_asset: &Path, kind: &str) -> Self {
+  pub fn new(
+    entry_asset: &Path,
+    kind: &str,
+  ) -> Self {
     let mut bundle = Self {
       kind: kind.to_string(),
       id: String::new(),
@@ -34,9 +40,12 @@ impl Bundle {
     return bundle;
   }
 
-  pub fn update_entry(&mut self, entry_asset: &Path) {
-    let mut file_stem = String::new();
-    let mut file_name = String::new();
+  pub fn update_entry(
+    &mut self,
+    entry_asset: &Path,
+  ) {
+    let file_stem: String;
+    let file_name: String;
     let mut file_extension = String::new();
 
     if let Some(ext) = entry_asset.extension() {
@@ -52,12 +61,14 @@ impl Bundle {
     if file_extension == "" {
       file_stem = file_name;
     } else {
-      file_stem = file_name
-        .replace(&format!(".{}", file_extension), "");
+      file_stem = file_name.replace(&format!(".{}", file_extension), "");
     }
 
     self.name = file_stem;
-    self.id = truncate(&hash_string_sha_256(entry_asset.to_str().unwrap()), ID_TRUNC);
+    self.id = truncate(
+      &hash_string_sha_256(entry_asset.to_str().unwrap()),
+      ID_TRUNC,
+    );
     self.entry_asset = entry_asset.to_path_buf();
   }
 }

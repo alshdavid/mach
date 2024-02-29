@@ -8,7 +8,7 @@ use crate::packaging::runtime_factory::ExportNamed;
 */
 pub fn read_exports_named(
   decl: NamedExport,
-  specifier: Option<String>,
+  import_specifier: Option<String>,
 ) -> ExportAssignment {
   let mut export_assignments = Vec::<ExportNamed>::new();
 
@@ -34,25 +34,25 @@ pub fn read_exports_named(
       //
       // I could be wrong, but a namespace asset can only have one assignment so
       // I assume decl.specifiers.len() will be 0
-      // ExportSpecifier::Namespace(decl) => {
-      //   let Some(asset_id) = asset_id else {
-      //     panic!("Invalid namespace export");
-      //   };
+      ExportSpecifier::Namespace(decl) => {
+        let Some(import_specifier) = import_specifier else {
+          panic!("Invalid namespace export");
+        };
 
-      //   let ModuleExportName::Ident(ident) = &decl.name else {
-      //     panic!("Invalid namespace export");
-      //   };
+        let ModuleExportName::Ident(ident) = &decl.name else {
+          panic!("Invalid namespace export");
+        };
 
-      //   return ExportAssignment::ReexportNamespace(asset_id, ident.sym.to_string());
-      // }
+        return ExportAssignment::ReexportNamespace(ident.sym.to_string(), import_specifier);
+      }
       _ => {
         panic!("Not Implemented")
       }
     }
   }
 
-  if let Some(specifier) = specifier {
-    return ExportAssignment::ReexportNamed(export_assignments, specifier);
+  if let Some(import_specifier) = import_specifier {
+    return ExportAssignment::ReexportNamed(export_assignments, import_specifier);
   }
 
   return ExportAssignment::ExportNamed(export_assignments);

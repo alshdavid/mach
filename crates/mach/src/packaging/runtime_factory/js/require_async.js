@@ -1,1 +1,0 @@
-require_async([], "module_id")

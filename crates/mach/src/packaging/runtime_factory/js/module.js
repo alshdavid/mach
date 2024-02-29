@@ -1,3 +1,8 @@
-mach_init["MODULE_ID"] = async (define_export, require_async, module, exports) => {
+// ESM
+mach_init["MODULE_ID"] = async (
+  mach_require, 
+  define_export,
+  module,
+) => {
   // module code
 };

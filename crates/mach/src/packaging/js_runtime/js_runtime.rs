@@ -1,11 +1,14 @@
 use std::path::Path;
 
+use once_cell::sync::Lazy;
+use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
 
 use crate::packaging::runtime_factory::ExportNamed;
 use crate::packaging::runtime_factory::ImportNamed;
+use crate::platform::swc::stmt_to_module_item;
 use crate::public::AssetGraph;
 use crate::public::BundleGraph;
 use crate::public::DependencyMap;
@@ -15,6 +18,9 @@ use super::read_exports::read_exports;
 use super::read_exports_named::read_exports_named;
 use super::read_exports_named::ExportAssignment;
 use super::read_import_assignments::read_import_assignments;
+use super::read_import_assignments::ImportAssignment;
+
+static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 
 pub struct JavaScriptRuntime<'a> {
   pub current_asset_id: &'a Path,
@@ -29,17 +35,23 @@ impl<'a> JavaScriptRuntime<'a> {
   fn get_bundle_ids_and_asset_id(
     &self,
     specifier: &str,
-  ) -> (Vec<&str>, String) {
+  ) -> (Vec<String>, String) {
     let (dependency_id, dependency) = 'block: {
       for (dependency_id, dependency) in &self.dependency_map.dependencies {
         if dependency.specifier == *specifier {
           break 'block (dependency_id, dependency);
         }
       }
-      panic!();
+      panic!(
+        "Could not find dependency for specifier\n  {}\n  {:?}",
+        specifier, self.current_asset_id
+      );
     };
 
-    let asset_graph_entries = self.asset_graph.get_dependencies(&dependency.resolve_from_rel).unwrap();
+    let asset_graph_entries = self
+      .asset_graph
+      .get_dependencies(&dependency.resolve_from_rel)
+      .unwrap();
     let mut asset_id = "";
     for (dep_id, target_asset_id) in asset_graph_entries {
       if dep_id == dependency_id {
@@ -49,30 +61,43 @@ impl<'a> JavaScriptRuntime<'a> {
 
     let bundle_id = self.bundle_graph.get(dependency_id).unwrap();
     if bundle_id == self.current_bundle_id {
-      return (vec![bundle_id], asset_id.to_string());
+      return (vec![], asset_id.to_string());
     } else {
-      return (vec![bundle_id], asset_id.to_string());
+      return (vec![bundle_id.clone()], asset_id.to_string());
     }
   }
 
-  /// Create "const { foo } = await mach_import([bundle_ids], module_id)""
   fn create_import_named(
-    &self, 
+    &self,
     specifier: &str,
     assignments: Vec<ImportNamed>,
   ) -> Stmt {
     let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return self.runtime_factory.require_async_named(&bundle_ids.as_slice(), &asset_id, assignments);
+    return self
+      .runtime_factory
+      .mach_require_named(assignments, &asset_id, &bundle_ids);
   }
 
-  /// Create "const foo = await mach_import([bundle_ids], module_id)""
   fn create_import_namespace(
-    &self, 
+    &self,
     specifier: &str,
     assignment: Option<String>,
   ) -> Stmt {
     let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return self.runtime_factory.require_async_namespace(&bundle_ids.as_slice(), &asset_id, assignment);
+    return self
+      .runtime_factory
+      .mach_require_namespace(assignment, &asset_id, &bundle_ids);
+  }
+
+  fn create_export_namespace(
+    &self,
+    specifier: &str,
+    assignment: Option<String>,
+  ) -> Stmt {
+    let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
+    return self
+      .runtime_factory
+      .define_reexport_namespace(assignment, &asset_id, &bundle_ids);
   }
 }
 
@@ -85,7 +110,7 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
 
     let mut statements = Vec::<Stmt>::new();
 
-    while let Some(decl) = module.body.pop() { 
+    for decl in module.body.drain(0..) {
       match decl {
         ModuleItem::ModuleDecl(decl) => {
           match decl {
@@ -96,24 +121,24 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                 /*
                   import * as foo from './foo'
                 */
-                super::read_import_assignments::ImportAssignment::Star(name) => {
+                ImportAssignment::Star(name) => {
                   statements.push(self.create_import_namespace(&specifier, Some(name)));
-                },
+                }
                 /*
                   import a, { b } from './foo'
                   import foo './foo'
                 */
-                super::read_import_assignments::ImportAssignment::Named(names) => {
+                ImportAssignment::Named(names) => {
                   statements.push(self.create_import_named(&specifier, names));
-                },
-                 /*
+                }
+                /*
                   import './foo'
                 */
-                super::read_import_assignments::ImportAssignment::None => {
+                ImportAssignment::None => {
                   statements.push(self.create_import_namespace(&specifier, None));
-                },
+                }
               }
-            },
+            }
             /*
               export const foo = ''
               export function foo() {}
@@ -126,7 +151,7 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
               for export in read_exports(decl) {
                 statements.push(self.runtime_factory.define_export(&export, &export));
               }
-            },
+            }
             ModuleDecl::ExportNamed(decl) => {
               // let specifier = &decl.src.value.to_string();
               let mut specifier = None::<String>;
@@ -141,26 +166,20 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   export { foo as bar } from './foo'
                 */
                 ExportAssignment::ReexportNamed(reexports, specifier) => {
-                  let mut reexports_stmts = Vec::<Stmt>::new();
-                  reexports_stmts.push(self.create_import_named(&specifier, reexports.clone()));
+                  let (bundle_ids, module_id) = self.get_bundle_ids_and_asset_id(&specifier);
 
-                  for reexport in reexports {
-                    match reexport {
-                      ExportNamed::Named(key) => reexports_stmts.push(
-                        self.runtime_factory.define_export(&key, &key)
-                      ),
-                      ExportNamed::Renamed(key, key_as) => reexports_stmts.push(
-                        self.runtime_factory.define_export(&key_as, &key)
-                      ),
-                      ExportNamed::Default(_) => panic!("impossible"),
-                    }
-                  }
-                  statements.push(self.runtime_factory.wrapper(reexports_stmts));
-                },
+                  statements.push(self.runtime_factory.define_reexport_named(
+                    &reexports,
+                    &module_id,
+                    &bundle_ids,
+                  ));
+                }
                 /*
                   export * as foo from './foo'
                 */
-                ExportAssignment::ReexportNamespace(_, _) => todo!(),
+                ExportAssignment::ReexportNamespace(namespace, specifier) => {
+                  statements.push(self.create_export_namespace(&specifier, Some(namespace)));
+                }
                 /*
                   const foo = ''; export { foo }
                   const foo = ''; export { foo as bar }
@@ -168,91 +187,166 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                 ExportAssignment::ExportNamed(assignments) => {
                   for assignment in assignments {
                     match assignment {
-                        ExportNamed::Named(key) => {
-                          statements.push(self.runtime_factory.define_export(&key, &key));
-                        },
-                        ExportNamed::Renamed(key, key_as) => {
-                          statements.push(self.runtime_factory.define_export(&key_as, &key));
-                        },
-                        ExportNamed::Default(_) => panic!("impossible"),
+                      ExportNamed::Named(key) => {
+                        statements.push(self.runtime_factory.define_export(&key, &key));
+                      }
+                      ExportNamed::Renamed(key, key_as) => {
+                        statements.push(self.runtime_factory.define_export(&key_as, &key));
+                      }
+                      ExportNamed::Default(_) => panic!("impossible"),
                     }
                   }
-                },
+                }
               }
-            },
+            }
             ModuleDecl::ExportDefaultDecl(decl) => {
-              // dbg!(&decl);
-            },
+              match decl.decl {
+                /*
+                  export default class foo {}
+                  export default class {}
+                */
+                DefaultDecl::Class(decl) => {
+                  if let Some(ident) = decl.ident {
+                    let class_name = ident.sym.to_string();
+                    let stmt = Stmt::Decl(Decl::Class(ClassDecl {
+                      ident,
+                      declare: false,
+                      class: decl.class,
+                    }));
+                    statements.push(stmt);
+                    statements.push(
+                      self
+                        .runtime_factory
+                        .define_export_default_named(&class_name),
+                    );
+                  } else {
+                    statements.push(self.runtime_factory.define_export_default(Expr::Class(
+                      ClassExpr {
+                        ident: None,
+                        class: decl.class,
+                      },
+                    )));
+                  }
+                }
+                /*
+                  export default function foo() {}
+                  export default function() {}
+                */
+                DefaultDecl::Fn(decl) => {
+                  if let Some(ident) = decl.ident {
+                    let func_name = ident.sym.to_string();
+                    let stmt = Stmt::Decl(Decl::Fn(FnDecl {
+                      ident,
+                      declare: false,
+                      function: decl.function,
+                    }));
+                    statements.push(stmt);
+                    statements.push(self.runtime_factory.define_export_default_named(&func_name));
+                  } else {
+                    statements.push(self.runtime_factory.define_export_default(Expr::Fn(FnExpr {
+                      ident: None,
+                      function: decl.function,
+                    })));
+                  }
+                }
+                _ => panic!("Not implemented"),
+              }
+            }
+            /*
+              export default 42
+              export default ''
+            */
             ModuleDecl::ExportDefaultExpr(decl) => {
-              // dbg!(&decl);
-            },
+              statements.push(self.runtime_factory.define_export_default(*decl.expr));
+            }
+            /*
+              export * from './foo'
+            */
             ModuleDecl::ExportAll(decl) => {
-              // dbg!(&decl);
-            },
-            ModuleDecl::TsImportEquals(decl) => {
-              // dbg!(&decl);
-            },
-            ModuleDecl::TsExportAssignment(decl) => {
-              // dbg!(&decl);
-            },
-            ModuleDecl::TsNamespaceExport(decl) => {
-              // dbg!(&decl);
-            },
+              let specifier = &decl.src.value.to_string();
+              statements.push(self.create_export_namespace(&specifier, None))
+            }
+            _ => panic!("not implemented"),
           }
-        },
+        }
         ModuleItem::Stmt(decl) => {
           statements.push(decl.clone());
-        },
+        }
       }
     }
 
-    module.body = vec![];
-
-    for stmt in statements {
-      module.body.push(ModuleItem::Stmt(stmt));
-    }
+    module.body = stmt_to_module_item(statements);
 
     return module;
   }
 
-  fn fold_call_expr(
+  /*
+    require("specifier")
+  */
+  fn fold_expr(
     &mut self,
-    call_expr: CallExpr,
-  ) -> CallExpr {
-    let call_expr = call_expr.fold_children_with(self);
+    expr: Expr,
+  ) -> Expr {
+    let mut expr = expr.fold_children_with(self);
 
-    match &call_expr.callee {
-      /*
-         import("specifier")
-      */
-      Callee::Import(_) => {
-        if call_expr.args.len() == 0 {
-          return call_expr;
+    if let Expr::Call(call_expr) = &mut expr {
+      match &call_expr.callee {
+        Callee::Expr(callee_expr) => {
+          let Expr::Ident(ident) = &**callee_expr else {
+            return expr;
+          };
+          if ident.sym != *REQUIRE_SYMBOL {
+            return expr;
+          }
+          let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+            return expr;
+          };
+          let Lit::Str(import_specifier) = import_specifier_arg else {
+            return expr;
+          };
+
+          let (bundle_ids, asset_id) =
+            self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
+
+          let mach_require = self
+            .runtime_factory
+            .mach_require(&asset_id, &bundle_ids, None)
+            .as_expr()
+            .unwrap()
+            .to_owned()
+            .expr;
+
+          return *mach_require;
         }
-        let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-          return call_expr;
-        };
-        let Lit::Str(import_specifier) = import_specifier_arg else {
-          return call_expr;
-        };
-        let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
+        Callee::Import(_) => {
+          let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+            return expr;
+          };
+          let Lit::Str(import_specifier) = import_specifier_arg else {
+            return expr;
+          };
 
-        let import_stmt = self.runtime_factory.require_async(&bundle_ids.as_slice(), &asset_id);
+          let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
 
-        let Stmt::Expr(import_stmt) = import_stmt else {
-          panic!("Unable to generate import");
-        };
+          let import_stmt = self
+            .runtime_factory
+            .mach_require(&asset_id, &bundle_ids, None);
 
-        let Expr::Call(import_stmt) = *import_stmt.expr else {
-          panic!("Unable to generate import");
-        };
+          let Stmt::Expr(import_stmt) = import_stmt else {
+            panic!("");
+          };
 
-        return import_stmt;
-      }
-      Callee::Expr(_) => {}
-      Callee::Super(_) => {}
+          let Expr::Await(import_stmt) = *import_stmt.expr else {
+            panic!()
+          };
+          return *import_stmt.arg;
+        }
+        Callee::Super(_) => {}
+      };
+
+      return expr;
     };
 
-    return call_expr;
+    return expr;
   }
 }
