@@ -2,18 +2,19 @@ mod adapters;
 mod args;
 mod bundling;
 mod config;
+mod emit;
 mod packaging;
 mod platform;
 mod plugins;
 mod public;
 mod transformation;
-mod emit;
 
 use std::sync::Arc;
 
 use crate::adapters::node_js::NodeAdapter;
 use crate::bundling::bundle;
 use crate::config::parse_config;
+use crate::emit::emit;
 use crate::packaging::package;
 use crate::plugins::load_plugins;
 use crate::public::AssetGraph;
@@ -24,7 +25,6 @@ use crate::public::Config;
 use crate::public::DependencyMap;
 use crate::public::Packages;
 use crate::transformation::transform;
-use crate::emit::emit;
 
 async fn main_async(config: Config) {
   // Bundle state
@@ -34,7 +34,7 @@ async fn main_async(config: Config) {
   let mut bundles = Bundles::new();
   let mut bundle_graph = BundleGraph::new();
   let mut packages = Packages::new();
-  
+
   // Adapters
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
 
@@ -113,11 +113,7 @@ async fn main_async(config: Config) {
 
   // dbg!(&packages);
 
-  if let Err(err) = emit(
-    &config,
-    &mut bundles,
-    &mut packages,
-  ) {
+  if let Err(err) = emit(&config, &mut bundles, &mut packages) {
     println!("Packaging Error");
     println!("{}", err);
     return;

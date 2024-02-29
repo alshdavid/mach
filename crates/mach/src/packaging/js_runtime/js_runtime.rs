@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::path::Path;
 
 use once_cell::sync::Lazy;
@@ -329,13 +328,17 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
 
           let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
 
-          let import_stmt = self.runtime_factory.mach_require(&asset_id, &bundle_ids, None);
+          let import_stmt = self
+            .runtime_factory
+            .mach_require(&asset_id, &bundle_ids, None);
 
           let Stmt::Expr(import_stmt) = import_stmt else {
             panic!("");
           };
 
-          let Expr::Await(import_stmt) = *import_stmt.expr else { panic!() };
+          let Expr::Await(import_stmt) = *import_stmt.expr else {
+            panic!()
+          };
           return *import_stmt.arg;
         }
         Callee::Super(_) => {}

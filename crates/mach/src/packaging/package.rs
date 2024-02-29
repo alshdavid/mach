@@ -33,7 +33,7 @@ pub fn package(
 ) -> Result<(), String> {
   let source_map = Arc::new(SourceMap::default());
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
-  let mut manifest = HashMap::<String, String>::new();    
+  let mut manifest = HashMap::<String, String>::new();
 
   for bundle in bundles.iter() {
     manifest.insert(bundle.id.clone(), format!("/{}", bundle.output));
@@ -50,7 +50,7 @@ pub fn package(
     for stmt in runtime_factory.prelude("PROJECT_HASH") {
       bundle_module_stmts.push(stmt);
     }
-    
+
     if !bundle.is_lazy {
       if bundles.len() > 1 {
         bundle_module_stmts.push(runtime_factory.manifest(&manifest).unwrap());
@@ -71,19 +71,26 @@ pub fn package(
       let stmt = swc_core::common::GLOBALS.set(&Globals::new(), move || {
         let asset = asset_map.get(&asset_id).unwrap();
 
-        let mut module = Module{
-            span: Span::default(),
-            body: vec![],
-            shebang: None,
+        let mut module = Module {
+          span: Span::default(),
+          body: vec![],
+          shebang: None,
         };
 
-        let parse_result = parse_program(&asset.file_path, std::str::from_utf8(&asset.content).unwrap(), source_map.clone()).unwrap();
+        let parse_result = parse_program(
+          &asset.file_path,
+          std::str::from_utf8(&asset.content).unwrap(),
+          source_map.clone(),
+        )
+        .unwrap();
         match parse_result.program {
-            Program::Module(m) => module.body = m.body,
-            Program::Script(s) => module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect(),
+          Program::Module(m) => module.body = m.body,
+          Program::Script(s) => {
+            module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+          }
         }
 
-        let mut javascript_runtime = JavaScriptRuntime{
+        let mut javascript_runtime = JavaScriptRuntime {
           current_asset_id: asset_id,
           current_bundle_id: bundle_id,
           dependency_map: &dependency_map,
@@ -107,23 +114,35 @@ pub fn package(
           }
         }
 
-        runtime_factory.module(bundle_dependencies.len() != 0, asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
+        runtime_factory.module(
+          bundle_dependencies.len() != 0,
+          asset_id.to_str().unwrap(),
+          module_item_to_stmt(module.body),
+        )
       });
 
-      
       bundle_module_stmts.push(stmt);
     }
 
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.mach_require(bundle.entry_asset.to_str().unwrap(), &[], None));
+      bundle_module_stmts.push(runtime_factory.mach_require(
+        bundle.entry_asset.to_str().unwrap(),
+        &[],
+        None,
+      ));
     }
 
-    let bundle_module = Module{ 
+    let bundle_module = Module {
       span: Span::default(),
-      body: vec![ModuleItem::Stmt(runtime_factory.wrapper(bundle_module_stmts))],
-      shebang: None 
+      body: vec![ModuleItem::Stmt(
+        runtime_factory.wrapper(bundle_module_stmts),
+      )],
+      shebang: None,
     };
-    packages.insert(bundle.id.clone(), PackageType::JavaScript((bundle_module, source_map)));
+    packages.insert(
+      bundle.id.clone(),
+      PackageType::JavaScript((bundle_module, source_map)),
+    );
   }
 
   return Ok(());

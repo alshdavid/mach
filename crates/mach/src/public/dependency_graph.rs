@@ -1,6 +1,8 @@
-use crate::platform::hash::{hash_string_sha_256, truncate};
+use crate::platform::hash::hash_string_sha_256;
+use crate::platform::hash::truncate;
 
-use super::{Dependency, ID_TRUNC};
+use super::Dependency;
+use super::ID_TRUNC;
 use std::collections::HashMap;
 use std::fmt::Debug;
 

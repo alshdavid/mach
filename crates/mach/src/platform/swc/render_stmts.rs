@@ -24,10 +24,10 @@ pub fn render_stmts(
     wr: writer,
   };
 
-  let script = Script { 
-    span: Span::default(), 
-    body: stmts.clone(), 
-    shebang: None 
+  let script = Script {
+    span: Span::default(),
+    body: stmts.clone(),
+    shebang: None,
   };
 
   emitter.emit_script(&script).unwrap();

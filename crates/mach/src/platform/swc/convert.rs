@@ -8,7 +8,8 @@ pub fn module_item_to_stmt(input: Vec<ModuleItem>) -> Vec<Stmt> {
         return None;
       };
       return Some(stmt);
-    }).collect::<Vec<Stmt>>()
+    })
+    .collect::<Vec<Stmt>>()
 }
 
 pub fn stmt_to_module_item(input: Vec<Stmt>) -> Vec<ModuleItem> {

@@ -667,7 +667,9 @@ impl RuntimeFactory {
       return self.mach_require(
         module_id,
         bundle_ids,
-        Some(BlockStmtOrExpr::BlockStmt(self.decl_define_reexport_star.clone())),
+        Some(BlockStmtOrExpr::BlockStmt(
+          self.decl_define_reexport_star.clone(),
+        )),
       );
     }
   }
