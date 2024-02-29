@@ -1,1 +1,2 @@
-export { a } from './a.js'
+let {a} = await import('./a.js')
+console.log(a)

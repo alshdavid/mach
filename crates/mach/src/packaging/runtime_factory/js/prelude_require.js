@@ -15,36 +15,27 @@ const mach_define_property = (target, key, getter, setter, settings = true) => O
 /**
  * @param {string} module_id
  * @param {string[]} [bundle_ids]
+ * @param {(module: *) => void} [callback]
  * @returns {* | Promise<*>}
  * */
-const mach_require = (module_id, bundle_ids) => {
-  if (mach_modules[module_id]) {
-    return mach_modules[module_id];
+const mach_require = (module_id, bundle_ids, callback) => {
+  let module = mach_modules[module_id];
+
+  if (module) {
+    callback && callback(module)
+    return module;
   }
 
-  const module = {};
+  module = {};
   mach_modules[module_id] = module;
-
-  // This is for CJS support and may not be needed depending
-  // on how well CJS transformation can be done
-  const exports = new Proxy({}, { get: (_, k) => module[k], set: (_, k, v) => (module[k] = v) });
-  mach_define_property(module, "exports", () => exports, undefined, false);
 
   const define_export = (...args) => mach_define_property(module, ...args);
 
-  // This can probably be omitted with symbol propagation
-  // to trace the origin of an import, optimizing out reexports
-  const define_reexport = async (specifier, bundle_ids, namespace) => {
-    const lazy = await mach_require(specifier, bundle_ids);
-    const target = namespace ? {} : module;
-    for (let key in lazy) mach_define_property(target, key, () => lazy[key]);
-    if (namespace) define_export(namespace, () => target);
-  };
-
   const run_init = () => {
-    mach_init[module_id](mach_require, define_export, define_reexport, module);
+    mach_init[module_id](mach_require, define_export, module);
     mach_init[module_id] = undefined;
-    return mach_modules[module_id];
+    callback && callback(module)
+    return module;
   };
 
   if (bundle_ids && bundle_ids.length) {

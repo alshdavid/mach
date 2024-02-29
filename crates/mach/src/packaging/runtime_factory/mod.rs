@@ -9,7 +9,6 @@ use swc_core::ecma::ast::*;
 use crate::platform::swc::parse_script;
 
 const JS_DEFINE_EXPORT: &str = include_str!("./js/define_export.js");
-const JS_DEFINE_REEXPORT: &str = include_str!("./js/define_reexport.js");
 const JS_IMPORT_SCRIPT_CLASSIC: &str = include_str!("./js/import_script_classic.js");
 const JS_IMPORT_SCRIPT_ESM: &str = include_str!("./js/import_script_esm.js");
 const JS_MANIFEST: &str = include_str!("./js/manifest.js");
@@ -23,7 +22,8 @@ const SYMBOL_EXPORT_DEFAULT_KEY: &str = "default";
 
 pub struct RuntimeFactory {
   decl_define_export: CallExpr,
-  decl_define_reexport: CallExpr,
+  decl_define_reexport_star: BlockStmt,
+  decl_define_reexport_namespace: BlockStmt,
   decl_import_script_classic: Stmt,
   decl_manifest: CallExpr,
   decl_module: Stmt,
@@ -38,20 +38,6 @@ impl RuntimeFactory {
     let decl_define_export: CallExpr = {
       let name = PathBuf::from("define_export");
       let result = parse_script(&name, JS_DEFINE_EXPORT, source_map.clone()).unwrap();
-      result.script.body[0]
-        .to_owned()
-        .as_expr()
-        .unwrap()
-        .to_owned()
-        .expr
-        .as_call()
-        .unwrap()
-        .to_owned()
-    };
-
-    let decl_define_reexport: CallExpr = {
-      let name = PathBuf::from("define_reexport");
-      let result = parse_script(&name, JS_DEFINE_REEXPORT, source_map.clone()).unwrap();
       result.script.body[0]
         .to_owned()
         .as_expr()
@@ -105,12 +91,16 @@ impl RuntimeFactory {
     let decl_prelude_mach_require: Vec<Stmt> = {
       let name = PathBuf::from("prelude_mach_require");
       let result = parse_script(&name, JS_PRELUDE_MACH_REQUIRE, source_map.clone()).unwrap();
-      vec![result.script.body[0].to_owned(), result.script.body[1].to_owned()]
+      vec![
+        result.script.body[0].to_owned(),
+        result.script.body[1].to_owned(),
+      ]
     };
 
     let decl_mach_require: CallExpr = {
       let name = PathBuf::from("mach_require");
       let result = parse_script(&name, JS_MACH_REQUIRE, source_map.clone()).unwrap();
+
       result.script.body[0]
         .to_owned()
         .as_expr()
@@ -118,6 +108,28 @@ impl RuntimeFactory {
         .to_owned()
         .expr
         .as_call()
+        .unwrap()
+        .to_owned()
+    };
+
+    let decl_define_reexport_star: BlockStmt = {
+      let name = PathBuf::from("mach_require");
+      let result = parse_script(&name, JS_MACH_REQUIRE, source_map.clone()).unwrap();
+
+      result.script.body[1]
+        .to_owned()
+        .as_block()
+        .unwrap()
+        .to_owned()
+    };
+
+    let decl_define_reexport_namespace: BlockStmt = {
+      let name = PathBuf::from("mach_require");
+      let result = parse_script(&name, JS_MACH_REQUIRE, source_map.clone()).unwrap();
+
+      result.script.body[2]
+        .to_owned()
+        .as_block()
         .unwrap()
         .to_owned()
     };
@@ -138,6 +150,8 @@ impl RuntimeFactory {
 
     return Self {
       decl_define_export,
+      decl_define_reexport_namespace,
+      decl_define_reexport_star,
       decl_import_script_classic: decl_import_script,
       decl_manifest,
       decl_module,
@@ -145,7 +159,6 @@ impl RuntimeFactory {
       decl_prelude_mach_require,
       decl_mach_require,
       decl_wrapper,
-      decl_define_reexport,
     };
   }
 
@@ -353,6 +366,7 @@ impl RuntimeFactory {
     &self,
     module_id: &str,
     bundle_ids: &[String],
+    callback: Option<BlockStmtOrExpr>,
   ) -> Stmt {
     let mut mach_require = self.decl_mach_require.clone();
 
@@ -364,7 +378,7 @@ impl RuntimeFactory {
         raw: Some(Atom::from(format!("\"{}\"", module_id))),
       }))),
     };
-    
+
     if bundle_ids.len() != 0 {
       let Expr::Array(array) = &mut *mach_require.args[1].expr else {
         panic!()
@@ -379,22 +393,40 @@ impl RuntimeFactory {
           }))),
         }))
       }
+    } else {
+      mach_require.args[1] = ExprOrSpread {
+        spread: None,
+        expr: Box::new(Expr::Ident(Ident {
+          span: Span::default(),
+          sym: Atom::new("undefined"),
+          optional: false,
+        })),
+      }
+    }
 
-      return Stmt::Expr(ExprStmt {
+    if let Some(callback) = callback {
+      let Expr::Arrow(arrow) = &mut *mach_require.args[2].expr else {
+        panic!()
+      };
+      arrow.body = Box::new(callback);
+    } else {
+      mach_require.args.pop();
+    };
+
+    if bundle_ids.len() == 0 {
+      Stmt::Expr(ExprStmt {
+        span: Span::default(),
+        expr: Box::new(Expr::Call(mach_require)),
+      })
+    } else {
+      Stmt::Expr(ExprStmt {
         span: Span::default(),
         expr: Box::new(Expr::Await(AwaitExpr {
           span: Span::default(),
           arg: Box::new(Expr::Call(mach_require)),
         })),
-      });
-    } 
-
-    mach_require.args.pop();
-
-    Stmt::Expr(ExprStmt {
-      span: Span::default(),
-      expr: Box::new(Expr::Call(mach_require)),
-    })
+      })
+    }
   }
 
   pub fn _mach_require_awaited(
@@ -402,7 +434,7 @@ impl RuntimeFactory {
     module_id: &str,
     bundle_ids: &[String],
   ) -> AwaitExpr {
-    let mach_require = self.mach_require(module_id, bundle_ids);
+    let mach_require = self.mach_require(module_id, bundle_ids, None);
 
     let Stmt::Expr(mach_require) = mach_require else {
       panic!("Unable to generate import");
@@ -429,7 +461,7 @@ impl RuntimeFactory {
     module_id: &str,
     bundle_ids: &[String],
   ) -> Stmt {
-    let mach_require = self.mach_require(module_id, bundle_ids);
+    let mach_require = self.mach_require(module_id, bundle_ids, None);
 
     let Stmt::Expr(mach_require) = mach_require else {
       panic!()
@@ -514,7 +546,7 @@ impl RuntimeFactory {
     module_id: &str,
     bundle_ids: &[String],
   ) -> Stmt {
-    let mach_require = self.mach_require(module_id, bundle_ids);
+    let mach_require = self.mach_require(module_id, bundle_ids, None);
 
     let Stmt::Expr(mach_require) = mach_require else {
       panic!()
@@ -591,77 +623,28 @@ impl RuntimeFactory {
     module_id: &str,
     bundle_ids: &[String],
   ) -> Stmt {
-    let mut exports = Vec::<Stmt>::new();
+    let mut callback = BlockStmt {
+      span: Span::default(),
+      stmts: vec![],
+    };
 
     for key in keys {
       match key {
-        ImportNamed::Named(key) => {
-          exports.push(self.define_export(&key, &format!("lazy.{}", &key)))
-        }
-        ImportNamed::Renamed(key, key_as) => {
-          exports.push(self.define_export(&key_as, &format!("lazy.{}", &key)))
-        }
+        ImportNamed::Named(key) => callback
+          .stmts
+          .push(self.define_export(&key, &format!("module.{}", &key))),
+        ImportNamed::Renamed(key, key_as) => callback
+          .stmts
+          .push(self.define_export(&key_as, &format!("module.{}", &key))),
         ImportNamed::Default(_) => todo!(),
       };
     }
 
-    let mach_require = self.mach_require(module_id, bundle_ids);
-
-    let Stmt::Expr(mach_require) = mach_require else {
-      panic!("Unable to generate import");
-    };
-
-    let Expr::Call(mach_require) = *mach_require.expr else {
-      panic!("Unable to generate import");
-    };
-
-    let member_expr = MemberExpr {
-      span: Span::default(),
-      obj: Box::new(Expr::Call(mach_require)),
-      prop: MemberProp::Ident(Ident {
-        span: Span::default(),
-        sym: Atom::from("then"),
-        optional: false,
-      }),
-    };
-
-    let call_expr = CallExpr {
-      span: Span::default(),
-      callee: Callee::Expr(Box::new(Expr::Member(member_expr))),
-      args: vec![ExprOrSpread {
-        spread: None,
-        expr: Box::new(Expr::Arrow(ArrowExpr {
-          span: Span::default(),
-          params: vec![Pat::Ident(BindingIdent {
-            id: Ident {
-              span: Span::default(),
-              sym: Atom::from("lazy"),
-              optional: false,
-            },
-            type_ann: None,
-          })],
-          body: Box::new(BlockStmtOrExpr::BlockStmt(BlockStmt {
-            span: Span::default(),
-            stmts: exports,
-          })),
-          is_async: false,
-          is_generator: false,
-          type_params: None,
-          return_type: None,
-        })),
-      }],
-      type_args: None,
-    };
-
-    let await_expr = AwaitExpr {
-      span: Span::default(),
-      arg: Box::new(Expr::Call(call_expr)),
-    };
-
-    return Stmt::Expr(ExprStmt {
-      span: Span::default(),
-      expr: Box::new(Expr::Await(await_expr)),
-    });
+    return self.mach_require(
+      module_id,
+      bundle_ids,
+      Some(BlockStmtOrExpr::BlockStmt(callback)),
+    );
   }
 
   /// export * as foo from './foo'
@@ -672,50 +655,21 @@ impl RuntimeFactory {
     module_id: &str,
     bundle_ids: &[String],
   ) -> Stmt {
-    let mut define_reexport = self.decl_define_reexport.clone();
-
     if let Some(namespace) = namespace {
-      define_reexport.args.push(ExprOrSpread {
-        spread: None,
-        expr: Box::new(Expr::Lit(Lit::Str(Str {
-          span: Span::default(),
-          value: Atom::from(format!("{}", namespace)),
-          raw: Some(Atom::from(format!("\"{}\"", namespace))),
-        }))),
-      })
+      let mut stmt = self.decl_define_reexport_namespace.clone();
+      stmt.stmts.push(self.define_export(&namespace, "target"));
+      return self.mach_require(
+        module_id,
+        bundle_ids,
+        Some(BlockStmtOrExpr::BlockStmt(stmt)),
+      );
+    } else {
+      return self.mach_require(
+        module_id,
+        bundle_ids,
+        Some(BlockStmtOrExpr::BlockStmt(self.decl_define_reexport_star.clone())),
+      );
     }
-
-    define_reexport.args[0] = ExprOrSpread {
-      spread: None,
-      expr: Box::new(Expr::Lit(Lit::Str(Str {
-        span: Span::default(),
-        value: Atom::from(format!("{}", module_id)),
-        raw: Some(Atom::from(format!("\"{}\"", module_id))),
-      }))),
-    };
-
-    let Expr::Array(array) = &mut *define_reexport.args[1].expr else {
-      panic!()
-    };
-
-    for bundle_id in bundle_ids {
-      array.elems.push(Some(ExprOrSpread {
-        spread: None,
-        expr: Box::new(Expr::Lit(Lit::Str(Str {
-          span: Span::default(),
-          value: Atom::from(format!("{}", bundle_id)),
-          raw: Some(Atom::from(format!("\"{}\"", bundle_id))),
-        }))),
-      }))
-    }
-
-    return Stmt::Expr(ExprStmt {
-      span: Span::default(),
-      expr: Box::new(Expr::Await(AwaitExpr {
-        span: Span::default(),
-        arg: Box::new(Expr::Call(define_reexport)),
-      })),
-    });
   }
 
   /// var foo = ''
@@ -730,7 +684,7 @@ impl RuntimeFactory {
     let decl = VarDecl {
       span: Span::default(),
       kind,
-      declare: true,
+      declare: false,
       decls: vec![VarDeclarator {
         span: Span::default(),
         name: Pat::Ident(BindingIdent {

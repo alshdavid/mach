@@ -89,12 +89,24 @@ pub fn package(
           bundle_graph: &bundle_graph,
           runtime_factory: &runtime_factory,
           asset_graph: &asset_graph,
-          depends_on_bundles: HashSet::new(),
         };
 
         let module = module.fold_with(&mut javascript_runtime);
 
-        runtime_factory.module(javascript_runtime.depends_on_bundles.len() != 0, asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
+        let mut bundle_dependencies = HashSet::<String>::new();
+        for (dependency_id, dependency) in dependency_map.iter() {
+          if dependency.resolve_from_rel == *asset_id {
+            let Some(bundle_id) = bundle_graph.get(dependency_id) else {
+              continue;
+            };
+            if *bundle_id == bundle.id {
+              continue;
+            }
+            bundle_dependencies.insert(bundle_id.clone());
+          }
+        }
+
+        runtime_factory.module(bundle_dependencies.len() != 0, asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
       });
 
       
@@ -102,7 +114,7 @@ pub fn package(
     }
 
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.mach_require(bundle.entry_asset.to_str().unwrap(), &[]));
+      bundle_module_stmts.push(runtime_factory.mach_require(bundle.entry_asset.to_str().unwrap(), &[], None));
     }
 
     let bundle_module = Module{ 

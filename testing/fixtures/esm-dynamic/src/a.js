@@ -1,1 +1,2 @@
-export const a = 'a'
+export * from './b'
+import('./c').then(console.log)

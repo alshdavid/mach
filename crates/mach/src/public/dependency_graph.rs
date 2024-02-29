@@ -40,6 +40,10 @@ impl DependencyMap {
   ) -> Option<&Dependency> {
     return self.dependencies.get(dependency_id);
   }
+
+  pub fn iter(&self) -> impl Iterator<Item = (&String, &Dependency)> {
+    return self.dependencies.iter();
+  }
 }
 
 impl Debug for DependencyMap {

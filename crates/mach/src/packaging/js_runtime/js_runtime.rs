@@ -31,7 +31,6 @@ pub enum ModuleKind {
 }
 
 pub struct JavaScriptRuntime<'a> {
-  pub depends_on_bundles: HashSet<String>,
   pub current_asset_id: &'a Path,
   pub current_bundle_id: &'a str,
   pub dependency_map: &'a DependencyMap,
@@ -41,14 +40,6 @@ pub struct JavaScriptRuntime<'a> {
 }
 
 impl<'a> JavaScriptRuntime<'a> {
-  fn add_bundle_dependency(&mut self, bundle_ids: &[String]) {
-    for bundle_id in bundle_ids {
-      if bundle_id != self.current_bundle_id {
-        self.depends_on_bundles.insert(bundle_id.to_string());
-      }
-    }
-  }
-
   fn get_bundle_ids_and_asset_id(
     &self,
     specifier: &str,
@@ -88,40 +79,33 @@ impl<'a> JavaScriptRuntime<'a> {
     &self,
     specifier: &str,
     assignments: Vec<ImportNamed>,
-  ) -> (Stmt, Vec<String>) {
+  ) -> Stmt {
     let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return (
-      self.runtime_factory.mach_require_named(
-      assignments,
-      &asset_id,
-      &bundle_ids,
-    ), bundle_ids);
+    return self
+      .runtime_factory
+      .mach_require_named(assignments, &asset_id, &bundle_ids);
   }
 
   fn create_import_namespace(
     &self,
     specifier: &str,
     assignment: Option<String>,
-  ) -> (Stmt, Vec<String>) {
+  ) -> Stmt {
     let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return (self.runtime_factory.mach_require_namespace(
-      assignment,
-      &asset_id,
-      &bundle_ids,
-    ), bundle_ids);
+    return self
+      .runtime_factory
+      .mach_require_namespace(assignment, &asset_id, &bundle_ids);
   }
 
   fn create_export_namespace(
     &self,
     specifier: &str,
     assignment: Option<String>,
-  ) -> (Stmt, Vec<String>) {
+  ) -> Stmt {
     let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return (self.runtime_factory.define_reexport_namespace(
-      assignment,
-      &asset_id,
-      &bundle_ids,
-    ), bundle_ids);
+    return self
+      .runtime_factory
+      .define_reexport_namespace(assignment, &asset_id, &bundle_ids);
   }
 }
 
@@ -146,18 +130,14 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   import * as foo from './foo'
                 */
                 ImportAssignment::Star(name) => {
-                  let (stmt, bundle_ids) = self.create_import_namespace(&specifier, Some(name));
-                  statements.push(stmt);
-                  self.add_bundle_dependency(&bundle_ids);
+                  statements.push(self.create_import_namespace(&specifier, Some(name)));
                 }
                 /*
                   import a, { b } from './foo'
                   import foo './foo'
                 */
                 ImportAssignment::Named(names) => {
-                  let (stmt, bundle_ids) = self.create_import_named(&specifier, names);
-                  statements.push(stmt);
-                  self.add_bundle_dependency(&bundle_ids);
+                  statements.push(self.create_import_named(&specifier, names));
                 }
                 /*
                   import './foo'
@@ -195,8 +175,12 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                 */
                 ExportAssignment::ReexportNamed(reexports, specifier) => {
                   let (bundle_ids, module_id) = self.get_bundle_ids_and_asset_id(&specifier);
-      
-                  statements.push(self.runtime_factory.define_reexport_named(&reexports, &module_id, &bundle_ids));
+
+                  statements.push(self.runtime_factory.define_reexport_named(
+                    &reexports,
+                    &module_id,
+                    &bundle_ids,
+                  ));
                 }
                 /*
                   export * as foo from './foo'
@@ -238,7 +222,11 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                       class: decl.class,
                     }));
                     statements.push(stmt);
-                    statements.push(self.runtime_factory.define_export_default_named(&class_name));
+                    statements.push(
+                      self
+                        .runtime_factory
+                        .define_export_default_named(&class_name),
+                    );
                   } else {
                     statements.push(self.runtime_factory.define_export_default(Expr::Class(
                       ClassExpr {
@@ -300,53 +288,49 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     return module;
   }
 
-  fn fold_call_expr(
-    &mut self,
-    call_expr: CallExpr,
-  ) -> CallExpr {
-    let call_expr = call_expr.fold_children_with(self);
+  // fn fold_call_expr(
+  //   &mut self,
+  //   call_expr: CallExpr,
+  // ) -> CallExpr {
+  //   let call_expr = call_expr.fold_children_with(self);
 
-    match &call_expr.callee {
-      /*
-         import("specifier")
-      */
-      Callee::Import(_) => {
-        if call_expr.args.len() == 0 {
-          return call_expr;
-        }
-        let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-          return call_expr;
-        };
-        let Lit::Str(import_specifier) = import_specifier_arg else {
-          return call_expr;
-        };
-        let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
+  //   match &call_expr.callee {
+  //     /*
+  //        import("specifier")
+  //     */
+  //     Callee::Import(_) => {
+  //       if call_expr.args.len() == 0 {
+  //         return call_expr;
+  //       }
+  //       let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+  //         return call_expr;
+  //       };
+  //       let Lit::Str(import_specifier) = import_specifier_arg else {
+  //         return call_expr;
+  //       };
+  //       let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
 
-        for bundle_id in &bundle_ids {
-          self.depends_on_bundles.insert(bundle_id.to_string());
-        }
+  //       let import_stmt = self
+  //         .runtime_factory
+  //         .mach_require(&asset_id, &bundle_ids);
 
-        let import_stmt = self
-          .runtime_factory
-          .mach_require(&asset_id, &bundle_ids);
+  //       let Stmt::Expr(import_stmt) = import_stmt else {
+  //         panic!("Unable to generate import");
+  //       };
 
-        let Stmt::Expr(import_stmt) = import_stmt else {
-          panic!("Unable to generate import");
-        };
+  //       let Expr::Call(import_stmt) = *import_stmt.expr else {
+  //         panic!("Unable to generate import");
+  //       };
 
-        let Expr::Call(import_stmt) = *import_stmt.expr else {
-          panic!("Unable to generate import");
-        };
+  //       return import_stmt;
+  //     }
 
-        return import_stmt;
-      }
+  //     Callee::Expr(_) => {}
+  //     Callee::Super(_) => {}
+  //   };
 
-      Callee::Expr(_) => {}
-      Callee::Super(_) => {}
-    };
-
-    return call_expr;
-  }
+  //   return call_expr;
+  // }
 
   /*
     require("specifier")
@@ -355,38 +339,58 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     &mut self,
     expr: Expr,
   ) -> Expr {
-    let expr = expr.fold_children_with(self);
-    if let Expr::Call(call_expr) = expr {
+    let mut expr = expr.fold_children_with(self);
+
+    if let Expr::Call(call_expr) = &mut expr {
       match &call_expr.callee {
-        Callee::Expr(expr) => {
-          let Expr::Ident(ident) = &**expr else {
-            return Expr::Call(call_expr);
+        Callee::Expr(callee_expr) => {
+          let Expr::Ident(ident) = &**callee_expr else {
+            return expr;
           };
           if ident.sym != *REQUIRE_SYMBOL {
-            return Expr::Call(call_expr);
+            return expr;
           }
           let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-            return Expr::Call(call_expr);
+            return expr;
           };
           let Lit::Str(import_specifier) = import_specifier_arg else {
-            return Expr::Call(call_expr);
+            return expr;
           };
 
-          let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
-          self.add_bundle_dependency(&bundle_ids);
-  
+          let (bundle_ids, asset_id) =
+            self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
+
           let mach_require = self
             .runtime_factory
-            .mach_require(&asset_id, &bundle_ids)
-            .as_expr().unwrap().to_owned()
+            .mach_require(&asset_id, &bundle_ids, None)
+            .as_expr()
+            .unwrap()
+            .to_owned()
             .expr;
 
           return *mach_require;
         }
-        Callee::Import(_) => {}
+        Callee::Import(_) => {
+          let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+            return expr;
+          };
+          let Lit::Str(import_specifier) = import_specifier_arg else {
+            return expr;
+          };
+
+          let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
+
+          let import_stmt = self.runtime_factory.mach_require(&asset_id, &bundle_ids, None);
+
+          let Stmt::Expr(import_stmt) = import_stmt else {
+            panic!("");
+          };
+          return *import_stmt.expr;
+        }
         Callee::Super(_) => {}
       };
-      return Expr::Call(call_expr);
+
+      return expr;
     };
 
     return expr;
