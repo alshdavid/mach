@@ -10,12 +10,12 @@ use crate::platform::swc::parse_script;
 
 const JS_DEFINE_EXPORT: &str = include_str!("./js/define_export.js");
 const JS_DEFINE_REEXPORT: &str = include_str!("./js/define_reexport.js");
-const JS_IMPORT_SCRIPT: &str = include_str!("./js/import_script.js");
+const JS_IMPORT_SCRIPT_CLASSIC: &str = include_str!("./js/import_script_classic.js");
+const JS_IMPORT_SCRIPT_ESM: &str = include_str!("./js/import_script_esm.js");
 const JS_MANIFEST: &str = include_str!("./js/manifest.js");
 const JS_MODULE: &str = include_str!("./js/module.js");
 const JS_PRELUDE: &str = include_str!("./js/prelude.js");
 const JS_PRELUDE_MACH_REQUIRE: &str = include_str!("./js/prelude_require.js");
-const JS_PRELUDE_MACH_REQUIRE_CJS: &str = include_str!("./js/prelude_require_cjs.js");
 const JS_MACH_REQUIRE: &str = include_str!("./js/mach_require.js");
 const JS_WRAPPER: &str = include_str!("./js/wrapper.js");
 
@@ -24,13 +24,11 @@ const SYMBOL_EXPORT_DEFAULT_KEY: &str = "default";
 pub struct RuntimeFactory {
   decl_define_export: CallExpr,
   decl_define_reexport: CallExpr,
-  decl_import_script: Stmt,
+  decl_import_script_classic: Stmt,
   decl_manifest: CallExpr,
   decl_module: Stmt,
-  decl_module_cjs: Stmt,
   decl_prelude: BlockStmt,
-  decl_prelude_mach_require: Stmt,
-  decl_prelude_mach_require_cjs: Stmt,
+  decl_prelude_mach_require: Vec<Stmt>,
   decl_mach_require: CallExpr,
   decl_wrapper: CallExpr,
 }
@@ -67,7 +65,7 @@ impl RuntimeFactory {
 
     let decl_import_script: Stmt = {
       let name = PathBuf::from("import_script");
-      let result = parse_script(&name, JS_IMPORT_SCRIPT, source_map.clone()).unwrap();
+      let result = parse_script(&name, JS_IMPORT_SCRIPT_CLASSIC, source_map.clone()).unwrap();
       result.script.body[0].to_owned()
     };
 
@@ -85,11 +83,10 @@ impl RuntimeFactory {
         .to_owned()
     };
 
-    let (decl_module, decl_module_cjs): (Stmt, Stmt) = {
+    let decl_module: Stmt = {
       let name = PathBuf::from("module");
       let result = parse_script(&name, JS_MODULE, source_map.clone()).unwrap();
-      (result.script.body[0].to_owned(),
-      result.script.body[1].to_owned())
+      result.script.body[0].to_owned()
     };
 
     let decl_prelude: BlockStmt = {
@@ -105,16 +102,10 @@ impl RuntimeFactory {
       block_stmt
     };
 
-    let decl_prelude_mach_require: Stmt = {
+    let decl_prelude_mach_require: Vec<Stmt> = {
       let name = PathBuf::from("prelude_mach_require");
       let result = parse_script(&name, JS_PRELUDE_MACH_REQUIRE, source_map.clone()).unwrap();
-      result.script.body[0].to_owned()
-    };
-
-    let decl_prelude_mach_require_cjs: Stmt = {
-      let name = PathBuf::from("prelude_mach_require");
-      let result = parse_script(&name, JS_PRELUDE_MACH_REQUIRE_CJS, source_map.clone()).unwrap();
-      result.script.body[0].to_owned()
+      vec![result.script.body[0].to_owned(), result.script.body[1].to_owned()]
     };
 
     let decl_mach_require: CallExpr = {
@@ -147,13 +138,11 @@ impl RuntimeFactory {
 
     return Self {
       decl_define_export,
-      decl_import_script,
+      decl_import_script_classic: decl_import_script,
       decl_manifest,
       decl_module,
-      decl_module_cjs,
       decl_prelude,
       decl_prelude_mach_require,
-      decl_prelude_mach_require_cjs,
       decl_mach_require,
       decl_wrapper,
       decl_define_reexport,
@@ -221,7 +210,7 @@ impl RuntimeFactory {
   }
 
   pub fn import_script(&self) -> Stmt {
-    self.decl_import_script.clone()
+    self.decl_import_script_classic.clone()
   }
 
   pub fn manifest(
@@ -354,8 +343,8 @@ impl RuntimeFactory {
     prelude.stmts
   }
 
-  pub fn prelude_mach_require(&self) -> Stmt {
-    self.decl_prelude_mach_require_cjs.clone()
+  pub fn prelude_mach_require(&self) -> Vec<Stmt> {
+    self.decl_prelude_mach_require.clone()
   }
 
   pub fn mach_require(

@@ -51,8 +51,8 @@ pub fn package(
     }
     
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.prelude_mach_require());
       bundle_module_stmts.push(runtime_factory.import_script());
+      bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
       bundle_module_stmts.push(runtime_factory.manifest(&manifest).unwrap());
     }
 
