@@ -239,6 +239,7 @@ impl RuntimeFactory {
 
   pub fn module(
     &self,
+    is_async: bool,
     module_id: &str,
     contents: Vec<Stmt>,
   ) -> Stmt {
@@ -275,6 +276,7 @@ impl RuntimeFactory {
       let Expr::Arrow(arrow) = &mut *assign.right else {
         panic!()
       };
+      arrow.is_async = is_async;
       arrow.body = Box::new(BlockStmtOrExpr::BlockStmt(BlockStmt {
         span: Span::default(),
         stmts: contents.to_vec(),
@@ -349,8 +351,8 @@ impl RuntimeFactory {
 
   pub fn mach_require(
     &self,
-    bundle_ids: &[&str],
     module_id: &str,
+    bundle_ids: &[String],
   ) -> Stmt {
     let mut mach_require = self.decl_mach_require.clone();
 
@@ -362,7 +364,6 @@ impl RuntimeFactory {
         raw: Some(Atom::from(format!("\"{}\"", module_id))),
       }))),
     };
-
     
     if bundle_ids.len() != 0 {
       let Expr::Array(array) = &mut *mach_require.args[1].expr else {
@@ -378,9 +379,17 @@ impl RuntimeFactory {
           }))),
         }))
       }
-    } else {
-      mach_require.args.pop();
-    }
+
+      return Stmt::Expr(ExprStmt {
+        span: Span::default(),
+        expr: Box::new(Expr::Await(AwaitExpr {
+          span: Span::default(),
+          arg: Box::new(Expr::Call(mach_require)),
+        })),
+      });
+    } 
+
+    mach_require.args.pop();
 
     Stmt::Expr(ExprStmt {
       span: Span::default(),
@@ -388,12 +397,12 @@ impl RuntimeFactory {
     })
   }
 
-  pub fn mach_require_awaited(
+  pub fn _mach_require_awaited(
     &self,
-    bundle_ids: &[&str],
     module_id: &str,
+    bundle_ids: &[String],
   ) -> AwaitExpr {
-    let mach_require = self.mach_require(bundle_ids, module_id);
+    let mach_require = self.mach_require(module_id, bundle_ids);
 
     let Stmt::Expr(mach_require) = mach_require else {
       panic!("Unable to generate import");
@@ -416,11 +425,15 @@ impl RuntimeFactory {
   /// import foo, { foo as bar } from 'foobar'
   pub fn mach_require_named(
     &self,
-    bundle_ids: &[&str],
-    module_id: &str,
     assignments: Vec<ImportNamed>,
+    module_id: &str,
+    bundle_ids: &[String],
   ) -> Stmt {
-    let import_expr = self.mach_require_awaited(bundle_ids, module_id);
+    let mach_require = self.mach_require(module_id, bundle_ids);
+
+    let Stmt::Expr(mach_require) = mach_require else {
+      panic!()
+    };
 
     let mut imports = Vec::<ObjectPatProp>::new();
 
@@ -487,7 +500,7 @@ impl RuntimeFactory {
           optional: false,
           type_ann: None,
         }),
-        init: Some(Box::new(Expr::Await(import_expr))),
+        init: Some(Box::new(*mach_require.expr)),
         definite: false,
       }],
     })));
@@ -497,14 +510,19 @@ impl RuntimeFactory {
   /// import * as foobar from 'foobar'
   pub fn mach_require_namespace(
     &self,
-    bundle_ids: &[&str],
-    module_id: &str,
     named_as: Option<String>,
+    module_id: &str,
+    bundle_ids: &[String],
   ) -> Stmt {
-    let import_expr = self.mach_require_awaited(bundle_ids, module_id);
+    let mach_require = self.mach_require(module_id, bundle_ids);
+
+    let Stmt::Expr(mach_require) = mach_require else {
+      panic!()
+    };
+
     let await_expr = ExprStmt {
       span: Span::default(),
-      expr: Box::new(Expr::Await(import_expr)),
+      expr: Box::new(*mach_require.expr),
     };
 
     let Some(assignment) = named_as else {
@@ -569,9 +587,9 @@ impl RuntimeFactory {
   /// export { foo as bar } from './foo'
   pub fn define_reexport_named(
     &self,
-    bundle_ids: &[&str],
-    module_id: &str,
     keys: &[ImportNamed],
+    module_id: &str,
+    bundle_ids: &[String],
   ) -> Stmt {
     let mut exports = Vec::<Stmt>::new();
 
@@ -587,7 +605,7 @@ impl RuntimeFactory {
       };
     }
 
-    let mach_require = self.mach_require(bundle_ids, module_id);
+    let mach_require = self.mach_require(module_id, bundle_ids);
 
     let Stmt::Expr(mach_require) = mach_require else {
       panic!("Unable to generate import");
@@ -650,9 +668,9 @@ impl RuntimeFactory {
   /// export * from './foo'
   pub fn define_reexport_namespace(
     &self,
-    bundle_ids: &[&str],
-    module_id: &str,
     namespace: Option<String>,
+    module_id: &str,
+    bundle_ids: &[String],
   ) -> Stmt {
     let mut define_reexport = self.decl_define_reexport.clone();
 

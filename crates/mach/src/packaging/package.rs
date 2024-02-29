@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use swc_core::common::Globals;
@@ -19,6 +20,7 @@ use crate::public::PackageType;
 use crate::public::Packages;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
+use super::js_runtime::js_runtime::ModuleKind;
 use super::runtime_factory::RuntimeFactory;
 
 pub fn package(
@@ -80,16 +82,19 @@ pub fn package(
             Program::Script(s) => module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect(),
         }
 
-        let module = module.fold_with(&mut JavaScriptRuntime{
+        let mut javascript_runtime = JavaScriptRuntime{
           current_asset_id: asset_id,
           current_bundle_id: bundle_id,
           dependency_map: &dependency_map,
           bundle_graph: &bundle_graph,
           runtime_factory: &runtime_factory,
           asset_graph: &asset_graph,
-        });
+          depends_on_bundles: HashSet::new(),
+        };
 
-        runtime_factory.module(asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
+        let module = module.fold_with(&mut javascript_runtime);
+
+        runtime_factory.module(javascript_runtime.depends_on_bundles.len() != 0, asset_id.to_str().unwrap(), module_item_to_stmt(module.body))
       });
 
       
@@ -97,7 +102,7 @@ pub fn package(
     }
 
     if !bundle.is_lazy {
-      bundle_module_stmts.push(runtime_factory.mach_require(&[], bundle.entry_asset.to_str().unwrap()));
+      bundle_module_stmts.push(runtime_factory.mach_require(bundle.entry_asset.to_str().unwrap(), &[]));
     }
 
     let bundle_module = Module{ 
