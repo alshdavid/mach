@@ -2,7 +2,8 @@
 mach_init["MODULE_ID"] = async (
   mach_require, 
   define_export,
-  module,
+  modules,
+  module_id
 ) => {
   // module code
 };

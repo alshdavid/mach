@@ -19,23 +19,20 @@ const mach_define_property = (target, key, getter, setter, settings = true) => O
  * @returns {* | Promise<*>}
  * */
 const mach_require = (module_id, bundle_ids, callback) => {
-  let module = mach_modules[module_id];
-
-  if (module) {
-    callback && callback(module)
-    return module;
+  if (mach_modules[module_id]) {
+    callback && callback(mach_modules[module_id])
+    return mach_modules[module_id];
   }
 
-  module = {};
-  mach_modules[module_id] = module;
+  mach_modules[module_id] = {};
 
-  const define_export = (...args) => mach_define_property(module, ...args);
+  const define_export = (...args) => mach_define_property(mach_modules[module_id], ...args);
 
   const run_init = () => {
-    mach_init[module_id](mach_require, define_export, module);
+    mach_init[module_id](mach_require, define_export, mach_modules, module_id);
     mach_init[module_id] = undefined;
-    callback && callback(module)
-    return module;
+    callback && callback(mach_modules[module_id])
+    return mach_modules[module_id];
   };
 
   if (bundle_ids && bundle_ids.length) {

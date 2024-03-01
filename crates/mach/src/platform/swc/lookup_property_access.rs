@@ -1,92 +1,109 @@
 use swc_core::ecma::ast::*;
 
+#[derive(Debug)]
+pub enum PropAccessType {
+  Ident(Ident, String),
+  Computed(Expr),
+}
+
 /// lookup_property_access(&expr, &["module", "exports"])
+/// module.exports = 'foo'
+/// module.exports.foo = 'foo'
+/// module.exports.foo
 pub fn lookup_property_access(
-  assign: &mut AssignExpr,
-  keys_test: &[&str],
-) -> Option<(Option<String>, Expr, bool)> {
-  let assign = assign.clone();
-  let mut keys = Vec::<String>::new();
-  let mut pats = Vec::<PatOrExpr>::from(&[assign.left]);
-  let mut use_quotes = true;
+  input: &MemberExpr,
+  source_keys: &[&str],
+) -> Result<Option<PropAccessType>, ()> {
+  // TODO optimize
+  let input = input.clone();
 
-  while let Some(expr) = pats.pop() {
-    match expr {
-      PatOrExpr::Expr(expr) => match *expr {
-        Expr::Member(member) => {
-          let MemberProp::Ident(ident) = member.prop else {
-            panic!()
-          };
-          pats.push(PatOrExpr::Expr(member.obj));
-          keys.push(ident.sym.to_string());
-        }
-        Expr::Ident(ident) => {
-          keys.push(ident.sym.to_string());
-        }
-        _ => panic!(),
+  let mut keys = Vec::<PropAccessType>::new();
+  let mut pats = Vec::<MemberExpr>::from(&[input]);
+
+  // Flatten tree
+  while let Some(member) = pats.pop() {
+    match member.prop {
+      MemberProp::Ident(ident) => {
+        let value = ident.sym.to_string();
+        keys.push(PropAccessType::Ident(ident, value));
       },
-      PatOrExpr::Pat(pat) => {
-        let Pat::Expr(expr) = *pat else { panic!() };
-        let Expr::Member(member) = *expr else {
-          panic!()
-        };
-        match member.prop {
-          MemberProp::Ident(ident) => {
-            pats.push(PatOrExpr::Expr(member.obj));
-            keys.push(ident.sym.to_string());
-          }
-          MemberProp::Computed(computed) => match *computed.expr {
-            // module.exports['foo'] = ''
-            Expr::Lit(lit) => {
-              match lit {
-                Lit::Str(str) => {
-                  pats.push(PatOrExpr::Expr(member.obj));
-                  keys.push(str.value.to_string());
-                },
-                _ => todo!(),
-              }
-            },
-            // let foo = 'foo'; 
-            // module.exports[foo + 'bar'] = ''
-            Expr::Ident(ident) => {
-              pats.push(PatOrExpr::Expr(member.obj));
-              keys.push(ident.sym.to_string());
-              use_quotes = false;
-            },
-            // let foo = 'foo'; 
-            // module.exports[foo + 'bar'] = ''
-            Expr::Bin(_) => todo!(),
-            // let foo = 'foo'; 
-            // module.exports[`${foo + 'bar'}`] = ''
-            Expr::Tpl(_) => todo!(),
-            _ => todo!(),
-          },
-          MemberProp::PrivateName(_) => todo!(),
-        };
+      MemberProp::Computed(computed) => {
+        keys.push(PropAccessType::Computed(*computed.expr));
+      },
+      MemberProp::PrivateName(_) => todo!(),
+    }
+
+    match *member.obj {
+      Expr::Member(member) => {
+        pats.push(member);
       }
+      Expr::Ident(ident) => {
+        let value = ident.sym.to_string();
+        keys.push(PropAccessType::Ident(ident, value));
+      }
+      _ => {},
     }
   }
 
-  keys.reverse();
-
-  if keys.len() == keys_test.len() {
-    for (i, key) in keys_test.iter().enumerate() {
-      if *key != &keys[i] {
-        return None;
-      }
-    }
-    return Some((None, *assign.right, use_quotes));
-  }
-
-  if keys.len() - 1 == keys_test.len() {
-    for (i, key) in keys_test.iter().enumerate() {
-      if *key != &keys[i] {
-        return None;
-      }
-    }
+  let source_keys_count = source_keys.len();
+  let exprs_count = keys.len();
   
-    return Some((Some(keys.pop().unwrap()), *assign.right, use_quotes));
+  if exprs_count != source_keys_count && exprs_count != source_keys_count + 1 {
+    return Err(());
   }
 
-  return None;
+  // loop in reverse order
+  let mut count = 0;
+  while let Some(access_type) = keys.pop() {
+    let source_key = source_keys.get(count);
+
+    match &access_type {
+      PropAccessType::Ident(ident, _) => {
+        if count == source_keys.len() {
+          return Ok(Some(access_type));
+        }
+        if *source_key.unwrap() != ident.sym.to_string() {
+          return Err(());
+        }
+      },
+      PropAccessType::Computed(expr) => {
+        match expr {
+          Expr::Ident(ident) => {
+            if count == source_keys.len() {
+              return Ok(Some(access_type));
+            }
+            if *source_key.unwrap() != ident.sym.to_string() {
+              return Err(());
+            }
+          },
+          Expr::Lit(lit) => {
+            match lit {
+              Lit::Str(str) => {
+                if count == source_keys.len() {
+                  return Ok(Some(access_type));
+                }
+                if *source_key.unwrap() != str.value.to_string() {
+                  return Err(());
+                }
+              },
+              _ => {
+                if count == source_keys.len() {
+                  return Ok(Some(access_type));
+                }
+              },
+            }
+          },
+          _ => {
+            if count == source_keys.len() {
+              return Ok(Some(access_type));
+            }
+          },
+        }
+      },
+    }
+
+    count += 1
+  }
+
+  return Ok(None);
 }

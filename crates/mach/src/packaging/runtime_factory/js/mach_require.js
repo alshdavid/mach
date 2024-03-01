@@ -1,5 +1,5 @@
 // General purpose import
-mach_require("module_id", [], (module) => {})
+mach_require("module_id", [], (module) => {});
 
 // export * from './specifier'
 {
@@ -13,10 +13,16 @@ mach_require("module_id", [], (module) => {})
   // define_export("namespace", () => target); <- added by factory
 }
 
-// CJS
-// module.exports = { foo: 'bar' }
-// exports = { foo: 'bar' }
+// CJS accessors and assignments
+// module.exports
+// exports
 {
-  for (const key in module) delete module[key]
-  Object.assign(module, {})
+  // module.exports.foo = {}
+  modules[module_id][key] = target;
+  // module.exports = {}
+  modules[module_id] = target;
+  // module.exports.foo
+  modules[module_id][key];
+  // module.exports
+  modules[module_id];
 }

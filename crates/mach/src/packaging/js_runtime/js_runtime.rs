@@ -8,10 +8,9 @@ use swc_core::ecma::visit::FoldWith;
 
 use crate::packaging::runtime_factory::ExportNamed;
 use crate::packaging::runtime_factory::ImportNamed;
-use crate::platform::hash::hash_string_sha_256;
-use crate::platform::hash::truncate;
 use crate::platform::swc::lookup_property_access;
 use crate::platform::swc::stmt_to_module_item;
+use crate::platform::swc::PropAccessType;
 use crate::public::AssetGraph;
 use crate::public::BundleGraph;
 use crate::public::DependencyMap;
@@ -101,44 +100,6 @@ impl<'a> JavaScriptRuntime<'a> {
     return self
       .runtime_factory
       .define_reexport_namespace(assignment, &asset_id, &bundle_ids);
-  }
-
-  /*
-    module.exports.a = value
-    module.exports = value
-    exports.a = value
-  */
-  fn fold_module_exports(
-    &mut self,
-    stmt: &mut Stmt,
-  ) -> Option<Vec<Stmt>> {
-    let Stmt::Expr(expr) = stmt else {
-      return None;
-    };
-    let Expr::Assign(assign) = &mut *expr.expr else {
-      return None;
-    };
-
-    let Some((key, expr, use_quotes)) = ('block: {
-      if let Some(v) = lookup_property_access(assign, &["module", "exports"]) {
-        break 'block Some(v);
-      };
-      if let Some(v) = lookup_property_access(assign, &["exports"]) {
-        break 'block Some(v);
-      };
-      break 'block None;
-    }) else {
-      return None;
-    };
-
-    if let Some(key) = key {
-      let id = truncate(&format!("cjs_{}", hash_string_sha_256(&format!("{}{:?}", key, &expr))), 20);
-      let new_var = self.runtime_factory.declare_var(VarDeclKind::Let, &id, expr);
-      let define_export = self.runtime_factory.define_export(&key, &id, use_quotes, true);
-      return Some(vec![new_var, define_export]);            
-    } else {
-      return Some(self.runtime_factory.module_exports_reassign(expr));
-    }
   }
 }
 
@@ -310,14 +271,8 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
             _ => panic!("not implemented"),
           }
         }
-        ModuleItem::Stmt(mut stmt) => {
-          if let Some(result) = self.fold_module_exports(&mut stmt) {
-            for stmt in result {
-              statements.push(stmt);
-            }
-          } else {
-            statements.push(stmt);
-          }
+        ModuleItem::Stmt(stmt) => {
+          statements.push(stmt);
         }
       }
     }
@@ -327,95 +282,172 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     return module;
   }
 
-  /*
-    import("specifier")
-    require("specifier")
-  */
-  fn fold_expr(
+  fn fold_call_expr(
     &mut self,
-    expr: Expr,
-  ) -> Expr {
-    let mut expr = expr.fold_children_with(self);
+    expr: CallExpr,
+  ) -> CallExpr {
+    let call_expr = expr.fold_children_with(self);
 
-    if let Expr::Call(call_expr) = &mut expr {
-      match &call_expr.callee {
-        Callee::Expr(callee_expr) => {
-          let Expr::Ident(ident) = &**callee_expr else {
-            return expr;
-          };
-          if ident.sym != *REQUIRE_SYMBOL {
-            return expr;
-          }
-          let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-            return expr;
-          };
-          let Lit::Str(import_specifier) = import_specifier_arg else {
-            return expr;
-          };
-
-          let (bundle_ids, asset_id) =
-            self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
-
-          let mach_require = self
-            .runtime_factory
-            .mach_require(&asset_id, &bundle_ids, None)
-            .as_expr()
-            .unwrap()
-            .to_owned()
-            .expr;
-
-          return *mach_require;
+    match &call_expr.callee {
+      Callee::Expr(callee_expr) => {
+        let Expr::Ident(ident) = &**callee_expr else {
+          return call_expr;
+        };
+        if ident.sym != *REQUIRE_SYMBOL {
+          return call_expr;
         }
-        Callee::Import(_) => {
-          let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
-            return expr;
-          };
-          let Lit::Str(import_specifier) = import_specifier_arg else {
-            return expr;
-          };
+        let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+          return call_expr;
+        };
+        let Lit::Str(import_specifier) = import_specifier_arg else {
+          return call_expr;
+        };
 
-          let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
+        let (bundle_ids, asset_id) =
+          self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
 
-          let import_stmt = self
-            .runtime_factory
-            .mach_require(&asset_id, &bundle_ids, None);
+        let mach_require = self
+          .runtime_factory
+          .mach_require(&asset_id, &bundle_ids, None)
+          .as_expr()
+          .unwrap()
+          .to_owned()
+          .expr;
 
-          let Stmt::Expr(import_stmt) = import_stmt else {
-            panic!("");
-          };
+        let Expr::Call(result) = *mach_require else { panic!() };
+        return result;
+      }
+      Callee::Import(_) => {
+        let Expr::Lit(import_specifier_arg) = &*call_expr.args[0].expr else {
+          return call_expr;
+        };
+        let Lit::Str(import_specifier) = import_specifier_arg else {
+          return call_expr;
+        };
 
-          let Expr::Await(import_stmt) = *import_stmt.expr else {
-            panic!()
-          };
-          return *import_stmt.arg;
-        }
-        Callee::Super(_) => {}
-      };
+        let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
 
-      return expr;
+        let import_stmt = self
+          .runtime_factory
+          .mach_require(&asset_id, &bundle_ids, None);
+
+        let Stmt::Expr(import_stmt) = import_stmt else {
+          panic!("");
+        };
+
+        let Expr::Await(import_stmt) = *import_stmt.expr else {
+          panic!()
+        };
+
+        let Expr::Call(result) = *import_stmt.arg else {
+          panic!()
+        };
+
+        return result;
+      }
+      Callee::Super(_) => {}
     };
 
-    return expr;
+    return call_expr;
   }
 
-  fn fold_stmts(
+   /*
+    module.exports.a
+    module.export
+    exports.a
+  */
+  fn fold_member_expr(
     &mut self,
-    stmts: Vec<Stmt>,
-  ) -> Vec<Stmt> {
-    let mut stmts = stmts.fold_children_with(self);
+    member_expression: MemberExpr,
+  ) -> MemberExpr {
+    let Ok(prop_assignment) = ('block: {
+      if let Ok(prop) = lookup_property_access(&member_expression, &["module", "exports"]) {
+        break 'block Ok(prop);
+      };
+      if let Ok(prop) = lookup_property_access(&member_expression, &["exports"]) {
+        break 'block Ok(prop);
+      };
+      break 'block Err(());
+    }) else { 
+      return member_expression 
+    };
 
-    let mut statements = Vec::<Stmt>::new();
+    if let Some(key) = prop_assignment {
+      match key {
+        PropAccessType::Ident(_, key) => {
+          let key = self.runtime_factory.create_string(&key);
+          let result = self.runtime_factory.module_exports_access(Some(key));
+          let Stmt::Expr(result) = result else { panic!() };
+          let Expr::Member(result) = *result.expr else { panic!() };
+          return result;
+        },
+        PropAccessType::Computed(expr) => {
+          let result = self.runtime_factory.module_exports_access(Some(expr));
+          let Stmt::Expr(result) = result else { panic!() };
+          let Expr::Member(result) = *result.expr else { panic!() };
+          return result;
+        },
+      }
+    }
+    let result = self.runtime_factory.module_exports_access(None);
+    let Stmt::Expr(result) = result else { panic!() };
+    let Expr::Member(result) = *result.expr else { panic!() };
+    return result;
+  }
 
-    for mut stmt in stmts.drain(0..) {
-      if let Some(result) = self.fold_module_exports(&mut stmt) {
-        for stmt in result {
-          statements.push(stmt);
-        }
-      } else {
-        statements.push(stmt);
+   /*
+    module.exports.a = value
+    module.exports = value
+    exports.a = value
+  */
+  fn fold_assign_expr(
+    &mut self,
+    mut assign :AssignExpr,
+  ) -> AssignExpr {
+    let PatOrExpr::Pat(pat) = &assign.left else { panic!(); };
+    let Pat::Expr(expr) = &**pat else { panic!()};
+    let Expr::Member(member_expression) = &**expr else { panic!()};
+
+    // dbg!(&assign.right);
+
+    let Ok(prop_assignment) = ('block: {
+      if let Ok(prop) = lookup_property_access(&member_expression, &["module", "exports"]) {
+        break 'block Ok(prop);
+      };
+      if let Ok(prop) = lookup_property_access(&member_expression, &["exports"]) {
+        break 'block Ok(prop);
+      };
+      break 'block Err(());
+    }) else {
+      return assign 
+    };
+
+    if let Some(key) = prop_assignment {
+      match key {
+        PropAccessType::Ident(_, key) => {
+          let key = self.runtime_factory.create_string(&key);
+          let result = self.runtime_factory.module_exports_assign(Some(key), *assign.right);
+          let Stmt::Expr(result) = result else { panic!() };
+          let Expr::Assign(result) = *result.expr else { panic!() };
+          return result;
+        },
+        PropAccessType::Computed(expr) => {
+          let result = self.runtime_factory.module_exports_assign(Some(expr), *assign.right);
+          let Stmt::Expr(result) = result else { panic!() };
+          let Expr::Assign(result) = *result.expr else { panic!() };
+          return result;
+        },
+        
       }
     }
 
-    return statements;
+    if let Expr::Call(call) = *assign.right {
+      assign.right = Box::new(Expr::Call(self.fold_call_expr(call)));
+    }
+
+    let result = self.runtime_factory.module_exports_assign(None, *assign.right);
+    let Stmt::Expr(result) = result else { panic!() };
+    let Expr::Assign(result) = *result.expr else { panic!() };
+    return result;
   }
 }

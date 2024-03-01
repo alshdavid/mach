@@ -24,7 +24,7 @@ pub struct RuntimeFactory {
   decl_define_export: CallExpr,
   decl_define_reexport_star: BlockStmt,
   decl_define_reexport_namespace: BlockStmt,
-  decl_define_module_exports_reassign: BlockStmt,
+  decl_commonjs_accessor: BlockStmt,
   decl_import_script_classic: Stmt,
   decl_manifest: CallExpr,
   decl_module: Stmt,
@@ -50,7 +50,7 @@ impl RuntimeFactory {
         .to_owned()
     };
 
-    let decl_import_script: Stmt = {
+    let decl_import_script_classic: Stmt = {
       let name = PathBuf::from("import_script");
       let result = parse_script(&name, JS_IMPORT_SCRIPT_CLASSIC, source_map.clone()).unwrap();
       result.script.body[0].to_owned()
@@ -135,7 +135,7 @@ impl RuntimeFactory {
         .to_owned()
     };
 
-    let decl_define_module_exports_reassign: BlockStmt = {
+    let decl_commonjs_accessor: BlockStmt = {
       let name = PathBuf::from("mach_require");
       let result = parse_script(&name, JS_MACH_REQUIRE, source_map.clone()).unwrap();
 
@@ -164,8 +164,8 @@ impl RuntimeFactory {
       decl_define_export,
       decl_define_reexport_namespace,
       decl_define_reexport_star,
-      decl_define_module_exports_reassign,
-      decl_import_script_classic: decl_import_script,
+      decl_commonjs_accessor,
+      decl_import_script_classic,
       decl_manifest,
       decl_module,
       decl_prelude,
@@ -269,13 +269,51 @@ impl RuntimeFactory {
     })
   }
 
-  pub fn module_exports_reassign(&self, object: Expr) -> Vec<Stmt> {
-    let mut block = self.decl_define_module_exports_reassign.clone();
-    let Stmt::Expr(expr) = &mut block.stmts[1] else { panic!() };
-    let Expr::Call(call) = &mut *expr.expr else { panic!() };
-    call.args[1].expr = Box::new(object);
+  // pub fn module_exports_reassign(&self, object: Expr) -> Vec<Stmt> {
+  //   let mut block = self.decl_define_module_exports_reassign.clone();
+  //   let Stmt::Expr(expr) = &mut block.stmts[1] else { panic!() };
+  //   let Expr::Call(call) = &mut *expr.expr else { panic!() };
+  //   call.args[1].expr = Box::new(object);
 
-    return block.stmts;
+  //   return block.stmts;
+  // }
+
+  pub fn module_exports_assign(&self, key: Option<Expr>, target_expr: Expr) -> Stmt {
+    let mut block = self.decl_commonjs_accessor.clone();
+    if let Some(key) = key {
+      let mut stmt = block.stmts.remove(0);
+      let Stmt::Expr(expr) = &mut stmt else { panic!() };
+      let Expr::Assign(assign) = &mut *expr.expr else { panic!() };
+      let PatOrExpr::Pat(pat) = &mut assign.left else { panic!() };
+      let Pat::Expr(expr) = &mut **pat else { panic!() };
+      let Expr::Member(member) = &mut **expr else { panic!() };
+      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      prop.expr = Box::new(key);
+      assign.right = Box::new(target_expr);
+      return stmt;
+    } else {
+      let mut stmt = block.stmts.remove(1);
+      let Stmt::Expr(expr) = &mut stmt else { panic!() };
+      let Expr::Assign(assign) = &mut *expr.expr else { panic!() };
+      assign.right = Box::new(target_expr);
+      return stmt;
+    }
+  }
+
+  pub fn module_exports_access(&self, key: Option<Expr>) -> Stmt {
+    let mut block = self.decl_commonjs_accessor.clone();
+
+    if let Some(key) = key {
+      let mut stmt = block.stmts.remove(2);
+      let Stmt::Expr(expr) = &mut stmt else { panic!() };
+      let Expr::Member(member) = &mut *expr.expr else { panic!() };
+      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      prop.expr = Box::new(key);
+      return stmt;
+    } else {
+      let stmt = block.stmts.remove(3);
+      return stmt;
+    }
   }
 
   pub fn import_script(&self) -> Stmt {
@@ -303,6 +341,14 @@ impl RuntimeFactory {
     Ok(Stmt::Expr(ExprStmt {
       span: Span::default(),
       expr: Box::new(Expr::Call(manifest)),
+    }))
+  }
+
+  pub fn create_string(&self, text: &str) -> Expr {
+    Expr::Lit(Lit::Str(Str {
+      span: Span::default(),
+      value: Atom::from(format!("{}", text)),
+      raw: Some(Atom::from(format!("{}", text))),
     }))
   }
 
