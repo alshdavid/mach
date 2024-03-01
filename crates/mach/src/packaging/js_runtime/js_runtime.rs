@@ -2,7 +2,6 @@ use std::path::Path;
 
 use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
-use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
@@ -10,6 +9,7 @@ use swc_core::ecma::visit::FoldWith;
 use crate::packaging::runtime_factory::ExportNamed;
 use crate::packaging::runtime_factory::ImportNamed;
 use crate::platform::hash::hash_string_sha_256;
+use crate::platform::hash::truncate;
 use crate::platform::swc::lookup_property_access;
 use crate::platform::swc::stmt_to_module_item;
 use crate::public::AssetGraph;
@@ -102,6 +102,44 @@ impl<'a> JavaScriptRuntime<'a> {
       .runtime_factory
       .define_reexport_namespace(assignment, &asset_id, &bundle_ids);
   }
+
+  /*
+    module.exports.a = value
+    module.exports = value
+    exports.a = value
+  */
+  fn fold_module_exports(
+    &mut self,
+    stmt: &mut Stmt,
+  ) -> Option<Vec<Stmt>> {
+    let Stmt::Expr(expr) = stmt else {
+      return None;
+    };
+    let Expr::Assign(assign) = &mut *expr.expr else {
+      return None;
+    };
+
+    let Some((key, expr, use_quotes)) = ('block: {
+      if let Some(v) = lookup_property_access(assign, &["module", "exports"]) {
+        break 'block Some(v);
+      };
+      if let Some(v) = lookup_property_access(assign, &["exports"]) {
+        break 'block Some(v);
+      };
+      break 'block None;
+    }) else {
+      return None;
+    };
+
+    if let Some(key) = key {
+      let id = truncate(&format!("cjs_{}", hash_string_sha_256(&format!("{}{:?}", key, &expr))), 20);
+      let new_var = self.runtime_factory.declare_var(VarDeclKind::Let, &id, expr);
+      let define_export = self.runtime_factory.define_export(&key, &id, use_quotes, true);
+      return Some(vec![new_var, define_export]);            
+    } else {
+      return Some(self.runtime_factory.module_exports_reassign(expr));
+    }
+  }
 }
 
 impl<'a> Fold for JavaScriptRuntime<'a> {
@@ -152,7 +190,7 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
               statements.push(Stmt::Decl(decl.decl.clone()));
 
               for export in read_exports(decl) {
-                statements.push(self.runtime_factory.define_export(&export, &export));
+                statements.push(self.runtime_factory.define_export(&export, &export, true, false));
               }
             }
             ModuleDecl::ExportNamed(decl) => {
@@ -191,10 +229,10 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   for assignment in assignments {
                     match assignment {
                       ExportNamed::Named(key) => {
-                        statements.push(self.runtime_factory.define_export(&key, &key));
+                        statements.push(self.runtime_factory.define_export(&key, &key, true, false));
                       }
                       ExportNamed::Renamed(key, key_as) => {
-                        statements.push(self.runtime_factory.define_export(&key_as, &key));
+                        statements.push(self.runtime_factory.define_export(&key_as, &key, true, false));
                       }
                       ExportNamed::Default(_) => panic!("impossible"),
                     }
@@ -272,8 +310,14 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
             _ => panic!("not implemented"),
           }
         }
-        ModuleItem::Stmt(decl) => {
-          statements.push(decl.clone());
+        ModuleItem::Stmt(mut stmt) => {
+          if let Some(result) = self.fold_module_exports(&mut stmt) {
+            for stmt in result {
+              statements.push(stmt);
+            }
+          } else {
+            statements.push(stmt);
+          }
         }
       }
     }
@@ -286,9 +330,6 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
   /*
     import("specifier")
     require("specifier")
-    module.exports.a = value
-    module.exports = value
-    exports.a = value
   */
   fn fold_expr(
     &mut self,
@@ -354,29 +395,27 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
       return expr;
     };
 
-    if let Expr::Assign(assign) = &mut expr {
-      if let Some((key, expr)) = lookup_property_access(assign, &["module", "exports"]) {
-        let id = hash_string_sha_256(&format!("{}{:?}", key,&expr));
-        // let new_var = self.runtime_factory.declare_var(VarDeclKind::Let, &id, &expr).as_decl().unwrap().as_var().unwrap().clone();
-        let new_assignment = AssignExpr {
-            span: Span::default(),
-            op: AssignOp::Assign,
-            left: PatOrExpr::Expr(Box::new(Expr::Ident(Ident { 
-              span: Span::default(), 
-              sym: Atom::from(key.clone()), 
-              optional: false,
-            }))),
-            right: Box::new(expr),
-        };
-        let export = self.runtime_factory.define_export(&key, &id).as_expr().unwrap().expr.clone();
-        return *Expr::from_exprs(vec![
-          Box::new(Expr::Assign(new_assignment)),
-          export,
-        ]);
-        
-      };
+    return expr;
+  }
+
+  fn fold_stmts(
+    &mut self,
+    stmts: Vec<Stmt>,
+  ) -> Vec<Stmt> {
+    let mut stmts = stmts.fold_children_with(self);
+
+    let mut statements = Vec::<Stmt>::new();
+
+    for mut stmt in stmts.drain(0..) {
+      if let Some(result) = self.fold_module_exports(&mut stmt) {
+        for stmt in result {
+          statements.push(stmt);
+        }
+      } else {
+        statements.push(stmt);
+      }
     }
 
-    return expr;
+    return statements;
   }
 }

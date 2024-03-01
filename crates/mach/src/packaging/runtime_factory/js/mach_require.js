@@ -12,3 +12,11 @@ mach_require("module_id", [], (module) => {})
   for (const key in module) Object.defineProperty(target, key, { get: () => module[key] });
   // define_export("namespace", () => target); <- added by factory
 }
+
+// CJS
+// module.exports = { foo: 'bar' }
+// exports = { foo: 'bar' }
+{
+  for (const key in module) delete module[key]
+  Object.assign(module, {})
+}

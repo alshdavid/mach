@@ -7,6 +7,7 @@ use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
+use swc_core::ecma::visit::VisitMutWith;
 
 use crate::platform::swc::module_item_to_stmt;
 use crate::platform::swc::parse_program;

@@ -1,6 +1,5 @@
-// Not actually valid CJS, cut this is used by React
-const c = 'c'
+// Not valid CJS but used by React
 
-exports.c = c
-exports.c2 = 'c2'
-exports['c3'] = 'c3'
+// const d = 'd'
+
+module.exports = { c1: 'c1' }

@@ -24,6 +24,7 @@ pub struct RuntimeFactory {
   decl_define_export: CallExpr,
   decl_define_reexport_star: BlockStmt,
   decl_define_reexport_namespace: BlockStmt,
+  decl_define_module_exports_reassign: BlockStmt,
   decl_import_script_classic: Stmt,
   decl_manifest: CallExpr,
   decl_module: Stmt,
@@ -134,6 +135,17 @@ impl RuntimeFactory {
         .to_owned()
     };
 
+    let decl_define_module_exports_reassign: BlockStmt = {
+      let name = PathBuf::from("mach_require");
+      let result = parse_script(&name, JS_MACH_REQUIRE, source_map.clone()).unwrap();
+
+      result.script.body[3]
+        .to_owned()
+        .as_block()
+        .unwrap()
+        .to_owned()
+    };
+
     let decl_wrapper: CallExpr = {
       let name = PathBuf::from("wrapper");
       let result = parse_script(&name, JS_WRAPPER, source_map.clone()).unwrap();
@@ -152,6 +164,7 @@ impl RuntimeFactory {
       decl_define_export,
       decl_define_reexport_namespace,
       decl_define_reexport_star,
+      decl_define_module_exports_reassign,
       decl_import_script_classic: decl_import_script,
       decl_manifest,
       decl_module,
@@ -179,6 +192,8 @@ impl RuntimeFactory {
     };
     arrow.body = Box::new(BlockStmtOrExpr::Expr(Box::new(expr)));
 
+    define_export.args.pop();
+
     Stmt::Expr(ExprStmt {
       span: Span::default(),
       expr: Box::new(Expr::Call(define_export)),
@@ -189,38 +204,78 @@ impl RuntimeFactory {
     &self,
     export_identifier: &str,
   ) -> Stmt {
-    return self.define_export(SYMBOL_EXPORT_DEFAULT_KEY, export_identifier);
+    return self.define_export(SYMBOL_EXPORT_DEFAULT_KEY, export_identifier, true, false);
   }
 
   // export { export_key } from "export_identifier"
   pub fn define_export(
     &self,
     export_key: &str,
-    export_identifier: &str,
+    target_value_symbol: &str,
+    use_quotes: bool,
+    include_setter: bool,
   ) -> Stmt {
     let mut define_export = self.decl_define_export.clone();
+    let identifier = {
+      if use_quotes {
+        Expr::Lit(Lit::Str(Str {
+          span: Span::default(),
+          value: Atom::from(export_key),
+          raw: Some(Atom::from(format!("\"{}\"", export_key))),
+        }))
+      } else {
+        Expr::Ident(Ident { 
+          span: Span::default(), 
+          sym: Atom::from(export_key), 
+          optional: false,
+        })
+      }
+    };
+    define_export.args[0].expr = Box::new(identifier);
 
-    define_export.args[0].expr = Box::new(Expr::Lit(Lit::Str(Str {
-      span: Span::default(),
-      value: Atom::from(format!("{}", export_key)),
-      raw: Some(Atom::from(format!("\"{}\"", export_key))),
-    })));
+    {
+      let Expr::Arrow(arrow) = &mut *define_export.args[1].expr else {
+        panic!()
+      };
+      let BlockStmtOrExpr::Expr(expr) = &mut *arrow.body else {
+        panic!()
+      };
+      let Expr::Ident(ident) = &mut **expr else {
+        panic!()
+      };
+      ident.sym = Atom::from(target_value_symbol);
+    }
 
-    let Expr::Arrow(arrow) = &mut *define_export.args[1].expr else {
-      panic!()
-    };
-    let BlockStmtOrExpr::Expr(block) = &mut *arrow.body else {
-      panic!()
-    };
-    let Expr::Ident(ident) = &mut **block else {
-      panic!()
-    };
-    ident.sym = Atom::from(export_identifier);
+    {
+      if include_setter {
+        let Expr::Arrow(arrow) = &mut *define_export.args[2].expr else {
+          panic!()
+        };
+        let BlockStmtOrExpr::Expr(expr) = &mut *arrow.body else {
+          panic!()
+        };
+        let Expr::Assign(assign) = &mut **expr else {panic!()};
+        let PatOrExpr::Pat(pat) = &mut assign.left else { panic!() };
+        let Pat::Ident(ident) = &mut **pat else { panic!() };
+        ident.id.sym = Atom::from(target_value_symbol);
+      } else {
+        define_export.args.pop();
+      }
+    }
 
     Stmt::Expr(ExprStmt {
       span: Span::default(),
       expr: Box::new(Expr::Call(define_export)),
     })
+  }
+
+  pub fn module_exports_reassign(&self, object: Expr) -> Vec<Stmt> {
+    let mut block = self.decl_define_module_exports_reassign.clone();
+    let Stmt::Expr(expr) = &mut block.stmts[1] else { panic!() };
+    let Expr::Call(call) = &mut *expr.expr else { panic!() };
+    call.args[1].expr = Box::new(object);
+
+    return block.stmts;
   }
 
   pub fn import_script(&self) -> Stmt {
@@ -306,32 +361,29 @@ impl RuntimeFactory {
   ) -> Vec<Stmt> {
     let mut prelude = self.decl_prelude.clone();
 
-    let Stmt::Decl(decl) = &mut prelude.stmts[0] else {
-      panic!();
-    };
-    let Decl::Var(var) = &mut *decl else {
-      panic!();
-    };
-    let Some(decl) = &mut var.decls[0].init else {
-      panic!();
-    };
-    let Expr::Assign(assign) = &mut **decl else {
-      panic!();
-    };
+    #[cfg_attr(rustfmt, rustfmt_skip)]
+  let assign = {
+    let Stmt::Decl(decl) = &mut prelude.stmts[0] else { panic!() };
+    let Decl::Var(var) = &mut *decl else { panic!() };
+    let Some(decl) = &mut var.decls[0].init else { panic!(); };
+    let Expr::Assign(assign) = &mut **decl else { panic!(); };
+    assign
+  };
 
     {
       let PatOrExpr::Pat(pat) = &mut assign.left else {
-        panic!();
+        panic!()
       };
       let Pat::Expr(expr) = &mut **pat else {
-        panic!();
+        panic!()
       };
       let Expr::Member(member) = &mut **expr else {
-        panic!();
+        panic!()
       };
       let MemberProp::Computed(prop) = &mut member.prop else {
-        panic!();
+        panic!()
       };
+
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
         value: Atom::from(format!("{}", project_identifier)),
@@ -341,14 +393,15 @@ impl RuntimeFactory {
 
     {
       let Expr::Bin(bin) = &mut *assign.right else {
-        panic!();
+        panic!()
       };
       let Expr::Member(member) = &mut *bin.left else {
-        panic!();
+        panic!()
       };
       let MemberProp::Computed(prop) = &mut member.prop else {
-        panic!();
+        panic!()
       };
+
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
         value: Atom::from(format!("{}", project_identifier)),
@@ -633,10 +686,10 @@ impl RuntimeFactory {
       match key {
         ImportNamed::Named(key) => callback
           .stmts
-          .push(self.define_export(&key, &format!("module.{}", &key))),
+          .push(self.define_export(&key, &format!("module.{}", &key), true, false)),
         ImportNamed::Renamed(key, key_as) => callback
           .stmts
-          .push(self.define_export(&key_as, &format!("module.{}", &key))),
+          .push(self.define_export(&key_as, &format!("module.{}", &key), true, false)),
         ImportNamed::Default(_) => todo!(),
       };
     }
@@ -658,7 +711,7 @@ impl RuntimeFactory {
   ) -> Stmt {
     if let Some(namespace) = namespace {
       let mut stmt = self.decl_define_reexport_namespace.clone();
-      stmt.stmts.push(self.define_export(&namespace, "target"));
+      stmt.stmts.push(self.define_export(&namespace, "target", true, false));
       return self.mach_require(
         module_id,
         bundle_ids,
