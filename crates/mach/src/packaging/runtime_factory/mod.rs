@@ -224,9 +224,9 @@ impl RuntimeFactory {
           raw: Some(Atom::from(format!("\"{}\"", export_key))),
         }))
       } else {
-        Expr::Ident(Ident { 
-          span: Span::default(), 
-          sym: Atom::from(export_key), 
+        Expr::Ident(Ident {
+          span: Span::default(),
+          sym: Atom::from(export_key),
           optional: false,
         })
       }
@@ -254,9 +254,15 @@ impl RuntimeFactory {
         let BlockStmtOrExpr::Expr(expr) = &mut *arrow.body else {
           panic!()
         };
-        let Expr::Assign(assign) = &mut **expr else {panic!()};
-        let PatOrExpr::Pat(pat) = &mut assign.left else { panic!() };
-        let Pat::Ident(ident) = &mut **pat else { panic!() };
+        let Expr::Assign(assign) = &mut **expr else {
+          panic!()
+        };
+        let PatOrExpr::Pat(pat) = &mut assign.left else {
+          panic!()
+        };
+        let Pat::Ident(ident) = &mut **pat else {
+          panic!()
+        };
         ident.id.sym = Atom::from(target_value_symbol);
       } else {
         define_export.args.pop();
@@ -278,36 +284,65 @@ impl RuntimeFactory {
   //   return block.stmts;
   // }
 
-  pub fn module_exports_assign(&self, key: Option<Expr>, target_expr: Expr) -> Stmt {
+  pub fn module_exports_assign(
+    &self,
+    key: Option<Expr>,
+    target_expr: Expr,
+  ) -> Stmt {
     let mut block = self.decl_commonjs_accessor.clone();
     if let Some(key) = key {
       let mut stmt = block.stmts.remove(0);
-      let Stmt::Expr(expr) = &mut stmt else { panic!() };
-      let Expr::Assign(assign) = &mut *expr.expr else { panic!() };
-      let PatOrExpr::Pat(pat) = &mut assign.left else { panic!() };
-      let Pat::Expr(expr) = &mut **pat else { panic!() };
-      let Expr::Member(member) = &mut **expr else { panic!() };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      let Stmt::Expr(expr) = &mut stmt else {
+        panic!()
+      };
+      let Expr::Assign(assign) = &mut *expr.expr else {
+        panic!()
+      };
+      let PatOrExpr::Pat(pat) = &mut assign.left else {
+        panic!()
+      };
+      let Pat::Expr(expr) = &mut **pat else {
+        panic!()
+      };
+      let Expr::Member(member) = &mut **expr else {
+        panic!()
+      };
+      let MemberProp::Computed(prop) = &mut member.prop else {
+        panic!()
+      };
       prop.expr = Box::new(key);
       assign.right = Box::new(target_expr);
       return stmt;
     } else {
       let mut stmt = block.stmts.remove(1);
-      let Stmt::Expr(expr) = &mut stmt else { panic!() };
-      let Expr::Assign(assign) = &mut *expr.expr else { panic!() };
+      let Stmt::Expr(expr) = &mut stmt else {
+        panic!()
+      };
+      let Expr::Assign(assign) = &mut *expr.expr else {
+        panic!()
+      };
       assign.right = Box::new(target_expr);
       return stmt;
     }
   }
 
-  pub fn module_exports_access(&self, key: Option<Expr>) -> Stmt {
+  pub fn module_exports_access(
+    &self,
+    key: Option<Expr>,
+  ) -> Stmt {
     let mut block = self.decl_commonjs_accessor.clone();
 
     if let Some(key) = key {
       let mut stmt = block.stmts.remove(2);
-      let Stmt::Expr(expr) = &mut stmt else { panic!() };
-      let Expr::Member(member) = &mut *expr.expr else { panic!() };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      let Stmt::Expr(expr) = &mut stmt else {
+        panic!()
+      };
+      let Expr::Member(member) = &mut *expr.expr else {
+        panic!()
+      };
+      let MemberProp::Computed(prop) = &mut member.prop else {
+        panic!()
+      };
       prop.expr = Box::new(key);
       return stmt;
     } else {
@@ -344,7 +379,10 @@ impl RuntimeFactory {
     }))
   }
 
-  pub fn create_string(&self, text: &str) -> Expr {
+  pub fn create_string(
+    &self,
+    text: &str,
+  ) -> Expr {
     Expr::Lit(Lit::Str(Str {
       span: Span::default(),
       value: Atom::from(format!("{}", text)),
@@ -730,12 +768,16 @@ impl RuntimeFactory {
 
     for key in keys {
       match key {
-        ImportNamed::Named(key) => callback
-          .stmts
-          .push(self.define_export(&key, &format!("module.{}", &key), true, false)),
-        ImportNamed::Renamed(key, key_as) => callback
-          .stmts
-          .push(self.define_export(&key_as, &format!("module.{}", &key), true, false)),
+        ImportNamed::Named(key) => {
+          callback
+            .stmts
+            .push(self.define_export(&key, &format!("module.{}", &key), true, false))
+        }
+        ImportNamed::Renamed(key, key_as) => {
+          callback
+            .stmts
+            .push(self.define_export(&key_as, &format!("module.{}", &key), true, false))
+        }
         ImportNamed::Default(_) => todo!(),
       };
     }
@@ -757,7 +799,9 @@ impl RuntimeFactory {
   ) -> Stmt {
     if let Some(namespace) = namespace {
       let mut stmt = self.decl_define_reexport_namespace.clone();
-      stmt.stmts.push(self.define_export(&namespace, "target", true, false));
+      stmt
+        .stmts
+        .push(self.define_export(&namespace, "target", true, false));
       return self.mach_require(
         module_id,
         bundle_ids,

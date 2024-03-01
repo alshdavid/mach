@@ -360,6 +360,8 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     &mut self,
     member_expression: MemberExpr,
   ) -> MemberExpr {
+    let member_expression = member_expression.fold_children_with(self);
+
     let Ok(prop_assignment) = ('block: {
       if let Ok(prop) = lookup_property_access(&member_expression, &["module", "exports"]) {
         break 'block Ok(prop);
@@ -402,13 +404,19 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
   */
   fn fold_assign_expr(
     &mut self,
-    mut assign :AssignExpr,
+    assign :AssignExpr,
   ) -> AssignExpr {
-    let PatOrExpr::Pat(pat) = &assign.left else { panic!(); };
-    let Pat::Expr(expr) = &**pat else { panic!()};
-    let Expr::Member(member_expression) = &**expr else { panic!()};
+    let mut assign = assign.fold_children_with(self);
 
-    // dbg!(&assign.right);
+    let PatOrExpr::Pat(pat) = &assign.left else { 
+      return assign;
+    };
+    let Pat::Expr(expr) = &**pat else { 
+      return assign;
+    };
+    let Expr::Member(member_expression) = &**expr else { 
+      return assign;
+    };
 
     let Ok(prop_assignment) = ('block: {
       if let Ok(prop) = lookup_property_access(&member_expression, &["module", "exports"]) {
