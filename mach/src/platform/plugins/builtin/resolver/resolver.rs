@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 
-use crate::platform::public::Dependency;
-use crate::platform::public::ResolveResult;
-use crate::platform::public::Resolver;
+use crate::public::Dependency;
+use crate::public::ResolveResult;
+use crate::public::Resolver;
 
 use super::resolve;
 

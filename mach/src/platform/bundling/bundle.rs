@@ -1,14 +1,14 @@
 use std::path::PathBuf;
 
-use crate::platform::public;
-use crate::platform::public::AssetGraph;
-use crate::platform::public::AssetMap;
-use crate::platform::public::Bundle;
-use crate::platform::public::BundleGraph;
-use crate::platform::public::Bundles;
-use crate::platform::public::DependencyMap;
-use crate::platform::public::ENTRY_ASSET;
-use crate::platform::public::NO_ASSET;
+use crate::public;
+use crate::public::AssetGraph;
+use crate::public::AssetMap;
+use crate::public::Bundle;
+use crate::public::BundleGraph;
+use crate::public::Bundles;
+use crate::public::DependencyMap;
+use crate::public::ENTRY_ASSET;
+use crate::public::NO_ASSET;
 
 pub fn bundle(
   _config: &public::Config,

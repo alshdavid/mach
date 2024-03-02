@@ -1,3 +1,4 @@
+mod public;
 mod cmd;
 mod kit;
 mod platform;

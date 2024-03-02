@@ -5,8 +5,8 @@ use normalize_path::NormalizePath;
 
 use crate::platform::adapters::node_js::native_node_resolve;
 use crate::platform::adapters::node_js::NodeAdapter;
-use crate::platform::public::Machrc;
-use crate::platform::public::Transformer;
+use crate::public::Machrc;
+use crate::public::Transformer;
 
 use super::builtin::resolver::DefaultResolver;
 use super::builtin::resolver_node_js::ResolverNodeJs;

@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
-use crate::platform::public::Config;
-use crate::platform::public::DependencyOptions;
-use crate::platform::public::MutableAsset;
-use crate::platform::public::Transformer;
+use crate::public::Config;
+use crate::public::DependencyOptions;
+use crate::public::MutableAsset;
+use crate::public::Transformer;
 
 #[derive(Debug)]
 pub struct DefaultTransformerNoop {}
@@ -17,13 +17,13 @@ impl Transformer for DefaultTransformerNoop {
   ) -> Result<(), String> {
     asset.add_dependency(DependencyOptions {
       specifier: "./index.js".to_string(),
-      specifier_type: crate::platform::public::SpecifierType::ESM,
-      priority: crate::platform::public::DependencyPriority::Lazy,
+      specifier_type: crate::public::SpecifierType::ESM,
+      priority: crate::public::DependencyPriority::Lazy,
       resolve_from: asset.file_path.clone(),
-      imported_symbols: vec![crate::platform::public::ImportSymbolType::Namespace(
+      imported_symbols: vec![crate::public::ImportSymbolType::Namespace(
         "".to_string(),
       )],
-      bundle_behavior: crate::platform::public::BundleBehavior::Default,
+      bundle_behavior: crate::public::BundleBehavior::Default,
     });
     return Ok(());
   }

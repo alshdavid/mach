@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use async_trait::async_trait;
 use dependency::Dependency;
 
-use crate::platform::public::dependency;
+use crate::public::dependency;
 
 #[async_trait]
 pub trait Resolver: Debug + Send + Sync {

@@ -6,8 +6,8 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
-use crate::platform::public::Config;
-use crate::platform::public::Machrc;
+use crate::public::Config;
+use crate::public::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 

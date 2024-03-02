@@ -9,9 +9,9 @@ use swc_core::ecma::visit::FoldWith;
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
-use crate::platform::public::AssetGraph;
-use crate::platform::public::BundleGraph;
-use crate::platform::public::DependencyMap;
+use crate::public::AssetGraph;
+use crate::public::BundleGraph;
+use crate::public::DependencyMap;
 
 use super::super::runtime_factory::ExportNamed;
 use super::super::runtime_factory::ImportNamed;

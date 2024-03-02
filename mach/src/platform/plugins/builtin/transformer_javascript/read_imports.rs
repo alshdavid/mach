@@ -9,9 +9,9 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
-use crate::platform::public::DependencyPriority;
-use crate::platform::public::ImportSymbolType;
-use crate::platform::public::SpecifierType;
+use crate::public::DependencyPriority;
+use crate::public::ImportSymbolType;
+use crate::public::SpecifierType;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 

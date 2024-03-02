@@ -11,16 +11,16 @@ use swc_core::ecma::visit::FoldWith;
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
 
-use crate::platform::public;
-use crate::platform::public::AssetGraph;
-use crate::platform::public::AssetMap;
-use crate::platform::public::Bundle;
-use crate::platform::public::BundleGraph;
-use crate::platform::public::BundleManifest;
-use crate::platform::public::Bundles;
-use crate::platform::public::DependencyMap;
-use crate::platform::public::PackageType;
-use crate::platform::public::Packages;
+use crate::public;
+use crate::public::AssetGraph;
+use crate::public::AssetMap;
+use crate::public::Bundle;
+use crate::public::BundleGraph;
+use crate::public::BundleManifest;
+use crate::public::Bundles;
+use crate::public::DependencyMap;
+use crate::public::PackageType;
+use crate::public::Packages;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;

@@ -7,9 +7,9 @@ use crate::platform::adapters::node_js::requests::LoadPluginRequest;
 use crate::platform::adapters::node_js::requests::RunResolverRequest;
 use crate::platform::adapters::node_js::requests::RunResolverResponse;
 use crate::platform::adapters::node_js::NodeAdapter;
-use crate::platform::public::Dependency;
-use crate::platform::public::ResolveResult;
-use crate::platform::public::Resolver;
+use crate::public::Dependency;
+use crate::public::ResolveResult;
+use crate::public::Resolver;
 
 pub struct ResolverNodeJs {
   specifier: String,

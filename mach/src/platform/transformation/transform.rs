@@ -2,15 +2,15 @@ use std::fs;
 
 use crate::platform::plugins::PluginContainer;
 use crate::platform::plugins::TransformerTarget;
-use crate::platform::public;
-use crate::platform::public::Asset;
-use crate::platform::public::AssetGraph;
-use crate::platform::public::AssetMap;
-use crate::platform::public::Dependency;
-use crate::platform::public::DependencyMap;
-use crate::platform::public::DependencyOptions;
-use crate::platform::public::MutableAsset;
-use crate::platform::public::ENTRY_ASSET;
+use crate::public;
+use crate::public::Asset;
+use crate::public::AssetGraph;
+use crate::public::AssetMap;
+use crate::public::Dependency;
+use crate::public::DependencyMap;
+use crate::public::DependencyOptions;
+use crate::public::MutableAsset;
+use crate::public::ENTRY_ASSET;
 
 pub async fn transform(
   config: &public::Config,

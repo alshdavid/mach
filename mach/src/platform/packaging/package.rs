@@ -2,14 +2,14 @@ use std::sync::Arc;
 
 use swc_core::common::SourceMap;
 
-use crate::platform::public;
-use crate::platform::public::AssetGraph;
-use crate::platform::public::AssetMap;
-use crate::platform::public::BundleGraph;
-use crate::platform::public::BundleManifest;
-use crate::platform::public::Bundles;
-use crate::platform::public::DependencyMap;
-use crate::platform::public::Packages;
+use crate::public;
+use crate::public::AssetGraph;
+use crate::public::AssetMap;
+use crate::public::BundleGraph;
+use crate::public::BundleManifest;
+use crate::public::Bundles;
+use crate::public::DependencyMap;
+use crate::public::Packages;
 
 use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
@@ -46,12 +46,9 @@ pub fn package(
         &bundle_manifest,
       );
     }
-    if bundle.kind == "css" {
-    }
-    if bundle.kind == "html" {
-    }
-    if bundle.kind == "file" {
-    }
+    if bundle.kind == "css" {}
+    if bundle.kind == "html" {}
+    if bundle.kind == "file" {}
   }
 
   return Ok(());

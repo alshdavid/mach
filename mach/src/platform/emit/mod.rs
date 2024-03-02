@@ -1,9 +1,9 @@
 use std::fs;
 
 use crate::kit::swc::render_module;
-use crate::platform::public::Bundles;
-use crate::platform::public::Packages;
-use crate::platform::public::{self};
+use crate::public::Bundles;
+use crate::public::Packages;
+use crate::public::{self};
 
 pub fn emit(
   config: &public::Config,

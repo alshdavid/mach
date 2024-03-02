@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 
-use crate::platform::public::Config;
-use crate::platform::public::MutableAsset;
-use crate::platform::public::Transformer;
+use crate::public::Config;
+use crate::public::MutableAsset;
+use crate::public::Transformer;
 
 #[derive(Debug)]
 pub struct DefaultTransformerCSS {}

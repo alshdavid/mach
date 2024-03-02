@@ -14,10 +14,10 @@ use swc_core::ecma::visit::FoldWith;
 
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
-use crate::platform::public::Config;
-use crate::platform::public::DependencyOptions;
-use crate::platform::public::MutableAsset;
-use crate::platform::public::Transformer;
+use crate::public::Config;
+use crate::public::DependencyOptions;
+use crate::public::MutableAsset;
+use crate::public::Transformer;
 
 use super::collect_decls;
 use super::read_imports_exports;
@@ -108,7 +108,7 @@ impl Transformer for DefaultTransformerJavaScript {
           priority: dependency.priority,
           resolve_from: asset.file_path.clone(),
           imported_symbols: dependency.imported_symbols,
-          bundle_behavior: crate::platform::public::BundleBehavior::Default,
+          bundle_behavior: crate::public::BundleBehavior::Default,
         });
       }
 

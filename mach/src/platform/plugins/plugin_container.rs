@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use crate::platform::public::Resolver;
-use crate::platform::public::Transformer;
+use crate::public::Resolver;
+use crate::public::Transformer;
 
 #[derive(Default, Debug)]
 pub struct PluginContainer {

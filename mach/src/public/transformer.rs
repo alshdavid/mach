@@ -5,8 +5,8 @@ use async_trait::async_trait;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::platform::public::Config;
-use crate::platform::public::SpecifierType;
+use crate::public::Config;
+use crate::public::SpecifierType;
 
 use super::BundleBehavior;
 use super::DependencyPriority;
