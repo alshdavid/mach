@@ -37,9 +37,9 @@ export function main(args) {
     const [branch, buildno] = BIN_VERSION.split('.')
     const verno = branch === 'main' ? `0.0.${buildno}` : `0.0.${buildno}-${branch}`
     console.log(verno)
-    const toml = fs.readFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), 'utf8')
+    const toml = fs.readFileSync(path.join(Paths.Root, 'mach', 'Cargo.toml'), 'utf8')
     const updated = toml.replace('version = "0.0.0-local"', `version = "${verno}"`)
-    fs.writeFileSync(path.join(Paths.Root, 'crates', 'mach', 'Cargo.toml'), updated, 'utf8')
+    fs.writeFileSync(path.join(Paths.Root, 'mach', 'Cargo.toml'), updated, 'utf8')
   }
 
   child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.Root, stdio: 'inherit' })

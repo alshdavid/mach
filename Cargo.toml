@@ -2,7 +2,7 @@
 resolver = "1"
 
 members = [
-    "crates/*",
+    "mach",
 ]
 
 [profile.release-lto]
