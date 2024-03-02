@@ -10,6 +10,10 @@ use cmd::dev::DevCommand;
 use cmd::version::VersionCommand;
 use cmd::watch::WatchCommand;
 
+/*
+  Main just acts as a router to run CLI commands
+*/
+
 #[derive(Debug, Subcommand)]
 pub enum CommandType {
   /// Build a project
@@ -20,12 +24,6 @@ pub enum CommandType {
   Watch(WatchCommand),
   /// Print version information
   Version(VersionCommand),
-}
-
-#[derive(Parser, Debug)]
-struct Commands {
-  #[clap(subcommand)]
-  command: CommandType,
 }
 
 fn main() {
@@ -45,4 +43,10 @@ fn main() {
       cmd::version::main();
     }
   }
+}
+
+#[derive(Parser, Debug)]
+struct Commands {
+  #[clap(subcommand)]
+  command: CommandType,
 }

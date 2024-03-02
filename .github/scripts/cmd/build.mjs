@@ -42,6 +42,7 @@ export function main(args) {
     fs.writeFileSync(path.join(Paths.Root, 'mach', 'Cargo.toml'), updated, 'utf8')
   }
 
+  console.log(`cargo build ${args._raw || ''}`)
   child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.Root, stdio: 'inherit' })
 
   if (TARGET) {

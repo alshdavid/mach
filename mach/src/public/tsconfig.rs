@@ -6,18 +6,6 @@
 //! The TSConfig file can be either a tsconfig.json or jsconfig.json; both have the same behavior and the same set of config variables.
 //!
 //! One TSConfig can inherit fields from another if it is specified in the 'extends' field.
-//!
-//! ## Example usage
-//!
-//! ```
-//! use tsconfig::TsConfig;
-//! use std::path::Path;
-//!
-//! let path = Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap())
-//!     .join("test/tsconfig.default.json");
-//! let config = TsConfig::parse_file(&path).unwrap();
-//!
-//! ```
 
 use std::collections::HashMap;
 use std::io::Read;
@@ -60,79 +48,12 @@ pub struct TsConfig {
 }
 
 impl TsConfig {
-  /// Parses a .tsconfig file into a [TsConfig].
-  ///
-  /// The `extends` field will be respected, allowing for one .tsconfig file to inherit properties from another.
-  /// Comments and trailing commas are both allowed, although they are not valid JSON.
-  /// ## Example
-  ///
-  /// Assuming the following .tsconfig files:
-  ///
-  /// tsconfig.base.json:
-  /// ```json
-  /// {
-  ///     "useDefineForClassFields": false,
-  ///     "traceResolution": true,
-  ///     "jsx": "preserve",
-  /// }
-  /// ```
-  /// tsconfig.inherits.json:
-  /// ```json
-  /// {
-  ///     "extends": "./tsconfig.base.json",
-  ///     "compilerOptions": {
-  ///         "traceResolution": false,
-  ///         "declaration": true,
-  ///         "jsx": "react-jsxdev",
-  ///     }
-  /// }
-  /// ```
-  /// ```
-  /// use std::path::Path;
-  /// use tsconfig::TsConfig;
-  /// let path = Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap())
-  ///     .join("test/tsconfig.inherits.json");
-  /// let config = TsConfig::parse_file(&path).unwrap();
-  ///
-  /// assert_eq!(
-  ///     config
-  ///         .compiler_options
-  ///         .clone()
-  ///         .unwrap()
-  ///         .use_define_for_class_fields,
-  ///     Some(false)
-  /// );
-  ///
-  /// assert_eq!(
-  ///     config.compiler_options.clone().unwrap().declaration,
-  ///     Some(true)
-  /// );
-  ///
-  /// assert_eq!(
-  ///     config.compiler_options.unwrap().trace_resolution,
-  ///     Some(false)
-  /// );
-  ///
-  /// ```
   pub fn parse_file<P: AsRef<Path>>(path: &P) -> Result<TsConfig> {
     let values = parse_file_to_value(path)?;
     let cfg = serde_json::from_value(values)?;
     Ok(cfg)
   }
 
-  /// Parse a JSON string into a single [TsConfig].
-  ///
-  /// The 'extends' field will be ignored. Comments and trailing commas are both allowed, although they are not valid JSON.
-  ///
-  /// ## Example
-  /// ```
-  /// use tsconfig::{TsConfig, Jsx};
-  /// let json = r#"{"compilerOptions": {"jsx": /*here's a comment*/ "react-jsx"},}"#;
-  ///
-  /// let config = TsConfig::parse_str(json).unwrap();
-  /// assert_eq!(config.compiler_options.unwrap().jsx, Some(Jsx::ReactJsx));     
-  ///```
-  ///
   pub fn parse_str(json: &str) -> Result<TsConfig> {
     // Remove trailing commas from objects.
     let re = Regex::new(r",(?P<valid>\s*})").unwrap();
@@ -162,53 +83,6 @@ fn merge(
   }
 }
 
-/// Parses a .tsconfig file into a [serde_json::Value].
-///
-/// The `extends` field will be respected, allowing for one .tsconfig file to inherit properties from another.
-/// Comments and trailing commas are both allowed, although they are not valid JSON.
-/// ## Example
-///
-/// Assuming the following .tsconfig files:
-///
-/// tsconfig.base.json:
-/// ```json
-/// {
-///     "compilerOptions": {
-///         "useDefineForClassFields": false,
-///         "traceResolution": true,
-///         "jsx": "preserve",
-///     }
-/// }
-/// ```
-/// tsconfig.inherits.json:
-/// ```json
-/// {
-///     "extends": "./tsconfig.base.json",
-///     "compilerOptions": {
-///         "traceResolution": false,
-///         "declaration": true,
-///         "jsx": "react-jsxdev",
-///     }
-/// }
-/// ```
-/// ```
-/// use std::path::Path;
-/// use tsconfig::parse_file_to_value;
-/// use serde_json::Value;
-///
-/// let path = Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap())
-///     .join("test/tsconfig.inherits.json");
-/// let config = parse_file_to_value(&path).unwrap();
-///
-/// assert_eq!(
-///     config
-///         ["compilerOptions"]
-///         ["useDefineForClassFields"],
-///     Value::Bool(false)
-/// );
-///
-///
-/// ```
 pub fn parse_file_to_value<P: AsRef<Path>>(path: &P) -> Result<Value> {
   let s = std::fs::read_to_string(path)?;
   let mut value = parse_to_value(&s)?;
@@ -239,22 +113,6 @@ pub fn parse_file_to_value<P: AsRef<Path>>(path: &P) -> Result<Value> {
   Ok(value)
 }
 
-/// Parse a JSON string into a single [serde_json::Value].
-///
-/// The 'extends' field will be ignored. Comments and trailing commas are both allowed, although they are not valid JSON.
-///
-/// ## Example
-/// ```
-/// use tsconfig::parse_to_value;
-/// use serde_json::Value;
-///
-///
-/// let json = r#"{"compilerOptions": {"jsx": /*here's a comment*/ "react-jsx"},}"#;
-///
-/// let config = parse_to_value(json).unwrap();
-/// assert_eq!(config["compilerOptions"]["jsx"], Value::String("react-jsx".to_string()));     
-///```
-///
 pub fn parse_to_value(json: &str) -> Result<Value> {
   // Remove trailing commas from objects.
   let re = Regex::new(r",(?P<valid>\s*})").unwrap();

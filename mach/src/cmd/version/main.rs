@@ -1,8 +1,7 @@
-use std::fs;
-use std::path::PathBuf;
-
 use clap::Parser;
 use normalize_path::NormalizePath;
+
+use crate::kit::json::parse_json_file;
 
 #[allow(non_upper_case_globals)]
 const color_red: &str = "\x1B[31m";
@@ -51,14 +50,4 @@ pub fn main() {
   } else {
     println!(r#"{style_bold}Version{style_reset}       {VERSION}"#);
   }
-}
-
-fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
-  let Ok(json_file) = fs::read_to_string(target) else {
-    return Err("Unable to read file".to_string());
-  };
-  let Ok(json) = serde_json::from_str::<serde_json::Value>(&json_file) else {
-    return Err("Unable to parse json".to_string());
-  };
-  return Ok(json);
 }
