@@ -5,6 +5,7 @@ use crate::platform::bundling::bundle;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::plugins::load_plugins;
+use crate::platform::transformation::transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
@@ -12,7 +13,6 @@ use crate::public::Bundles;
 use crate::public::Config;
 use crate::public::DependencyMap;
 use crate::public::Packages;
-use crate::platform::transformation::transform;
 
 use super::parse_config;
 use super::BuildCommand;

@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use std::env;
 use std::path::PathBuf;
 
+use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Machrc {
   pub is_default: bool,
   pub file_path: PathBuf,
@@ -31,7 +32,7 @@ impl Default for Machrc {
         ),
         (
           "*.html".to_string(),
-          vec!["mach:transformer/noop".to_string()],
+          vec!["mach:transformer/html".to_string()],
         ),
         (
           "*.{svg,png}".to_string(),

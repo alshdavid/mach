@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
@@ -37,7 +38,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
   let start_time = SystemTime::now();
 
   // Ignore multiple entries for now
-  let entry_point = get_absolute_path(&command.entry[0].clone());
+  let entry_point = get_entry(&command.entry[0].clone());
 
   // Find these points of interest
   let file_index = find_file_by_name(
@@ -104,6 +105,28 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     optimize: !command.no_optimize,
     env,
   });
+}
+
+fn get_entry(entry_arg: &Path) -> PathBuf {
+  let absolute = get_absolute_path(entry_arg);
+
+  if absolute.is_file() {
+    return absolute.to_path_buf();
+  }
+
+  for test in [
+    "index.html",
+    "index.tsx",
+    "index.ts",
+    "index.jsx",
+    "index.js",
+  ] {
+    let test = absolute.join("src").join(test);
+    if test.exists() {
+      return test;
+    }
+  }
+  panic!("Could not find entry");
 }
 
 fn parse_machrc(file_index: &FileIndex) -> Result<Machrc, String> {
@@ -253,7 +276,7 @@ fn find_file_by_name(
   return found;
 }
 
-fn get_absolute_path(target: &PathBuf) -> PathBuf {
+fn get_absolute_path(target: &Path) -> PathBuf {
   let mut file_path = PathBuf::from(&target);
   if !file_path.is_absolute() {
     file_path = std::env::current_dir().unwrap().join(file_path);
