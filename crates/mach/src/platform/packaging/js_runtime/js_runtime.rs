@@ -6,11 +6,11 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
 
-use crate::platform::packaging::runtime_factory::ExportNamed;
-use crate::platform::packaging::runtime_factory::ImportNamed;
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
+use crate::platform::packaging::runtime_factory::ExportNamed;
+use crate::platform::packaging::runtime_factory::ImportNamed;
 use crate::platform::public::AssetGraph;
 use crate::platform::public::BundleGraph;
 use crate::platform::public::DependencyMap;
@@ -151,7 +151,11 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
               statements.push(Stmt::Decl(decl.decl.clone()));
 
               for export in read_exports(decl) {
-                statements.push(self.runtime_factory.define_export(&export, &export, true, false));
+                statements.push(
+                  self
+                    .runtime_factory
+                    .define_export(&export, &export, true, false),
+                );
               }
             }
             ModuleDecl::ExportNamed(decl) => {
@@ -190,10 +194,15 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   for assignment in assignments {
                     match assignment {
                       ExportNamed::Named(key) => {
-                        statements.push(self.runtime_factory.define_export(&key, &key, true, false));
+                        statements
+                          .push(self.runtime_factory.define_export(&key, &key, true, false));
                       }
                       ExportNamed::Renamed(key, key_as) => {
-                        statements.push(self.runtime_factory.define_export(&key_as, &key, true, false));
+                        statements.push(
+                          self
+                            .runtime_factory
+                            .define_export(&key_as, &key, true, false),
+                        );
                       }
                       ExportNamed::Default(_) => panic!("impossible"),
                     }
@@ -314,7 +323,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           .to_owned()
           .expr;
 
-        let Expr::Call(result) = *mach_require else { panic!() };
+        let Expr::Call(result) = *mach_require else {
+          panic!()
+        };
         return result;
       }
       Callee::Import(_) => {
@@ -351,7 +362,7 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
     return call_expr;
   }
 
-   /*
+  /*
     module.exports.a
     module.export
     exports.a
@@ -370,8 +381,8 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
         break 'block Ok(prop);
       };
       break 'block Err(());
-    }) else { 
-      return member_expression 
+    }) else {
+      return member_expression;
     };
 
     if let Some(key) = prop_assignment {
@@ -380,41 +391,47 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           let key = self.runtime_factory.create_string(&key);
           let result = self.runtime_factory.module_exports_access(Some(key));
           let Stmt::Expr(result) = result else { panic!() };
-          let Expr::Member(result) = *result.expr else { panic!() };
+          let Expr::Member(result) = *result.expr else {
+            panic!()
+          };
           return result;
-        },
+        }
         PropAccessType::Computed(expr) => {
           let result = self.runtime_factory.module_exports_access(Some(expr));
           let Stmt::Expr(result) = result else { panic!() };
-          let Expr::Member(result) = *result.expr else { panic!() };
+          let Expr::Member(result) = *result.expr else {
+            panic!()
+          };
           return result;
-        },
+        }
       }
     }
     let result = self.runtime_factory.module_exports_access(None);
     let Stmt::Expr(result) = result else { panic!() };
-    let Expr::Member(result) = *result.expr else { panic!() };
+    let Expr::Member(result) = *result.expr else {
+      panic!()
+    };
     return result;
   }
 
-   /*
+  /*
     module.exports.a = value
     module.exports = value
     exports.a = value
   */
   fn fold_assign_expr(
     &mut self,
-    assign :AssignExpr,
+    assign: AssignExpr,
   ) -> AssignExpr {
     let mut assign = assign.fold_children_with(self);
 
-    let PatOrExpr::Pat(pat) = &assign.left else { 
+    let PatOrExpr::Pat(pat) = &assign.left else {
       return assign;
     };
-    let Pat::Expr(expr) = &**pat else { 
+    let Pat::Expr(expr) = &**pat else {
       return assign;
     };
-    let Expr::Member(member_expression) = &**expr else { 
+    let Expr::Member(member_expression) = &**expr else {
       return assign;
     };
 
@@ -427,25 +444,32 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
       };
       break 'block Err(());
     }) else {
-      return assign 
+      return assign;
     };
 
     if let Some(key) = prop_assignment {
       match key {
         PropAccessType::Ident(_, key) => {
           let key = self.runtime_factory.create_string(&key);
-          let result = self.runtime_factory.module_exports_assign(Some(key), *assign.right);
+          let result = self
+            .runtime_factory
+            .module_exports_assign(Some(key), *assign.right);
           let Stmt::Expr(result) = result else { panic!() };
-          let Expr::Assign(result) = *result.expr else { panic!() };
+          let Expr::Assign(result) = *result.expr else {
+            panic!()
+          };
           return result;
-        },
+        }
         PropAccessType::Computed(expr) => {
-          let result = self.runtime_factory.module_exports_assign(Some(expr), *assign.right);
+          let result = self
+            .runtime_factory
+            .module_exports_assign(Some(expr), *assign.right);
           let Stmt::Expr(result) = result else { panic!() };
-          let Expr::Assign(result) = *result.expr else { panic!() };
+          let Expr::Assign(result) = *result.expr else {
+            panic!()
+          };
           return result;
-        },
-        
+        }
       }
     }
 
@@ -453,9 +477,13 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
       assign.right = Box::new(Expr::Call(self.fold_call_expr(call)));
     }
 
-    let result = self.runtime_factory.module_exports_assign(None, *assign.right);
+    let result = self
+      .runtime_factory
+      .module_exports_assign(None, *assign.right);
     let Stmt::Expr(result) = result else { panic!() };
-    let Expr::Assign(result) = *result.expr else { panic!() };
+    let Expr::Assign(result) = *result.expr else {
+      panic!()
+    };
     return result;
   }
 }

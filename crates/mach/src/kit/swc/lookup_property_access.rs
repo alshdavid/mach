@@ -26,10 +26,10 @@ pub fn lookup_property_access(
       MemberProp::Ident(ident) => {
         let value = ident.sym.to_string();
         keys.push(PropAccessType::Ident(ident, value));
-      },
+      }
       MemberProp::Computed(computed) => {
         keys.push(PropAccessType::Computed(*computed.expr));
-      },
+      }
       MemberProp::PrivateName(_) => todo!(),
     }
 
@@ -41,13 +41,13 @@ pub fn lookup_property_access(
         let value = ident.sym.to_string();
         keys.push(PropAccessType::Ident(ident, value));
       }
-      _ => {},
+      _ => {}
     }
   }
 
   let source_keys_count = source_keys.len();
   let exprs_count = keys.len();
-  
+
   if exprs_count != source_keys_count && exprs_count != source_keys_count + 1 {
     return Err(());
   }
@@ -65,39 +65,35 @@ pub fn lookup_property_access(
         if *source_key.unwrap() != ident.sym.to_string() {
           return Err(());
         }
-      },
-      PropAccessType::Computed(expr) => {
-        match expr {
-          Expr::Ident(ident) => {
+      }
+      PropAccessType::Computed(expr) => match expr {
+        Expr::Ident(ident) => {
+          if count == source_keys.len() {
+            return Ok(Some(access_type));
+          }
+          if *source_key.unwrap() != ident.sym.to_string() {
+            return Err(());
+          }
+        }
+        Expr::Lit(lit) => match lit {
+          Lit::Str(str) => {
             if count == source_keys.len() {
               return Ok(Some(access_type));
             }
-            if *source_key.unwrap() != ident.sym.to_string() {
+            if *source_key.unwrap() != str.value.to_string() {
               return Err(());
             }
-          },
-          Expr::Lit(lit) => {
-            match lit {
-              Lit::Str(str) => {
-                if count == source_keys.len() {
-                  return Ok(Some(access_type));
-                }
-                if *source_key.unwrap() != str.value.to_string() {
-                  return Err(());
-                }
-              },
-              _ => {
-                if count == source_keys.len() {
-                  return Ok(Some(access_type));
-                }
-              },
-            }
-          },
+          }
           _ => {
             if count == source_keys.len() {
               return Ok(Some(access_type));
             }
-          },
+          }
+        },
+        _ => {
+          if count == source_keys.len() {
+            return Ok(Some(access_type));
+          }
         }
       },
     }

@@ -14,12 +14,6 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
 
-  crates/mach/src/adapters/node_js/js:
-    devDependencies:
-      '@alshdavid/mach':
-        specifier: workspace:*
-        version: link:../../../../../../npm/noop
-
   npm/mach: {}
 
   npm/node-adapter: {}

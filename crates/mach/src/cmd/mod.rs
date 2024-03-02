@@ -1,4 +1,4 @@
-pub mod version;
 pub mod build;
-pub mod watch;
 pub mod dev;
+pub mod version;
+pub mod watch;

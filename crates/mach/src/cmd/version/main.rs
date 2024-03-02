@@ -27,7 +27,9 @@ pub fn main() {
   if possible_package_json.exists() {
     let package_json = parse_json_file(&possible_package_json).expect("package.json malformed");
     if let Some(version) = package_json.get("version") {
-      let version = version.as_str().expect("package.json#version is invalid type");
+      let version = version
+        .as_str()
+        .expect("package.json#version is invalid type");
       npm_version = Some(version.to_string());
     }
   }

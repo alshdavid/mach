@@ -63,7 +63,7 @@ pub fn package(
     let asset_map = &asset_map;
     let mut bundle_assets = bundle.assets.iter().collect::<Vec<&PathBuf>>();
     bundle_assets.sort();
-    
+
     for asset_id in bundle_assets {
       let source_map = &source_map;
       let asset_graph = &asset_graph;

@@ -14,7 +14,8 @@ use crate::platform::public::DependencyMap;
 use crate::platform::public::Packages;
 use crate::platform::transformation::transform;
 
-use super::{parse_config, BuildCommand};
+use super::parse_config;
+use super::BuildCommand;
 
 async fn main_async(config: Config) {
   // Bundle state
@@ -114,7 +115,6 @@ async fn main_async(config: Config) {
     config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
   );
 }
-
 
 pub fn main(command: BuildCommand) {
   let config = parse_config(command).expect("Failed to init config");

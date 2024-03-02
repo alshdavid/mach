@@ -20,7 +20,9 @@ impl Transformer for DefaultTransformerNoop {
       specifier_type: crate::platform::public::SpecifierType::ESM,
       priority: crate::platform::public::DependencyPriority::Lazy,
       resolve_from: asset.file_path.clone(),
-      imported_symbols: vec![crate::platform::public::ImportSymbolType::Namespace("".to_string())],
+      imported_symbols: vec![crate::platform::public::ImportSymbolType::Namespace(
+        "".to_string(),
+      )],
       bundle_behavior: crate::platform::public::BundleBehavior::Default,
     });
     return Ok(());

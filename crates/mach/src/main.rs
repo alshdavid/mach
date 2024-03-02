@@ -1,13 +1,13 @@
 mod cmd;
-mod platform;
 mod kit;
+mod platform;
 
-use clap::Subcommand;
 use clap::Parser;
+use clap::Subcommand;
 use cmd::build::BuildCommand;
 use cmd::dev::DevCommand;
-use cmd::watch::WatchCommand;
 use cmd::version::VersionCommand;
+use cmd::watch::WatchCommand;
 
 #[derive(Debug, Subcommand)]
 pub enum CommandType {
@@ -33,15 +33,15 @@ fn main() {
   match command.command {
     CommandType::Build(command) => {
       cmd::build::main(command);
-    },
+    }
     CommandType::Dev(command) => {
       cmd::dev::main(command);
-    },
+    }
     CommandType::Watch(command) => {
       cmd::watch::main(command);
-    },
+    }
     CommandType::Version(_) => {
       cmd::version::main();
-    },
+    }
   }
 }
