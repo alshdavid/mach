@@ -1,6 +1,6 @@
 use swc_core::ecma::ast::*;
 
-use crate::platform::packaging::runtime_factory::ExportNamed;
+use super::super::runtime_factory::ExportNamed;
 
 /*
   const foo = ''; export { foo }

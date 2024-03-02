@@ -75,3 +75,4 @@ impl Bundle {
 
 pub type Bundles = Vec<Bundle>;
 pub type BundleGraph = HashMap<String, String>;
+pub type BundleManifest = HashMap<String, String>;

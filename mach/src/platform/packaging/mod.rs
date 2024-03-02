@@ -1,5 +1,4 @@
-mod js_runtime;
+mod javascript;
 mod package;
-pub mod runtime_factory;
 
 pub use crate::platform::packaging::package::*;

@@ -1,6 +1,6 @@
 use swc_core::ecma::ast::*;
 
-use crate::platform::packaging::runtime_factory::ImportNamed;
+use super::super::runtime_factory::ImportNamed;
 
 /// ImportAssignment looks at the variables assigned within an import statement
 ///   import { a, b } from './foo'

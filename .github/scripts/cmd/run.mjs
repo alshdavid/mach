@@ -14,8 +14,8 @@ export function main(args) {
   const { binary_path } = build(parse(CARGO_ARGS.split(' ')))
 
   try {
-    console.log(`${binary_path} build ${MACH_ARGS || ''}`)
-    child_process.execSync(`${binary_path} build ${MACH_ARGS || ''}`, { cwd: FIXTURE_DIR, stdio: 'inherit' })
+    console.log(`${binary_path} ${MACH_ARGS || ''}`)
+    child_process.execSync(`${binary_path} ${MACH_ARGS || ''}`, { cwd: FIXTURE_DIR, stdio: 'inherit' })
   } catch (error) {
   }
 }
