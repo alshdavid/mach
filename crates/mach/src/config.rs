@@ -7,8 +7,8 @@ use clap::Parser;
 use normalize_path::NormalizePath;
 
 use crate::args::Args;
-use crate::public::Config;
-use crate::public::Machrc;
+use crate::platform::public::Config;
+use crate::platform::public::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 

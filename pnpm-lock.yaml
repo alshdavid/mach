@@ -38,7 +38,13 @@ importers:
         specifier: ^14.1.1
         version: 14.1.1
 
-  testing/fixtures/cjs-nested:
+  testing/fixtures/commonjs:
+    devDependencies:
+      http-server:
+        specifier: ^14.1.1
+        version: 14.1.1
+
+  testing/fixtures/commonjs-nested:
     devDependencies:
       '@types/react':
         specifier: ^18.2.45
@@ -55,12 +61,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-
-  testing/fixtures/commonjs:
-    devDependencies:
-      http-server:
-        specifier: ^14.1.1
-        version: 14.1.1
 
   testing/fixtures/esm:
     devDependencies:

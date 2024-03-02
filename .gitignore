@@ -2,7 +2,6 @@
 
 # builds
 dist/
-build/
 publish/
 temp/
 target/

@@ -1,7 +1,9 @@
 [package]
 name = "mach"
 version = "0.0.0-local"
-description = "mustang"
+repository = "https://github.com/alshdavid/mach"
+bugreports = "test"
+description = "Bundler For The Modern Web"
 edition = "2021"
 
 [dependencies]
