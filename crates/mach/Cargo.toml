@@ -2,7 +2,6 @@
 name = "mach"
 version = "0.0.0-local"
 repository = "https://github.com/alshdavid/mach"
-bugreports = "test"
 description = "Bundler For The Modern Web"
 edition = "2021"
 

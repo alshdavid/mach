@@ -2,6 +2,13 @@
   "name": "@workspace/adapter",
   "private": true,
   "version": "0.0.0-workspace",
-  "main": "index.js",
-  "types": "index.d.js"
+  "main": "lib/index.js",
+  "types": "types/index.d.js",
+  "scripts": {
+    "build": "rm -rf lib types && npx tsc && npx tsc --outDir types --declaration true --emitDeclarationOnly true"
+  },
+  "dependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
+  }
 }

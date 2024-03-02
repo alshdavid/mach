@@ -77,6 +77,7 @@ impl Transformer for DefaultTransformerJavaScript {
           top_level_mark,
           unresolved_mark,
         ));
+        *asset.kind = "js".to_string();
       }
 
       if file_extension == "tsx" {

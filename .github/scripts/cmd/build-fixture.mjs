@@ -28,7 +28,7 @@ export function main(args) {
     }
 
     try {
-      child_process.execSync(`${binary_path} ${test} ${MACH_ARGS}`, { cwd: FIXTURE_DIR, stdio: 'inherit' })
+      child_process.execSync(`${binary_path} build ${test} ${MACH_ARGS}`, { cwd: FIXTURE_DIR, stdio: 'inherit' })
     } catch (error) {
       
     }
