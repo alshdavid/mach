@@ -1,4 +1,6 @@
 mod cmd;
+mod platform;
+mod kit;
 
 use clap::Subcommand;
 use clap::Parser;
@@ -9,16 +11,20 @@ use cmd::version::VersionCommand;
 
 #[derive(Debug, Subcommand)]
 pub enum CommandType {
+  /// Build a project
   Build(BuildCommand),
+  /// Start a web server and reload when changes are detected
   Dev(DevCommand),
+  /// Build and rebuild when changes are detected
   Watch(WatchCommand),
+  /// Print version information
   Version(VersionCommand),
 }
 
 #[derive(Parser, Debug)]
 struct Commands {
   #[clap(subcommand)]
-  command: CommandType
+  command: CommandType,
 }
 
 fn main() {
@@ -34,8 +40,8 @@ fn main() {
     CommandType::Watch(command) => {
       cmd::watch::main(command);
     },
-    CommandType::Version(command) => {
-      cmd::version::main(command);
+    CommandType::Version(_) => {
+      cmd::version::main();
     },
   }
 }
