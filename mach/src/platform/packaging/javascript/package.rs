@@ -44,7 +44,7 @@ pub fn package_javascript(
     bundle_module_stmts.push(stmt);
   }
 
-  if !bundle.is_lazy {
+  if bundle.is_entry {
     if bundles.len() > 1 {
       bundle_module_stmts.push(runtime_factory.manifest(&bundle_manifest).unwrap());
       bundle_module_stmts.push(runtime_factory.import_script());
@@ -120,7 +120,7 @@ pub fn package_javascript(
     bundle_module_stmts.push(stmt);
   }
 
-  if !bundle.is_lazy {
+  if bundle.is_entry {
     bundle_module_stmts.push(runtime_factory.mach_require(
       bundle.entry_asset.to_str().unwrap(),
       &[],

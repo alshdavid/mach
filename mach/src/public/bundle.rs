@@ -15,7 +15,6 @@ pub struct Bundle {
   pub output: String,
   pub kind: String,
   pub is_entry: bool,
-  pub is_lazy: bool,
   pub assets: HashSet<PathBuf>,
   pub entry_asset: PathBuf,
 }
@@ -31,7 +30,6 @@ impl Bundle {
       name: String::new(),
       output: String::new(),
       is_entry: false,
-      is_lazy: false,
       assets: HashSet::new(),
       entry_asset: PathBuf::new(),
     };

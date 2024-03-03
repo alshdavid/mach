@@ -20,27 +20,24 @@ pub fn bundle(
 ) -> Result<(), String> {
   let mut css_bundle = Bundle::new(NO_ASSET.as_path(), "css");
 
-  let mut entries: Vec<(PathBuf, bool, Option<String>)> = asset_graph
+  let mut entries: Vec<DepRef> = asset_graph
     .get_dependencies(&ENTRY_ASSET)
     .expect("no entry assets")
     .iter()
-    .map(|x| (x.1.clone(), false, None))
+    .map(|(dep_id, asset_id)| DepRef {
+      asset_id: (*asset_id).clone(),
+      from_dependency: (*dep_id).clone(),
+      is_entry: true,
+    })
     .collect();
 
-  while let Some((entry_asset_id, is_lazy, from_bundle)) = entries.pop() {
-    let mut bundle = Bundle::new(&entry_asset_id, "");
+  while let Some(dep_ref) = entries.pop() {
+    let mut bundle = Bundle::new(&dep_ref.asset_id, "");
 
-    if let Some(from_dependency_id) = from_bundle {
-      bundle_graph.insert(from_dependency_id.clone(), bundle.id.clone());
-    } else {
-      bundle.is_entry = true;
-    }
+    bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.id.clone());
+    bundle.is_entry = dep_ref.is_entry;
 
-    if is_lazy {
-      bundle.is_lazy = true
-    }
-
-    let mut q = Vec::<PathBuf>::from([entry_asset_id.clone()]);
+    let mut q = Vec::<PathBuf>::from([dep_ref.asset_id.clone()]);
 
     while let Some(asset_id) = q.pop() {
       let current_asset = asset_map.get(&asset_id).unwrap();
@@ -49,16 +46,40 @@ pub fn bundle(
         bundle.name = current_asset.name.clone();
       }
 
+      // Bundle JavaScript
       if current_asset.kind == "js" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "js".to_string();
 
         if bundle.output == "" {
-          // bundle.output = format!("{}.{}.js", bundle.name, bundle.id);
           bundle.output = format!("{}.js", bundle.name);
         }
+
+        let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
+          continue;
+        };
+
+        for (dependency_id, asset_id) in dependencies {
+          let dependency = dependency_map.get(dependency_id).unwrap();
+          match dependency.priority {
+            public::DependencyPriority::Sync => {
+              bundle_graph.insert(dependency_id.clone(), bundle.id.clone());
+              q.push(asset_id.clone());
+            }
+            public::DependencyPriority::Lazy => {
+              entries.push(DepRef {
+                asset_id: asset_id.clone(),
+                from_dependency: dependency_id.clone(),
+                is_entry: false,
+              });
+            }
+          }
+        }
+
+        continue;
       }
 
+      // Bundle CSS
       if current_asset.kind == "css" {
         css_bundle.assets.insert(asset_id.clone());
         if css_bundle.entry_asset == *NO_ASSET {
@@ -66,34 +87,31 @@ pub fn bundle(
         }
 
         if bundle.output == "" {
-          bundle.output = format!("{}.{}.css", bundle.name, bundle.id);
+          bundle.output = format!("{}.css", bundle.name);
         }
+
+        continue;
       }
 
+      // Bundle HTML
       if current_asset.kind == "html" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "html".to_string();
-      }
+        bundle.output = format!("{}.html", bundle.name);
 
-      if bundle.kind == "" {
-        continue;
-      }
+        let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
+          continue;
+        };
 
-      let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
-        continue;
-      };
-
-      for (dependency_id, asset_id) in dependencies {
-        let dependency = dependency_map.get(dependency_id).unwrap();
-        match dependency.priority {
-          public::DependencyPriority::Sync => {
-            bundle_graph.insert(dependency_id.clone(), bundle.id.clone());
-            q.push(asset_id.clone());
-          }
-          public::DependencyPriority::Lazy => {
-            entries.push((asset_id.clone(), true, Some(dependency_id.clone())));
-          }
+        for (dependency_id, asset_id) in dependencies {
+          entries.push(DepRef {
+            asset_id: asset_id.clone(),
+            from_dependency: dependency_id.clone(),
+            is_entry: true,
+          });
         }
+
+        continue;
       }
     }
 
@@ -105,6 +123,12 @@ pub fn bundle(
   }
 
   return Ok(());
+}
+
+struct DepRef {
+  asset_id: PathBuf,
+  from_dependency: String,
+  is_entry: bool,
 }
 
 /*

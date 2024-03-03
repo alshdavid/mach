@@ -11,6 +11,7 @@ use crate::public::Bundles;
 use crate::public::DependencyMap;
 use crate::public::Packages;
 
+use super::html::package_html;
 use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
@@ -47,7 +48,19 @@ pub fn package(
       );
     }
     if bundle.kind == "css" {}
-    if bundle.kind == "html" {}
+    if bundle.kind == "html" {
+      package_html(
+        config,
+        asset_map,
+        dependency_map,
+        asset_graph,
+        bundles,
+        bundle_graph,
+        packages,
+        bundle,
+        &bundle_manifest,
+      )
+    }
     if bundle.kind == "file" {}
   }
 
