@@ -9,6 +9,7 @@ use cmd::build::BuildCommand;
 use cmd::dev::DevCommand;
 use cmd::version::VersionCommand;
 use cmd::watch::WatchCommand;
+use cmd::serve::ServeCommand;
 
 /*
   Main just acts as a router to run CLI commands
@@ -22,6 +23,8 @@ pub enum CommandType {
   Dev(DevCommand),
   /// Build and rebuild when changes are detected
   Watch(WatchCommand),
+  /// General purpose HTTP server
+  Serve(ServeCommand),
   /// Print version information
   Version(VersionCommand),
 }
@@ -38,6 +41,9 @@ fn main() {
     }
     CommandType::Watch(command) => {
       cmd::watch::main(command);
+    }
+    CommandType::Serve(command) => {
+      cmd::serve::main(command);
     }
     CommandType::Version(_) => {
       cmd::version::main();
