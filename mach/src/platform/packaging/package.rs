@@ -9,7 +9,7 @@ use crate::public::BundleGraph;
 use crate::public::BundleManifest;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
-use crate::public::Packages;
+use crate::public::Outputs;
 
 use super::html::package_html;
 use super::javascript::package_javascript;
@@ -17,18 +17,18 @@ use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
   config: &public::Config,
-  asset_map: &AssetMap,
+  asset_map: &mut AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
   bundles: &Bundles,
   bundle_graph: &BundleGraph,
-  packages: &mut Packages,
+  outputs: &mut Outputs,
 ) -> Result<(), String> {
   let source_map = Arc::new(SourceMap::default());
   let mut bundle_manifest = BundleManifest::new();
 
   for bundle in bundles.iter() {
-    bundle_manifest.insert(bundle.id.clone(), format!("/{}", bundle.output));
+    bundle_manifest.insert(bundle.id.clone(), bundle.name.clone());
   }
 
   for bundle in bundles.iter() {
@@ -41,13 +41,19 @@ pub fn package(
         &asset_graph,
         &bundles,
         &bundle_graph,
-        packages,
+        outputs,
         &runtime_factory,
         &bundle,
         &bundle_manifest,
       );
     }
+  }
+
+  for bundle in bundles.iter() {
     if bundle.kind == "css" {}
+  }
+
+  for bundle in bundles.iter() {
     if bundle.kind == "html" {
       package_html(
         config,
@@ -56,13 +62,14 @@ pub fn package(
         asset_graph,
         bundles,
         bundle_graph,
-        packages,
+        outputs,
         bundle,
         &bundle_manifest,
       )
     }
-    if bundle.kind == "file" {}
   }
+
+  // dbg!(bundle_manifest);
 
   return Ok(());
 }

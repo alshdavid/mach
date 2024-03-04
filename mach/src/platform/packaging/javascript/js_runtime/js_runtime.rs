@@ -54,7 +54,8 @@ impl<'a> JavaScriptRuntime<'a> {
     let asset_graph_entries = self
       .asset_graph
       .get_dependencies(&dependency.resolve_from_rel)
-      .unwrap();
+      .expect(&format!("Could not get dependency:\n  {:?}\n  {:?}", dependency.resolve_from_rel, dependency_id));
+    
     let mut asset_id = "";
     for (dep_id, target_asset_id) in asset_graph_entries {
       if dep_id == dependency_id {
@@ -62,7 +63,7 @@ impl<'a> JavaScriptRuntime<'a> {
       }
     }
 
-    let bundle_id = self.bundle_graph.get(dependency_id).unwrap();
+    let bundle_id = self.bundle_graph.get(dependency_id).expect(&format!("Could not get bundle:\n  {}\n  {}", dependency_id, asset_id));
     if bundle_id == self.current_bundle_id {
       return (vec![], asset_id.to_string());
     } else {

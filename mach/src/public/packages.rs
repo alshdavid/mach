@@ -1,28 +1,19 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use swc_core::common::SourceMap;
 use swc_core::ecma::ast::Module;
 
-pub enum PackageType {
-  JavaScript((Module, Arc<SourceMap>)),
-  // CSS,
-  // HTML,
-  // File,
+pub type Outputs = Vec<Output>;
+
+pub struct Output {
+  pub content: Vec<u8>,
+  pub filepath: PathBuf,
 }
 
-impl std::fmt::Debug for PackageType {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    match self {
-      Self::JavaScript((_, _)) => f.debug_tuple("JavaScript").finish(),
-      // Self::CSS => write!(f, "CSS"),
-      // Self::HTML => write!(f, "HTML"),
-      // Self::File => write!(f, "File"),
+impl std::fmt::Debug for Output {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Output").field("content (size)", &self.content.len()).field("filepath", &self.filepath).finish()
     }
-  }
 }
-
-pub type Packages = HashMap<String, PackageType>;

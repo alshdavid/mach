@@ -5,5 +5,5 @@ const rootElement = document.createElement('div')
 document.body.appendChild(rootElement)
 
 const root = ReactDOM.createRoot(rootElement)
-// root.render(<div>Hello World!</div>)
-root.render(React.createElement('div', {}, ['Hello World!']))
+root.render(<div>Hello World!</div>)
+// root.render(React.createElement('div', {}, ['Hello World!']))

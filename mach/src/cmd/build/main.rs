@@ -12,7 +12,7 @@ use crate::public::BundleGraph;
 use crate::public::Bundles;
 use crate::public::Config;
 use crate::public::DependencyMap;
-use crate::public::Packages;
+use crate::public::Outputs;
 
 use super::parse_config;
 use super::BuildCommand;
@@ -24,7 +24,7 @@ async fn main_async(config: Config) {
   let mut asset_graph = AssetGraph::new();
   let mut bundles = Bundles::new();
   let mut bundle_graph = BundleGraph::new();
-  let mut packages = Packages::new();
+  let mut outputs = Outputs::new();
 
   // Adapters
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
@@ -95,16 +95,16 @@ async fn main_async(config: Config) {
     &mut asset_graph,
     &mut bundles,
     &mut bundle_graph,
-    &mut packages,
+    &mut outputs,
   ) {
     println!("Packaging Error");
     println!("{}", err);
     return;
   }
 
-  // dbg!(&packages);
+  // dbg!(&outputs);
 
-  if let Err(err) = emit(&config, &mut bundles, &mut packages) {
+  if let Err(err) = emit(&config, &mut bundles, &mut outputs) {
     println!("Packaging Error");
     println!("{}", err);
     return;

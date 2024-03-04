@@ -21,6 +21,10 @@ pub struct BuildCommand {
   #[arg(short = 'o', long = "dist", default_value = "dist")]
   pub out_folder: PathBuf,
 
+  /// Delete output folder before emitting files
+  #[arg(short = 'c', long = "clean")]
+  pub clean: bool,
+
   /// Disable optimizations
   #[arg(long = "no-optimize")]
   pub no_optimize: bool,

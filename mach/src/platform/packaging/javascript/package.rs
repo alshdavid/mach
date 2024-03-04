@@ -11,6 +11,7 @@ use swc_core::ecma::visit::FoldWith;
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
 
+use crate::kit::swc::render_module;
 use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
@@ -19,8 +20,8 @@ use crate::public::BundleGraph;
 use crate::public::BundleManifest;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
-use crate::public::PackageType;
-use crate::public::Packages;
+use crate::public::Outputs;
+use crate::public::Output;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;
@@ -32,7 +33,7 @@ pub fn package_javascript(
   asset_graph: &AssetGraph,
   bundles: &Bundles,
   bundle_graph: &BundleGraph,
-  packages: &mut Packages,
+  outputs: &mut Outputs,
   runtime_factory: &RuntimeFactory,
   bundle: &Bundle,
   bundle_manifest: &BundleManifest,
@@ -42,14 +43,6 @@ pub fn package_javascript(
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
     bundle_module_stmts.push(stmt);
-  }
-
-  if bundle.is_entry {
-    if bundles.len() > 1 {
-      bundle_module_stmts.push(runtime_factory.manifest(&bundle_manifest).unwrap());
-      bundle_module_stmts.push(runtime_factory.import_script());
-    }
-    bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
   }
 
   let asset_map = &asset_map;
@@ -103,7 +96,7 @@ pub fn package_javascript(
           let Some(bundle_id) = bundle_graph.get(dependency_id) else {
             continue;
           };
-          if *bundle_id == bundle.id {
+          if *bundle_id == bundle.name {
             continue;
           }
           bundle_dependencies.insert(bundle_id.clone());
@@ -120,9 +113,16 @@ pub fn package_javascript(
     bundle_module_stmts.push(stmt);
   }
 
-  if bundle.is_entry {
+
+  if let Some(entry_asset_id) = &bundle.entry_asset {
+    if bundles.len() > 1 {
+      bundle_module_stmts.push(runtime_factory.manifest(&bundle_manifest).unwrap());
+      bundle_module_stmts.push(runtime_factory.import_script());
+    }
+    bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
+
     bundle_module_stmts.push(runtime_factory.mach_require(
-      bundle.entry_asset.to_str().unwrap(),
+      entry_asset_id.to_str().unwrap(),
       &[],
       None,
     ));
@@ -135,8 +135,11 @@ pub fn package_javascript(
     )],
     shebang: None,
   };
-  packages.insert(
-    bundle.id.clone(),
-    PackageType::JavaScript((bundle_module, source_map)),
-  );
+
+  let rendered = render_module(&bundle_module, source_map);
+
+  outputs.push(Output {
+    content: rendered.as_bytes().to_vec(),
+    filepath: PathBuf::from(&bundle.name),
+  });
 }

@@ -14,7 +14,7 @@ pub fn hash_string_sha_256(input: &str) -> String {
   return hash_sha_256(input.as_bytes());
 }
 
-pub fn _hash_path_buff_sha_256(input: &PathBuf) -> String {
+pub fn hash_path_buff_sha_256(input: &PathBuf) -> String {
   return hash_string_sha_256(input.to_str().unwrap());
 }
 

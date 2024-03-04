@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::public;
@@ -8,7 +9,6 @@ use crate::public::BundleGraph;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
 use crate::public::ENTRY_ASSET;
-use crate::public::NO_ASSET;
 
 pub fn bundle(
   _config: &public::Config,
@@ -18,7 +18,9 @@ pub fn bundle(
   bundles: &mut Bundles,
   bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
-  let mut css_bundle = Bundle::new(NO_ASSET.as_path(), "css");
+  let mut css_bundle = Bundle{
+    ..Bundle::default()
+  };
 
   let mut entries: Vec<DepRef> = asset_graph
     .get_dependencies(&ENTRY_ASSET)
@@ -32,28 +34,25 @@ pub fn bundle(
     .collect();
 
   while let Some(dep_ref) = entries.pop() {
-    let mut bundle = Bundle::new(&dep_ref.asset_id, "");
+    // dbg!(&dep_ref);
+    let mut sync_dependencies = HashSet::<String>::new();
+    let mut bundle = Bundle {
+      ..Bundle::default()
+    };
 
-    bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.id.clone());
-    bundle.is_entry = dep_ref.is_entry;
+    if dep_ref.is_entry {
+      bundle.entry_asset = Some(dep_ref.asset_id.clone());
+    }
 
     let mut q = Vec::<PathBuf>::from([dep_ref.asset_id.clone()]);
 
     while let Some(asset_id) = q.pop() {
       let current_asset = asset_map.get(&asset_id).unwrap();
 
-      if bundle.name == "" {
-        bundle.name = current_asset.name.clone();
-      }
-
       // Bundle JavaScript
       if current_asset.kind == "js" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "js".to_string();
-
-        if bundle.output == "" {
-          bundle.output = format!("{}.js", bundle.name);
-        }
 
         let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
           continue;
@@ -61,9 +60,10 @@ pub fn bundle(
 
         for (dependency_id, asset_id) in dependencies {
           let dependency = dependency_map.get(dependency_id).unwrap();
+          // dbg!(&dependency);
           match dependency.priority {
             public::DependencyPriority::Sync => {
-              bundle_graph.insert(dependency_id.clone(), bundle.id.clone());
+              sync_dependencies.insert(dependency_id.clone());
               q.push(asset_id.clone());
             }
             public::DependencyPriority::Lazy => {
@@ -82,14 +82,6 @@ pub fn bundle(
       // Bundle CSS
       if current_asset.kind == "css" {
         css_bundle.assets.insert(asset_id.clone());
-        if css_bundle.entry_asset == *NO_ASSET {
-          css_bundle.update_entry(&asset_id);
-        }
-
-        if bundle.output == "" {
-          bundle.output = format!("{}.css", bundle.name);
-        }
-
         continue;
       }
 
@@ -97,7 +89,6 @@ pub fn bundle(
       if current_asset.kind == "html" {
         bundle.assets.insert(asset_id.clone());
         bundle.kind = "html".to_string();
-        bundle.output = format!("{}.html", bundle.name);
 
         let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
           continue;
@@ -115,16 +106,33 @@ pub fn bundle(
       }
     }
 
+    bundle.id = bundle.generate_id();
+
+    if bundle.kind == "js" {
+      for dep_id in sync_dependencies {
+        bundle_graph.insert(dep_id, bundle.id.clone());
+      }
+      bundle.name = bundle.generate_name();
+    }
+
+    if bundle.kind == "html" {
+      bundle.name = bundle.entry_asset.as_ref().unwrap().file_name().unwrap().to_str().unwrap().to_string();
+    }
+
+    bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.id.clone());
     bundles.push(bundle);
   }
 
   if css_bundle.assets.len() > 0 {
+    css_bundle.id = css_bundle.generate_id();
+    css_bundle.name = css_bundle.generate_name();
     bundles.push(css_bundle);
   }
 
   return Ok(());
 }
 
+#[derive(Debug)]
 struct DepRef {
   asset_id: PathBuf,
   from_dependency: String,

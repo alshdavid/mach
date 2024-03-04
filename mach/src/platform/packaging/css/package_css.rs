@@ -6,7 +6,7 @@ use crate::public::BundleGraph;
 use crate::public::BundleManifest;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
-use crate::public::Packages;
+use crate::public::Outputs;
 
 pub fn _package_css(
   _config: &public::Config,
@@ -15,7 +15,7 @@ pub fn _package_css(
   _asset_graph: &AssetGraph,
   _bundles: &Bundles,
   _bundle_graph: &BundleGraph,
-  _packages: &mut Packages,
+  _outputs: &mut Outputs,
   _bundle: &Bundle,
   _bundle_manifest: &BundleManifest,
 ) {

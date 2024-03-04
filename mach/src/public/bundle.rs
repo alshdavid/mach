@@ -3,71 +3,48 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::path::PathBuf;
 
+use crate::kit::hash::hash_path_buff_sha_256;
 use crate::kit::hash::hash_string_sha_256;
 use crate::kit::hash::truncate;
 
 use super::ID_TRUNC;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Bundle {
   pub id: String,
   pub name: String,
-  pub output: String,
   pub kind: String,
-  pub is_entry: bool,
   pub assets: HashSet<PathBuf>,
-  pub entry_asset: PathBuf,
+  pub entry_asset: Option<PathBuf>,
 }
 
 impl Bundle {
-  pub fn new(
-    entry_asset: &Path,
-    kind: &str,
-  ) -> Self {
-    let mut bundle = Self {
-      kind: kind.to_string(),
-      id: String::new(),
-      name: String::new(),
-      output: String::new(),
-      is_entry: false,
-      assets: HashSet::new(),
-      entry_asset: PathBuf::new(),
-    };
+  pub fn generate_id(&self) -> String {
+    let mut names = String::new();
 
-    bundle.update_entry(entry_asset);
-    return bundle;
-  }
-
-  pub fn update_entry(
-    &mut self,
-    entry_asset: &Path,
-  ) {
-    let file_stem: String;
-    let file_name: String;
-    let mut file_extension = String::new();
-
-    if let Some(ext) = entry_asset.extension() {
-      file_extension = ext.to_str().unwrap().to_string();
-    };
-
-    if let Some(fname) = entry_asset.file_name() {
-      file_name = fname.to_str().unwrap().to_string();
-    } else {
-      file_name = "".to_string();
-    };
-
-    if file_extension == "" {
-      file_stem = file_name;
-    } else {
-      file_stem = file_name.replace(&format!(".{}", file_extension), "");
+    for input in &self.get_assets() {
+      names.push_str(&hash_path_buff_sha_256(input));
     }
 
-    self.name = file_stem;
-    self.id = truncate(
-      &hash_string_sha_256(entry_asset.to_str().unwrap()),
-      ID_TRUNC,
-    );
-    self.entry_asset = entry_asset.to_path_buf();
+    let names_hash = truncate(&hash_string_sha_256(&names), 17);
+    return names_hash;
+  }
+
+  pub fn generate_name(&self) -> String {
+    let id = self.generate_id();
+
+    if let Some(entry) = &self.entry_asset {
+      let file_stem = entry.file_stem().unwrap().to_str().unwrap();
+      return format!("{}.{}.{}", file_stem, id, self.kind);
+    } else {
+      return format!("shared.{}.{}", id, self.kind);
+    }
+  }
+
+  pub fn get_assets(&self) -> Vec<&PathBuf> {
+    let mut v = self.assets.iter().collect::<Vec<&PathBuf>>();
+    v.sort();
+    return v;
   }
 }
 
