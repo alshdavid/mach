@@ -117,7 +117,14 @@ async fn main_async(config: Config) {
 }
 
 pub fn main(command: BuildCommand) {
-  let config = parse_config(command).expect("Failed to init config");
+  let config = match parse_config(command) {
+    Ok(config) => config,
+    Err(msg) => {
+      println!("Init Error:");
+      println!("  {}", msg);
+      std::process::exit(1);
+    },
+  };
   tokio::runtime::Builder::new_multi_thread()
     .worker_threads(config.threads)
     .enable_all()

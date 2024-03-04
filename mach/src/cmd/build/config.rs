@@ -15,7 +15,7 @@ type FileIndex = HashMap<String, Vec<PathBuf>>;
 #[derive(Parser, Debug)]
 pub struct BuildCommand {
   /// Input file to build
-  pub entry: Vec<PathBuf>,
+  pub entry: Option<Vec<PathBuf>>,
 
   /// Output folder
   #[arg(short = 'o', long = "dist", default_value = "dist")]
@@ -37,8 +37,16 @@ pub struct BuildCommand {
 pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
   let start_time = SystemTime::now();
 
+  let entry_arg = 'block: {
+    if let Some(args) = command.entry {
+      break 'block args[0].clone();
+    }
+    break 'block std::env::current_dir().unwrap();
+  };
   // Ignore multiple entries for now
-  let entry_point = get_entry(&command.entry[0].clone());
+  let Some(entry_point) = get_entry(&entry_arg) else {
+    return Err("Could not find entry point".to_string());
+  };
 
   // Find these points of interest
   let file_index = find_file_by_name(
@@ -107,26 +115,31 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
   });
 }
 
-fn get_entry(entry_arg: &Path) -> PathBuf {
+fn get_entry(entry_arg: &Path) -> Option<PathBuf> {
   let absolute = get_absolute_path(entry_arg);
 
   if absolute.is_file() {
-    return absolute.to_path_buf();
+    return Some(absolute.to_path_buf());
   }
 
   for test in [
-    "index.html",
-    "index.tsx",
-    "index.ts",
-    "index.jsx",
-    "index.js",
+    absolute.join("index.html"),
+    absolute.join("index.tsx"),
+    absolute.join("index.ts"),
+    absolute.join("index.jsx"),
+    absolute.join("index.js"),
+    absolute.join("src").join("index.html"),
+    absolute.join("src").join("index.tsx"),
+    absolute.join("src").join("index.ts"),
+    absolute.join("src").join("index.jsx"),
+    absolute.join("src").join("index.js"),
   ] {
-    let test = absolute.join("src").join(test);
     if test.exists() {
-      return test;
+      return Some(test);
     }
   }
-  panic!("Could not find entry");
+
+  return None;
 }
 
 fn parse_machrc(file_index: &FileIndex) -> Result<Machrc, String> {
