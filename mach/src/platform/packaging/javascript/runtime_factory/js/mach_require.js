@@ -13,7 +13,10 @@ mach_require("module_id", [], (module) => {});
   // define_export("namespace", () => target); <- added by factory
 }
 
-// CJS accessors and assignments
+// Accessor for export on const bindings
+// accessors for CJS exports
+//
+// export const foo = ''
 // module.exports
 // exports
 {
