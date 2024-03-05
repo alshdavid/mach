@@ -5,9 +5,11 @@ use super::Dependency;
 use super::ID_TRUNC;
 use std::collections::HashMap;
 use std::fmt::Debug;
+use std::path::Path;
 
 #[derive(Default)]
 pub struct DependencyMap {
+  /// DependencyId -> Dependency
   pub dependencies: HashMap<String, Dependency>,
 }
 
@@ -20,7 +22,7 @@ impl DependencyMap {
 
   pub fn insert(
     &mut self,
-    dependency: Dependency,
+    mut dependency: Dependency,
   ) -> String {
     // TODO this can be done faster
     let key = format!(
@@ -32,6 +34,7 @@ impl DependencyMap {
       dependency.imported_symbols
     );
     let dependency_id = truncate(&hash_string_sha_256(&key), ID_TRUNC);
+    dependency.id = dependency_id.clone();
     self.dependencies.insert(dependency_id.clone(), dependency);
     dependency_id
   }
@@ -41,6 +44,20 @@ impl DependencyMap {
     dependency_id: &str,
   ) -> Option<&Dependency> {
     return self.dependencies.get(dependency_id);
+  }
+
+  pub fn get_dependency_for_specifier<'a>(
+    &'a self,
+    from_asset_id: &Path,
+    specifier: &str,
+  ) -> Option<&'a Dependency> {
+    // TODO this can be done more efficiently
+    for (dependency_id, dependency) in &self.dependencies {
+      if dependency.specifier == *specifier && dependency.resolve_from_rel == from_asset_id {
+        return Some(dependency);
+      }
+    }
+    return None;
   }
 
   pub fn iter(&self) -> impl Iterator<Item = (&String, &Dependency)> {

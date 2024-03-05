@@ -10,6 +10,7 @@ use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
 use crate::public::AssetGraph;
+use crate::public::AssetMap;
 use crate::public::BundleGraph;
 use crate::public::DependencyMap;
 
@@ -30,6 +31,7 @@ pub struct JavaScriptRuntime<'a> {
   pub current_bundle_id: &'a str,
   pub dependency_map: &'a DependencyMap,
   pub asset_graph: &'a AssetGraph,
+  pub asset_map: &'a AssetMap,
   pub bundle_graph: &'a BundleGraph,
   pub runtime_factory: &'a RuntimeFactory,
 }
@@ -38,36 +40,31 @@ impl<'a> JavaScriptRuntime<'a> {
   fn get_bundle_ids_and_asset_id(
     &self,
     specifier: &str,
-  ) -> (Vec<String>, String) {
-    let (dependency_id, dependency) = 'block: {
-      for (dependency_id, dependency) in &self.dependency_map.dependencies {
-        if dependency.specifier == *specifier {
-          break 'block (dependency_id, dependency);
-        }
-      }
-      panic!(
-        "Could not find dependency for specifier\n  {}\n  {:?}",
-        specifier, self.current_asset_id
-      );
+  ) -> Option<(Vec<String>, String)> {
+    let Some(dependency) = self.dependency_map.get_dependency_for_specifier(&self.current_asset_id, specifier) else {
+      panic!("Could not get dependency for specifier:\n  Asset: {:?}\n  Specifier: {:?}", self.current_asset_id, specifier);
     };
 
-    let asset_graph_entries = self
-      .asset_graph
-      .get_dependencies(&dependency.resolve_from_rel)
-      .expect(&format!("Could not get dependency:\n  {:?}\n  {:?}", dependency.resolve_from_rel, dependency_id));
-    
-    let mut asset_id = "";
-    for (dep_id, target_asset_id) in asset_graph_entries {
-      if dep_id == dependency_id {
-        asset_id = target_asset_id.to_str().unwrap();
-      }
+    let Some(asset_id) = self.asset_graph.get_asset_id_for_dependency(&dependency) else {
+      panic!("Could not get asset_id for dependency:\n  Dependency: {:?}", dependency.id);
+    };
+
+    let Some(asset) = self.asset_map.get(&asset_id) else {
+      panic!("Could not get Asset for AssetID:\n  AssetID: {:?}", asset_id);
+    };
+
+    if asset.kind != "js" {
+      return None;
     }
 
-    let bundle_id = self.bundle_graph.get(dependency_id).expect(&format!("Could not get bundle:\n  {}\n  {}", dependency_id, asset_id));
+    let Some(bundle_id) = self.bundle_graph.get(&dependency.id) else {
+      panic!("Could not get Bundle for Dependency:\n  Dependency: {}", dependency.id);
+    };
+
     if bundle_id == self.current_bundle_id {
-      return (vec![], asset_id.to_string());
+      return Some((vec![], asset_id.to_str().unwrap().to_string()));
     } else {
-      return (vec![bundle_id.clone()], asset_id.to_string());
+      return Some((vec![bundle_id.clone()], asset_id.to_str().unwrap().to_string()));
     }
   }
 
@@ -75,33 +72,39 @@ impl<'a> JavaScriptRuntime<'a> {
     &self,
     specifier: &str,
     assignments: Vec<ImportNamed>,
-  ) -> Stmt {
-    let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return self
+  ) -> Option<Stmt> {
+    let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
+      return None;
+    };
+    return Some(self
       .runtime_factory
-      .mach_require_named(assignments, &asset_id, &bundle_ids);
+      .mach_require_named(assignments, &asset_id, &bundle_ids));
   }
 
   fn create_import_namespace(
     &self,
     specifier: &str,
     assignment: Option<String>,
-  ) -> Stmt {
-    let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return self
+  ) -> Option<Stmt> {
+    let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
+      return None;
+    };
+    return Some(self
       .runtime_factory
-      .mach_require_namespace(assignment, &asset_id, &bundle_ids);
+      .mach_require_namespace(assignment, &asset_id, &bundle_ids));
   }
 
   fn create_export_namespace(
     &self,
     specifier: &str,
     assignment: Option<String>,
-  ) -> Stmt {
-    let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(specifier);
-    return self
+  ) -> Option<Stmt> {
+    let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
+      return None;
+    };
+    return Some(self
       .runtime_factory
-      .define_reexport_namespace(assignment, &asset_id, &bundle_ids);
+      .define_reexport_namespace(assignment, &asset_id, &bundle_ids));
   }
 }
 
@@ -126,20 +129,26 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   import * as foo from './foo'
                 */
                 ImportAssignment::Star(name) => {
-                  statements.push(self.create_import_namespace(&specifier, Some(name)));
+                  if let Some(stmt) = self.create_import_namespace(&specifier, Some(name)) {
+                    statements.push(stmt);
+                  }
                 }
                 /*
                   import a, { b } from './foo'
                   import foo './foo'
                 */
                 ImportAssignment::Named(names) => {
-                  statements.push(self.create_import_named(&specifier, names));
+                  if let Some(stmt) = self.create_import_named(&specifier, names) {
+                    statements.push(stmt);
+                  }
                 }
                 /*
                   import './foo'
                 */
                 ImportAssignment::None => {
-                  statements.push(self.create_import_namespace(&specifier, None));
+                  if let Some(stmt) = self.create_import_namespace(&specifier, None) {
+                    statements.push(stmt);
+                  }
                 }
               }
             }
@@ -174,7 +183,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   export { foo as bar } from './foo'
                 */
                 ExportAssignment::ReexportNamed(reexports, specifier) => {
-                  let (bundle_ids, module_id) = self.get_bundle_ids_and_asset_id(&specifier);
+                  let Some((bundle_ids, module_id)) = self.get_bundle_ids_and_asset_id(&specifier) else {
+                    continue;
+                  };
 
                   statements.push(self.runtime_factory.define_reexport_named(
                     &reexports,
@@ -186,7 +197,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   export * as foo from './foo'
                 */
                 ExportAssignment::ReexportNamespace(namespace, specifier) => {
-                  statements.push(self.create_export_namespace(&specifier, Some(namespace)));
+                  if let Some(stmt) = self.create_export_namespace(&specifier, Some(namespace)) {
+                    statements.push(stmt);
+                  }
                 }
                 /*
                   const foo = ''; export { foo }
@@ -277,7 +290,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
             */
             ModuleDecl::ExportAll(decl) => {
               let specifier = &decl.src.value.to_string();
-              statements.push(self.create_export_namespace(&specifier, None))
+              if let Some(stmt) = self.create_export_namespace(&specifier, None) {
+                statements.push(stmt);
+              }
             }
             _ => panic!("not implemented"),
           }
@@ -314,8 +329,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           return call_expr;
         };
 
-        let (bundle_ids, asset_id) =
-          self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string());
+        let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string()) else {
+          return call_expr;
+        };
 
         let mach_require = self
           .runtime_factory
@@ -338,7 +354,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           return call_expr;
         };
 
-        let (bundle_ids, asset_id) = self.get_bundle_ids_and_asset_id(&import_specifier.value);
+        let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(&import_specifier.value) else {
+          return call_expr;
+        };
 
         let import_stmt = self
           .runtime_factory

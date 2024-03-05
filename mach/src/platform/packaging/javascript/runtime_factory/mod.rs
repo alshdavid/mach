@@ -549,6 +549,9 @@ impl RuntimeFactory {
       arrow.body = Box::new(callback);
     } else {
       mach_require.args.pop();
+      if bundle_ids.len() == 0 {
+        mach_require.args.pop();
+      } 
     };
 
     if bundle_ids.len() == 0 {

@@ -105,6 +105,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     start_time,
     entry_point,
     dist_dir,
+    clean_dist_dir: command.clean,
     // TODO
     workspace_root: None,
     // TODO

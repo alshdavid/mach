@@ -40,6 +40,22 @@ impl AssetMap {
     return self.assets.get(file_path);
   }
 
+  pub fn get_many(
+    &self,
+    asset_ids: &[&PathBuf],
+  ) -> Result<Vec<&Asset>, String> {
+    let mut results = Vec::<&Asset>::new();
+
+    for asset_id in asset_ids {
+      let Some(asset) = self.get(&asset_id) else {
+        return Err(format!("Could not find Asset: {:?}", asset_id));
+      };
+      results.push(asset);
+    }
+
+    return Ok(results);
+  }
+
   pub fn contains_key(
     &self,
     file_path: &Path,

@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use swc_core::common::SourceMap;
@@ -12,6 +13,7 @@ use crate::public::DependencyMap;
 use crate::public::Outputs;
 
 use super::html::package_html;
+use super::css::package_css;
 use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
@@ -50,7 +52,19 @@ pub fn package(
   }
 
   for bundle in bundles.iter() {
-    if bundle.kind == "css" {}
+    if bundle.kind == "css" {
+      package_css(
+        &config,
+        asset_map,
+        &dependency_map,
+        &asset_graph,
+        &bundles,
+        &bundle_graph,
+        outputs,
+        &bundle,
+        &mut bundle_manifest,
+      )
+    }
   }
 
   for bundle in bundles.iter() {
@@ -64,12 +78,24 @@ pub fn package(
         bundle_graph,
         outputs,
         bundle,
-        &bundle_manifest,
+        &mut bundle_manifest,
       )
     }
   }
 
-  // dbg!(bundle_manifest);
+  let bundle_manifest_json = serde_json::to_string_pretty(&bundle_manifest).unwrap();
+
+  outputs.push(public::Output { 
+    content: bundle_manifest_json.as_bytes().to_vec(),
+    filepath: PathBuf::from("bundle_manifest.json"),
+  });
+
+  // let bundle_graph_json = serde_json::to_string_pretty(&bundle_graph).unwrap();
+
+  // outputs.push(public::Output { 
+  //   content: bundle_graph_json.as_bytes().to_vec(),
+  //   filepath: PathBuf::from("bundle_graph.json"),
+  // });
 
   return Ok(());
 }

@@ -4,7 +4,10 @@ use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
 
+use super::Dependency;
+
 pub struct AssetGraph {
+  /// AssetRelPath -> [](DependencyId, AssetRelPath)
   edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
 }
 
@@ -42,6 +45,20 @@ impl AssetGraph {
     }
 
     return Some(result);
+  }
+
+  pub fn get_asset_id_for_dependency(&self, dependency: &Dependency) -> Option<PathBuf> {
+    let Some(asset_graph_entries) = self.get_dependencies(&dependency.resolve_from_rel) else {
+      return None;
+    };
+    
+    for (dep_id, target_asset_id) in asset_graph_entries {
+      if *dep_id == dependency.id {
+        return Some(target_asset_id.clone());
+      }
+    }
+
+    return None;
   }
 
   pub fn _iter(&self) -> impl Iterator<Item = (&PathBuf, &HashSet<(String, PathBuf)>)> {

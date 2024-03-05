@@ -1,5 +1,5 @@
 mod js_runtime;
-mod package;
+mod package_javascript;
 pub mod runtime_factory;
 
-pub use crate::platform::packaging::javascript::package::*;
+pub use crate::platform::packaging::javascript::package_javascript::*;

@@ -5,6 +5,7 @@ use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Dependency {
+  pub id: String,
   /// Identifier of the import
   pub specifier: String,
   pub specifier_type: SpecifierType,
@@ -26,6 +27,7 @@ pub struct Dependency {
 impl Default for Dependency {
   fn default() -> Self {
     Self {
+      id: String::new(),
       specifier: Default::default(),
       specifier_type: SpecifierType::ESM,
       is_entry: Default::default(),

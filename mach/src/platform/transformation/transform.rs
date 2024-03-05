@@ -109,6 +109,7 @@ pub async fn transform(
     // Add new items to the queue
     while let Some(dependency_options) = asset_dependencies.pop() {
       queue.push(Dependency {
+        id: String::new(),
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,
         is_entry: false,

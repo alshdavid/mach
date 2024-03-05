@@ -86,6 +86,7 @@ pub fn package_javascript(
         bundle_graph: &bundle_graph,
         runtime_factory: &runtime_factory,
         asset_graph: &asset_graph,
+        asset_map: &asset_map,
       };
 
       let module = module.fold_with(&mut javascript_runtime);

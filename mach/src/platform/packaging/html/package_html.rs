@@ -1,14 +1,20 @@
+use std::cell::RefCell;
 use std::path::PathBuf;
 
 use html5ever::parse_document;
 use html5ever::tendril::TendrilSink;
-use markup5ever_rcdom::Handle;
+use html5ever::Attribute;
+use html5ever::LocalName;
+use html5ever::Namespace;
+use html5ever::QualName;
+use markup5ever_rcdom::Node;
 use markup5ever_rcdom::NodeData;
 use markup5ever_rcdom::RcDom;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;
 use markup5ever_rcdom::SerializableHandle;
 
+use crate::kit::html;
 use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
@@ -25,11 +31,11 @@ pub fn package_html(
   asset_map: &mut AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
-  _bundles: &Bundles,
+  bundles: &Bundles,
   bundle_graph: &BundleGraph,
   outputs: &mut Outputs,
   bundle: &Bundle,
-  bundle_manifest: &BundleManifest,
+  bundle_manifest: &mut BundleManifest,
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -47,50 +53,48 @@ pub fn package_html(
     .read_from(&mut asset.content.as_slice())
     .unwrap();
 
-  let mut nodes = Vec::<Handle>::from([dom.document.clone()]);
+  let mut script_nodes = html::query_selector_all(&dom.document.clone(), html::QuerySelectorOptions{
+    tag_name: Some("script".to_string()),
+    attribute: Some(("src".to_string(), None)),
+  });
 
-  while let Some(node) = nodes.pop() {
-    for child in node.children.borrow().iter() {
-      nodes.push(child.clone());
+  for script_node in &mut script_nodes {
+    let Some(specifier) = html::get_attribute(&script_node, "src") else {
+      continue;
+    };
+
+    let Some(dependency) = dependency_map.get_dependency_for_specifier(&asset.file_path_rel, &specifier) else {
+      continue;
+    };
+
+    let bundle_id = bundle_graph.get(&dependency.id).unwrap();
+    let file_path = bundle_manifest.get(bundle_id).unwrap();
+
+    html::set_attribute(script_node, "src", file_path);
+  }
+
+  let css_home = 'block: {
+    for tag_name in ["head", "body"] {
+      let Some(css_home) = html::query_selector(&dom.document, html::QuerySelectorOptions{
+        tag_name: Some(tag_name.to_string()),
+        attribute: None,
+      }) else {
+        continue;
+      };
+      break 'block css_home;
     }
+    break 'block dom.document.clone();
+  };
 
-    match node.data {
-      NodeData::Element {
-        ref name,
-        ref attrs,
-        ..
-      } => {
-        if name.local.to_string() != "script" {
-          continue;
-        }
-        for attr in attrs.borrow_mut().iter_mut() {
-          if attr.name.local.to_string() != "src" {
-            continue;
-          }
-          let specifier = attr.value.to_string();
-
-          let (dependency_id, _) = 'block: {
-            for (dependency_id, dependency) in &dependency_map.dependencies {
-              if dependency.specifier == *specifier {
-                break 'block (dependency_id, dependency);
-              }
-            }
-            panic!(
-              "Could not find dependency for specifier\n  {}",
-              specifier
-            );
-          };
-
-          let bundle_id = bundle_graph.get(dependency_id).unwrap();
-          let file_path = bundle_manifest.get(bundle_id).unwrap();
-
-          attr.value = From::from(file_path.clone());
-          break;
-        }
-      }
-      _ => {}
+  for bundle in bundles {
+    if bundle.kind == "css" {
+      css_home.children.borrow_mut().push(html::create_element(html::CreateElementOptions{
+        tag_name: "link",
+        attributes: &[("rel", "stylesheet"), ("href", &bundle.name)]
+      })); 
     }
   }
+
 
   let document: SerializableHandle = dom.document.clone().into();
   let mut output = Vec::<u8>::new();
@@ -98,6 +102,5 @@ pub fn package_html(
   outputs.push(Output{
     content: output,
     filepath: PathBuf::from(&bundle.name),
-})
-  
+  });
 }

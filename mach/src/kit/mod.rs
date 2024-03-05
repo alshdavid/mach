@@ -4,3 +4,4 @@
 pub mod hash;
 pub mod json;
 pub mod swc;
+pub mod html;

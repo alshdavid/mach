@@ -17,6 +17,7 @@ pub struct Config {
   pub start_time: SystemTime,
   pub entry_point: PathBuf,
   pub dist_dir: PathBuf,
+  pub clean_dist_dir: bool,
   pub workspace_root: Option<PathBuf>,
   pub workspace_kind: Option<()>, //Option<WorkspaceKind>,
   pub project_root: PathBuf,
