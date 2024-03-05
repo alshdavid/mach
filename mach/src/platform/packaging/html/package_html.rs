@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
 use html5ever::parse_document;
-use html5ever::tendril::TendrilSink;
-use markup5ever_rcdom::RcDom;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;
+use html5ever::tendril::TendrilSink;
+use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 
 use crate::kit::html;
@@ -46,17 +46,22 @@ pub fn package_html(
     .read_from(&mut asset.content.as_slice())
     .unwrap();
 
-  let mut script_nodes = html::query_selector_all(&dom.document.clone(), html::QuerySelectorOptions{
-    tag_name: Some("script".to_string()),
-    attribute: Some(("src".to_string(), None)),
-  });
+  let mut script_nodes = html::query_selector_all(
+    &dom.document.clone(),
+    html::QuerySelectorOptions {
+      tag_name: Some("script".to_string()),
+      attribute: Some(("src".to_string(), None)),
+    },
+  );
 
   for script_node in &mut script_nodes {
     let Some(specifier) = html::get_attribute(&script_node, "src") else {
       continue;
     };
 
-    let Some(dependency) = dependency_map.get_dependency_for_specifier(&asset.file_path_rel, &specifier) else {
+    let Some(dependency) =
+      dependency_map.get_dependency_for_specifier(&asset.file_path_rel, &specifier)
+    else {
       continue;
     };
 
@@ -68,10 +73,13 @@ pub fn package_html(
 
   let css_home = 'block: {
     for tag_name in ["head", "body"] {
-      let Some(css_home) = html::query_selector(&dom.document, html::QuerySelectorOptions{
-        tag_name: Some(tag_name.to_string()),
-        attribute: None,
-      }) else {
+      let Some(css_home) = html::query_selector(
+        &dom.document,
+        html::QuerySelectorOptions {
+          tag_name: Some(tag_name.to_string()),
+          attribute: None,
+        },
+      ) else {
         continue;
       };
       break 'block css_home;
@@ -81,18 +89,20 @@ pub fn package_html(
 
   for bundle in bundles {
     if bundle.kind == "css" {
-      css_home.children.borrow_mut().push(html::create_element(html::CreateElementOptions{
-        tag_name: "link",
-        attributes: &[("rel", "stylesheet"), ("href", &bundle.name)]
-      })); 
+      css_home
+        .children
+        .borrow_mut()
+        .push(html::create_element(html::CreateElementOptions {
+          tag_name: "link",
+          attributes: &[("rel", "stylesheet"), ("href", &bundle.name)],
+        }));
     }
   }
-
 
   let document: SerializableHandle = dom.document.clone().into();
   let mut output = Vec::<u8>::new();
   serialize(&mut output, &document, SerializeOpts::default()).unwrap();
-  outputs.push(Output{
+  outputs.push(Output {
     content: output,
     filepath: PathBuf::from(&bundle.name),
   });

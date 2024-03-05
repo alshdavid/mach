@@ -21,6 +21,6 @@ pub fn emit(
     fs::create_dir_all(basename).unwrap();
     fs::write(complete_path, output.content.as_slice()).unwrap();
   }
-  
+
   Ok(())
 }

@@ -20,8 +20,8 @@ use crate::public::BundleGraph;
 use crate::public::BundleManifest;
 use crate::public::Bundles;
 use crate::public::DependencyMap;
-use crate::public::Outputs;
 use crate::public::Output;
+use crate::public::Outputs;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;
@@ -113,7 +113,6 @@ pub fn package_javascript(
 
     bundle_module_stmts.push(stmt);
   }
-
 
   if let Some(entry_asset_id) = &bundle.entry_asset {
     if bundles.len() > 1 {

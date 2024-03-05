@@ -18,7 +18,7 @@ pub fn bundle(
   bundles: &mut Bundles,
   bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
-  let mut css_bundle = Bundle{
+  let mut css_bundle = Bundle {
     kind: "css".to_string(),
     ..Bundle::default()
   };
@@ -117,7 +117,15 @@ pub fn bundle(
     }
 
     if bundle.kind == "html" {
-      bundle.name = bundle.entry_asset.as_ref().unwrap().file_name().unwrap().to_str().unwrap().to_string();
+      bundle.name = bundle
+        .entry_asset
+        .as_ref()
+        .unwrap()
+        .file_name()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
     }
 
     bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.id.clone());
@@ -126,7 +134,8 @@ pub fn bundle(
 
   if css_bundle.assets.len() > 0 {
     css_bundle.id = css_bundle.generate_id();
-    css_bundle.name = css_bundle.generate_name(asset_map.get_many(&css_bundle.get_assets()).unwrap());
+    css_bundle.name =
+      css_bundle.generate_name(asset_map.get_many(&css_bundle.get_assets()).unwrap());
     bundles.push(css_bundle);
   }
 

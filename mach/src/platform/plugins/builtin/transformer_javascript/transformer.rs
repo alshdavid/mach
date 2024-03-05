@@ -82,7 +82,6 @@ impl Transformer for DefaultTransformerJavaScript {
       }
 
       if file_extension == "tsx" {
-
         program = program.fold_with(&mut typescript_transforms::tsx(
           source_map.clone(),
           Default::default(),

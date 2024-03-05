@@ -125,7 +125,7 @@ pub fn main(command: BuildCommand) {
       println!("Init Error:");
       println!("  {}", msg);
       std::process::exit(1);
-    },
+    }
   };
   tokio::runtime::Builder::new_multi_thread()
     .worker_threads(config.threads)

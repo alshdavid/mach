@@ -13,7 +13,13 @@ pub struct Output {
 }
 
 impl std::fmt::Debug for Output {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Output").field("content (size)", &self.content.len()).field("filepath", &self.filepath).finish()
-    }
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("Output")
+      .field("content (size)", &self.content.len())
+      .field("filepath", &self.filepath)
+      .finish()
+  }
 }

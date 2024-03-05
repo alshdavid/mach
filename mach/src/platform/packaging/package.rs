@@ -12,8 +12,8 @@ use crate::public::Bundles;
 use crate::public::DependencyMap;
 use crate::public::Outputs;
 
-use super::html::package_html;
 use super::css::package_css;
+use super::html::package_html;
 use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
@@ -85,14 +85,14 @@ pub fn package(
 
   let bundle_manifest_json = serde_json::to_string_pretty(&bundle_manifest).unwrap();
 
-  outputs.push(public::Output { 
+  outputs.push(public::Output {
     content: bundle_manifest_json.as_bytes().to_vec(),
     filepath: PathBuf::from("bundle_manifest.json"),
   });
 
   // let bundle_graph_json = serde_json::to_string_pretty(&bundle_graph).unwrap();
 
-  // outputs.push(public::Output { 
+  // outputs.push(public::Output {
   //   content: bundle_graph_json.as_bytes().to_vec(),
   //   filepath: PathBuf::from("bundle_graph.json"),
   // });

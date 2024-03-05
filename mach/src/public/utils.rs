@@ -1,4 +1,5 @@
-use super::{Dependency, DependencyMap};
+use super::Dependency;
+use super::DependencyMap;
 
 pub fn get_dependency_for_specifier<'a>(
   dependency_map: &'a DependencyMap,
@@ -10,10 +11,7 @@ pub fn get_dependency_for_specifier<'a>(
         break 'block (dependency_id, dependency);
       }
     }
-    panic!(
-      "Could not find dependency for specifier\n  {}",
-      specifier
-    );
+    panic!("Could not find dependency for specifier\n  {}", specifier);
   };
 
   return (dependency_id, dependency);

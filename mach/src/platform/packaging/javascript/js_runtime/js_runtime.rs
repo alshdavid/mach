@@ -41,16 +41,28 @@ impl<'a> JavaScriptRuntime<'a> {
     &self,
     specifier: &str,
   ) -> Option<(Vec<String>, String)> {
-    let Some(dependency) = self.dependency_map.get_dependency_for_specifier(&self.current_asset_id, specifier) else {
-      panic!("Could not get dependency for specifier:\n  Asset: {:?}\n  Specifier: {:?}", self.current_asset_id, specifier);
+    let Some(dependency) = self
+      .dependency_map
+      .get_dependency_for_specifier(&self.current_asset_id, specifier)
+    else {
+      panic!(
+        "Could not get dependency for specifier:\n  Asset: {:?}\n  Specifier: {:?}",
+        self.current_asset_id, specifier
+      );
     };
 
     let Some(asset_id) = self.asset_graph.get_asset_id_for_dependency(&dependency) else {
-      panic!("Could not get asset_id for dependency:\n  Dependency: {:?}", dependency.id);
+      panic!(
+        "Could not get asset_id for dependency:\n  Dependency: {:?}",
+        dependency.id
+      );
     };
 
     let Some(asset) = self.asset_map.get(&asset_id) else {
-      panic!("Could not get Asset for AssetID:\n  AssetID: {:?}", asset_id);
+      panic!(
+        "Could not get Asset for AssetID:\n  AssetID: {:?}",
+        asset_id
+      );
     };
 
     if asset.kind != "js" {
@@ -58,13 +70,19 @@ impl<'a> JavaScriptRuntime<'a> {
     }
 
     let Some(bundle_id) = self.bundle_graph.get(&dependency.id) else {
-      panic!("Could not get Bundle for Dependency:\n  Dependency: {}", dependency.id);
+      panic!(
+        "Could not get Bundle for Dependency:\n  Dependency: {}",
+        dependency.id
+      );
     };
 
     if bundle_id == self.current_bundle_id {
       return Some((vec![], asset_id.to_str().unwrap().to_string()));
     } else {
-      return Some((vec![bundle_id.clone()], asset_id.to_str().unwrap().to_string()));
+      return Some((
+        vec![bundle_id.clone()],
+        asset_id.to_str().unwrap().to_string(),
+      ));
     }
   }
 
@@ -76,9 +94,11 @@ impl<'a> JavaScriptRuntime<'a> {
     let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
       return None;
     };
-    return Some(self
-      .runtime_factory
-      .mach_require_named(assignments, &asset_id, &bundle_ids));
+    return Some(
+      self
+        .runtime_factory
+        .mach_require_named(assignments, &asset_id, &bundle_ids),
+    );
   }
 
   fn create_import_namespace(
@@ -89,9 +109,11 @@ impl<'a> JavaScriptRuntime<'a> {
     let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
       return None;
     };
-    return Some(self
-      .runtime_factory
-      .mach_require_namespace(assignment, &asset_id, &bundle_ids));
+    return Some(
+      self
+        .runtime_factory
+        .mach_require_namespace(assignment, &asset_id, &bundle_ids),
+    );
   }
 
   fn create_export_namespace(
@@ -102,9 +124,11 @@ impl<'a> JavaScriptRuntime<'a> {
     let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(specifier) else {
       return None;
     };
-    return Some(self
-      .runtime_factory
-      .define_reexport_namespace(assignment, &asset_id, &bundle_ids));
+    return Some(self.runtime_factory.define_reexport_namespace(
+      assignment,
+      &asset_id,
+      &bundle_ids,
+    ));
   }
 }
 
@@ -183,7 +207,8 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
                   export { foo as bar } from './foo'
                 */
                 ExportAssignment::ReexportNamed(reexports, specifier) => {
-                  let Some((bundle_ids, module_id)) = self.get_bundle_ids_and_asset_id(&specifier) else {
+                  let Some((bundle_ids, module_id)) = self.get_bundle_ids_and_asset_id(&specifier)
+                  else {
                     continue;
                   };
 
@@ -329,7 +354,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           return call_expr;
         };
 
-        let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string()) else {
+        let Some((bundle_ids, asset_id)) =
+          self.get_bundle_ids_and_asset_id(&import_specifier.value.to_string())
+        else {
           return call_expr;
         };
 
@@ -354,7 +381,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           return call_expr;
         };
 
-        let Some((bundle_ids, asset_id)) = self.get_bundle_ids_and_asset_id(&import_specifier.value) else {
+        let Some((bundle_ids, asset_id)) =
+          self.get_bundle_ids_and_asset_id(&import_specifier.value)
+        else {
           return call_expr;
         };
 

@@ -32,12 +32,19 @@ impl Bundle {
     return names_hash;
   }
 
-  pub fn generate_name(&self, mut assets: Vec<&Asset>) -> String {
+  pub fn generate_name(
+    &self,
+    mut assets: Vec<&Asset>,
+  ) -> String {
     assets.sort_by(|a, b| a.file_path_rel.cmp(&b.file_path_rel));
     let mut content_hashes = String::new();
 
     for asset in assets {
-      let result = format!("{} {}\n", asset.file_path_rel.to_str().unwrap(), hash_sha_256(&asset.content));
+      let result = format!(
+        "{} {}\n",
+        asset.file_path_rel.to_str().unwrap(),
+        hash_sha_256(&asset.content)
+      );
       content_hashes.push_str(&result);
     }
 
@@ -60,4 +67,3 @@ impl Bundle {
 
 pub type Bundles = Vec<Bundle>;
 pub type BundleGraph = HashMap<String, String>;
-

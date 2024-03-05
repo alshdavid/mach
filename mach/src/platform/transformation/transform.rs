@@ -85,7 +85,7 @@ pub async fn transform(
       // If the file type and pattern changes restart transformers
       if *mutable_asset.kind != file_target.file_extension {
         file_target.update(mutable_asset.kind);
-  
+
         let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
         // Use new transformers if they are different to current ones
         if new_pattern != pattern {
