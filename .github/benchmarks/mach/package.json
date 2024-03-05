@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/testing-three-js-mach",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "../../../target/release/bin/mach build ./src/index.js"
+  },
+  "dependencies": {}
+}

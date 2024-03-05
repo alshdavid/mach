@@ -1,0 +1,11 @@
+{
+  "name": "@workspace/testing-three-js-esbuild",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npx esbuild ./src/index.js --bundle --outdir=dist"
+  },
+  "dependencies": {
+    "esbuild": "latest"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@workspace/testing-three-js-parcel",
+  "version": "1.0.0",
+  "dependencies": {
+    "@parcel/plugin": "latest",
+    "@parcel/config-default": "latest",
+    "parcel": "latest"
+  },
+  "scripts": {
+    "clean": "rm -rf dist .parcel-cache",
+    "build": "npx parcel build --no-optimize --no-cache"
+  },
+  "targets": {
+    "default": {
+      "source": "./src/index.js",
+      "distDir": "./dist",
+      "sourceMap": false
+    }
+  }
+}

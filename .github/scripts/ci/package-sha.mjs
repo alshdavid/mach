@@ -5,9 +5,12 @@ import { crawlDir, TargetType } from '../platform/crawl.mjs'
 import { Paths } from '../platform/paths.mjs'
 
 let [,, action] = process.argv
-if (action !== 'read' || action !== 'set') {
-
+if (action !== 'read' && action !== 'set') {
+  console.log("invalid entry")
+  process.exit(1)
 }
+
+let target_file = path.join(Paths.ScriptsTmp, 'sums', 'node-adapter')
 
 let results = crawlDir({
   targetPath: path.join(Paths.Root, 'npm', 'node-adapter'),
@@ -24,7 +27,6 @@ for (const filepath of results.keys()) {
 }
 
 let sum = crypto.createHash('sha256').update(JSON.stringify(hashes)).digest('hex')
-let target_file = path.join(Paths.Scripts, '.sums', 'node-adapter')
 
 if (action === 'set') {
   fs.mkdirSync(path.dirname(target_file), { recursive: true })
