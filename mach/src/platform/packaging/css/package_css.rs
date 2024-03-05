@@ -16,7 +16,7 @@ pub fn package_css(
   asset_map: &mut AssetMap,
   _dependency_map: &DependencyMap,
   _asset_graph: &AssetGraph,
-  bundles: &Bundles,
+  _bundles: &Bundles,
   _bundle_graph: &BundleGraph,
   outputs: &mut Outputs,
   bundle: &Bundle,

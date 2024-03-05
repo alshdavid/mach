@@ -1,14 +1,7 @@
-use std::cell::RefCell;
 use std::path::PathBuf;
 
 use html5ever::parse_document;
 use html5ever::tendril::TendrilSink;
-use html5ever::Attribute;
-use html5ever::LocalName;
-use html5ever::Namespace;
-use html5ever::QualName;
-use markup5ever_rcdom::Node;
-use markup5ever_rcdom::NodeData;
 use markup5ever_rcdom::RcDom;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;

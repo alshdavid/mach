@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 
-const rootElement = document.createElement('div')
+const rootElement: HTMLElement = document.createElement('div')
 document.body.appendChild(rootElement)
 
 const root = ReactDOM.createRoot(rootElement)

@@ -52,7 +52,7 @@ impl DependencyMap {
     specifier: &str,
   ) -> Option<&'a Dependency> {
     // TODO this can be done more efficiently
-    for (dependency_id, dependency) in &self.dependencies {
+    for (_, dependency) in &self.dependencies {
       if dependency.specifier == *specifier && dependency.resolve_from_rel == from_asset_id {
         return Some(dependency);
       }

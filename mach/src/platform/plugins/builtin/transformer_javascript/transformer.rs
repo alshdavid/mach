@@ -36,6 +36,7 @@ impl Transformer for DefaultTransformerJavaScript {
     return swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
       let code = asset.get_code();
+
       let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
         return Err(format!("SWC Parse Error"));
       };
@@ -81,7 +82,6 @@ impl Transformer for DefaultTransformerJavaScript {
       }
 
       if file_extension == "tsx" {
-        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
 
         program = program.fold_with(&mut typescript_transforms::tsx(
           source_map.clone(),
@@ -90,6 +90,8 @@ impl Transformer for DefaultTransformerJavaScript {
           Some(&comments),
           top_level_mark,
         ));
+
+        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
 
         *asset.kind = "js".to_string();
       }
