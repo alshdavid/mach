@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use std::sync::Mutex;
 use swc_core::common::SourceMap;
-use tokio::task::JoinSet;
 
 use crate::public;
 use crate::public::AssetGraph;

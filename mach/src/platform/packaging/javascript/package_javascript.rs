@@ -7,7 +7,6 @@ use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
-use tokio::task::JoinHandle;
 use std::sync::Mutex;
 
 use crate::kit::swc::module_item_to_stmt;

@@ -27,9 +27,9 @@ _default:
 
 build:
   @just _create_out_dir
+  @just _build_npm
   cargo build {{profile_cargo}} {{target_cargo}}
   @just _copy_cargo
-  @just _build_npm
 
 run *ARGS:
   @just build
@@ -59,6 +59,6 @@ fmt:
   cp ./target/.cargo/{{profile}}/mach ./target/{{profile}}/bin
 
 @_build_npm:
-  @cd npm/node-adapter && pnpm run build
+  {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "cd npm/node-adapter && pnpm run build && node ../../.github/scripts/ci/package-sha.mjs set" } else { "echo skip npm build" } }}
   cp -r npm/node-adapter/lib ./target/{{profile}}/lib/node-adapter
   cp -r npm/node-adapter/types ./target/{{profile}}/lib/node-adapter
