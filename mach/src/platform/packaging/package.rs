@@ -76,17 +76,17 @@ pub async fn package(
         ).await;
       }));
     } else if bundle.kind == "css" {
-      // package_css(
-      //   &config,
-      //   asset_map,
-      //   &dependency_map,
-      //   &asset_graph,
-      //   &bundles,
-      //   &bundle_graph,
-      //   outputs,
-      //   &bundle,
-      //   &mut bundle_manifest,
-      // )
+      package_css(
+        config_local,
+        asset_map_local,
+        dependency_map_local,
+        asset_graph_local,
+        bundles_local,
+        bundle_graph_local,
+        outputs_local,
+        bundle,
+        bundle_manifest,
+      )
     } else if bundle.kind == "html" {
       jobs.push(tokio::task::spawn(async move {
         package_html(
