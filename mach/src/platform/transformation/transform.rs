@@ -74,26 +74,29 @@ pub async fn transform(
 
     let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
 
-    let mut i = transformers.len();
-    while i != 0 {
-      let Some(transformer) = transformers.get(i - 1) else {
+    let mut i = 0;
+    while i != transformers.len() {
+      let Some(transformer) = transformers.get(i) else {
         break;
       };
+
       transformer.transform(&mut mutable_asset, &config).await?;
-      if *mutable_asset.kind == file_target.file_extension {
-        i -= 1;
-        continue;
-      }
+
       // If the file type and pattern changes restart transformers
-      file_target.update(mutable_asset.kind);
-      let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
-      if new_pattern != pattern {
-        transformers = new_transformers;
-        pattern = new_pattern;
-        i = transformers.len();
-        continue;
+      if *mutable_asset.kind != file_target.file_extension {
+        file_target.update(mutable_asset.kind);
+  
+        let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
+        // Use new transformers if they are different to current ones
+        if new_pattern != pattern {
+          transformers = new_transformers;
+          pattern = new_pattern;
+          i = 0;
+          continue;
+        }
       }
-      i -= 1;
+
+      i += 1;
     }
 
     asset_map.insert(Asset {

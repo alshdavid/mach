@@ -50,6 +50,8 @@ async fn main_async(config: Config) {
     panic!("Unable to initialize plugins");
   };
 
+  // dbg!(&plugins);
+
   // This phase reads source files and transforms them. New imports
   // are discovered as files are parsed, looping until no more imports exist
   if let Err(err) = transform(
