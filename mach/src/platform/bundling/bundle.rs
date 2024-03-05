@@ -12,9 +12,9 @@ use crate::public::ENTRY_ASSET;
 
 pub fn bundle(
   _config: &public::Config,
-  asset_map: &mut AssetMap,
-  dependency_map: &mut DependencyMap,
-  asset_graph: &mut AssetGraph,
+  asset_map: &AssetMap,
+  dependency_map: &DependencyMap,
+  asset_graph: &AssetGraph,
   bundles: &mut Bundles,
   bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {

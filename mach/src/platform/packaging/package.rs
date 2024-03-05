@@ -19,11 +19,11 @@ use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
   config: &public::Config,
-  asset_map: &mut AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
   bundles: &Bundles,
   bundle_graph: &BundleGraph,
+  asset_map: &mut AssetMap,
   outputs: &mut Outputs,
 ) -> Result<(), String> {
   let source_map = Arc::new(SourceMap::default());

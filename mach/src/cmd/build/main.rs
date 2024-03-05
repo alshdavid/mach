@@ -5,7 +5,7 @@ use crate::platform::bundling::bundle;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::plugins::load_plugins;
-use crate::platform::transformation::transform;
+use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
@@ -17,8 +17,14 @@ use crate::public::Outputs;
 use super::parse_config;
 use super::BuildCommand;
 
-async fn main_async(config: Config) {
-  // Bundle state
+async fn main_async(config: Config) -> Result<(), String> {
+  config.log_details();
+
+  /*
+    This is the bundler state. It is passed into
+    the bundling phases with read or write permissions
+    depending on how that phase uses them
+  */
   let mut asset_map = AssetMap::new();
   let mut dependency_map = DependencyMap::new();
   let mut asset_graph = AssetGraph::new();
@@ -26,98 +32,79 @@ async fn main_async(config: Config) {
   let mut bundle_graph = BundleGraph::new();
   let mut outputs = Outputs::new();
 
-  // Adapters
+  /*
+    Adapters are responsible for interoperability with
+    external plugin execution contexts (like Node.js)
+  */
   let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
 
-  // TODO move this into a "reporter" plugin
-  println!("Entry:         {}", config.entry_point.to_str().unwrap());
-  println!("Root:          {}", config.project_root.to_str().unwrap());
-  if !&config.machrc.is_default {
-    println!(
-      "Mach Config:   {}",
-      config.machrc.file_path.to_str().unwrap()
-    );
-  } else {
-    println!("Mach Config:   Default");
-  }
-  println!("Out Dir:       {}", config.dist_dir.to_str().unwrap());
-  println!("Optimize:      {}", config.optimize);
-  println!("Threads:       {}", config.threads);
-  println!("Node Workers:  {}", config.node_workers);
+  /*
+  load_plugins() will read source the .machrc and will
+  fetch then initialize the referenced plugins
+  */
+  let plugins = load_plugins(&config.machrc, node_adapter.clone()).await?;
 
-  // Initialize plugins
-  let Ok(plugins) = load_plugins(&config.machrc, node_adapter.clone()).await else {
-    panic!("Unable to initialize plugins");
-  };
+  /*
+    link_and_transform() will read source files, identify import statements
+    before modifying their contents (like removing TypeScript types).
 
-  // dbg!(&plugins);
-
-  // This phase reads source files and transforms them. New imports
-  // are discovered as files are parsed, looping until no more imports exist
-  if let Err(err) = transform(
+    This will loop until there are no more import statements to resolve
+  */
+  link_and_transform(
     &config,
+    &plugins,
     &mut asset_map,
     &mut dependency_map,
     &mut asset_graph,
-    &plugins,
   )
-  .await
-  {
-    println!("Transformation Error");
-    println!("{}", err);
-    return;
-  }
+  .await?;
 
   println!("Assets:        {}", asset_map.len());
 
-  // dbg!(&asset_map);
-  // dbg!(&asset_graph);
-  // dbg!(&dependency_map);
-
-  if let Err(err) = bundle(
+  /*
+    bundle() will take the asset graph and organize related assets
+    into groupings. Each grouping will be emitted as a "bundle"
+  */
+  bundle(
     &config,
-    &mut asset_map,
-    &mut dependency_map,
-    &mut asset_graph,
+    &asset_map,
+    &dependency_map,
+    &asset_graph,
     &mut bundles,
     &mut bundle_graph,
-  ) {
-    println!("Bundling Error");
-    println!("{}", err);
-    return;
-  }
+  )?;
 
-  // dbg!(&bundles);
-  // dbg!(&bundle_graph);
+  /*
+    package() will take the bundles, obtain their referenced Assets
+    and modify them such that they can work in the context of an
+    emitted file.
 
-  if let Err(err) = package(
+    It also injects the runtime and rewrites import
+    statements to point to the new paths
+  */
+  package(
     &config,
+    &dependency_map,
+    &asset_graph,
+    &bundles,
+    &bundle_graph,
     &mut asset_map,
-    &mut dependency_map,
-    &mut asset_graph,
-    &mut bundles,
-    &mut bundle_graph,
     &mut outputs,
-  ) {
-    println!("Packaging Error");
-    println!("{}", err);
-    return;
-  }
+  )?;
 
-  // dbg!(&outputs);
+  /*
+    emit() writes the contents of the bundles to disk
+  */
+  emit(&config, &mut bundles, &mut outputs)?;
 
-  if let Err(err) = emit(&config, &mut bundles, &mut outputs) {
-    println!("Packaging Error");
-    println!("{}", err);
-    return;
-  }
-
-  println!(
-    "Finished in:   {:.3}s",
-    config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
-  );
+  println!("Finished in:   {:.3}s", config.time_elapsed(),);
+  Ok(())
 }
 
+/*
+  main() initializes the config and starts the async runtime
+  then main_async() takes over. 
+*/
 pub fn main(command: BuildCommand) {
   let config = match parse_config(command) {
     Ok(config) => config,
@@ -127,10 +114,14 @@ pub fn main(command: BuildCommand) {
       std::process::exit(1);
     }
   };
-  tokio::runtime::Builder::new_multi_thread()
+  if let Err(msg) = tokio::runtime::Builder::new_multi_thread()
     .worker_threads(config.threads)
     .enable_all()
     .build()
     .unwrap()
-    .block_on(main_async(config));
+    .block_on(main_async(config))
+  {
+    println!("Build Error:");
+    println!("{}", msg);
+  };
 }

@@ -20,15 +20,13 @@ use super::PluginContainer;
 pub async fn load_plugins(
   machrc: &Machrc,
   node_adapter: Arc<NodeAdapter>,
-) -> Result<PluginContainer, ()> {
+) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
-      let Ok((engine, specifier)) = parse_plugin_string(&base_path, plugin_string).await else {
-        return Err(());
-      };
+      let (engine, specifier) = parse_plugin_string(&base_path, plugin_string).await?;
 
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(DefaultResolver {}));
@@ -48,9 +46,7 @@ pub async fn load_plugins(
       let mut transformers = Vec::<Box<dyn Transformer>>::new();
 
       for plugin_string in specifiers {
-        let Ok((engine, specifier)) = parse_plugin_string(&base_path, plugin_string).await else {
-          return Err(());
-        };
+        let (engine, specifier) = parse_plugin_string(&base_path, plugin_string).await?;
 
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(DefaultTransformerJavaScript {}));
@@ -91,7 +87,7 @@ pub async fn load_plugins(
 async fn parse_plugin_string(
   base_path: &Path,
   plugin_string: &str,
-) -> Result<(String, String), ()> {
+) -> Result<(String, String), String> {
   let (engine, specifier) = plugin_string.split_once(':').unwrap();
 
   let engine = engine.to_string();
@@ -117,5 +113,5 @@ async fn parse_plugin_string(
     };
   }
 
-  return Err(());
+  return Err("Could not load plugin string".to_string());
 }

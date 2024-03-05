@@ -12,12 +12,12 @@ use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::ENTRY_ASSET;
 
-pub async fn transform(
+pub async fn link_and_transform(
   config: &public::Config,
+  plugins: &PluginContainer,
   asset_map: &mut AssetMap,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
-  plugins: &PluginContainer,
 ) -> Result<(), String> {
   let mut queue = Vec::<Dependency>::new();
 
