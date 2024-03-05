@@ -48,6 +48,9 @@ fixture cmd fixture *ARGS:
 fmt:
   cargo +nightly fmt
 
+three-js:
+  node ./.github/scripts/ci/benchmark.mjs
+
 @_create_out_dir:
   rm -rf ./target/{{profile}}
   mkdir -p ./target/{{profile}}

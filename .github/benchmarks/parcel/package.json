@@ -8,7 +8,8 @@
   },
   "scripts": {
     "clean": "rm -rf dist .parcel-cache",
-    "build": "npx parcel build --no-optimize --no-cache"
+    "build": "npx parcel build --no-optimize --no-cache",
+    "build:optimize": "npx parcel build --no-cache"
   },
   "targets": {
     "default": {

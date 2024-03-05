@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "../../../target/release/bin/mach build ./src/index.js"
+    "build": "../../../target/release/bin/mach build ./src/index.js --no-optimize",
+    "build:optimize": "../../../target/release/bin/mach build ./src/index.js"
   },
   "dependencies": {}
 }

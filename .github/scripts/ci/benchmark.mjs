@@ -4,7 +4,20 @@ import * as child_process from 'node:child_process'
 import { Paths } from '../platform/paths.mjs'
 import { crawlDir, TargetType } from '../platform/crawl.mjs'
 
-const COPIES = process.env.BENCH_COPIES ? parseInt(process.env.BENCH_COPIES, 10) : 1
+const COPIES = process.env.BENCH_COPIES ? parseInt(process.env.BENCH_COPIES, 10) : 50
+const STDIO = process.env.STDIO | 'ignore'
+const GENERATE_FIXTURE = process.env.GENERATE_FIXTURE
+
+let generate_fixture = true
+
+if (fs.existsSync(path.join(Paths.ScriptsTmp, 'bench_copies'))) {
+  let current_copies = fs.readFileSync(path.join(Paths.ScriptsTmp, 'bench_copies'), 'utf8')
+  if (current_copies == COPIES) {
+    generate_fixture = false
+  } else {
+    fs.rmSync(path.join(Paths.ScriptsTmp, 'bench_copies'), { recursive: true, force: true })
+  }
+}
 
 const bench_dir = path.join(Paths.Benchmarks)
 const $ = (cmd, cwd = bench_dir, stdio = 'inherit', options = {}) => {
@@ -12,35 +25,54 @@ const $ = (cmd, cwd = bench_dir, stdio = 'inherit', options = {}) => {
   child_process.execSync(cmd, { cwd, stdio, ...options })
 }
 
-fs.rmSync(path.join(bench_dir, 'three-js'), { recursive: true, force: true })
-fs.mkdirSync(path.join(bench_dir, 'three-js'), { recursive: true })
+if (GENERATE_FIXTURE || generate_fixture) {
 
-$(`tar -xzvf three-js.tar.gz -C three-js`)
+  fs.rmSync(path.join(bench_dir, 'three-js'), { recursive: true, force: true })
+  fs.mkdirSync(path.join(bench_dir, 'three-js'), { recursive: true })
 
-fs.mkdirSync(path.join(bench_dir, 'three-js', 'src'), { recursive: true })
+  $(`tar -xzvf three-js.tar.gz -C three-js`)
 
-let index = ''
-let count = 0
+  fs.mkdirSync(path.join(bench_dir, 'three-js', 'src'), { recursive: true })
 
-for (let i = 1; i <= COPIES; i++) {
-   index += `import * as three_js_copy_${i} from './copy_${i}/Three.js'; export { three_js_copy_${i} }; window.three_js_copy_${i} = three_js_copy_${i};\n`
+  let index = ''
+  let count = 0
 
-   const copy_dir = path.join(bench_dir, 'three-js', 'src', `copy_${i}`);
-   fs.cpSync(path.join(bench_dir, 'three-js', '_src'), copy_dir, { recursive: true })
+  for (let i = 1; i <= COPIES; i++) {
+    index += `import * as three_js_copy_${i} from './copy_${i}/Three.js'; export { three_js_copy_${i} }; window.three_js_copy_${i} = three_js_copy_${i};\n`
 
-   let results = crawlDir({
-    targetPath: copy_dir,
-    dontCrawl: [],
-    match: [TargetType.FILE]
-  })
+    const copy_dir = path.join(bench_dir, 'three-js', 'src', `copy_${i}`);
+    fs.cpSync(path.join(bench_dir, 'three-js', '_src'), copy_dir, { recursive: true })
 
-  for (const filepath of results.keys()) {
-    fs.appendFileSync(filepath, `\nexport const unique_id_${count} = ${count};`)
-    count += 1
+    let results = crawlDir({
+      targetPath: copy_dir,
+      dontCrawl: [],
+      match: [TargetType.FILE]
+    })
+
+    for (const filepath of results.keys()) {
+      fs.appendFileSync(filepath, `\nexport const unique_id_${count} = ${count};`)
+      count += 1
+    }
+  }
+
+  fs.writeFileSync(path.join(bench_dir, 'three-js', 'src', 'index.js'), index, 'utf8')
+
+  for (const tester of [
+    "mach",
+    "esbuild",
+    "parcel",
+    // "webpack",
+    // "rspack",
+  ]) {
+    fs.cpSync(path.join(bench_dir, 'three-js', 'src'), path.join(bench_dir, tester, 'src'), { recursive: true })
   }
 }
 
-fs.writeFileSync(path.join(bench_dir, 'three-js', 'src', 'index.js'), index, 'utf8')
+$('pnpm install')
+
+fs.writeFileSync(path.join(Paths.ScriptsTmp, 'bench_copies'), `${COPIES}`, 'utf8')
+
+const timings = {}
 
 for (const tester of [
   "mach",
@@ -49,7 +81,16 @@ for (const tester of [
   // "webpack",
   // "rspack",
 ]) {
-  fs.cpSync(path.join(bench_dir, 'three-js', 'src'), path.join(bench_dir, tester, 'src'), { recursive: true })
+  console.log('Running:', tester)
+  console.log()
+  let package_json = JSON.parse(fs.readFileSync(path.join(Paths.Benchmarks, tester, 'package.json'), 'utf8'))
+  $(package_json.scripts['clean'], path.join(Paths.Benchmarks, tester), STDIO)
+
+  let start_time = Date.now()
+  $(package_json.scripts['build'], path.join(Paths.Benchmarks, tester), STDIO)
+  let end_time = Date.now() - start_time
+  timings[tester] = end_time / 1000
+  console.log()
 }
 
-$('pnpm install')
+console.table(timings)

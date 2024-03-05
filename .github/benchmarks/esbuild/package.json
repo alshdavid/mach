@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npx esbuild ./src/index.js --bundle --outdir=dist"
+    "build": "npx esbuild ./src/index.js --bundle --outdir=dist",
+    "build:optimize": "npx esbuild ./src/index.js --bundle --outdir=dist --minify"
   },
   "dependencies": {
     "esbuild": "latest"

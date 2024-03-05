@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "echo todo"
+    "build": "echo todo",
+    "build:optimize": "echo todo"
   }
 }
