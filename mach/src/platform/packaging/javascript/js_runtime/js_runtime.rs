@@ -1,10 +1,12 @@
 use std::path::Path;
+use std::sync::Arc;
 
 use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
+use std::sync::Mutex;
 
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
@@ -31,7 +33,7 @@ pub struct JavaScriptRuntime<'a> {
   pub current_bundle_id: &'a str,
   pub dependency_map: &'a DependencyMap,
   pub asset_graph: &'a AssetGraph,
-  pub asset_map: &'a AssetMap,
+  pub asset_map: Arc<Mutex<AssetMap>>,
   pub bundle_graph: &'a BundleGraph,
   pub runtime_factory: &'a RuntimeFactory,
 }
@@ -58,14 +60,18 @@ impl<'a> JavaScriptRuntime<'a> {
       );
     };
 
-    let Some(asset) = self.asset_map.get(&asset_id) else {
-      panic!(
-        "Could not get Asset for AssetID:\n  AssetID: {:?}",
-        asset_id
-      );
+    let asset_kind = {
+      let asset_map = self.asset_map.lock().unwrap();
+      let Some(asset) = asset_map.get(&asset_id) else {
+        panic!(
+          "Could not get Asset for AssetID:\n  AssetID: {:?}",
+          asset_id
+        );
+      };
+      asset.kind.clone()
     };
 
-    if asset.kind != "js" {
+    if asset_kind != "js" {
       return None;
     }
 

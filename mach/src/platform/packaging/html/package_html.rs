@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use html5ever::parse_document;
 use html5ever::serialize::serialize;
@@ -6,6 +7,7 @@ use html5ever::serialize::SerializeOpts;
 use html5ever::tendril::TendrilSink;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
+use std::sync::Mutex;
 
 use crate::kit::html;
 use crate::public;
@@ -20,15 +22,15 @@ use crate::public::Output;
 use crate::public::Outputs;
 
 pub fn package_html(
-  _config: &public::Config,
-  asset_map: &mut AssetMap,
-  dependency_map: &DependencyMap,
-  asset_graph: &AssetGraph,
-  bundles: &Bundles,
-  bundle_graph: &BundleGraph,
-  outputs: &mut Outputs,
-  bundle: &Bundle,
-  bundle_manifest: &mut BundleManifest,
+  _config: Arc<public::Config>,
+  asset_map: Arc<Mutex<AssetMap>>,
+  dependency_map: Arc<DependencyMap>,
+  asset_graph: Arc<AssetGraph>,
+  bundles: Arc<Bundles>,
+  bundle_graph: Arc<BundleGraph>,
+  outputs: Arc<Mutex<Outputs>>,
+  bundle: Bundle,
+  bundle_manifest:Arc<BundleManifest>,
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -37,13 +39,18 @@ pub fn package_html(
   if dependencies.len() == 0 {
     return;
   }
-  let Some(asset) = asset_map.get_mut(&entry_asset) else {
-    panic!("could not find asset")
+  let (asset_file_path_rel, asset_content) = {
+    let mut asset_map = asset_map.lock().unwrap();
+    let Some(asset) = asset_map.get_mut(&entry_asset) else {
+      panic!("could not find asset")
+    };
+    (asset.file_path_rel.clone(), std::mem::take(&mut asset.content))
   };
+
 
   let dom = parse_document(RcDom::default(), Default::default())
     .from_utf8()
-    .read_from(&mut asset.content.as_slice())
+    .read_from(&mut asset_content.as_slice())
     .unwrap();
 
   let mut script_nodes = html::query_selector_all(
@@ -60,7 +67,7 @@ pub fn package_html(
     };
 
     let Some(dependency) =
-      dependency_map.get_dependency_for_specifier(&asset.file_path_rel, &specifier)
+      dependency_map.get_dependency_for_specifier(&asset_file_path_rel, &specifier)
     else {
       continue;
     };
@@ -87,7 +94,7 @@ pub fn package_html(
     break 'block dom.document.clone();
   };
 
-  for bundle in bundles {
+  for bundle in bundles.iter() {
     if bundle.kind == "css" {
       css_home
         .children
@@ -102,7 +109,8 @@ pub fn package_html(
   let document: SerializableHandle = dom.document.clone().into();
   let mut output = Vec::<u8>::new();
   serialize(&mut output, &document, SerializeOpts::default()).unwrap();
-  outputs.push(Output {
+  
+  outputs.lock().unwrap().push(Output {
     content: output,
     filepath: PathBuf::from(&bundle.name),
   });

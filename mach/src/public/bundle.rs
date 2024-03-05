@@ -11,7 +11,7 @@ use crate::kit::hash::truncate;
 use super::Asset;
 use super::ID_TRUNC;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Bundle {
   pub id: String,
   pub name: String,

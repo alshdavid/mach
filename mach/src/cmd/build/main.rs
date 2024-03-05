@@ -89,13 +89,14 @@ async fn main_async(config: Config) -> Result<(), String> {
   */
   package(
     &config,
-    &dependency_map,
-    &asset_graph,
-    &bundles,
-    &bundle_graph,
+    &mut dependency_map,
+    &mut asset_graph,
+    &mut bundles,
+    &mut bundle_graph,
     &mut asset_map,
     &mut outputs,
-  )?;
+  )
+  .await?;
 
   let time_package = config.time_elapsed();
   println!("  Package:       {:.3}s", time_package - time_bundle);

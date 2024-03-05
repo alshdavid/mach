@@ -71,6 +71,7 @@ pub async fn link_and_transform(
   }
 
   //Put the results of the transformation back into the bundle state
+  *plugins = Arc::try_unwrap(plugins_local).unwrap();
   *asset_map = Arc::try_unwrap(asset_map_local).unwrap().into_inner();
   *dependency_map = Arc::try_unwrap(dependency_map_local).unwrap().into_inner();
   *asset_graph = Arc::try_unwrap(asset_graph_local).unwrap().into_inner();
