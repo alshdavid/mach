@@ -59,9 +59,8 @@ async fn main_async(config: Config) -> Result<(), String> {
   )
   .await?;
 
-  println!("Assets:        {}", asset_map.len());
   let time_transform = config.time_elapsed();
-  println!("  Transform:     {:.3}s", time_transform);
+  println!("  Transform:     {:.3}s  (Assets {})", time_transform, asset_map.len());
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -77,7 +76,7 @@ async fn main_async(config: Config) -> Result<(), String> {
   )?;
 
   let time_bundle = config.time_elapsed();
-  println!("  Bundle:        {:.3}s", time_bundle - time_transform);
+  println!("  Bundle:        {:.3}s  (Bundles {})", time_bundle - time_transform, bundles.len());
 
   /*
     package() will take the bundles, obtain their referenced Assets
