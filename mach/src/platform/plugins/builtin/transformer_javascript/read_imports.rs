@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
-use normalize_path::NormalizePath;
 use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
@@ -31,7 +30,7 @@ pub fn read_imports_exports(
     imports_sync: HashMap::new(),
     imports_lazy: HashMap::new(),
     imports_require: HashMap::new(),
-    file_path: file_path.parent().unwrap().to_path_buf(),
+    _file_path: file_path.parent().unwrap().to_path_buf(),
     exports: Vec::<ExportSymbol>::new(),
   };
 
@@ -71,7 +70,7 @@ pub fn read_imports_exports(
 
 #[derive(Debug)]
 struct Walker {
-  file_path: PathBuf,
+  _file_path: PathBuf,
   imports_sync: HashMap<String, Vec<ImportSymbolType>>,
   imports_lazy: HashMap<String, Vec<ImportSymbolType>>,
   imports_require: HashMap<String, Vec<ImportSymbolType>>,
@@ -87,10 +86,7 @@ impl Walker {
       return specifier.to_string();
     }
 
-    let specifier_path = self.file_path.join(specifier).normalize();
-    let relative = pathdiff::diff_paths(&specifier_path, &self.file_path).unwrap();
-    let relative_str = relative.to_str().unwrap().to_string();
-    return format!("./{}", relative_str);
+    return specifier.to_string();
   }
 
   fn insert_import_sync(

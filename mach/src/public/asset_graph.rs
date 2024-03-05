@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 use super::Dependency;
 
+#[derive(Default)]
 pub struct AssetGraph {
   /// AssetRelPath -> [](DependencyId, AssetRelPath)
   edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,

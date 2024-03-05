@@ -17,9 +17,17 @@ pub fn read_exports(export_decl: ExportDecl) -> Vec<String> {
         exports.push(name.id.sym.to_string());
       }
     }
-    _ => {
-      todo!()
+    Decl::Fn(decl) => {
+      exports.push(decl.ident.sym.to_string());
     }
+    Decl::Class(decl) => {
+      exports.push(decl.ident.sym.to_string());
+    }
+    Decl::Using(_) => panic!("Decl::Using"),
+    Decl::TsInterface(_) => panic!("Decl::TsInterface"),
+    Decl::TsTypeAlias(_) => panic!("Decl::TsTypeAlias"),
+    Decl::TsEnum(_) => panic!("Decl::TsEnum"),
+    Decl::TsModule(_) => panic!("Decl::TsModule"),
   }
 
   return exports;

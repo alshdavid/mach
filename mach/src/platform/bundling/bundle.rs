@@ -64,8 +64,9 @@ pub fn bundle(
           // dbg!(&dependency);
           match dependency.priority {
             public::DependencyPriority::Sync => {
-              sync_dependencies.insert(dependency_id.clone());
-              q.push(asset_id.clone());
+              if sync_dependencies.insert(dependency_id.clone()) {
+                q.push(asset_id.clone());
+              };
             }
             public::DependencyPriority::Lazy => {
               entries.push(DepRef {

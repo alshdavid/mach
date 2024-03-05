@@ -80,3 +80,9 @@ pub enum BundleBehavior {
   Inline,
   Isolated,
 }
+
+impl Default for BundleBehavior {
+  fn default() -> Self {
+    BundleBehavior::Default
+  }
+}

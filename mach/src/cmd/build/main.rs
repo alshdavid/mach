@@ -42,7 +42,7 @@ async fn main_async(config: Config) -> Result<(), String> {
   load_plugins() will read source the .machrc and will
   fetch then initialize the referenced plugins
   */
-  let plugins = load_plugins(&config.machrc, node_adapter.clone()).await?;
+  let mut plugins = load_plugins(&config.machrc, node_adapter.clone()).await?;
 
   /*
     link_and_transform() will read source files, identify import statements
@@ -52,7 +52,7 @@ async fn main_async(config: Config) -> Result<(), String> {
   */
   link_and_transform(
     &config,
-    &plugins,
+    &mut plugins,
     &mut asset_map,
     &mut dependency_map,
     &mut asset_graph,
@@ -60,6 +60,8 @@ async fn main_async(config: Config) -> Result<(), String> {
   .await?;
 
   println!("Assets:        {}", asset_map.len());
+  let time_transform = config.time_elapsed();
+  println!("  Transform:     {:.3}s", time_transform);
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -73,6 +75,9 @@ async fn main_async(config: Config) -> Result<(), String> {
     &mut bundles,
     &mut bundle_graph,
   )?;
+
+  let time_bundle = config.time_elapsed();
+  println!("  Bundle:        {:.3}s", time_bundle - time_transform);
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -92,10 +97,16 @@ async fn main_async(config: Config) -> Result<(), String> {
     &mut outputs,
   )?;
 
+  let time_package = config.time_elapsed();
+  println!("  Package:       {:.3}s", time_package - time_bundle);
+
   /*
     emit() writes the contents of the bundles to disk
   */
   emit(&config, &mut bundles, &mut outputs)?;
+
+  let time_emit = config.time_elapsed();
+  println!("  Emit:          {:.3}s", time_emit - time_package);
 
   println!("Finished in:   {:.3}s", config.time_elapsed(),);
   Ok(())
@@ -103,7 +114,7 @@ async fn main_async(config: Config) -> Result<(), String> {
 
 /*
   main() initializes the config and starts the async runtime
-  then main_async() takes over. 
+  then main_async() takes over.
 */
 pub fn main(command: BuildCommand) {
   let config = match parse_config(command) {

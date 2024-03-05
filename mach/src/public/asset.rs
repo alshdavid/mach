@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use super::BundleBehavior;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Asset {
   pub name: String,
   pub file_path: PathBuf,
