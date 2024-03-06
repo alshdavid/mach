@@ -69,7 +69,7 @@ The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are 
 **6th March 2023**
 
 <p align="center">
-  <img align="center" height="600px" src="./.docs/assets/benchmark-2023-03-06.jpg">
+  <img align="center" height="600px" src="./.docs/assets/bench-2023-03-06.jpg">
   <br>
   <i>Build Time (lower is better)</i>
 </p>
