@@ -69,14 +69,24 @@ The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are 
 **6th March 2023**
 
 <p align="center">
-  <img align="center" height="600px" src="./.docs/assets/bench-2023-03-06.jpg">
+  <img align="center" height="600px" src="./.docs/assets/benchmarks/bench-2023-03-06.jpg">
   <br>
   <i>Build Time (lower is better)</i>
 </p>
 
 As of the 6th March 2023, this is a benchmark of Mach verses other bundlers. Mach is still in the early phase of development so I haven't spent a lot of time optimizing it.
 
-Mach is spending 80% of its time in the packaging phase (where it converts `import` statements into runtime code). There is a lot of room for optimization here so the numbers are likely to improve as we go 🙂
+<p align="center">
+  <img align="center" width="400px" src="./.docs/assets/benchmarks/time-2023-03-06.jpg">
+  <br>
+  <i>Time spent during build</i>
+</p>
+
+Mach is spending 50% of its time in the transformation phase (generating AST) and 50% in the packaging phase (where it converts `import` statements into runtime code).
+
+At present Mach doesn't share AST between these phases causing it to double up on the parsing work.
+
+There is a lot of room for optimization here so the numbers are likely to get better as we go 🙂
 
 ## Special Thanks
 
