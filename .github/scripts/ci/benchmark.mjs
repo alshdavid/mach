@@ -7,6 +7,13 @@ import { crawlDir, TargetType } from '../platform/crawl.mjs'
 const COPIES = process.env.BENCH_COPIES ? parseInt(process.env.BENCH_COPIES, 10) : 50
 const STDIO = process.env.STDIO | 'ignore'
 const GENERATE_FIXTURE = process.env.GENERATE_FIXTURE
+const TESTERS = [
+  "mach",
+  "esbuild",
+  "parcel",
+  "webpack",
+  "rspack",
+]
 
 let generate_fixture = true
 
@@ -26,8 +33,13 @@ const $ = (cmd, cwd = bench_dir, stdio = 'inherit', options = {}) => {
 }
 
 if (GENERATE_FIXTURE || generate_fixture) {
+  console.log("Generating fixtures")
 
   fs.rmSync(path.join(bench_dir, 'three-js'), { recursive: true, force: true })
+  for (const tester of TESTERS) {
+    fs.rmSync(path.join(bench_dir, tester, 'src'), { recursive: true, force: true })
+  }
+
   fs.mkdirSync(path.join(bench_dir, 'three-js'), { recursive: true })
 
   $(`tar -xzvf three-js.tar.gz -C three-js`)
@@ -57,15 +69,11 @@ if (GENERATE_FIXTURE || generate_fixture) {
 
   fs.writeFileSync(path.join(bench_dir, 'three-js', 'src', 'index.js'), index, 'utf8')
 
-  for (const tester of [
-    "mach",
-    "esbuild",
-    "parcel",
-    // "webpack",
-    // "rspack",
-  ]) {
+  for (const tester of TESTERS) {
     fs.cpSync(path.join(bench_dir, 'three-js', 'src'), path.join(bench_dir, tester, 'src'), { recursive: true })
   }
+} else {
+  console.log("Skip: Generating fixtures")
 }
 
 $('pnpm install')
@@ -74,13 +82,7 @@ fs.writeFileSync(path.join(Paths.ScriptsTmp, 'bench_copies'), `${COPIES}`, 'utf8
 
 const timings = {}
 
-for (const tester of [
-  "mach",
-  "esbuild",
-  "parcel",
-  // "webpack",
-  // "rspack",
-]) {
+for (const tester of TESTERS) {
   console.log('Running:', tester)
   console.log()
   let package_json = JSON.parse(fs.readFileSync(path.join(Paths.Benchmarks, tester, 'package.json'), 'utf8'))

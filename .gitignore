@@ -37,9 +37,6 @@ junit.xml
 # Bamboo Agent Files
 **/.electron/*
 
-# Ignore NPMRc
-**/.npmrc
-
 *.pdf
 
 # Operating Systems support files
