@@ -53,6 +53,11 @@ $ mach dev ./src/index.html
 > Serving on http://localhost:4242
 ```
 
+## Plugins
+
+Plugins are supported by an embedded Deno runtime with support for Node.js, TypeScript, etc
+This is still under development
+
 ## Benchmark
 
 The benchmark takes the three-js source code, copies it 50 times, imports the 50 copies from a single entrypoint and measures the time to build.
