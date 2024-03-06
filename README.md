@@ -69,14 +69,12 @@ The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are 
 **6th March 2023**
 
 <p align="center">
-  <img align="center" height="600px" src="./.docs/assets/benchmark-2023-03-06.jpeg">
+  <img align="center" height="600px" src="./.docs/assets/benchmark-2023-03-06.jpg">
   <br>
   <i>Build Time (lower is better)</i>
 </p>
 
 As of the 6th March 2023, this is a benchmark of Mach verses other bundlers. Mach is still in the early phase of development so I haven't spent a lot of time optimizing it.
-
-I suspect esbuild is reusing the transformations of files if they have matching hashes so future iterations of this benchmark will add some randomly generated code to each file, ensuring they are all unique.
 
 Mach is spending 80% of its time in the packaging phase (where it converts `import` statements into runtime code). There is a lot of room for optimization here so the numbers are likely to improve as we go 🙂
 

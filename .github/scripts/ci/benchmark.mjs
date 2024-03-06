@@ -7,6 +7,8 @@ import { crawlDir, TargetType } from '../platform/crawl.mjs'
 const COPIES = process.env.BENCH_COPIES ? parseInt(process.env.BENCH_COPIES, 10) : 50
 const STDIO = process.env.STDIO | 'ignore'
 const GENERATE_FIXTURE = process.env.GENERATE_FIXTURE
+const NO_OPTIMIZE = process.env.NO_OPTIMIZE
+
 const TESTERS = [
   "mach",
   "esbuild",
@@ -76,7 +78,9 @@ if (GENERATE_FIXTURE || generate_fixture) {
   console.log("Skip: Generating fixtures")
 }
 
-$('pnpm install')
+if (!fs.existsSync(path.join(Paths.Benchmarks, 'node_modules'))) {
+  $('pnpm install')
+}
 
 fs.writeFileSync(path.join(Paths.ScriptsTmp, 'bench_copies'), `${COPIES}`, 'utf8')
 
@@ -89,7 +93,8 @@ for (const tester of TESTERS) {
   $(package_json.scripts['clean'], path.join(Paths.Benchmarks, tester), STDIO)
 
   let start_time = Date.now()
-  $(package_json.scripts['build'], path.join(Paths.Benchmarks, tester), STDIO)
+  let cmd = NO_OPTIMIZE != undefined ? 'build' : 'build:optimize' 
+  $(package_json.scripts[cmd], path.join(Paths.Benchmarks, tester), STDIO)
   let end_time = Date.now() - start_time
   timings[tester] = end_time / 1000
   console.log()
