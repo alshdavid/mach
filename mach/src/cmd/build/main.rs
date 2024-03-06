@@ -78,6 +78,10 @@ async fn main_async(config: Config) -> Result<(), String> {
   let time_bundle = config.time_elapsed();
   println!("  Bundle:        {:.3}s  (Bundles {})", time_bundle - time_transform, bundles.len());
 
+  // dbg!(&asset_map);
+  // dbg!(&dependency_map);
+  // dbg!(&bundles);
+  // dbg!(&bundle_graph);
   /*
     package() will take the bundles, obtain their referenced Assets
     and modify them such that they can work in the context of an

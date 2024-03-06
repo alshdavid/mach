@@ -95,7 +95,8 @@ async fn transform_dependency(
         break 'block resolve_result;
       }
     }
-    return Err("Unable to resolve file".to_string());
+    // return Err("Unable to resolve file".to_string());
+    return Ok(None);
   };
   let file_path_rel =
     pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();

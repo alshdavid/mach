@@ -49,6 +49,7 @@ impl<'a> JavaScriptRuntime<'a> {
       .dependency_map
       .get_dependency_for_specifier(&self.current_asset_id, specifier)
     else {
+      return None;
       panic!(
         "Could not get dependency for specifier:\n  Asset: {:?}\n  Specifier: {:?}",
         self.current_asset_id, specifier
@@ -85,7 +86,9 @@ impl<'a> JavaScriptRuntime<'a> {
     };
 
     if bundle_id == self.current_bundle_id {
-      return Some((vec![], asset_id.to_str().unwrap().to_string()));
+      self.depends_on.insert(bundle_id.clone());
+      
+      return Some((vec![bundle_id.clone()], asset_id.to_str().unwrap().to_string()));
     } else {
       self.depends_on.insert(bundle_id.clone());
       return Some((
@@ -378,6 +381,8 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           .expr;
 
         let Expr::Call(result) = *mach_require else {
+          // TODO
+          return call_expr;
           panic!()
         };
         return result;

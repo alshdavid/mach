@@ -46,9 +46,6 @@ pub async fn package_javascript(
     bundle_module_stmts.push(stmt);
   }
 
-  // let mut bundle_assets = bundle.assets.iter().collect::<Vec<&PathBuf>>();
-  // bundle_assets.sort();
-
   let mut jobs = Vec::new();
 
   let bundle_id = bundle.id.clone();
@@ -61,7 +58,6 @@ pub async fn package_javascript(
     let bundle_graph = bundle_graph.clone();
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
-    let bundle_name = bundle.name.clone();
     
     jobs.push(tokio::task::spawn(async move {
       let (asset_file_path, asset_content) = {
@@ -76,12 +72,13 @@ pub async fn package_javascript(
         shebang: None,
       };
 
-      let parse_result = parse_program(
+      let Ok(parse_result) = parse_program(
         &asset_file_path,
         std::str::from_utf8(&asset_content).unwrap(),
         source_map.clone(),
-      )
-      .unwrap();
+      ) else {
+        return None;
+      };
 
       match parse_result.program {
         Program::Module(m) => module.body = m.body,
@@ -110,7 +107,7 @@ pub async fn package_javascript(
         module_item_to_stmt(module.body),
       );
 
-      (stmt, asset_id)
+      Some((stmt, asset_id))
     }));
   }
 
@@ -121,8 +118,12 @@ pub async fn package_javascript(
     stmts.push(result);
   }
 
-  stmts.sort_by(|a, b| a.1.cmp(&b.1));
-  for (stmt, _) in stmts.drain(0..) {
+  // stmts.sort_by(|a, b| a.1.cmp(&b.1));
+
+  for stmt in stmts.drain(0..) {
+    let Some((stmt, _)) = stmt else {
+      continue;
+    };
     bundle_module_stmts.push(stmt);
   }
 

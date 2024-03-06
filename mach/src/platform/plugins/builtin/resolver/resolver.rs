@@ -19,8 +19,8 @@ impl Resolver for DefaultResolver {
       Ok(file_path) => {
         return Ok(Some(ResolveResult { file_path }));
       }
-      Err(err) => {
-        return Err(err);
+      Err(_) => {
+        return Ok(None);
       }
     }
   }

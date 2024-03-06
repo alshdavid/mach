@@ -48,11 +48,22 @@ impl<'a> MutableAsset<'a> {
     return String::from_utf8(self.content.to_owned()).unwrap();
   }
 
+  pub fn get_bytes(&mut self) -> &[u8] {
+    return self.content;
+  }
+
   pub fn set_code(
     &mut self,
     code: &str,
   ) {
     *self.content = code.as_bytes().to_vec();
+  }
+
+  pub fn set_bytes(
+    &mut self,
+    bytes: Vec<u8>,
+  ) {
+    *self.content = bytes;
   }
 
   pub fn add_dependency(
