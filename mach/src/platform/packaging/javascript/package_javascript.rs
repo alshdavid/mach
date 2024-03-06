@@ -96,27 +96,16 @@ pub async fn package_javascript(
         runtime_factory: &runtime_factory,
         asset_graph: &asset_graph,
         asset_map: asset_map.clone(),
+        depends_on: HashSet::new(),
       };
 
-      let module = swc_core::common::GLOBALS.set(&Globals::new(), move || {
-        module.fold_with(&mut javascript_runtime)
+      let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+        let module = module.fold_with(&mut javascript_runtime);
+        return (module, javascript_runtime);
       });
 
-      let mut bundle_dependencies = HashSet::<String>::new();
-      for (dependency_id, dependency) in dependency_map.iter() {
-        if dependency.resolve_from_rel == *asset_id {
-          let Some(bundle_id) = bundle_graph.get(dependency_id) else {
-            continue;
-          };
-          if *bundle_id == bundle_name {
-            continue;
-          }
-          bundle_dependencies.insert(bundle_id.clone());
-        }
-      }
-
       let stmt = runtime_factory.module(
-        bundle_dependencies.len() != 0,
+        javascript_runtime.depends_on.len() != 0,
         asset_id.to_str().unwrap(),
         module_item_to_stmt(module.body),
       );

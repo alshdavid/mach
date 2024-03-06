@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Arc;
 
@@ -36,11 +37,12 @@ pub struct JavaScriptRuntime<'a> {
   pub asset_map: Arc<Mutex<AssetMap>>,
   pub bundle_graph: &'a BundleGraph,
   pub runtime_factory: &'a RuntimeFactory,
+  pub depends_on: HashSet<String>,
 }
 
 impl<'a> JavaScriptRuntime<'a> {
   fn get_bundle_ids_and_asset_id(
-    &self,
+    &mut self,
     specifier: &str,
   ) -> Option<(Vec<String>, String)> {
     let Some(dependency) = self
@@ -85,6 +87,7 @@ impl<'a> JavaScriptRuntime<'a> {
     if bundle_id == self.current_bundle_id {
       return Some((vec![], asset_id.to_str().unwrap().to_string()));
     } else {
+      self.depends_on.insert(bundle_id.clone());
       return Some((
         vec![bundle_id.clone()],
         asset_id.to_str().unwrap().to_string(),
@@ -93,7 +96,7 @@ impl<'a> JavaScriptRuntime<'a> {
   }
 
   fn create_import_named(
-    &self,
+    &mut self,
     specifier: &str,
     assignments: Vec<ImportNamed>,
   ) -> Option<Stmt> {
@@ -108,7 +111,7 @@ impl<'a> JavaScriptRuntime<'a> {
   }
 
   fn create_import_namespace(
-    &self,
+    &mut self,
     specifier: &str,
     assignment: Option<String>,
   ) -> Option<Stmt> {
@@ -123,7 +126,7 @@ impl<'a> JavaScriptRuntime<'a> {
   }
 
   fn create_export_namespace(
-    &self,
+    &mut self,
     specifier: &str,
     assignment: Option<String>,
   ) -> Option<Stmt> {
