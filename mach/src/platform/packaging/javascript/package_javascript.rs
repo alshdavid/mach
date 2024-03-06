@@ -61,7 +61,6 @@ pub async fn package_javascript(
     let bundle_graph = bundle_graph.clone();
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
-    let bundle_name = bundle.name.clone();
     
     jobs.push(tokio::task::spawn(async move {
       let (asset_file_path, asset_content) = {
