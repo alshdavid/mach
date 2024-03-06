@@ -1,4 +1,4 @@
-<h1 align="center">🌏️ Mach 🚀</h1>
+<h1 align="center">🌏️ Mach 🚀 (Alpha Phase)</h1>
 
 <h3 align="center">Zero Configuration Bundler For The Modern Web</h3>
 
