@@ -71,7 +71,7 @@ import * as copy_3 from './copy_3/Three.js'; window.copy_3 = copy_3;
 
 The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are using 16 threads.
 
-**6th March 2023**
+**6th March 2024**
 
 <p align="center">
   <img align="center" width="100%" src="./.docs/assets/benchmarks/bench-2023-03-06.jpg">
@@ -79,7 +79,7 @@ The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are 
   <i>Build Time (lower is better)</i>
 </p>
 
-As of the 6th March 2023, this is a benchmark of Mach verses other bundlers. Mach is still in the early phase of development so I haven't spent a lot of time optimizing it.
+As of the 6th March 2024, this is a benchmark of Mach verses other bundlers. Mach is still in the early phase of development so I haven't spent a lot of time optimizing it.
 
 <p align="center">
   <img align="center" width="100%" src="./.docs/assets/benchmarks/time-2023-03-06.jpg">
