@@ -23,7 +23,7 @@ env:
 
 jobs:
   linux-amd64:
-    name: "Build: linux-amd64"
+    name: "🔨 🐥 Linux AMD64"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
           du -sh ./*
 
   linux-arm64:
-    name: "Build: linux-arm64"
+    name: "🔨 🐥 Linux ARM64"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
           du -sh ./*
 
   macos-amd64:
-    name: "Build: macos-amd64"
+    name: "🔨 🍎 MacOS AMD64"
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +100,7 @@ jobs:
           du -sh ./*
 
   macos-arm64:
-    name: "Build: macos-arm64"
+    name: "🔨 🍎 MacOS ARM64"
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
           du -sh ./*
 
   windows-amd64:
-    name: "Build: windows-amd64"
+    name: "🔨 🪟 Windows AMD64"
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -145,7 +145,7 @@ jobs:
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-pc-windows-msvc
           cd target/windows-amd64
           mv release-lto mach
-          XZ_OPT=-9 tar -Jcvf mach-windows-amd64.tar.xz mach
+          tar -czvf mach-windows-amd64.tar.gz mach
           du -sh .
 
   

@@ -15,16 +15,36 @@ if (BRANCH_NAME == '' || process.env.MACH_SKIP_INSTALL === 'true') {
   process.exit(0) 
 }
 
-const OS = {
+const GH_API_URL = "https://api.github.com/repos/alshdavid/mach"
+
+const OS_MAP = {
   'win32': 'windows',
   'darwin': 'macos',
   'linux': 'linux'
-}[process.platform]
+}
 
-const ARCH = {
+const ARCH_MAP = {
   'arm64': 'arm64',
   'x64': 'amd64',
-}[process.arch]
+}
+
+const ARCHIVE_TYPE_MAP = {
+  'gzip': 'gzip',
+  'lzma': 'lzma',
+}
+
+const ARCHIVE_TARGET_MAP = {
+  [`${OS_MAP.linux}-${ARCH_MAP.x64}`]: [`mach-${OS_MAP.linux}-${ARCH_MAP.x64}.tar.xz`, ARCHIVE_TYPE_MAP.lzma],
+  [`${OS_MAP.linux}-${ARCH_MAP.arm64}`]: [`mach-${OS_MAP.linux}-${ARCH_MAP.arm64}.tar.xz`, ARCHIVE_TYPE_MAP.lzma],
+  [`${OS_MAP.darwin}-${ARCH_MAP.x64}`]: [`mach-${OS_MAP.darwin}-${ARCH_MAP.x64}.tar.xz`, ARCHIVE_TYPE_MAP.lzma],
+  [`${OS_MAP.darwin}-${ARCH_MAP.arm64}`]: [`mach-${OS_MAP.darwin}-${ARCH_MAP.arm64}.tar.xz`, ARCHIVE_TYPE_MAP.lzma],
+  [`${OS_MAP.win32}-${ARCH_MAP.x64}`]: [`mach-${OS_MAP.win32}-${ARCH_MAP.x64}.tar.gz`, ARCHIVE_TYPE_MAP.gzip],
+  // [`${OS_MAP.win32}-${ARCH_MAP.arm64}`]: [`mach-${OS_MAP.win32}-${ARCH_MAP.arm64}.tar.gz`, ARCHIVE_TYP_MAP.gzip],
+}
+
+const OS = OS_MAP[process.platform]
+const ARCH = OS_MAP[process.arch]
+const [ARCHIVE_TARGET, ARCHIVE_TYPE] = ARCHIVE_TARGET_MAP[`${OS}-${ARCH}`]
 
 if (!ARCH || !OS) {
   console.warn('Could not find Mach binary for your system. Please compile from source')
@@ -44,13 +64,12 @@ if (process.platform === 'win32') {
 // 
 // Find the binary with the latest tag
 //
-const GH_API_URL = "https://api.github.com/repos/alshdavid/mach"
 
 let bin_url = undefined
 
 for await (const release of get_gh_releases()) {
   if (release.tag_name.startsWith(`${BRANCH_NAME}.`)) {
-    bin_url = `https://github.com/alshdavid/mach/releases/download/${release.tag_name}/mach-${OS}-${ARCH}.tar.xz`
+    bin_url = `https://github.com/alshdavid/mach/releases/download/${release.tag_name}/${ARCHIVE_TARGET}`
     break
   }
 }
@@ -63,10 +82,10 @@ if (!bin_url) {
 // 
 // Download and extract the latest version
 //
-const DOWNLOAD_TO = path.join(__dirname, "..", '..', "mach.tar.xz")
+const DOWNLOAD_TO = path.join(__dirname, "..", '..', ARCHIVE_TARGET)
 
 fs.rmSync(path.join(__dirname, "..", '..', "mach"), { force: true });
-fs.rmSync(path.join(__dirname, "..", '..', "mach.tar.xz"), { force: true });
+fs.rmSync(path.join(__dirname, "..", '..', ARCHIVE_TARGET), { force: true });
 
 const buffer = await fetch(bin_url).then(r => r.arrayBuffer())
 
@@ -74,7 +93,12 @@ fs.writeFileSync(DOWNLOAD_TO, Buffer.from(buffer));
 fs.writeFileSync(path.join(__dirname, 'bin_details.txt'), bin_url, 'utf8');
 
 try {
-  child_process.execSync(`tar -Jxvf mach.tar.xz`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })
+  if (ARCHIVE_TYPE === ARCHIVE_TYPE_MAP.gzip) {
+    child_process.execSync(`tar -xzf ${ARCHIVE_TARGET}`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })
+  }
+  if (ARCHIVE_TYPE === ARCHIVE_TYPE_MAP.lzma) {
+    child_process.execSync(`tar -Jxvf ${ARCHIVE_TARGET}`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })
+  }
   fs.rmSync(DOWNLOAD_TO, { force: true })
 } catch (err) {
   console.error('Error: "tar" command is not installed')
