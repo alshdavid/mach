@@ -280,12 +280,12 @@ jobs:
   #       run: |
   #         cd target/windows-arm64
   #         mv release-lto mach
-  #         tar -czvf mach-windows-arm64.tar.gz mach
+  #         XZ_OPT=-9 tar -Jcvf mach-windows-arm64.tar.xz mach
       
   #     - uses: actions/upload-artifact@v4
   #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: target/windows-arm64/mach-windows-arm64.tar.gz
+  #         name: ${{ github.job }}.tar.xz
+  #         path: target/windows-arm64/mach-windows-arm64.tar.xz
   #         if-no-files-found: error
   #         retention-days: 1
 
@@ -358,12 +358,12 @@ jobs:
             gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
-          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.xz
-          gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.xz
-          gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.xz
-          gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.xz
-          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.xz
-          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.xz
+          gh release upload $BIN_VERSION linux-amd64.tar.xz/mach-linux-amd64.tar.xz
+          gh release upload $BIN_VERSION linux-arm64.tar.xz/mach-linux-arm64.tar.xz
+          gh release upload $BIN_VERSION macos-amd64.tar.xz/mach-macos-amd64.tar.xz
+          gh release upload $BIN_VERSION macos-arm64.tar.xz/mach-macos-arm64.tar.xz
+          gh release upload $BIN_VERSION windows-amd64.tar.xz/mach-windows-amd64.tar.xz
+          # gh release upload $BIN_VERSION windows-arm64.tar.xz/mach-windows-arm64.tar.xz
           
           gh release edit $BIN_VERSION --draft=false
 

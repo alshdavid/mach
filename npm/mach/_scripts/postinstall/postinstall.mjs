@@ -50,7 +50,7 @@ let bin_url = undefined
 
 for await (const release of get_gh_releases()) {
   if (release.tag_name.startsWith(`${BRANCH_NAME}.`)) {
-    bin_url = `https://github.com/alshdavid/mach/releases/download/${release.tag_name}/mach-${OS}-${ARCH}.tar.gz`
+    bin_url = `https://github.com/alshdavid/mach/releases/download/${release.tag_name}/mach-${OS}-${ARCH}.tar.xz`
     break
   }
 }
@@ -63,10 +63,10 @@ if (!bin_url) {
 // 
 // Download and extract the latest version
 //
-const DOWNLOAD_TO = path.join(__dirname, "..", '..', "mach.tar.gz")
+const DOWNLOAD_TO = path.join(__dirname, "..", '..', "mach.tar.xz")
 
 fs.rmSync(path.join(__dirname, "..", '..', "mach"), { force: true });
-fs.rmSync(path.join(__dirname, "..", '..', "mach.tar.gz"), { force: true });
+fs.rmSync(path.join(__dirname, "..", '..', "mach.tar.xz"), { force: true });
 
 const buffer = await fetch(bin_url).then(r => r.arrayBuffer())
 
@@ -74,7 +74,7 @@ fs.writeFileSync(DOWNLOAD_TO, Buffer.from(buffer));
 fs.writeFileSync(path.join(__dirname, 'bin_details.txt'), bin_url, 'utf8');
 
 try {
-  child_process.execSync(`tar -xzf mach.tar.gz`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })
+  child_process.execSync(`tar -Jxvf mach.tar.xz`, { cwd: path.resolve(__dirname,  '..', '..'), stdio: 'inherit' })
   fs.rmSync(DOWNLOAD_TO, { force: true })
 } catch (err) {
   console.error('Error: "tar" command is not installed')
