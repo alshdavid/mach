@@ -152,7 +152,7 @@ jobs:
   # Window ARM build is broken after adding Deno
   #
   windows-arm64:
-    name: "🪟 Windows ARM64 (skip)"
+    name: "🪟 Windows ARM64 (skip) ⚠️"
     runs-on: windows-latest
     steps:
       - run: |
