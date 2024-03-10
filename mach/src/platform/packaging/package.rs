@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use ad_swc_common::SourceMap;
 use std::sync::Mutex;
-use swc_core::common::SourceMap;
 
 use crate::public;
 use crate::public::AssetGraph;
@@ -72,7 +72,8 @@ pub async fn package(
           runtime_factory,
           bundle,
           bundle_manifest,
-        ).await;
+        )
+        .await;
       }));
     } else if bundle.kind == "css" {
       package_css(

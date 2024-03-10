@@ -1,10 +1,10 @@
+use ad_swc_atoms::Atom;
+use ad_swc_common::SourceMap;
+use ad_swc_common::Span;
+use ad_swc_ecma_ast::*;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use swc_core::atoms::Atom;
-use swc_core::common::SourceMap;
-use swc_core::common::Span;
-use swc_core::ecma::ast::*;
 
 use crate::kit::swc::parse_script;
 
@@ -257,10 +257,10 @@ impl RuntimeFactory {
         let Expr::Assign(assign) = &mut **expr else {
           panic!()
         };
-        let PatOrExpr::Pat(pat) = &mut assign.left else {
+        let AssignTarget::Simple(at) = &mut assign.left else {
           panic!()
         };
-        let Pat::Ident(ident) = &mut **pat else {
+        let SimpleAssignTarget::Ident(ident) = &mut *at else {
           panic!()
         };
         ident.id.sym = Atom::from(target_value_symbol);
@@ -298,13 +298,10 @@ impl RuntimeFactory {
       let Expr::Assign(assign) = &mut *expr.expr else {
         panic!()
       };
-      let PatOrExpr::Pat(pat) = &mut assign.left else {
+      let AssignTarget::Simple(at) = &mut assign.left else {
         panic!()
       };
-      let Pat::Expr(expr) = &mut **pat else {
-        panic!()
-      };
-      let Expr::Member(member) = &mut **expr else {
+      let SimpleAssignTarget::Member(member) = &mut *at else {
         panic!()
       };
       let MemberProp::Computed(prop) = &mut member.prop else {
@@ -405,13 +402,10 @@ impl RuntimeFactory {
       panic!()
     };
     {
-      let PatOrExpr::Pat(pat) = &mut assign.left else {
+      let AssignTarget::Simple(pat) = &mut assign.left else {
         panic!()
       };
-      let Pat::Expr(expr) = &mut **pat else {
-        panic!()
-      };
-      let Expr::Member(member) = &mut **expr else {
+      let SimpleAssignTarget::Member(member) = &mut *pat else {
         panic!()
       };
       let MemberProp::Computed(prop) = &mut member.prop else {
@@ -439,34 +433,22 @@ impl RuntimeFactory {
     module
   }
 
+  #[cfg_attr(rustfmt, rustfmt_skip)]
   pub fn prelude(
     &self,
     project_identifier: &str,
   ) -> Vec<Stmt> {
     let mut prelude = self.decl_prelude.clone();
 
-    #[cfg_attr(rustfmt, rustfmt_skip)]
-  let assign = {
     let Stmt::Decl(decl) = &mut prelude.stmts[0] else { panic!() };
     let Decl::Var(var) = &mut *decl else { panic!() };
     let Some(decl) = &mut var.decls[0].init else { panic!(); };
     let Expr::Assign(assign) = &mut **decl else { panic!(); };
-    assign
-  };
 
     {
-      let PatOrExpr::Pat(pat) = &mut assign.left else {
-        panic!()
-      };
-      let Pat::Expr(expr) = &mut **pat else {
-        panic!()
-      };
-      let Expr::Member(member) = &mut **expr else {
-        panic!()
-      };
-      let MemberProp::Computed(prop) = &mut member.prop else {
-        panic!()
-      };
+      let AssignTarget::Simple(pat) = &mut assign.left else { panic!() };
+      let SimpleAssignTarget::Member(member) = &mut *pat else { panic!() };
+      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
 
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
@@ -476,15 +458,9 @@ impl RuntimeFactory {
     }
 
     {
-      let Expr::Bin(bin) = &mut *assign.right else {
-        panic!()
-      };
-      let Expr::Member(member) = &mut *bin.left else {
-        panic!()
-      };
-      let MemberProp::Computed(prop) = &mut member.prop else {
-        panic!()
-      };
+      let Expr::Bin(bin) = &mut *assign.right else { panic!() };
+      let Expr::Member(member) = &mut *bin.left else { panic!() };
+      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
 
       prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
         span: Span::default(),
@@ -614,10 +590,13 @@ impl RuntimeFactory {
       match assignment {
         ImportNamed::Named(name) => imports.push(ObjectPatProp::Assign(AssignPatProp {
           span: Span::default(),
-          key: Ident {
-            span: Span::default(),
-            sym: Atom::from(name.clone()),
-            optional: false,
+          key: BindingIdent {
+            id: Ident {
+              span: Span::default(),
+              sym: Atom::from(name.clone()),
+              optional: false,
+            },
+            type_ann: None,
           },
           value: None,
         })),

@@ -1,0 +1,36 @@
+
+[package]
+authors = ["강동윤 <kdy1997.dev@gmail.com>"]
+description = "Commons for compat transforms"
+documentation = "https://rustdoc.swc.rs/swc_ecma_compat_common/"
+edition = "2021"
+include = ["Cargo.toml","src/**/*.rs"]
+license = "Apache-2.0"
+name = "ad_swc_ecma_compat_common"
+repository = "https://github.com/swc-project/swc.git"
+version = "1.0.0"
+
+[dependencies.swc_common]
+version = "1.0.0"
+path = "../swc_common"
+package = "ad_swc_common"
+
+[dependencies.swc_ecma_ast]
+version = "1.0.0"
+path = "../swc_ecma_ast"
+package = "ad_swc_ecma_ast"
+
+[dependencies.swc_ecma_utils]
+version = "1.0.0"
+path = "../swc_ecma_utils"
+package = "ad_swc_ecma_utils"
+
+[dependencies.swc_ecma_visit]
+version = "1.0.0"
+path = "../swc_ecma_visit"
+package = "ad_swc_ecma_visit"
+
+[dependencies.swc_trace_macro]
+version = "1.0.0"
+path = "../swc_trace_macro"
+package = "ad_swc_trace_macro"

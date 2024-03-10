@@ -2,11 +2,11 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use swc_core::common::Globals;
-use swc_core::common::SourceMap;
-use swc_core::common::Span;
-use swc_core::ecma::ast::*;
-use swc_core::ecma::visit::FoldWith;
+use ad_swc_common::Globals;
+use ad_swc_common::SourceMap;
+use ad_swc_common::Span;
+use ad_swc_ecma_ast::*;
+use ad_swc_ecma_visit::FoldWith;
 use std::sync::Mutex;
 
 use crate::kit::swc::module_item_to_stmt;
@@ -61,12 +61,15 @@ pub async fn package_javascript(
     let bundle_graph = bundle_graph.clone();
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
-    
+
     jobs.push(tokio::task::spawn(async move {
       let (asset_file_path, asset_content) = {
         let mut asset_map = asset_map.lock().unwrap();
         let asset = asset_map.get_mut(&asset_id).unwrap();
-        (asset.file_path_rel.clone(), std::mem::take(&mut asset.content))
+        (
+          asset.file_path_rel.clone(),
+          std::mem::take(&mut asset.content),
+        )
       };
 
       let mut module = Module {
@@ -84,7 +87,9 @@ pub async fn package_javascript(
 
       match parse_result.program {
         Program::Module(m) => module.body = m.body,
-        Program::Script(s) => module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect(),
+        Program::Script(s) => {
+          module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+        }
       }
 
       let mut javascript_runtime = JavaScriptRuntime {
@@ -98,7 +103,7 @@ pub async fn package_javascript(
         depends_on: HashSet::new(),
       };
 
-      let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+      let (module, javascript_runtime) = ad_swc_common::GLOBALS.set(&Globals::new(), move || {
         let module = module.fold_with(&mut javascript_runtime);
         return (module, javascript_runtime);
       });

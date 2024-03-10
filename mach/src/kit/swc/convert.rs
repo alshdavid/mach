@@ -1,4 +1,4 @@
-use swc_core::ecma::ast::*;
+use ad_swc_ecma_ast::*;
 
 pub fn module_item_to_stmt(input: Vec<ModuleItem>) -> Vec<Stmt> {
   input

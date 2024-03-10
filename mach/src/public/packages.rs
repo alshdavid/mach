@@ -1,9 +1,4 @@
-use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
-
-use swc_core::common::SourceMap;
-use swc_core::ecma::ast::Module;
 
 pub type Outputs = Vec<Output>;
 

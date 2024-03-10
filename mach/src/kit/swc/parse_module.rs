@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use swc_core::common::comments::SingleThreadedComments;
-use swc_core::common::SourceFile;
-use swc_core::common::SourceMap;
-use swc_core::ecma::ast::*;
+use ad_swc_common::comments::SingleThreadedComments;
+use ad_swc_common::SourceFile;
+use ad_swc_common::SourceMap;
+use ad_swc_ecma_ast::*;
 
 use super::parse_program;
 

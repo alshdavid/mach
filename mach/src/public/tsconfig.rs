@@ -1,3 +1,6 @@
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 //! https://github.com/drivasperez/tsconfig/blob/master/src/lib.rs
 //!
 //! A Rust crate for parsing TypeScript's TSConfig files into a struct.

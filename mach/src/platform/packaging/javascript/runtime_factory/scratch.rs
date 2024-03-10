@@ -14,7 +14,7 @@ mod emit;
 use std::sync::Arc;
 
 use swc_core::{atoms::Atom, common::{SourceMap, Span}, ecma::ast::{BlockStmt, BlockStmtOrExpr, VarDeclKind}};
-use swc_core::ecma::ast::*;
+use ad_swc_ecma_ast::*;
 
 use crate::{packaging::runtime_factory::{self, ImportNamed}, platform::swc::render_stmts};
 
@@ -73,7 +73,7 @@ use std::{path::PathBuf, sync::Arc};
 
 use platform::swc::lookup_property_access;
 use swc_core::{atoms::Atom, common::{SourceMap, Span}, ecma::ast::{BlockStmt, BlockStmtOrExpr, VarDeclKind}};
-use swc_core::ecma::ast::*;
+use ad_swc_ecma_ast::*;
 
 use crate::{packaging::runtime_factory::{self, ImportNamed}, platform::swc::{parse_script, render_stmts}};
 
