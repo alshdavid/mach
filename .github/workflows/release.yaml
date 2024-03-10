@@ -95,12 +95,12 @@ jobs:
         run: |
           cd target/linux-amd64
           mv release-lto mach
-          tar -czvf mach-linux-amd64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-linux-amd64.tar.xz mach
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-amd64/mach-linux-amd64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/linux-amd64/mach-linux-amd64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -135,12 +135,12 @@ jobs:
         run: |
           cd target/linux-arm64
           mv release-lto mach
-          tar -czvf mach-linux-arm64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-linux-arm64.tar.xz mach
       
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-arm64/mach-linux-arm64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/linux-arm64/mach-linux-arm64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -171,12 +171,12 @@ jobs:
         run: |
           cd target/macos-amd64
           mv release-lto mach
-          tar -czvf mach-macos-amd64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-macos-amd64.tar.xz mach
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-amd64/mach-macos-amd64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/macos-amd64/mach-macos-amd64.tar.xz
           if-no-files-found: error
           retention-days: 1
       
@@ -207,12 +207,12 @@ jobs:
         run: |
           cd target/macos-arm64
           mv release-lto mach
-          tar -czvf mach-macos-arm64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-macos-arm64.tar.xz mach
       
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-arm64/mach-macos-arm64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/macos-arm64/mach-macos-arm64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -242,12 +242,12 @@ jobs:
         run: |
           cd target/windows-amd64
           mv release-lto mach
-          tar -czvf mach-windows-amd64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-windows-amd64.tar.xz mach
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/windows-amd64/mach-windows-amd64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/windows-amd64/mach-windows-amd64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -358,12 +358,12 @@ jobs:
             gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
-          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-          gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-          gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-          gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.xz
+          gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.xz
+          gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.xz
+          gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.xz
+          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.xz
+          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.xz
           
           gh release edit $BIN_VERSION --draft=false
 

@@ -2310,12 +2310,12 @@ impl Generator {
       self.block_stack = Some(Default::default());
     }
 
-    let index = self.block_actions.as_ref().unwrap().len();
+    // let index = self.block_actions.as_ref().unwrap().len();
 
-    #[cfg(debug_assertions)]
-    if cfg!(debug_assertions) {
-      debug!("Begin block {}: {:?}", index, block);
-    }
+    // #[cfg(debug_assertions)]
+    // if cfg!(debug_assertions) {
+    //   debug!("Begin block {}: {:?}", index, block);
+    // }
 
     let block = Rc::new(RefCell::new(block));
 
@@ -2335,10 +2335,10 @@ impl Generator {
   fn end_block(&mut self) -> Ptr<CodeBlock> {
     let block = self.peek_block().expect("beginBlock was never called.");
 
-    let index = self.block_actions.as_ref().unwrap().len();
+    // let index = self.block_actions.as_ref().unwrap().len();
 
-    #[cfg(debug_assertions)]
-    debug!("End block {}", index);
+    // #[cfg(debug_assertions)]
+    // debug!("End block {}", index);
 
     self
       .block_actions
