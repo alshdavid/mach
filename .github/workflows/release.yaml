@@ -78,6 +78,7 @@ jobs:
       - name: Setup Dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install protobuf-compiler
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
@@ -115,7 +116,7 @@ jobs:
           sudo apt-get update
           npm install -g npm pnpm
           pnpm install
-          sudo apt-get install gcc-aarch64-linux-gnu build-essential
+          sudo apt-get install gcc-aarch64-linux-gnu build-essential protobuf-compiler
           rustup target add aarch64-unknown-linux-gnu
           aarch64-linux-gnu-gcc --version
 
