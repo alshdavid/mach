@@ -2,11 +2,11 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Arc;
 
+use ad_swc_atoms::Atom;
+use ad_swc_ecma_ast::*;
+use ad_swc_ecma_visit::Fold;
+use ad_swc_ecma_visit::FoldWith;
 use once_cell::sync::Lazy;
-use swc_core::atoms::Atom;
-use swc_core::ecma::ast::*;
-use swc_core::ecma::visit::Fold;
-use swc_core::ecma::visit::FoldWith;
 use std::sync::Mutex;
 
 use crate::kit::swc::lookup_property_access;
@@ -483,13 +483,10 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
   ) -> AssignExpr {
     let mut assign = assign.fold_children_with(self);
 
-    let PatOrExpr::Pat(pat) = &assign.left else {
+    let AssignTarget::Simple(at) = &assign.left else {
       return assign;
     };
-    let Pat::Expr(expr) = &**pat else {
-      return assign;
-    };
-    let Expr::Member(member_expression) = &**expr else {
+    let SimpleAssignTarget::Member(member_expression) = &*at else {
       return assign;
     };
 

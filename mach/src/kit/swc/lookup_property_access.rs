@@ -1,4 +1,4 @@
-use swc_core::ecma::ast::*;
+use ad_swc_ecma_ast::*;
 
 #[derive(Debug)]
 pub enum PropAccessType {
@@ -7,9 +7,11 @@ pub enum PropAccessType {
 }
 
 /// lookup_property_access(&expr, &["module", "exports"])
-/// module.exports = 'foo'
-/// module.exports.foo = 'foo'
-/// module.exports.foo
+/// module.exports = 'foo'      // Ok(None)
+/// module.exports              // Ok(None)
+/// module.exports.foo = 'foo'  // Ok(PropertyAccessType::Ident(ident, "foo"))
+/// module.exports.foo          // Ok(PropertyAccessType::Ident(ident, "foo"))
+/// module.notexports.foo       // Err(())
 pub fn lookup_property_access(
   input: &MemberExpr,
   source_keys: &[&str],
@@ -103,3 +105,39 @@ pub fn lookup_property_access(
 
   return Ok(None);
 }
+
+/*
+
+use std::{path::PathBuf, sync::Arc};
+
+use ad_swc_common::SourceMap;
+use ad_swc_ecma_ast::*;
+
+use crate::{kit::swc::{lookup_property_access, parse_script}, public::Config};
+
+use super::BuildCommand;
+
+pub fn main(command: BuildCommand) {
+
+  let code = "module.exports";
+  let mut stmt = parse_script(&PathBuf::from(""), code, Arc::new(SourceMap::default())).unwrap().script;
+  let Stmt::Expr(expr) = stmt.body.pop().unwrap() else { panic!(); };
+
+  let member: MemberExpr = 'block: {
+    if let Expr::Member(member) = *expr.expr {
+      break 'block member;
+    }
+    if let Expr::Assign(assign) = *expr.expr {
+      let AssignTarget::Simple(pat) = assign.left else { panic!(); };
+      let SimpleAssignTarget::Member(member) = pat else { panic!() };
+      break 'block member
+    }
+    panic!();
+  };
+
+  let res = lookup_property_access(&member, &["module", "exports"]).unwrap();
+
+  dbg!(&res);
+}
+
+*/

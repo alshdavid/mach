@@ -1,0 +1,28 @@
+
+[package]
+authors = ["강동윤 <kdy1997.dev@gmail.com>"]
+description = "Error reporter implementations for the swc project"
+documentation = "https://rustdoc.swc.rs/swc_error_reporters/"
+edition = "2021"
+license = "Apache-2.0"
+name = "ad_swc_error_reporters"
+repository = "https://github.com/swc-project/swc.git"
+version = "1.0.0"
+
+[lib]
+bench = false
+
+[dependencies]
+anyhow = "1"
+once_cell = "1"
+parking_lot = "0.12.1"
+
+[dependencies.miette]
+version = "4.2.1"
+features = ["fancy"]
+
+[dependencies.swc_common]
+version = "1.0.0"
+path = "../swc_common"
+features = ["concurrent"]
+package = "ad_swc_common"

@@ -1,16 +1,13 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::sync::Arc;
 
+use ad_swc_common::Globals;
+use ad_swc_common::Mark;
+use ad_swc_common::SourceMap;
+use ad_swc_ecma_transforms_base::resolver;
+use ad_swc_ecma_transforms_react::{self as react_transforms};
+use ad_swc_ecma_transforms_typescript::{self as typescript_transforms};
+use ad_swc_ecma_visit::FoldWith;
 use async_trait::async_trait;
-use swc_core::atoms::JsWord;
-use swc_core::common::Globals;
-use swc_core::common::Mark;
-use swc_core::common::SourceMap;
-use swc_core::ecma::transforms::base::resolver;
-use swc_core::ecma::transforms::react::{self as react_transforms};
-use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
-use swc_core::ecma::visit::FoldWith;
 
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
@@ -19,7 +16,7 @@ use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
-use super::collect_decls;
+// use super::collect_decls;
 use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
@@ -33,7 +30,7 @@ impl Transformer for DefaultTransformerJavaScript {
     asset: &mut MutableAsset,
     config: &Config,
   ) -> Result<(), String> {
-    return swc_core::common::GLOBALS.set(&Globals::new(), move || {
+    return ad_swc_common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
       let code = asset.get_code();
 
@@ -58,17 +55,9 @@ impl Transformer for DefaultTransformerJavaScript {
 
       let mut program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
 
-      let decls = collect_decls(&program);
+      // let decls = collect_decls(&program);
 
-      program = program.fold_with(&mut NodeEnvReplacer {
-        replace_env: true,
-        env: &get_env(&config.env),
-        is_browser: true,
-        decls: &decls,
-        used_env: &mut HashSet::new(),
-        source_map: &source_map.clone(),
-        unresolved_mark,
-      });
+      program = program.fold_with(&mut NodeEnvReplacer { env: &config.env });
 
       if file_extension == "jsx" {
         program = program.fold_with(&mut react_transforms::react(
@@ -118,15 +107,4 @@ impl Transformer for DefaultTransformerJavaScript {
       return Ok(());
     });
   }
-}
-
-fn get_env(config_env: &HashMap<String, String>) -> HashMap<JsWord, JsWord> {
-  let mut env = HashMap::<JsWord, JsWord>::new();
-  for (key, value) in config_env.iter() {
-    env.insert(
-      JsWord::from(key.to_string()),
-      JsWord::from(value.to_string()),
-    );
-  }
-  return env;
 }

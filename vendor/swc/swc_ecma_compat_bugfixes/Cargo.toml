@@ -1,0 +1,64 @@
+
+[package]
+authors = ["강동윤 <kdy1997.dev@gmail.com>"]
+description = "Compatibility fixes for browser bugs"
+documentation = "https://rustdoc.swc.rs/swc_ecma_compat_bugfixes/"
+edition = "2021"
+include = ["Cargo.toml","src/**/*.rs"]
+license = "Apache-2.0"
+name = "ad_swc_ecma_compat_bugfixes"
+repository = "https://github.com/swc-project/swc.git"
+version = "1.0.0"
+
+[dependencies]
+tracing = "0.1.37"
+
+[dependencies.swc_atoms]
+version = "1.0.0"
+path = "../swc_atoms"
+package = "ad_swc_atoms"
+
+[dependencies.swc_common]
+version = "1.0.0"
+path = "../swc_common"
+package = "ad_swc_common"
+
+[dependencies.swc_ecma_ast]
+version = "1.0.0"
+path = "../swc_ecma_ast"
+package = "ad_swc_ecma_ast"
+
+[dependencies.swc_ecma_compat_es2015]
+version = "1.0.0"
+path = "../swc_ecma_compat_es2015"
+package = "ad_swc_ecma_compat_es2015"
+
+[dependencies.swc_ecma_transforms_base]
+version = "1.0.0"
+path = "../swc_ecma_transforms_base"
+package = "ad_swc_ecma_transforms_base"
+
+[dependencies.swc_ecma_utils]
+version = "1.0.0"
+path = "../swc_ecma_utils"
+package = "ad_swc_ecma_utils"
+
+[dependencies.swc_ecma_visit]
+version = "1.0.0"
+path = "../swc_ecma_visit"
+package = "ad_swc_ecma_visit"
+
+[dependencies.swc_trace_macro]
+version = "1.0.0"
+path = "../swc_trace_macro"
+package = "ad_swc_trace_macro"
+
+[dev-dependencies.swc_ecma_parser]
+version = "1.0.0"
+path = "../swc_ecma_parser"
+package = "ad_swc_ecma_parser"
+
+[dev-dependencies.swc_ecma_transforms_testing]
+version = "1.0.0"
+path = "../swc_ecma_transforms_testing"
+package = "ad_swc_ecma_transforms_testing"
