@@ -173,29 +173,31 @@ jobs:
           BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-pc-windows-msvc
+  
+  # Window ARM build is broken after adding Deno
+  #
+  # windows-arm64:
+  #   name: "Build: windows-arm64"
+  #   runs-on: windows-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
+  #     - uses: arduino/setup-protoc@v3
+  #       with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
-  windows-arm64:
-    name: "Build: windows-arm64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - uses: arduino/setup-protoc@v3
-        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add aarch64-pc-windows-msvc
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-pc-windows-msvc
-
-      - name: Build
-        env:
-          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-        run: |
-          node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
+  #     - name: Build
+  #       env:
+  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #       run: |
+  #         node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
 
   npm-package:
     name: "Build: NPM"

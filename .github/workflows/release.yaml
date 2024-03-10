@@ -251,41 +251,43 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  windows-arm64:
-    name: "Build: windows-arm64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - uses: arduino/setup-protoc@v3
-        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
+  # Window ARM build is broken after adding Deno
+  #
+  # windows-arm64:
+  #   name: "Build: windows-arm64"
+  #   runs-on: windows-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
+  #     - uses: arduino/setup-protoc@v3
+  #       with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-pc-windows-msvc
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add aarch64-pc-windows-msvc
 
-      - name: Build
-        env:
-          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-        run: |
-          node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
+  #     - name: Build
+  #       env:
+  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #       run: |
+  #         node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
 
-      - name: Package
-        run: |
-          cd target/windows-arm64
-          mv release-lto mach
-          tar -czvf mach-windows-arm64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/windows-arm64
+  #         mv release-lto mach
+  #         tar -czvf mach-windows-arm64.tar.gz mach
       
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/windows-arm64/mach-windows-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}.tar.gz
+  #         path: target/windows-arm64/mach-windows-arm64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
 
   npm-package:
     name: "Build: NPM"
