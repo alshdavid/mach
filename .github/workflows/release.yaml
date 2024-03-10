@@ -28,6 +28,7 @@ env:
   PUBLISH_NPM: ${{ inputs.publish-npm }}
   PUBLISH_BIN: ${{ inputs.publish-bin }}
   BIN_CODENAME: ${{ inputs.bin-codename }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   vars:
@@ -74,11 +75,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y protobuf-compiler
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
@@ -110,13 +112,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
           sudo apt-get update
           npm install -g npm pnpm
           pnpm install
-          sudo apt-get install -y gcc-aarch64-linux-gnu build-essential protobuf-compiler
+          sudo apt-get install -y gcc-aarch64-linux-gnu build-essential
           rustup target add aarch64-unknown-linux-gnu
           aarch64-linux-gnu-gcc --version
 
@@ -148,13 +152,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-apple-darwin
-          brew install protobuf
 
       - name: Build
         env:
@@ -183,13 +188,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
           npm install -g npm pnpm
           pnpm install
           rustup target add aarch64-apple-darwin
-          brew install protobuf
 
       - name: Build
         env:
@@ -218,7 +224,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
       - name: Setup Dependencies
         run: |
           npm install -g npm pnpm
@@ -252,6 +259,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
@@ -352,7 +361,7 @@ jobs:
           gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
           gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
           gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-          gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
           gh release edit $BIN_VERSION --draft=false
 
@@ -365,7 +374,6 @@ jobs:
       - uses: actions/download-artifact@v4
       - name: Publish NPM Package
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
