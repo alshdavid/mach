@@ -23,6 +23,7 @@
     "rust-toolchain": true,
     "rustfmt.toml": true,
     "Cargo.toml": true,
+    ".npmrc": true,
     "package.json": true
   },
   "deno.enablePaths": [

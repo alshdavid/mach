@@ -4,30 +4,18 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-on: 
-  workflow_dispatch:
-    inputs:
-      publish-npm:
-        description: 'Publish NPM'
-        required: true
-        default: false
-        type: boolean
-      publish-bin:
-        description: 'Publish Binaries'
-        required: true
-        default: false
-        type: boolean
-      bin-codename:
-        # Use the names of planes in increasing increments of speed
-        description: 'Binary Release Codename'
-        required: false
-        default: ""
-        type: string
+on:
+  push:
+    branches: 
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
 
 env:
-  PUBLISH_NPM: ${{ inputs.publish-npm }}
-  PUBLISH_BIN: ${{ inputs.publish-bin }}
-  BIN_CODENAME: ${{ inputs.bin-codename }}
+  PUBLISH_NPM: "dummy"
+  PUBLISH_BIN: "dummy"
+  BIN_CODENAME: dummy""
 
 jobs:
   vars:
@@ -88,19 +76,6 @@ jobs:
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-unknown-linux-gnu
 
-      - name: Package
-        run: |
-          cd target/linux-amd64
-          mv release-lto mach
-          tar -czvf mach-linux-amd64.tar.gz mach
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-amd64/mach-linux-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
-
   linux-arm64:
     name: "Build: linux-arm64"
     runs-on: ubuntu-latest
@@ -126,19 +101,6 @@ jobs:
           export CC=aarch64-linux-gnu-gcc
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-unknown-linux-gnu
 
-      - name: Package
-        run: |
-          cd target/linux-arm64
-          mv release-lto mach
-          tar -czvf mach-linux-arm64.tar.gz mach
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-arm64/mach-linux-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
-
   macos-amd64:
     name: "Build: macos-amd64"
     runs-on: macos-13
@@ -159,19 +121,6 @@ jobs:
           BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-apple-darwin
-
-      - name: Package
-        run: |
-          cd target/macos-amd64
-          mv release-lto mach
-          tar -czvf mach-macos-amd64.tar.gz mach
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-amd64/mach-macos-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
       
   macos-arm64:
     name: "Build: macos-arm64"
@@ -194,19 +143,6 @@ jobs:
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-apple-darwin
 
-      - name: Package
-        run: |
-          cd target/macos-arm64
-          mv release-lto mach
-          tar -czvf mach-macos-arm64.tar.gz mach
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-arm64/mach-macos-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
-
   windows-amd64:
     name: "Build: windows-amd64"
     runs-on: windows-latest
@@ -228,19 +164,6 @@ jobs:
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target x86_64-pc-windows-msvc
 
-      - name: Package
-        run: |
-          cd target/windows-amd64
-          mv release-lto mach
-          tar -czvf mach-windows-amd64.tar.gz mach
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/windows-amd64/mach-windows-amd64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
-
   windows-arm64:
     name: "Build: windows-arm64"
     runs-on: windows-latest
@@ -261,19 +184,6 @@ jobs:
           BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
         run: |
           node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
-
-      - name: Package
-        run: |
-          cd target/windows-arm64
-          mv release-lto mach
-          tar -czvf mach-windows-arm64.tar.gz mach
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/windows-arm64/mach-windows-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
 
   npm-package:
     name: "Build: NPM"
@@ -305,78 +215,3 @@ jobs:
           rm -rf ./_scripts/prepack
           npm pack
           mv *.tgz ../../mach-npm.tgz
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-npm.tgz
-          path: mach-npm.tgz
-          if-no-files-found: error
-          retention-days: 1
-
-  publish-github-release:
-    name: "Publish: Binaries"
-    runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-      - name: Publish` Github Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-        run: |
-          if [ "$PUBLISH_BIN" != "true" ]; then
-            echo Skipping publish
-            exit 0
-          fi
-
-          gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
-
-          if [ "$BRANCH_NAME" == "main" ]; then
-            if [ "$BIN_CODENAME" != "" ]; then
-              gh release edit $BIN_VERSION --title "🚀 Mach - $BIN_CODENAME"
-            else
-              gh release edit $BIN_VERSION --title "🚀 Mach"
-            fi
-          else
-            gh release edit $BIN_VERSION --prerelease
-            gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
-          fi
-          
-          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-          gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-          gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-          gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-          gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
-          
-          gh release edit $BIN_VERSION --draft=false
-
-  publish-npm-package:
-    name: "Publish: NPM"
-    runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-      - name: Publish NPM Package
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-        run: |
-          if [ "$PUBLISH_NPM" != "true" ]; then
-            exit 0
-          fi
-
-          npm install -g npm pnpm
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
-
-          if [ "$BRANCH_NAME" == "main" ]; then
-            echo Publishing latest tag
-            npm publish --access=public ./mach-npm.tgz/mach-npm.tgz
-          else
-            echo Publishing $BRANCH_NAME tag
-            npm publish --access=public --tag="$BRANCH_NAME" ./mach-npm.tgz/mach-npm.tgz
-          fi
