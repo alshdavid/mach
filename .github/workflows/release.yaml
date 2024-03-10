@@ -366,8 +366,8 @@ jobs:
           gh release upload $BIN_VERSION linux-arm64.tar.xz/mach-linux-arm64.tar.xz
           gh release upload $BIN_VERSION macos-amd64.tar.xz/mach-macos-amd64.tar.xz
           gh release upload $BIN_VERSION macos-arm64.tar.xz/mach-macos-arm64.tar.xz
-          gh release upload $BIN_VERSION windows-amd64.tar.xz/mach-windows-amd64.tar.gz
-          # gh release upload $BIN_VERSION windows-arm64.tar.xz/mach-windows-arm64.tar.gz
+          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
+          # gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
           
           gh release edit $BIN_VERSION --draft=false
 
