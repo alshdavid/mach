@@ -1,1 +1,4 @@
-// TODO integrate deno_core crate as an alternative to spinning up a Node.js instance
+pub mod internal;
+mod adapter;
+
+pub use self::adapter::*;

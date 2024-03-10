@@ -28,6 +28,7 @@ env:
   PUBLISH_NPM: ${{ inputs.publish-npm }}
   PUBLISH_BIN: ${{ inputs.publish-bin }}
   BIN_CODENAME: ${{ inputs.bin-codename }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   vars:
@@ -74,6 +75,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
@@ -92,12 +95,12 @@ jobs:
         run: |
           cd target/linux-amd64
           mv release-lto mach
-          tar -czvf mach-linux-amd64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-linux-amd64.tar.xz mach
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-amd64/mach-linux-amd64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/linux-amd64/mach-linux-amd64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -109,13 +112,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
           sudo apt-get update
           npm install -g npm pnpm
           pnpm install
-          sudo apt-get install gcc-aarch64-linux-gnu build-essential
+          sudo apt-get install -y gcc-aarch64-linux-gnu build-essential
           rustup target add aarch64-unknown-linux-gnu
           aarch64-linux-gnu-gcc --version
 
@@ -130,12 +135,12 @@ jobs:
         run: |
           cd target/linux-arm64
           mv release-lto mach
-          tar -czvf mach-linux-arm64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-linux-arm64.tar.xz mach
       
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/linux-arm64/mach-linux-arm64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/linux-arm64/mach-linux-arm64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -147,6 +152,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
@@ -164,12 +171,12 @@ jobs:
         run: |
           cd target/macos-amd64
           mv release-lto mach
-          tar -czvf mach-macos-amd64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-macos-amd64.tar.xz mach
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-amd64/mach-macos-amd64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/macos-amd64/mach-macos-amd64.tar.xz
           if-no-files-found: error
           retention-days: 1
       
@@ -181,6 +188,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
       - name: Setup Dependencies
         run: |
@@ -198,12 +207,12 @@ jobs:
         run: |
           cd target/macos-arm64
           mv release-lto mach
-          tar -czvf mach-macos-arm64.tar.gz mach
+          XZ_OPT=-9 tar -Jcvf mach-macos-arm64.tar.xz mach
       
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}.tar.gz
-          path: target/macos-arm64/mach-macos-arm64.tar.gz
+          name: ${{ github.job }}.tar.xz
+          path: target/macos-arm64/mach-macos-arm64.tar.xz
           if-no-files-found: error
           retention-days: 1
 
@@ -215,7 +224,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-
+      - uses: arduino/setup-protoc@v3
+        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
       - name: Setup Dependencies
         run: |
           npm install -g npm pnpm
@@ -241,39 +251,43 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  windows-arm64:
-    name: "Build: windows-arm64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+  # Window ARM build is broken after adding Deno
+  #
+  # windows-arm64:
+  #   name: "Build: windows-arm64"
+  #   runs-on: windows-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20 }
+  #     - uses: arduino/setup-protoc@v3
+  #       with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
 
-      - name: Setup Dependencies
-        run: |
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-pc-windows-msvc
+  #     - name: Setup Dependencies
+  #       run: |
+  #         npm install -g npm pnpm
+  #         pnpm install
+  #         rustup target add aarch64-pc-windows-msvc
 
-      - name: Build
-        env:
-          BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-        run: |
-          node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
+  #     - name: Build
+  #       env:
+  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+  #       run: |
+  #         node .github/scripts/run.mjs build --profile release-lto --target aarch64-pc-windows-msvc
 
-      - name: Package
-        run: |
-          cd target/windows-arm64
-          mv release-lto mach
-          tar -czvf mach-windows-arm64.tar.gz mach
+  #     - name: Package
+  #       run: |
+  #         cd target/windows-arm64
+  #         mv release-lto mach
+  #         tar -czvf mach-windows-arm64.tar.gz mach
       
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: target/windows-arm64/mach-windows-arm64.tar.gz
-          if-no-files-found: error
-          retention-days: 1
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ github.job }}.tar.gz
+  #         path: target/windows-arm64/mach-windows-arm64.tar.gz
+  #         if-no-files-found: error
+  #         retention-days: 1
 
   npm-package:
     name: "Build: NPM"
@@ -344,12 +358,12 @@ jobs:
             gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
-          gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-          gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-          gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-          gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-          gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-          gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+          gh release upload $BIN_VERSION linux-amd64.tar.xz/mach-linux-amd64.tar.xz
+          gh release upload $BIN_VERSION linux-arm64.tar.xz/mach-linux-arm64.tar.xz
+          gh release upload $BIN_VERSION macos-amd64.tar.xz/mach-macos-amd64.tar.xz
+          gh release upload $BIN_VERSION macos-arm64.tar.xz/mach-macos-arm64.tar.xz
+          gh release upload $BIN_VERSION windows-amd64.tar.xz/mach-windows-amd64.tar.gz
+          # gh release upload $BIN_VERSION windows-arm64.tar.xz/mach-windows-arm64.tar.gz
           
           gh release edit $BIN_VERSION --draft=false
 
@@ -362,7 +376,6 @@ jobs:
       - uses: actions/download-artifact@v4
       - name: Publish NPM Package
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |

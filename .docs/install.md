@@ -15,7 +15,7 @@ npm install @alshdavid/mach
 ```bash
 rm -rf $HOME/.local/mach
 mkdir -p $HOME/.local/mach
-curl -L --url https://github.com/alshdavid/mach/releases/latest/download/macos-arm64.tar.gz | tar -xvzf - -C $HOME/.local/mach
+curl -L --url https://github.com/alshdavid/mach/releases/latest/download/macos-arm64.tar.xz | tar -xvzf - -C $HOME/.local/mach
 export PATH=$HOME/.local/mach
 ```
 
@@ -29,7 +29,7 @@ export PATH=$HOME/.local/mach:$PATH
 ```bash
 rm -rf $HOME/.local/mach
 mkdir -p $HOME/.local/mach
-curl -L --url https://github.com/alshdavid/mach/releases/latest/download/linux-amd64.tar.gz | tar -xvzf - -C $HOME/.local/mach
+curl -L --url https://github.com/alshdavid/mach/releases/latest/download/linux-amd64.tar.xz | tar -xvzf - -C $HOME/.local/mach
 ```
 
 Add the following to your `~/.zshrc`
