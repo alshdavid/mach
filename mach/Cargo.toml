@@ -40,6 +40,7 @@ markup5ever_rcdom = "0.2.0"
 # -----------------
 # Deno Dependencies
 # -----------------
+deno_runtime = "0.149.0"
 deno_ast = { version = "=0.34.2", features = ["transpiling"] }
 deno_broadcast_channel = "=0.135.0"
 deno_cache = "=0.73.0"
