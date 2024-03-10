@@ -116,6 +116,7 @@ jobs:
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-apple-darwin
+          brew install protobuf
 
       - name: Build
         env:
@@ -137,6 +138,7 @@ jobs:
           npm install -g npm pnpm
           pnpm install
           rustup target add aarch64-apple-darwin
+          brew install protobuf
 
       - name: Build
         env:
