@@ -43,7 +43,8 @@ const ARCHIVE_TARGET_MAP = {
 }
 
 const OS = OS_MAP[process.platform]
-const ARCH = OS_MAP[process.arch]
+const ARCH = ARCH_MAP[process.arch]
+
 const [ARCHIVE_TARGET, ARCHIVE_TYPE] = ARCHIVE_TARGET_MAP[`${OS}-${ARCH}`]
 
 if (!ARCH || !OS) {
