@@ -300,7 +300,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - uses: arduino/setup-protoc@v3
-        with: { repo-token: "${{ secrets.GITHUB_TOKEN }}" }
+      - uses: extractions/setup-just@v1
       - name: Build NPM
         env:
           BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
@@ -315,6 +315,7 @@ jobs:
           pnpm install
 
           node .github/scripts/run.mjs build
+          just build
 
           echo "NPM_VERSION = $NPM_VERSION"
           echo "NPM_BIN_TARGET = $NPM_BIN_TARGET"
