@@ -11,14 +11,24 @@ use deno_runtime::worker::MainWorker;
 use deno_runtime::worker::WorkerOptions;
 use deno_runtime::BootstrapOptions;
 
-use crate::deno_cli::node::CliNodeCodeTranslator;
-use crate::deno_cli::resolver::CjsResolutionStore;
-use crate::DenoInitOptions;
-use crate::SNAPSHOT;
+use crate::deno_cli::args::flags_from_vec;
+use crate::deno_cli::args::CliOptions;
+use crate::deno_cli::cache::Caches;
+use crate::deno_cli::cache::DenoDirProvider;
+use crate::deno_cli::cache::NodeAnalysisCache;
+use crate::deno_cli::cache::ParsedSourceCache;
 use crate::deno_cli::errors;
+use crate::deno_cli::module_loader::CliModuleLoader;
+use crate::deno_cli::module_loader::CliModuleLoaderFactory;
+use crate::deno_cli::node::CliCjsCodeAnalyzer;
+use crate::deno_cli::node::CliNodeCodeTranslator;
 use crate::deno_cli::npm::byonm::create_byonm_npm_resolver;
 use crate::deno_cli::npm::byonm::CliNpmResolverByonmCreateOptions;
+use crate::deno_cli::resolver::CjsResolutionStore;
+use crate::deno_cli::resolver::CliNodeResolver;
 use crate::deno_cli::resolver::NpmModuleLoader;
+use crate::DenoInitOptions;
+use crate::SNAPSHOT;
 
 pub async fn init_deno(options: DenoInitOptions) -> Result<MainWorker, AnyError> {
   let fs = Arc::new(deno_fs::RealFs);
@@ -32,20 +42,55 @@ pub async fn init_deno(options: DenoInitOptions) -> Result<MainWorker, AnyError>
 
   let npm_resolver = byonm_npm_resolver.into_npm_resolver();
 
-  let node_resolver = NodeResolver::new(
-    fs.clone(), 
-    npm_resolver.clone(),
-  );
+  let node_resolver = Arc::new(NodeResolver::new(fs.clone(), npm_resolver.clone()));
 
   let cjs_resolution_store = Arc::new(CjsResolutionStore::default());
 
-  let node_code_translator = Arc::new(CliNodeCodeTranslator::default());
-  
-  let module_loader = NpmModuleLoader::new(
+  let deno_dir_provider = Arc::new(DenoDirProvider::new(None));
+
+  let caches = Arc::new(Caches::new(deno_dir_provider.clone()));
+
+  let node_analysis_cache = NodeAnalysisCache::new(caches.node_analysis_db());
+
+  let cli_cjs_code_analyzer = CliCjsCodeAnalyzer::new(node_analysis_cache, fs.clone());
+
+  let node_code_translator = Arc::new(CliNodeCodeTranslator::new(
+    cli_cjs_code_analyzer,
+    fs.clone(),
+    node_resolver.clone(),
+    npm_resolver.clone(),
+  ));
+
+  let cli_node_resolver = Arc::new(CliNodeResolver::new(
+    Some(cjs_resolution_store.clone()),
+    fs.clone(),
+    node_resolver.clone(),
+    byonm_npm_resolver.clone(),
+  ));
+
+  let npm_module_loader = Rc::new(NpmModuleLoader::new(
     cjs_resolution_store.clone(),
     node_code_translator.clone(),
     fs.clone(),
-    node_resolver.clone(),
+    cli_node_resolver.clone(),
+  ));
+
+  let cli_options = CliOptions::new(
+    flags_from_vec(vec![]),
+    options.cwd.clone(),
+    None,
+    None,
+    None,
+    false,
+  );
+
+  let parsed_source_cache = ParsedSourceCache::default();
+  
+  let emit_cache = EmitCache::new(deno_dir_provider.get_or_create()?.gen_cache.clone());
+  let emitter = Arc::new(Emitter::new());
+
+  let cli_module_loader_factory = CliModuleLoaderFactory::new(
+    &cli_options,
   );
 
   let bootstrap_options = BootstrapOptions {
@@ -82,9 +127,7 @@ pub async fn init_deno(options: DenoInitOptions) -> Result<MainWorker, AnyError>
     stdio: options.stdio,
     startup_snapshot: Some(SNAPSHOT),
     fs: fs.clone(),
-    create_web_worker_cb: Arc::new(|_| {
-      unimplemented!("web workers are not supported")
-    }),
+    create_web_worker_cb: Arc::new(|_| unimplemented!("web workers are not supported")),
     format_js_error_fn: Some(Arc::new(format_js_error)),
     root_cert_store_provider: Default::default(),
     seed: Default::default(),
@@ -109,9 +152,9 @@ pub async fn init_deno(options: DenoInitOptions) -> Result<MainWorker, AnyError>
     let exe_path = std::env::current_exe().unwrap();
     break 'block ModuleSpecifier::from_file_path(exe_path).unwrap();
   };
-  
+
   let mut main_worker = MainWorker::from_options(main_module.clone(), permissions, worker_options);
   main_worker.bootstrap(bootstrap_options.clone());
-  
-  main_worker
+
+  Ok(main_worker)
 }

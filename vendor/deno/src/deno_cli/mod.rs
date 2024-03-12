@@ -5,4 +5,5 @@ pub mod util;
 pub mod resolver;
 pub mod node;
 pub mod cache;
+pub mod module_loader;
 // pub mod resolution;

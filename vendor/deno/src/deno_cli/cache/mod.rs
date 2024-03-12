@@ -1,11 +1,11 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 
-use crate::args::CacheSetting;
-use crate::errors::get_error_class_name;
-use crate::file_fetcher::FetchOptions;
-use crate::file_fetcher::FileFetcher;
-use crate::npm::CliNpmResolver;
-use crate::util::fs::atomic_write_file;
+use crate::deno_cli::args::CacheSetting;
+// use crate::deno_cli::errors::get_error_class_name;
+// use crate::deno_cli::file_fetcher::FetchOptions;
+// use crate::deno_cli::file_fetcher::FileFetcher;
+use crate::deno_cli::npm::CliNpmResolver;
+use crate::deno_cli::util::fs::atomic_write_file;
 
 use deno_ast::MediaType;
 use deno_core::futures;
@@ -103,7 +103,7 @@ use self::module_info::ModuleInfoCacheSourceHash;
 /// a concise interface to the DENO_DIR when building module graphs.
 pub struct FetchCacher {
   emit_cache: EmitCache,
-  file_fetcher: Arc<FileFetcher>,
+  // file_fetcher: Arc<FileFetcher>,
   file_header_overrides: HashMap<ModuleSpecifier, HashMap<String, String>>,
   global_http_cache: Arc<GlobalHttpCache>,
   npm_resolver: Arc<dyn CliNpmResolver>,
@@ -115,7 +115,7 @@ pub struct FetchCacher {
 impl FetchCacher {
   pub fn new(
     emit_cache: EmitCache,
-    file_fetcher: Arc<FileFetcher>,
+    // file_fetcher: Arc<FileFetcher>,
     file_header_overrides: HashMap<ModuleSpecifier, HashMap<String, String>>,
     global_http_cache: Arc<GlobalHttpCache>,
     npm_resolver: Arc<dyn CliNpmResolver>,
@@ -124,7 +124,7 @@ impl FetchCacher {
   ) -> Self {
     Self {
       emit_cache,
-      file_fetcher,
+      // file_fetcher,
       file_header_overrides,
       global_http_cache,
       npm_resolver,
@@ -205,7 +205,7 @@ impl Loader for FetchCacher {
       // is in a node_modules dir to avoid needlessly canonicalizing, then now compare
       // against the canonicalized specifier.
       let specifier =
-        crate::node::resolve_specifier_into_node_modules(specifier);
+        crate::deno_cli::node::resolve_specifier_into_node_modules(specifier);
       if self.npm_resolver.in_npm_package(&specifier) {
         return Box::pin(futures::future::ready(Ok(Some(
           LoadResponse::External { specifier },
@@ -231,46 +231,47 @@ impl Loader for FetchCacher {
         }
         LoaderCacheSetting::Only => Some(CacheSetting::Only),
       };
-      file_fetcher
-        .fetch_with_options(FetchOptions {
-          specifier: &specifier,
-          permissions,
-          maybe_accept: None,
-          maybe_cache_setting: maybe_cache_setting.as_ref(),
-          maybe_checksum: options.maybe_checksum,
-        })
-        .await
-        .map(|file| {
-          let maybe_headers =
-            match (file.maybe_headers, file_header_overrides.get(&specifier)) {
-              (Some(headers), Some(overrides)) => {
-                Some(headers.into_iter().chain(overrides.clone()).collect())
-              }
-              (Some(headers), None) => Some(headers),
-              (None, Some(overrides)) => Some(overrides.clone()),
-              (None, None) => None,
-            };
-          Ok(Some(LoadResponse::Module {
-            specifier: file.specifier,
-            maybe_headers,
-            content: file.source,
-          }))
-        })
-        .unwrap_or_else(|err| {
-          if let Some(io_err) = err.downcast_ref::<std::io::Error>() {
-            if io_err.kind() == std::io::ErrorKind::NotFound {
-              return Ok(None);
-            } else {
-              return Err(err);
-            }
-          }
-          let error_class_name = get_error_class_name(&err);
-          match error_class_name {
-            "NotFound" => Ok(None),
-            "NotCached" if options.cache_setting == LoaderCacheSetting::Only => Ok(None),
-            _ => Err(err),
-          }
-        })
+      panic!();
+      // file_fetcher
+      //   .fetch_with_options(FetchOptions {
+      //     specifier: &specifier,
+      //     permissions,
+      //     maybe_accept: None,
+      //     maybe_cache_setting: maybe_cache_setting.as_ref(),
+      //     maybe_checksum: options.maybe_checksum,
+      //   })
+      //   .await
+      //   .map(|file| {
+      //     let maybe_headers =
+      //       match (file.maybe_headers, file_header_overrides.get(&specifier)) {
+      //         (Some(headers), Some(overrides)) => {
+      //           Some(headers.into_iter().chain(overrides.clone()).collect())
+      //         }
+      //         (Some(headers), None) => Some(headers),
+      //         (None, Some(overrides)) => Some(overrides.clone()),
+      //         (None, None) => None,
+      //       };
+      //     Ok(Some(LoadResponse::Module {
+      //       specifier: file.specifier,
+      //       maybe_headers,
+      //       content: file.source,
+      //     }))
+      //   })
+      //   .unwrap_or_else(|err| {
+      //     if let Some(io_err) = err.downcast_ref::<std::io::Error>() {
+      //       if io_err.kind() == std::io::ErrorKind::NotFound {
+      //         return Ok(None);
+      //       } else {
+      //         return Err(err);
+      //       }
+      //     }
+      //     let error_class_name = get_error_class_name(&err);
+      //     match error_class_name {
+      //       "NotFound" => Ok(None),
+      //       "NotCached" if options.cache_setting == LoaderCacheSetting::Only => Ok(None),
+      //       _ => Err(err),
+      //     }
+      //   })
     }
     .boxed()
   }
@@ -289,11 +290,11 @@ impl Loader for FetchCacher {
       module_info,
     );
     if let Err(err) = result {
-      log::debug!(
-        "Error saving module cache info for {}. {:#}",
-        specifier,
-        err
-      );
+      // log::debug!(
+      //   "Error saving module cache info for {}. {:#}",
+      //   specifier,
+      //   err
+      // );
     }
   }
 }

@@ -1877,6 +1877,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "deno_cache_dir"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6cf517bddfd22d79d0f284500318e3f9aea193536c2b61cbf6ce7b50a85f1b6a"
+dependencies = [
+ "anyhow",
+ "deno_media_type",
+ "indexmap",
+ "log",
+ "once_cell",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+ "url",
+]
+
+[[package]]
 name = "deno_canvas"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2014,6 +2033,7 @@ dependencies = [
  "deno_ast",
  "deno_broadcast_channel",
  "deno_cache",
+ "deno_cache_dir",
  "deno_canvas",
  "deno_config",
  "deno_console",
