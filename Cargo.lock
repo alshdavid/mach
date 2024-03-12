@@ -2084,7 +2084,147 @@ dependencies = [
 ]
 
 [[package]]
-name = "deno_cli"
+name = "deno_config"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61c801e30b12aa3f15f59d4d4947621eef34d6798a93f6a5037c0efa26f87a8b"
+dependencies = [
+ "anyhow",
+ "glob",
+ "import_map",
+ "indexmap",
+ "jsonc-parser",
+ "log",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
+name = "deno_console"
+version = "0.141.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4675af179340f69c8989e173cefd8443ad7c07d4eeb2cf7337d0055af3052599"
+dependencies = [
+ "deno_core",
+]
+
+[[package]]
+name = "deno_core"
+version = "0.269.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a14bd0f882d9f2c9041c7e311ca11ebb96f31d0524d67d9ced650bb0bf1c0923"
+dependencies = [
+ "anyhow",
+ "bincode",
+ "bit-set",
+ "bit-vec",
+ "bytes",
+ "cooked-waker",
+ "deno_core_icudata",
+ "deno_ops",
+ "deno_unsync 0.3.2",
+ "futures",
+ "libc",
+ "log",
+ "memoffset 0.9.0",
+ "parking_lot 0.12.1",
+ "pin-project",
+ "serde",
+ "serde_json",
+ "serde_v8",
+ "smallvec",
+ "sourcemap 7.0.1",
+ "static_assertions",
+ "tokio",
+ "url",
+ "v8",
+]
+
+[[package]]
+name = "deno_core_icudata"
+version = "0.0.73"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a13951ea98c0a4c372f162d669193b4c9d991512de9f2381dd161027f34b26b1"
+
+[[package]]
+name = "deno_cron"
+version = "0.21.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "784abb0f2b739cfb06bff85beeb82b6f9114b8cee64c3a6d31ba30e460b3a861"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "deno_core",
+ "deno_unsync 0.1.1",
+ "saffron",
+ "tokio",
+]
+
+[[package]]
+name = "deno_crypto"
+version = "0.155.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b02ad73ed156149387daf06dff51a8f73e3a77dc50541c04c34208b678b94da"
+dependencies = [
+ "aes",
+ "aes-gcm",
+ "aes-kw",
+ "base64",
+ "cbc",
+ "const-oid",
+ "ctr",
+ "curve25519-dalek",
+ "deno_core",
+ "deno_web",
+ "elliptic-curve",
+ "num-traits",
+ "once_cell",
+ "p256",
+ "p384",
+ "p521",
+ "rand",
+ "ring",
+ "rsa",
+ "serde",
+ "serde_bytes",
+ "sha1",
+ "sha2",
+ "signature",
+ "spki",
+ "tokio",
+ "uuid",
+ "x25519-dalek",
+]
+
+[[package]]
+name = "deno_doc"
+version = "0.113.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "394381b3a23173f7bcb309e49ee29f33b8815495ca61fbdc8cb030439dc9d6ed"
+dependencies = [
+ "ammonia",
+ "anyhow",
+ "cfg-if",
+ "comrak",
+ "deno_ast",
+ "deno_graph",
+ "futures",
+ "handlebars",
+ "html-escape",
+ "import_map",
+ "indexmap",
+ "lazy_static",
+ "regex",
+ "serde",
+ "serde_json",
+ "termcolor",
+]
+
+[[package]]
+name = "deno_embed"
 version = "1.42.1"
 dependencies = [
  "aes",
@@ -2255,153 +2395,6 @@ dependencies = [
  "winres",
  "zeromq",
  "zstd",
-]
-
-[[package]]
-name = "deno_config"
-version = "0.14.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61c801e30b12aa3f15f59d4d4947621eef34d6798a93f6a5037c0efa26f87a8b"
-dependencies = [
- "anyhow",
- "glob",
- "import_map",
- "indexmap",
- "jsonc-parser",
- "log",
- "percent-encoding",
- "serde",
- "serde_json",
- "url",
-]
-
-[[package]]
-name = "deno_console"
-version = "0.141.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4675af179340f69c8989e173cefd8443ad7c07d4eeb2cf7337d0055af3052599"
-dependencies = [
- "deno_core",
-]
-
-[[package]]
-name = "deno_core"
-version = "0.269.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a14bd0f882d9f2c9041c7e311ca11ebb96f31d0524d67d9ced650bb0bf1c0923"
-dependencies = [
- "anyhow",
- "bincode",
- "bit-set",
- "bit-vec",
- "bytes",
- "cooked-waker",
- "deno_core_icudata",
- "deno_ops",
- "deno_unsync 0.3.2",
- "futures",
- "libc",
- "log",
- "memoffset 0.9.0",
- "parking_lot 0.12.1",
- "pin-project",
- "serde",
- "serde_json",
- "serde_v8",
- "smallvec",
- "sourcemap 7.0.1",
- "static_assertions",
- "tokio",
- "url",
- "v8",
-]
-
-[[package]]
-name = "deno_core_icudata"
-version = "0.0.73"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a13951ea98c0a4c372f162d669193b4c9d991512de9f2381dd161027f34b26b1"
-
-[[package]]
-name = "deno_cron"
-version = "0.21.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784abb0f2b739cfb06bff85beeb82b6f9114b8cee64c3a6d31ba30e460b3a861"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "deno_core",
- "deno_unsync 0.1.1",
- "saffron",
- "tokio",
-]
-
-[[package]]
-name = "deno_crypto"
-version = "0.155.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b02ad73ed156149387daf06dff51a8f73e3a77dc50541c04c34208b678b94da"
-dependencies = [
- "aes",
- "aes-gcm",
- "aes-kw",
- "base64",
- "cbc",
- "const-oid",
- "ctr",
- "curve25519-dalek",
- "deno_core",
- "deno_web",
- "elliptic-curve",
- "num-traits",
- "once_cell",
- "p256",
- "p384",
- "p521",
- "rand",
- "ring",
- "rsa",
- "serde",
- "serde_bytes",
- "sha1",
- "sha2",
- "signature",
- "spki",
- "tokio",
- "uuid",
- "x25519-dalek",
-]
-
-[[package]]
-name = "deno_doc"
-version = "0.113.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "394381b3a23173f7bcb309e49ee29f33b8815495ca61fbdc8cb030439dc9d6ed"
-dependencies = [
- "ammonia",
- "anyhow",
- "cfg-if",
- "comrak",
- "deno_ast",
- "deno_graph",
- "futures",
- "handlebars",
- "html-escape",
- "import_map",
- "indexmap",
- "lazy_static",
- "regex",
- "serde",
- "serde_json",
- "termcolor",
-]
-
-[[package]]
-name = "deno_embed"
-version = "1.42.1"
-dependencies = [
- "deno_cli",
 ]
 
 [[package]]

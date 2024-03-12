@@ -7,6 +7,7 @@
 // use deno_embed::ModuleCodeString;
 
 fn main() {
+  println!("{}", deno_embed::DENO_VERSION);
   // deno_current_thread(async move {
   //   let mut main_worker = init_deno(DenoInitOptions{
   //     ..Default::default()
