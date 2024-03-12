@@ -1890,6 +1890,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "deno_config"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61c801e30b12aa3f15f59d4d4947621eef34d6798a93f6a5037c0efa26f87a8b"
+dependencies = [
+ "anyhow",
+ "glob",
+ "import_map",
+ "indexmap",
+ "jsonc-parser",
+ "log",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
 name = "deno_console"
 version = "0.141.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1992,10 +2010,12 @@ name = "deno_embed"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "base32",
  "deno_ast",
  "deno_broadcast_channel",
  "deno_cache",
  "deno_canvas",
+ "deno_config",
  "deno_console",
  "deno_core",
  "deno_cron",
@@ -2003,13 +2023,16 @@ dependencies = [
  "deno_fetch",
  "deno_ffi",
  "deno_fs",
+ "deno_graph",
  "deno_http",
  "deno_io",
  "deno_kv",
  "deno_napi",
  "deno_net",
  "deno_node",
+ "deno_npm",
  "deno_runtime",
+ "deno_semver",
  "deno_terminal",
  "deno_tls",
  "deno_url",
@@ -2018,6 +2041,11 @@ dependencies = [
  "deno_webidl",
  "deno_websocket",
  "deno_webstorage",
+ "import_map",
+ "indexmap",
+ "percent-encoding",
+ "serde",
+ "thiserror",
  "tokio",
 ]
 
@@ -2079,6 +2107,35 @@ dependencies = [
  "serde",
  "tokio",
  "winapi",
+]
+
+[[package]]
+name = "deno_graph"
+version = "0.69.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8b19de8858ed651af8ff5f3749bdd84e66b168450e7a5710636943f68598c91"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "data-url",
+ "deno_ast",
+ "deno_semver",
+ "deno_unsync 0.3.2",
+ "encoding_rs",
+ "futures",
+ "import_map",
+ "indexmap",
+ "log",
+ "monch",
+ "once_cell",
+ "parking_lot",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+ "twox-hash",
+ "url",
 ]
 
 [[package]]
@@ -2168,6 +2225,18 @@ dependencies = [
  "tokio",
  "url",
  "uuid",
+]
+
+[[package]]
+name = "deno_lockfile"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8835418ae924f25ab20f508bf6240193b22d893519d44432b670a27b8fb1efeb"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
 ]
 
 [[package]]
@@ -2293,6 +2362,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "deno_npm"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53a333104d3fb6aa52e499384e523aefc09d3ac8ecd05ca7f65f856044fbcb09"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "deno_lockfile",
+ "deno_semver",
+ "futures",
+ "log",
+ "monch",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "deno_ops"
 version = "0.145.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2370,6 +2456,19 @@ dependencies = [
  "winapi",
  "windows-sys 0.48.0",
  "winres",
+]
+
+[[package]]
+name = "deno_semver"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b49e14effd9df8ed261f7a1a34ac19bbaf0fa940c59bd19a6d8313cf41525e1c"
+dependencies = [
+ "monch",
+ "once_cell",
+ "serde",
+ "thiserror",
+ "url",
 ]
 
 [[package]]
@@ -3738,6 +3837,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "import_map"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72395c7d41857a714b5ce1266685ef3c5ceb761ce601a99c44c072d72b41a1e3"
+dependencies = [
+ "indexmap",
+ "log",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
 name = "indexmap"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3854,6 +3967,15 @@ name = "json_comments"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9dbbfed4e59ba9750e15ba154fdfd9329cee16ff3df539c2666b70f58cc32105"
+
+[[package]]
+name = "jsonc-parser"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7725c320caac8c21d8228c1d055af27a995d371f78cc763073d3e068323641b5"
+dependencies = [
+ "serde_json",
+]
 
 [[package]]
 name = "k256"
@@ -4378,6 +4500,12 @@ dependencies = [
  "wasi",
  "windows-sys 0.48.0",
 ]
+
+[[package]]
+name = "monch"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b52c1b33ff98142aecea13138bd399b68aa7ab5d9546c300988c345004001eea"
 
 [[package]]
 name = "multimap"
@@ -7094,6 +7222,17 @@ name = "try-lock"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
+
+[[package]]
+name = "twox-hash"
+version = "1.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
+dependencies = [
+ "cfg-if",
+ "rand",
+ "static_assertions",
+]
 
 [[package]]
 name = "typed-arena"

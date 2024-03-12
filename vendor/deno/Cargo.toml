@@ -4,8 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tokio = { version = "1.36.0", features = ["full", "sync"] }
 async-trait = "0.1.77"
-deno_ast = "0.34.2"
+serde = "1.0.197"
+thiserror = "1.0.40"
+indexmap = { version = "2", features = ["serde"] }
+percent-encoding = "2.3.0"
+base32 = "=0.4.0"
+
+deno_ast = { version = "0.34.2", features = ["cjs"] }
 deno_broadcast_channel = "0.135.0"
 deno_cache = "0.73.0"
 deno_canvas = "0.10.0"
@@ -31,4 +38,8 @@ deno_webgpu = "0.108.0"
 deno_webidl = "0.141.0"
 deno_websocket = "0.146.0"
 deno_webstorage = "0.136.0"
-tokio = { version = "1.36.0", features = ["full", "sync"] }
+deno_graph = "0.69.6"
+deno_semver = "0.5.4"
+deno_npm = "0.17.0"
+deno_config = "0.14.1"
+import_map = "0.19.0"

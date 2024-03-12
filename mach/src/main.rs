@@ -1,3 +1,6 @@
+use std::path::PathBuf;
+use std::time::Duration;
+
 use deno_embed::deno_current_thread;
 use deno_embed::init_deno;
 use deno_embed::DenoInitOptions;
@@ -7,9 +10,27 @@ fn main() {
   deno_current_thread(async move {
     let mut main_worker = init_deno(DenoInitOptions{
       ..Default::default()
-    });
+    }).await;
 
-    main_worker.execute_script("main.js", ModuleCodeString::from_static("console.log(42)")).unwrap();
+    main_worker
+      .execute_main_module(&deno_embed::ModuleSpecifier::from_file_path("/home/dalsh/Development/alshdavid/mach/pkg/index.js")
+      .unwrap())
+      .await
+      .unwrap();
+
+    // main_worker.execute_main_module(module_specifier)
+
+    // main_worker.execute_script("main.js", ModuleCodeString::from_static(r#"
+    //   (async () => {
+    //     console.log("num", 42)
+    //     const value = await new Promise(res => setTimeout(() => res('hi'), 1000))
+    //     console.log("value", value)
+    //     const result = await fetch('http://icanhazip.com').then(r => r.text())
+    //     console.log("result", result)
+    //   })()
+    // "#)).unwrap();
+
+    main_worker.run_event_loop(false).await.unwrap();
   });
 }
 

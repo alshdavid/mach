@@ -2,20 +2,51 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use deno_ast::ModuleSpecifier;
+use deno_core::error::AnyError;
 use deno_core::FsModuleLoader;
+use deno_node::NodeResolver;
 use deno_runtime::fmt_errors::format_js_error;
 use deno_runtime::permissions::PermissionsContainer;
 use deno_runtime::worker::MainWorker;
 use deno_runtime::worker::WorkerOptions;
 use deno_runtime::BootstrapOptions;
 
+use crate::deno_cli::node::CliNodeCodeTranslator;
+use crate::deno_cli::resolver::CjsResolutionStore;
 use crate::DenoInitOptions;
 use crate::SNAPSHOT;
+use crate::deno_cli::errors;
+use crate::deno_cli::npm::byonm::create_byonm_npm_resolver;
+use crate::deno_cli::npm::byonm::CliNpmResolverByonmCreateOptions;
+use crate::deno_cli::resolver::NpmModuleLoader;
 
-pub fn init_deno(options: DenoInitOptions) -> MainWorker {
+pub async fn init_deno(options: DenoInitOptions) -> Result<MainWorker, AnyError> {
   let fs = Arc::new(deno_fs::RealFs);
   let module_loader = Rc::new(FsModuleLoader);
   let permissions = PermissionsContainer::allow_all();
+
+  let byonm_npm_resolver = create_byonm_npm_resolver(CliNpmResolverByonmCreateOptions {
+    fs: fs.clone(),
+    root_node_modules_dir: options.cwd.clone(),
+  });
+
+  let npm_resolver = byonm_npm_resolver.into_npm_resolver();
+
+  let node_resolver = NodeResolver::new(
+    fs.clone(), 
+    npm_resolver.clone(),
+  );
+
+  let cjs_resolution_store = Arc::new(CjsResolutionStore::default());
+
+  let node_code_translator = Arc::new(CliNodeCodeTranslator::default());
+  
+  let module_loader = NpmModuleLoader::new(
+    cjs_resolution_store.clone(),
+    node_code_translator.clone(),
+    fs.clone(),
+    node_resolver.clone(),
+  );
 
   let bootstrap_options = BootstrapOptions {
     args: options.args,
@@ -25,7 +56,7 @@ pub fn init_deno(options: DenoInitOptions) -> MainWorker {
     locale: options.locale,
     location: options.location,
     no_color: options.no_color,
-    is_tty: options.is_tty,
+    is_tty: false,
     user_agent: options.user_agent,
     inspect: options.inspect,
     log_level: Default::default(),
@@ -58,11 +89,11 @@ pub fn init_deno(options: DenoInitOptions) -> MainWorker {
     root_cert_store_provider: Default::default(),
     seed: Default::default(),
     module_loader: module_loader.clone(),
-    npm_resolver: Default::default(),
+    npm_resolver: Some(npm_resolver.clone()),
     source_map_getter: Default::default(),
     maybe_inspector_server: Default::default(),
     strace_ops: Default::default(),
-    get_error_class_fn: Default::default(),
+    get_error_class_fn: Some(&errors::get_error_class_name),
     cache_storage_dir: Default::default(),
     origin_storage_dir: Default::default(),
     blob_store: Default::default(),

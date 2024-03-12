@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::thread;
 
 use deno_ast::ModuleSpecifier;
@@ -8,6 +9,7 @@ use deno_io::Stdio;
 use deno_terminal::colors;
 
 pub struct DenoInitOptions {
+  pub cwd: PathBuf,
   pub main_module: Option<String>,
   /// Sets `Deno.args` in JS runtime.
   pub args: Vec<String>,
@@ -17,7 +19,6 @@ pub struct DenoInitOptions {
   pub locale: String,
   pub location: Option<ModuleSpecifier>,
   pub no_color: bool,
-  pub is_tty: bool,
   pub user_agent: String,
   pub inspect: bool,
   /// JsRuntime extensions, not to be confused with ES modules.
@@ -53,11 +54,11 @@ impl Default for DenoInitOptions {
     let user_agent = format!("Deno/{runtime_version}");
 
     Self {
+      cwd: std::env::current_dir().unwrap(),
       main_module: None,
       user_agent,
       cpu_count,
       no_color: !colors::use_color(),
-      is_tty: deno_terminal::is_stdout_tty(),
       enable_op_summary_metrics: Default::default(),
       locale: "en".to_string(),
       location: Default::default(),

@@ -2,6 +2,7 @@ mod deno_init;
 mod deno_init_options;
 mod deno_current_thread;
 mod snapshots;
+pub mod deno_cli;
 
 pub use self::deno_init::*;
 pub use self::deno_init_options::*;
@@ -39,3 +40,4 @@ pub use deno_webstorage;
 
 pub use deno_core::ModuleCodeString;
 pub use deno_core::ModuleSpecifier;
+pub use deno_core::url::Url;
