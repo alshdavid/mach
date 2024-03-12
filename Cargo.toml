@@ -3,6 +3,7 @@ resolver = "2"
 
 members = [
     "mach",
+    "vendor/deno",
 ]
 
 [profile.release-lto]

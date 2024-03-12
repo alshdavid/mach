@@ -40,37 +40,7 @@ markup5ever_rcdom = "0.2.0"
 # -----------------
 # Deno Dependencies
 # -----------------
-deno_runtime = "0.149.0"
-deno_ast = { version = "=0.34.2", features = ["transpiling"] }
-deno_broadcast_channel = "=0.135.0"
-deno_cache = "=0.73.0"
-deno_canvas = "=0.10.0"
-deno_console = "=0.141.0"
-deno_core = "=0.269.0"
-deno_cron = "=0.21.0"
-deno_crypto = "=0.155.0"
-deno_fetch = "=0.165.0"
-deno_ffi = "=0.128.0"
-deno_fs = "=0.51.0"
-deno_http = "=0.138.0"
-deno_io = "=0.51.0"
-deno_kv = "=0.49.0"
-deno_napi = "=0.71.0"
-deno_net = "=0.133.0"
-deno_node = "=0.78.0"
-deno_terminal = "=0.1.1"
-deno_tls = "=0.128.0"
-deno_url = "=0.141.0"
-deno_web = "=0.172.0"
-deno_webgpu = "=0.108.0"
-deno_webidl = "=0.141.0"
-deno_websocket = "=0.146.0"
-deno_webstorage = "=0.136.0"
-deno_semver = "=0.5.4"
-deno_config = "=0.14.1"
-deno_npm = "=0.17.0"
-deno_graph = "=0.69.7"
-# deno_runtime = "0.149.0"
+deno_embed = { path = "../vendor/deno" }
 
 # ----------------
 # SWC Dependencies

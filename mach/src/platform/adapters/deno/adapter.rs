@@ -10,7 +10,6 @@ pub struct DenoAdapter {}
 
 impl DenoAdapter {
   pub fn new() -> Self {
-    // let (tx, rx) = unbounded_channel::<()>();
 
     std::thread::spawn(move || {
       deno_current_thread(async {
