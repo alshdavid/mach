@@ -40,7 +40,7 @@ markup5ever_rcdom = "0.2.0"
 # -----------------
 # Deno Dependencies
 # -----------------
-deno_embed = { path = "../vendor/deno" }
+deno_embed = { path = "../vendor/deno_embed" }
 
 # ----------------
 # SWC Dependencies
