@@ -29,7 +29,7 @@ pub enum CacheFailure {
 pub struct CacheDBConfiguration {
   /// SQL to run for a new database.
   pub table_initializer: &'static str,
-  /// SQL to run when the version from [`crate::version::deno()`] changes.
+  /// SQL to run when the version from [`crate::deno_cli::version::deno()`] changes.
   pub on_version_change: &'static str,
   /// Prepared statements to pre-heat while initializing the database.
   pub preheat_queries: &'static [&'static str],

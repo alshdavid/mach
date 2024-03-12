@@ -45,9 +45,9 @@ impl Caches {
     cell
       .get_or_init(|| {
         if let Some(path) = path {
-          CacheDB::from_path(config, path, crate::version::deno())
+          CacheDB::from_path(config, path, crate::deno_cli::version::deno())
         } else {
-          CacheDB::in_memory(config, crate::version::deno())
+          CacheDB::in_memory(config, crate::deno_cli::version::deno())
         }
       })
       .clone()

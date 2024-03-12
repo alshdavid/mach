@@ -1206,7 +1206,7 @@ impl Inner {
 
     let version = format!(
       "{} ({}, {})",
-      crate::version::deno(),
+      crate::deno_cli::version::deno(),
       env!("PROFILE"),
       env!("TARGET")
     );

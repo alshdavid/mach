@@ -513,11 +513,11 @@ fn kernel_info() -> serde_json::Value {
   json!({
     "status": "ok",
     "protocol_version": "5.3",
-    "implementation_version": crate::version::deno(),
+    "implementation_version": crate::deno_cli::version::deno(),
     "implementation": "Deno kernel",
     "language_info": {
       "name": "typescript",
-      "version": crate::version::TYPESCRIPT,
+      "version": crate::deno_cli::version::TYPESCRIPT,
       "mimetype": "text/x.typescript",
       "file_extension": ".ts",
       "pygments_lexer": "typescript",

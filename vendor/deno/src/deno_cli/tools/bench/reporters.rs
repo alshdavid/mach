@@ -151,7 +151,7 @@ impl BenchReporter for ConsoleReporter {
         "{}\n",
         colors::gray(format!(
           "runtime: deno {} ({})",
-          crate::version::deno(),
+          crate::deno_cli::version::deno(),
           env!("TARGET")
         ))
       );

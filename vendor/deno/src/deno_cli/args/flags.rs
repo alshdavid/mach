@@ -982,15 +982,15 @@ fn handle_repl_flags(flags: &mut Flags, repl_flags: ReplFlags) {
 fn clap_root() -> Command {
   let long_version = format!(
     "{} ({}, {})\nv8 {}\ntypescript {}",
-    crate::version::deno(),
-    if crate::version::is_canary() {
+    crate::deno_cli::version::deno(),
+    if crate::deno_cli::version::is_canary() {
       "canary"
     } else {
       env!("PROFILE")
     },
     env!("TARGET"),
     deno_core::v8_version(),
-    crate::version::TYPESCRIPT
+    crate::deno_cli::version::TYPESCRIPT
   );
 
   let mut cmd = Command::new("deno")
@@ -1004,7 +1004,7 @@ fn clap_root() -> Command {
     )
     .color(ColorChoice::Auto)
     .max_term_width(80)
-    .version(crate::version::deno())
+    .version(crate::deno_cli::version::deno())
     .long_version(long_version)
     // cause --unstable flags to display at the bottom of the help text
     .next_display_order(1000)

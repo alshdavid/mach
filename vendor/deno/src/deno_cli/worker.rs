@@ -803,7 +803,7 @@ fn create_web_worker_callback(
         locale: deno_core::v8::icu::get_language_tag(),
         location: Some(args.main_module.clone()),
         no_color: !colors::use_color(),
-        is_tty: deno_terminal::colors::is_stdout_tty(),
+        is_tty: deno_terminal::is_stdout_tty(),
         unstable: shared.options.unstable,
         unstable_features,
         user_agent: version::get_user_agent().to_string(),

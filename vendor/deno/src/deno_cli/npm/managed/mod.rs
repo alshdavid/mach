@@ -65,7 +65,7 @@ pub struct CliNpmResolverManagedCreateOptions {
   pub snapshot: CliNpmResolverManagedSnapshotOption,
   pub maybe_lockfile: Option<Arc<Mutex<Lockfile>>>,
   pub fs: Arc<dyn deno_runtime::deno_fs::FileSystem>,
-  pub http_client: Arc<crate::http_util::HttpClient>,
+  pub http_client: Arc<crate::deno_cli::http_util::HttpClient>,
   pub npm_global_cache_dir: PathBuf,
   pub cache_setting: crate::deno_cli::args::CacheSetting,
   pub text_only_progress_bar: crate::deno_cli::util::progress_bar::ProgressBar,

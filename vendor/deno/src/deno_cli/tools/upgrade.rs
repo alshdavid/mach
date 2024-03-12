@@ -34,7 +34,7 @@ use std::time::Duration;
 const RELEASE_URL: &str = "https://github.com/denoland/deno/releases";
 
 pub static ARCHIVE_NAME: Lazy<String> =
-  Lazy::new(|| format!("deno-{}.zip", env!("TARGET")));
+  Lazy::new(|| format!("deno-{}.zip", "TARGET"));
 
 // How often query server for new version. In hours.
 const UPGRADE_CHECK_INTERVAL: i64 = 24;
@@ -422,9 +422,9 @@ pub async fn upgrade(
       }
 
       let current_is_passed = if upgrade_flags.canary {
-        crate::version::GIT_COMMIT_HASH == passed_version
-      } else if !crate::version::is_canary() {
-        crate::version::deno() == passed_version
+        crate::deno_cli::version::GIT_COMMIT_HASH == passed_version
+      } else if !crate::deno_cli::version::is_canary() {
+        crate::deno_cli::version::deno() == passed_version
       } else {
         false
       };
@@ -454,8 +454,8 @@ pub async fn upgrade(
 
       let current_is_most_recent = if upgrade_flags.canary {
         let latest_hash = &latest_version;
-        crate::version::GIT_COMMIT_HASH == latest_hash
-      } else if !crate::version::is_canary() {
+        crate::deno_cli::version::GIT_COMMIT_HASH == latest_hash
+      } else if !crate::deno_cli::version::is_canary() {
         let current = Version::parse_standard(crate::deno_cli::version::deno()).unwrap();
         let latest = Version::parse_standard(&latest_version).unwrap();
         current >= latest
@@ -470,9 +470,9 @@ pub async fn upgrade(
         log::info!(
           "Local deno version {} is the most recent release",
           if upgrade_flags.canary {
-            crate::version::GIT_COMMIT_HASH
+            crate::deno_cli::version::GIT_COMMIT_HASH
           } else {
-            crate::version::deno()
+            crate::deno_cli::version::deno()
           }
         );
         return Ok(());
@@ -569,7 +569,7 @@ async fn get_latest_version(
   release_kind: UpgradeReleaseKind,
   check_kind: UpgradeCheckKind,
 ) -> Result<String, AnyError> {
-  let url = get_url(release_kind, env!("TARGET"), check_kind);
+  let url = get_url(release_kind, "TARGET", check_kind);
   let text = client.download_text(url).await?;
   Ok(normalize_version_from_server(release_kind, &text))
 }
