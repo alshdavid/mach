@@ -405,7 +405,7 @@ impl ModuleLoaderFactory for CliModuleLoaderFactory {
   }
 }
 
-pub struct CliModuleLoader {
+struct CliModuleLoader {
   lib: TsTypeLib,
   /// The initial set of permissions used to resolve the static imports in the
   /// worker. These are "allow all" for main worker, and parent thread
@@ -418,7 +418,7 @@ pub struct CliModuleLoader {
 }
 
 impl CliModuleLoader {
-  pub fn load_sync(
+  fn load_sync(
     &self,
     specifier: &ModuleSpecifier,
     maybe_referrer: Option<&ModuleSpecifier>,
@@ -472,7 +472,7 @@ impl CliModuleLoader {
     ))
   }
 
-  pub fn resolve_referrer(
+  fn resolve_referrer(
     &self,
     referrer: &str,
   ) -> Result<ModuleSpecifier, AnyError> {
@@ -489,7 +489,7 @@ impl CliModuleLoader {
     }
   }
 
-  pub fn inner_resolve(
+  fn inner_resolve(
     &self,
     specifier: &str,
     referrer: &ModuleSpecifier,
@@ -723,7 +723,7 @@ impl SourceMapGetter for CliSourceMapGetter {
     if line_number >= lines.len() {
       Some(format!(
         "{} Couldn't format source line: Line {} is out of bounds (source may have changed at runtime)",
-        crate::colors::yellow("Warning"), line_number + 1,
+        deno_terminal::colors::yellow("Warning"), line_number + 1,
       ))
     } else {
       Some(lines[line_number].to_string())

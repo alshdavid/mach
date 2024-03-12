@@ -1,8 +1,8 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 
-use crate::args::Flags;
-use crate::colors;
-use crate::util::fs::canonicalize_path;
+use crate::deno_cli::args::Flags;
+use deno_terminal::colors;
+use crate::deno_cli::util::fs::canonicalize_path;
 
 use deno_core::error::AnyError;
 use deno_core::error::JsError;

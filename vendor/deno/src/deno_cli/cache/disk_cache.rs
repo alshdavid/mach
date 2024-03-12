@@ -1,7 +1,7 @@
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 
 use super::CACHE_PERM;
-use crate::util::fs::atomic_write_file;
+use crate::deno_cli::util::fs::atomic_write_file;
 
 use deno_cache_dir::url_to_filename;
 use deno_core::url::Host;

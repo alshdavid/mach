@@ -9,7 +9,7 @@ use std::io::IsTerminal;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::util::console::console_size;
+use crate::deno_cli::util::console::console_size;
 
 /// Renders text that will be displayed stacked in a
 /// static place on the console.

@@ -8,7 +8,7 @@ use std::time::SystemTime;
 use deno_core::parking_lot::Mutex;
 use deno_runtime::ops::tty::ConsoleSize;
 
-use crate::colors;
+use deno_terminal::colors;
 
 use self::renderer::ProgressBarRenderer;
 use self::renderer::ProgressData;

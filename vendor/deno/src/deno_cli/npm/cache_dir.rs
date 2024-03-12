@@ -180,3 +180,4 @@ pub fn mixed_case_package_name_decode(name: &str) -> Option<String> {
   base32::decode(base32::Alphabet::RFC4648 { padding: false }, name)
     .and_then(|b| String::from_utf8(b).ok())
 }
+

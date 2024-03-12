@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use deno_terminal::colors;
 
-use crate::util::display::human_download_size;
+use crate::deno_cli::util::display::human_download_size;
 
 use super::ProgressMessagePrompt;
 

@@ -42,6 +42,7 @@ use std::sync::Arc;
 use crate::deno_cli::args::package_json::PackageJsonDeps;
 use crate::deno_cli::args::JsxImportSourceConfig;
 use crate::deno_cli::args::PackageJsonDepsProvider;
+use crate::deno_cli::args::DENO_DISABLE_PEDANTIC_NODE_WARNINGS;
 use crate::deno_cli::node::CliNodeCodeTranslator;
 use crate::deno_cli::npm::ByonmCliNpmResolver;
 use crate::deno_cli::npm::CliNpmResolver;
@@ -725,19 +726,19 @@ fn sloppy_imports_resolve(
   };
   // show a warning when this happens in order to drive
   // the user towards correcting these specifiers
-  // if !*DENO_DISABLE_PEDANTIC_NODE_WARNINGS {
-  //   log::warn!(
-  //     "{} Sloppy module resolution {}\n    at {}",
-  //     crate::colors::yellow("Warning"),
-  //     crate::colors::gray(format!("(hint: {})", hint_message)).to_string(),
-  //     if referrer_range.end == deno_graph::Position::zeroed() {
-  //       // not worth showing the range in this case
-  //       crate::colors::cyan(referrer_range.specifier.as_str()).to_string()
-  //     } else {
-  //       format_range_with_colors(referrer_range)
-  //     },
-  //   );
-  // }
+  if !*DENO_DISABLE_PEDANTIC_NODE_WARNINGS {
+    log::warn!(
+      "{} Sloppy module resolution {}\n    at {}",
+      deno_terminal::colors::yellow("Warning"),
+      deno_terminal::colors::gray(format!("(hint: {})", hint_message)).to_string(),
+      if referrer_range.end == deno_graph::Position::zeroed() {
+        // not worth showing the range in this case
+        deno_terminal::colors::cyan(referrer_range.specifier.as_str()).to_string()
+      } else {
+        format_range_with_colors(referrer_range)
+      },
+    );
+  }
 
   resolution.into_specifier().into_owned()
 }
@@ -791,9 +792,9 @@ impl NpmResolver for CliGraphResolver {
     } = range;
     let line = start.line + 1;
     let column = start.character + 1;
-    // if !*DENO_DISABLE_PEDANTIC_NODE_WARNINGS {
-    //   log::warn!("Warning: Resolving \"{module_name}\" as \"node:{module_name}\" at {specifier}:{line}:{column}. If you want to use a built-in Node module, add a \"node:\" prefix.")
-    // }
+    if !*DENO_DISABLE_PEDANTIC_NODE_WARNINGS {
+      log::warn!("Warning: Resolving \"{module_name}\" as \"node:{module_name}\" at {specifier}:{line}:{column}. If you want to use a built-in Node module, add a \"node:\" prefix.")
+    }
   }
 
   fn load_and_cache_npm_package_info(
@@ -1184,3 +1185,4 @@ impl SloppyImportsResolver {
     })
   }
 }
+

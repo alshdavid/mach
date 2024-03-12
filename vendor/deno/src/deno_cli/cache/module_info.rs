@@ -63,21 +63,8 @@ pub struct ModuleInfoCache {
 }
 
 impl ModuleInfoCache {
-  #[cfg(test)]
-  pub fn new_in_memory(version: &'static str) -> Self {
-    Self::new(CacheDB::in_memory(&MODULE_INFO_CACHE_DB, version))
-  }
-
   pub fn new(conn: CacheDB) -> Self {
     Self { conn }
-  }
-
-  /// Useful for testing: re-create this cache DB with a different current version.
-  #[cfg(test)]
-  pub(crate) fn recreate_with_version(self, version: &'static str) -> Self {
-    Self {
-      conn: self.conn.recreate_with_version(version),
-    }
   }
 
   pub fn get_module_info(

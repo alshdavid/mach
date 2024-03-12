@@ -7,7 +7,7 @@ mod import_map;
 mod lockfile;
 pub mod package_json;
 
-// pub use self::import_map::resolve_import_map;
+pub use self::import_map::resolve_import_map;
 use self::package_json::PackageJsonDeps;
 use ::import_map::ImportMap;
 use deno_core::resolve_url_or_path;
@@ -30,8 +30,8 @@ pub use deno_config::TsConfigType;
 pub use deno_config::TsTypeLib;
 pub use deno_config::WorkspaceConfig;
 pub use flags::*;
-// pub use lockfile::Lockfile;
-// pub use lockfile::LockfileError;
+pub use lockfile::Lockfile;
+pub use lockfile::LockfileError;
 pub use package_json::PackageJsonDepsProvider;
 
 use deno_ast::ModuleSpecifier;
@@ -50,9 +50,9 @@ use deno_runtime::deno_tls::webpki_roots;
 use deno_runtime::inspector_server::InspectorServer;
 use deno_runtime::permissions::PermissionsOptions;
 use deno_terminal::colors;
-// use dotenvy::from_filename;
-// use once_cell::sync::Lazy;
-// use once_cell::sync::OnceCell;
+use dotenvy::from_filename;
+use once_cell::sync::Lazy;
+use once_cell::sync::OnceCell;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -66,120 +66,120 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use thiserror::Error;
 
-// use crate::file_fetcher::FileFetcher;
-// use crate::util::fs::canonicalize_path_maybe_not_exists;
-// use crate::version;
+use crate::deno_cli::file_fetcher::FileFetcher;
+use crate::deno_cli::util::fs::canonicalize_path_maybe_not_exists;
+use crate::deno_cli::version;
 
 use deno_config::glob::PathOrPatternSet;
 use deno_config::FmtConfig;
 use deno_config::LintConfig;
 use deno_config::TestConfig;
 
-// pub fn npm_registry_url() -> &'static Url {
-//   static NPM_REGISTRY_DEFAULT_URL: Lazy<Url> = Lazy::new(|| {
-//     let env_var_name = "NPM_CONFIG_REGISTRY";
-//     if let Ok(registry_url) = std::env::var(env_var_name) {
-//       // ensure there is a trailing slash for the directory
-//       let registry_url = format!("{}/", registry_url.trim_end_matches('/'));
-//       match Url::parse(&registry_url) {
-//         Ok(url) => {
-//           return url;
-//         }
-//         Err(err) => {
-//           log::debug!(
-//             "Invalid {} environment variable: {:#}",
-//             env_var_name,
-//             err,
-//           );
-//         }
-//       }
-//     }
+pub fn npm_registry_url() -> &'static Url {
+  static NPM_REGISTRY_DEFAULT_URL: Lazy<Url> = Lazy::new(|| {
+    let env_var_name = "NPM_CONFIG_REGISTRY";
+    if let Ok(registry_url) = std::env::var(env_var_name) {
+      // ensure there is a trailing slash for the directory
+      let registry_url = format!("{}/", registry_url.trim_end_matches('/'));
+      match Url::parse(&registry_url) {
+        Ok(url) => {
+          return url;
+        }
+        Err(err) => {
+          log::debug!(
+            "Invalid {} environment variable: {:#}",
+            env_var_name,
+            err,
+          );
+        }
+      }
+    }
 
-//     Url::parse("https://registry.npmjs.org").unwrap()
-//   });
+    Url::parse("https://registry.npmjs.org").unwrap()
+  });
 
-//   &NPM_REGISTRY_DEFAULT_URL
-// }
+  &NPM_REGISTRY_DEFAULT_URL
+}
 
-// pub static DENO_DISABLE_PEDANTIC_NODE_WARNINGS: Lazy<bool> = Lazy::new(|| {
-//   std::env::var("DENO_DISABLE_PEDANTIC_NODE_WARNINGS")
-//     .ok()
-//     .is_some()
-// });
+pub static DENO_DISABLE_PEDANTIC_NODE_WARNINGS: Lazy<bool> = Lazy::new(|| {
+  std::env::var("DENO_DISABLE_PEDANTIC_NODE_WARNINGS")
+    .ok()
+    .is_some()
+});
 
-// pub fn jsr_url() -> &'static Url {
-//   static JSR_URL: Lazy<Url> = Lazy::new(|| {
-//     let env_var_name = "JSR_URL";
-//     if let Ok(registry_url) = std::env::var(env_var_name) {
-//       // ensure there is a trailing slash for the directory
-//       let registry_url = format!("{}/", registry_url.trim_end_matches('/'));
-//       match Url::parse(&registry_url) {
-//         Ok(url) => {
-//           return url;
-//         }
-//         Err(err) => {
-//           log::debug!(
-//             "Invalid {} environment variable: {:#}",
-//             env_var_name,
-//             err,
-//           );
-//         }
-//       }
-//     }
+pub fn jsr_url() -> &'static Url {
+  static JSR_URL: Lazy<Url> = Lazy::new(|| {
+    let env_var_name = "JSR_URL";
+    if let Ok(registry_url) = std::env::var(env_var_name) {
+      // ensure there is a trailing slash for the directory
+      let registry_url = format!("{}/", registry_url.trim_end_matches('/'));
+      match Url::parse(&registry_url) {
+        Ok(url) => {
+          return url;
+        }
+        Err(err) => {
+          log::debug!(
+            "Invalid {} environment variable: {:#}",
+            env_var_name,
+            err,
+          );
+        }
+      }
+    }
 
-//     Url::parse("https://jsr.io/").unwrap()
-//   });
+    Url::parse("https://jsr.io/").unwrap()
+  });
 
-//   &JSR_URL
-// }
+  &JSR_URL
+}
 
-// pub fn jsr_api_url() -> &'static Url {
-//   static JSR_API_URL: Lazy<Url> = Lazy::new(|| {
-//     let mut jsr_api_url = jsr_url().clone();
-//     jsr_api_url.set_path("api/");
-//     jsr_api_url
-//   });
+pub fn jsr_api_url() -> &'static Url {
+  static JSR_API_URL: Lazy<Url> = Lazy::new(|| {
+    let mut jsr_api_url = jsr_url().clone();
+    jsr_api_url.set_path("api/");
+    jsr_api_url
+  });
 
-//   &JSR_API_URL
-// }
+  &JSR_API_URL
+}
 
-// pub fn ts_config_to_emit_options(
-//   config: deno_config::TsConfig,
-// ) -> deno_ast::EmitOptions {
-//   let options: deno_config::EmitConfigOptions =
-//     serde_json::from_value(config.0).unwrap();
-//   let imports_not_used_as_values =
-//     match options.imports_not_used_as_values.as_str() {
-//       "preserve" => deno_ast::ImportsNotUsedAsValues::Preserve,
-//       "error" => deno_ast::ImportsNotUsedAsValues::Error,
-//       _ => deno_ast::ImportsNotUsedAsValues::Remove,
-//     };
-//   let (transform_jsx, jsx_automatic, jsx_development, precompile_jsx) =
-//     match options.jsx.as_str() {
-//       "react" => (true, false, false, false),
-//       "react-jsx" => (true, true, false, false),
-//       "react-jsxdev" => (true, true, true, false),
-//       "precompile" => (false, false, false, true),
-//       _ => (false, false, false, false),
-//     };
-//   deno_ast::EmitOptions {
-//     use_ts_decorators: options.experimental_decorators,
-//     use_decorators_proposal: !options.experimental_decorators,
-//     emit_metadata: options.emit_decorator_metadata,
-//     imports_not_used_as_values,
-//     inline_source_map: options.inline_source_map,
-//     inline_sources: options.inline_sources,
-//     source_map: options.source_map,
-//     jsx_automatic,
-//     jsx_development,
-//     jsx_factory: options.jsx_factory,
-//     jsx_fragment_factory: options.jsx_fragment_factory,
-//     jsx_import_source: options.jsx_import_source,
-//     precompile_jsx,
-//     transform_jsx,
-//     var_decl_imports: false,
-//   }
-// }
+pub fn ts_config_to_emit_options(
+  config: deno_config::TsConfig,
+) -> deno_ast::EmitOptions {
+  let options: deno_config::EmitConfigOptions =
+    serde_json::from_value(config.0).unwrap();
+  let imports_not_used_as_values =
+    match options.imports_not_used_as_values.as_str() {
+      "preserve" => deno_ast::ImportsNotUsedAsValues::Preserve,
+      "error" => deno_ast::ImportsNotUsedAsValues::Error,
+      _ => deno_ast::ImportsNotUsedAsValues::Remove,
+    };
+  let (transform_jsx, jsx_automatic, jsx_development, precompile_jsx) =
+    match options.jsx.as_str() {
+      "react" => (true, false, false, false),
+      "react-jsx" => (true, true, false, false),
+      "react-jsxdev" => (true, true, true, false),
+      "precompile" => (false, false, false, true),
+      _ => (false, false, false, false),
+    };
+  deno_ast::EmitOptions {
+    use_ts_decorators: options.experimental_decorators,
+    use_decorators_proposal: !options.experimental_decorators,
+    emit_metadata: options.emit_decorator_metadata,
+    imports_not_used_as_values,
+    inline_source_map: options.inline_source_map,
+    inline_sources: options.inline_sources,
+    source_map: options.source_map,
+    jsx_automatic,
+    jsx_development,
+    jsx_factory: options.jsx_factory,
+    jsx_fragment_factory: options.jsx_fragment_factory,
+    jsx_import_source: options.jsx_import_source,
+    precompile_jsx,
+    transform_jsx,
+    var_decl_imports: false,
+  }
+}
 
 /// Indicates how cached source files should be handled.
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -203,444 +203,444 @@ pub enum CacheSetting {
   Use,
 }
 
-// impl CacheSetting {
-//   pub fn should_use_for_npm_package(&self, package_name: &str) -> bool {
-//     match self {
-//       CacheSetting::ReloadAll => false,
-//       CacheSetting::ReloadSome(list) => {
-//         if list.iter().any(|i| i == "npm:") {
-//           return false;
-//         }
-//         let specifier = format!("npm:{package_name}");
-//         if list.contains(&specifier) {
-//           return false;
-//         }
-//         true
-//       }
-//       _ => true,
-//     }
-//   }
-// }
+impl CacheSetting {
+  pub fn should_use_for_npm_package(&self, package_name: &str) -> bool {
+    match self {
+      CacheSetting::ReloadAll => false,
+      CacheSetting::ReloadSome(list) => {
+        if list.iter().any(|i| i == "npm:") {
+          return false;
+        }
+        let specifier = format!("npm:{package_name}");
+        if list.contains(&specifier) {
+          return false;
+        }
+        true
+      }
+      _ => true,
+    }
+  }
+}
 
-// #[derive(Clone, Debug, Eq, PartialEq)]
-// pub struct BenchOptions {
-//   pub files: FilePatterns,
-//   pub filter: Option<String>,
-//   pub json: bool,
-//   pub no_run: bool,
-// }
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BenchOptions {
+  pub files: FilePatterns,
+  pub filter: Option<String>,
+  pub json: bool,
+  pub no_run: bool,
+}
 
-// impl BenchOptions {
-//   pub fn resolve(
-//     maybe_bench_config: Option<BenchConfig>,
-//     maybe_bench_flags: Option<BenchFlags>,
-//     initial_cwd: &Path,
-//   ) -> Result<Self, AnyError> {
-//     let bench_flags = maybe_bench_flags.unwrap_or_default();
-//     Ok(Self {
-//       files: resolve_files(
-//         maybe_bench_config.map(|c| c.files),
-//         Some(bench_flags.files),
-//         initial_cwd,
-//       )?,
-//       filter: bench_flags.filter,
-//       json: bench_flags.json,
-//       no_run: bench_flags.no_run,
-//     })
-//   }
-// }
+impl BenchOptions {
+  pub fn resolve(
+    maybe_bench_config: Option<BenchConfig>,
+    maybe_bench_flags: Option<BenchFlags>,
+    initial_cwd: &Path,
+  ) -> Result<Self, AnyError> {
+    let bench_flags = maybe_bench_flags.unwrap_or_default();
+    Ok(Self {
+      files: resolve_files(
+        maybe_bench_config.map(|c| c.files),
+        Some(bench_flags.files),
+        initial_cwd,
+      )?,
+      filter: bench_flags.filter,
+      json: bench_flags.json,
+      no_run: bench_flags.no_run,
+    })
+  }
+}
 
-// #[derive(Clone, Debug)]
-// pub struct FmtOptions {
-//   pub check: bool,
-//   pub options: FmtOptionsConfig,
-//   pub files: FilePatterns,
-// }
+#[derive(Clone, Debug)]
+pub struct FmtOptions {
+  pub check: bool,
+  pub options: FmtOptionsConfig,
+  pub files: FilePatterns,
+}
 
-// impl FmtOptions {
-//   pub fn new_with_base(base: PathBuf) -> Self {
-//     Self {
-//       check: false,
-//       options: FmtOptionsConfig::default(),
-//       files: FilePatterns::new_with_base(base),
-//     }
-//   }
+impl FmtOptions {
+  pub fn new_with_base(base: PathBuf) -> Self {
+    Self {
+      check: false,
+      options: FmtOptionsConfig::default(),
+      files: FilePatterns::new_with_base(base),
+    }
+  }
 
-//   pub fn resolve(
-//     maybe_fmt_config: Option<FmtConfig>,
-//     maybe_fmt_flags: Option<FmtFlags>,
-//     initial_cwd: &Path,
-//   ) -> Result<Self, AnyError> {
-//     let (maybe_config_options, maybe_config_files) =
-//       maybe_fmt_config.map(|c| (c.options, c.files)).unzip();
+  pub fn resolve(
+    maybe_fmt_config: Option<FmtConfig>,
+    maybe_fmt_flags: Option<FmtFlags>,
+    initial_cwd: &Path,
+  ) -> Result<Self, AnyError> {
+    let (maybe_config_options, maybe_config_files) =
+      maybe_fmt_config.map(|c| (c.options, c.files)).unzip();
 
-//     Ok(Self {
-//       check: maybe_fmt_flags.as_ref().map(|f| f.check).unwrap_or(false),
-//       options: resolve_fmt_options(
-//         maybe_fmt_flags.as_ref(),
-//         maybe_config_options,
-//       ),
-//       files: resolve_files(
-//         maybe_config_files,
-//         maybe_fmt_flags.map(|f| f.files),
-//         initial_cwd,
-//       )?,
-//     })
-//   }
-// }
+    Ok(Self {
+      check: maybe_fmt_flags.as_ref().map(|f| f.check).unwrap_or(false),
+      options: resolve_fmt_options(
+        maybe_fmt_flags.as_ref(),
+        maybe_config_options,
+      ),
+      files: resolve_files(
+        maybe_config_files,
+        maybe_fmt_flags.map(|f| f.files),
+        initial_cwd,
+      )?,
+    })
+  }
+}
 
-// fn resolve_fmt_options(
-//   fmt_flags: Option<&FmtFlags>,
-//   options: Option<FmtOptionsConfig>,
-// ) -> FmtOptionsConfig {
-//   let mut options = options.unwrap_or_default();
+fn resolve_fmt_options(
+  fmt_flags: Option<&FmtFlags>,
+  options: Option<FmtOptionsConfig>,
+) -> FmtOptionsConfig {
+  let mut options = options.unwrap_or_default();
 
-//   if let Some(fmt_flags) = fmt_flags {
-//     if let Some(use_tabs) = fmt_flags.use_tabs {
-//       options.use_tabs = Some(use_tabs);
-//     }
+  if let Some(fmt_flags) = fmt_flags {
+    if let Some(use_tabs) = fmt_flags.use_tabs {
+      options.use_tabs = Some(use_tabs);
+    }
 
-//     if let Some(line_width) = fmt_flags.line_width {
-//       options.line_width = Some(line_width.get());
-//     }
+    if let Some(line_width) = fmt_flags.line_width {
+      options.line_width = Some(line_width.get());
+    }
 
-//     if let Some(indent_width) = fmt_flags.indent_width {
-//       options.indent_width = Some(indent_width.get());
-//     }
+    if let Some(indent_width) = fmt_flags.indent_width {
+      options.indent_width = Some(indent_width.get());
+    }
 
-//     if let Some(single_quote) = fmt_flags.single_quote {
-//       options.single_quote = Some(single_quote);
-//     }
+    if let Some(single_quote) = fmt_flags.single_quote {
+      options.single_quote = Some(single_quote);
+    }
 
-//     if let Some(prose_wrap) = &fmt_flags.prose_wrap {
-//       options.prose_wrap = Some(match prose_wrap.as_str() {
-//         "always" => ProseWrap::Always,
-//         "never" => ProseWrap::Never,
-//         "preserve" => ProseWrap::Preserve,
-//         // validators in `flags.rs` makes other values unreachable
-//         _ => unreachable!(),
-//       });
-//     }
+    if let Some(prose_wrap) = &fmt_flags.prose_wrap {
+      options.prose_wrap = Some(match prose_wrap.as_str() {
+        "always" => ProseWrap::Always,
+        "never" => ProseWrap::Never,
+        "preserve" => ProseWrap::Preserve,
+        // validators in `flags.rs` makes other values unreachable
+        _ => unreachable!(),
+      });
+    }
 
-//     if let Some(no_semis) = &fmt_flags.no_semicolons {
-//       options.semi_colons = Some(!no_semis);
-//     }
-//   }
+    if let Some(no_semis) = &fmt_flags.no_semicolons {
+      options.semi_colons = Some(!no_semis);
+    }
+  }
 
-//   options
-// }
+  options
+}
 
-// #[derive(Clone)]
-// pub struct TestOptions {
-//   pub files: FilePatterns,
-//   pub doc: bool,
-//   pub no_run: bool,
-//   pub fail_fast: Option<NonZeroUsize>,
-//   pub allow_none: bool,
-//   pub filter: Option<String>,
-//   pub shuffle: Option<u64>,
-//   pub concurrent_jobs: NonZeroUsize,
-//   pub trace_leaks: bool,
-//   pub reporter: TestReporterConfig,
-//   pub junit_path: Option<String>,
-// }
+#[derive(Clone)]
+pub struct TestOptions {
+  pub files: FilePatterns,
+  pub doc: bool,
+  pub no_run: bool,
+  pub fail_fast: Option<NonZeroUsize>,
+  pub allow_none: bool,
+  pub filter: Option<String>,
+  pub shuffle: Option<u64>,
+  pub concurrent_jobs: NonZeroUsize,
+  pub trace_leaks: bool,
+  pub reporter: TestReporterConfig,
+  pub junit_path: Option<String>,
+}
 
-// impl TestOptions {
-//   pub fn resolve(
-//     maybe_test_config: Option<TestConfig>,
-//     maybe_test_flags: Option<TestFlags>,
-//     initial_cwd: &Path,
-//   ) -> Result<Self, AnyError> {
-//     let test_flags = maybe_test_flags.unwrap_or_default();
+impl TestOptions {
+  pub fn resolve(
+    maybe_test_config: Option<TestConfig>,
+    maybe_test_flags: Option<TestFlags>,
+    initial_cwd: &Path,
+  ) -> Result<Self, AnyError> {
+    let test_flags = maybe_test_flags.unwrap_or_default();
 
-//     Ok(Self {
-//       files: resolve_files(
-//         maybe_test_config.map(|c| c.files),
-//         Some(test_flags.files),
-//         initial_cwd,
-//       )?,
-//       allow_none: test_flags.allow_none,
-//       concurrent_jobs: test_flags
-//         .concurrent_jobs
-//         .unwrap_or_else(|| NonZeroUsize::new(1).unwrap()),
-//       doc: test_flags.doc,
-//       fail_fast: test_flags.fail_fast,
-//       filter: test_flags.filter,
-//       no_run: test_flags.no_run,
-//       shuffle: test_flags.shuffle,
-//       trace_leaks: test_flags.trace_leaks,
-//       reporter: test_flags.reporter,
-//       junit_path: test_flags.junit_path,
-//     })
-//   }
-// }
+    Ok(Self {
+      files: resolve_files(
+        maybe_test_config.map(|c| c.files),
+        Some(test_flags.files),
+        initial_cwd,
+      )?,
+      allow_none: test_flags.allow_none,
+      concurrent_jobs: test_flags
+        .concurrent_jobs
+        .unwrap_or_else(|| NonZeroUsize::new(1).unwrap()),
+      doc: test_flags.doc,
+      fail_fast: test_flags.fail_fast,
+      filter: test_flags.filter,
+      no_run: test_flags.no_run,
+      shuffle: test_flags.shuffle,
+      trace_leaks: test_flags.trace_leaks,
+      reporter: test_flags.reporter,
+      junit_path: test_flags.junit_path,
+    })
+  }
+}
 
-// #[derive(Clone, Default, Debug)]
-// pub enum LintReporterKind {
-//   #[default]
-//   Pretty,
-//   Json,
-//   Compact,
-// }
+#[derive(Clone, Default, Debug)]
+pub enum LintReporterKind {
+  #[default]
+  Pretty,
+  Json,
+  Compact,
+}
 
-// #[derive(Clone, Debug)]
-// pub struct LintOptions {
-//   pub rules: LintRulesConfig,
-//   pub files: FilePatterns,
-//   pub reporter_kind: LintReporterKind,
-// }
+#[derive(Clone, Debug)]
+pub struct LintOptions {
+  pub rules: LintRulesConfig,
+  pub files: FilePatterns,
+  pub reporter_kind: LintReporterKind,
+}
 
-// impl LintOptions {
-//   pub fn new_with_base(base: PathBuf) -> Self {
-//     Self {
-//       rules: Default::default(),
-//       files: FilePatterns::new_with_base(base),
-//       reporter_kind: Default::default(),
-//     }
-//   }
+impl LintOptions {
+  pub fn new_with_base(base: PathBuf) -> Self {
+    Self {
+      rules: Default::default(),
+      files: FilePatterns::new_with_base(base),
+      reporter_kind: Default::default(),
+    }
+  }
 
-//   pub fn resolve(
-//     maybe_lint_config: Option<LintConfig>,
-//     maybe_lint_flags: Option<LintFlags>,
-//     initial_cwd: &Path,
-//   ) -> Result<Self, AnyError> {
-//     let mut maybe_reporter_kind =
-//       maybe_lint_flags.as_ref().and_then(|lint_flags| {
-//         if lint_flags.json {
-//           Some(LintReporterKind::Json)
-//         } else if lint_flags.compact {
-//           Some(LintReporterKind::Compact)
-//         } else {
-//           None
-//         }
-//       });
+  pub fn resolve(
+    maybe_lint_config: Option<LintConfig>,
+    maybe_lint_flags: Option<LintFlags>,
+    initial_cwd: &Path,
+  ) -> Result<Self, AnyError> {
+    let mut maybe_reporter_kind =
+      maybe_lint_flags.as_ref().and_then(|lint_flags| {
+        if lint_flags.json {
+          Some(LintReporterKind::Json)
+        } else if lint_flags.compact {
+          Some(LintReporterKind::Compact)
+        } else {
+          None
+        }
+      });
 
-//     if maybe_reporter_kind.is_none() {
-//       // Flag not set, so try to get lint reporter from the config file.
-//       if let Some(lint_config) = &maybe_lint_config {
-//         maybe_reporter_kind = match lint_config.report.as_deref() {
-//           Some("json") => Some(LintReporterKind::Json),
-//           Some("compact") => Some(LintReporterKind::Compact),
-//           Some("pretty") => Some(LintReporterKind::Pretty),
-//           Some(_) => {
-//             bail!("Invalid lint report type in config file")
-//           }
-//           None => None,
-//         }
-//       }
-//     }
+    if maybe_reporter_kind.is_none() {
+      // Flag not set, so try to get lint reporter from the config file.
+      if let Some(lint_config) = &maybe_lint_config {
+        maybe_reporter_kind = match lint_config.report.as_deref() {
+          Some("json") => Some(LintReporterKind::Json),
+          Some("compact") => Some(LintReporterKind::Compact),
+          Some("pretty") => Some(LintReporterKind::Pretty),
+          Some(_) => {
+            bail!("Invalid lint report type in config file")
+          }
+          None => None,
+        }
+      }
+    }
 
-//     let (
-//       maybe_file_flags,
-//       maybe_rules_tags,
-//       maybe_rules_include,
-//       maybe_rules_exclude,
-//     ) = maybe_lint_flags
-//       .map(|f| {
-//         (
-//           f.files,
-//           f.maybe_rules_tags,
-//           f.maybe_rules_include,
-//           f.maybe_rules_exclude,
-//         )
-//       })
-//       .unwrap_or_default();
+    let (
+      maybe_file_flags,
+      maybe_rules_tags,
+      maybe_rules_include,
+      maybe_rules_exclude,
+    ) = maybe_lint_flags
+      .map(|f| {
+        (
+          f.files,
+          f.maybe_rules_tags,
+          f.maybe_rules_include,
+          f.maybe_rules_exclude,
+        )
+      })
+      .unwrap_or_default();
 
-//     let (maybe_config_files, maybe_config_rules) =
-//       maybe_lint_config.map(|c| (c.files, c.rules)).unzip();
-//     Ok(Self {
-//       reporter_kind: maybe_reporter_kind.unwrap_or_default(),
-//       files: resolve_files(
-//         maybe_config_files,
-//         Some(maybe_file_flags),
-//         initial_cwd,
-//       )?,
-//       rules: resolve_lint_rules_options(
-//         maybe_config_rules,
-//         maybe_rules_tags,
-//         maybe_rules_include,
-//         maybe_rules_exclude,
-//       ),
-//     })
-//   }
-// }
+    let (maybe_config_files, maybe_config_rules) =
+      maybe_lint_config.map(|c| (c.files, c.rules)).unzip();
+    Ok(Self {
+      reporter_kind: maybe_reporter_kind.unwrap_or_default(),
+      files: resolve_files(
+        maybe_config_files,
+        Some(maybe_file_flags),
+        initial_cwd,
+      )?,
+      rules: resolve_lint_rules_options(
+        maybe_config_rules,
+        maybe_rules_tags,
+        maybe_rules_include,
+        maybe_rules_exclude,
+      ),
+    })
+  }
+}
 
-// fn resolve_lint_rules_options(
-//   maybe_lint_rules_config: Option<LintRulesConfig>,
-//   mut maybe_rules_tags: Option<Vec<String>>,
-//   mut maybe_rules_include: Option<Vec<String>>,
-//   mut maybe_rules_exclude: Option<Vec<String>>,
-// ) -> LintRulesConfig {
-//   if let Some(config_rules) = maybe_lint_rules_config {
-//     // Try to get configured rules. CLI flags take precedence
-//     // over config file, i.e. if there's `rules.include` in config file
-//     // and `--rules-include` CLI flag, only the flag value is taken into account.
-//     if maybe_rules_include.is_none() {
-//       maybe_rules_include = config_rules.include;
-//     }
-//     if maybe_rules_exclude.is_none() {
-//       maybe_rules_exclude = config_rules.exclude;
-//     }
-//     if maybe_rules_tags.is_none() {
-//       maybe_rules_tags = config_rules.tags;
-//     }
-//   }
-//   LintRulesConfig {
-//     exclude: maybe_rules_exclude,
-//     include: maybe_rules_include,
-//     tags: maybe_rules_tags,
-//   }
-// }
+fn resolve_lint_rules_options(
+  maybe_lint_rules_config: Option<LintRulesConfig>,
+  mut maybe_rules_tags: Option<Vec<String>>,
+  mut maybe_rules_include: Option<Vec<String>>,
+  mut maybe_rules_exclude: Option<Vec<String>>,
+) -> LintRulesConfig {
+  if let Some(config_rules) = maybe_lint_rules_config {
+    // Try to get configured rules. CLI flags take precedence
+    // over config file, i.e. if there's `rules.include` in config file
+    // and `--rules-include` CLI flag, only the flag value is taken into account.
+    if maybe_rules_include.is_none() {
+      maybe_rules_include = config_rules.include;
+    }
+    if maybe_rules_exclude.is_none() {
+      maybe_rules_exclude = config_rules.exclude;
+    }
+    if maybe_rules_tags.is_none() {
+      maybe_rules_tags = config_rules.tags;
+    }
+  }
+  LintRulesConfig {
+    exclude: maybe_rules_exclude,
+    include: maybe_rules_include,
+    tags: maybe_rules_tags,
+  }
+}
 
-// /// Discover `package.json` file. If `maybe_stop_at` is provided, we will stop
-// /// crawling up the directory tree at that path.
-// fn discover_package_json(
-//   flags: &Flags,
-//   maybe_stop_at: Option<PathBuf>,
-//   current_dir: &Path,
-// ) -> Result<Option<PackageJson>, AnyError> {
-//   // TODO(bartlomieju): discover for all subcommands, but print warnings that
-//   // `package.json` is ignored in bundle/compile/etc.
+/// Discover `package.json` file. If `maybe_stop_at` is provided, we will stop
+/// crawling up the directory tree at that path.
+fn discover_package_json(
+  flags: &Flags,
+  maybe_stop_at: Option<PathBuf>,
+  current_dir: &Path,
+) -> Result<Option<PackageJson>, AnyError> {
+  // TODO(bartlomieju): discover for all subcommands, but print warnings that
+  // `package.json` is ignored in bundle/compile/etc.
 
-//   if let Some(package_json_dir) = flags.package_json_search_dir(current_dir) {
-//     return package_json::discover_from(&package_json_dir, maybe_stop_at);
-//   }
+  if let Some(package_json_dir) = flags.package_json_search_dir(current_dir) {
+    return package_json::discover_from(&package_json_dir, maybe_stop_at);
+  }
 
-//   log::debug!("No package.json file found");
-//   Ok(None)
-// }
+  log::debug!("No package.json file found");
+  Ok(None)
+}
 
-// struct CliRootCertStoreProvider {
-//   cell: OnceCell<RootCertStore>,
-//   maybe_root_path: Option<PathBuf>,
-//   maybe_ca_stores: Option<Vec<String>>,
-//   maybe_ca_data: Option<CaData>,
-// }
+struct CliRootCertStoreProvider {
+  cell: OnceCell<RootCertStore>,
+  maybe_root_path: Option<PathBuf>,
+  maybe_ca_stores: Option<Vec<String>>,
+  maybe_ca_data: Option<CaData>,
+}
 
-// impl CliRootCertStoreProvider {
-//   pub fn new(
-//     maybe_root_path: Option<PathBuf>,
-//     maybe_ca_stores: Option<Vec<String>>,
-//     maybe_ca_data: Option<CaData>,
-//   ) -> Self {
-//     Self {
-//       cell: Default::default(),
-//       maybe_root_path,
-//       maybe_ca_stores,
-//       maybe_ca_data,
-//     }
-//   }
-// }
+impl CliRootCertStoreProvider {
+  pub fn new(
+    maybe_root_path: Option<PathBuf>,
+    maybe_ca_stores: Option<Vec<String>>,
+    maybe_ca_data: Option<CaData>,
+  ) -> Self {
+    Self {
+      cell: Default::default(),
+      maybe_root_path,
+      maybe_ca_stores,
+      maybe_ca_data,
+    }
+  }
+}
 
-// impl RootCertStoreProvider for CliRootCertStoreProvider {
-//   fn get_or_try_init(&self) -> Result<&RootCertStore, AnyError> {
-//     self
-//       .cell
-//       .get_or_try_init(|| {
-//         get_root_cert_store(
-//           self.maybe_root_path.clone(),
-//           self.maybe_ca_stores.clone(),
-//           self.maybe_ca_data.clone(),
-//         )
-//       })
-//       .map_err(|e| e.into())
-//   }
-// }
+impl RootCertStoreProvider for CliRootCertStoreProvider {
+  fn get_or_try_init(&self) -> Result<&RootCertStore, AnyError> {
+    self
+      .cell
+      .get_or_try_init(|| {
+        get_root_cert_store(
+          self.maybe_root_path.clone(),
+          self.maybe_ca_stores.clone(),
+          self.maybe_ca_data.clone(),
+        )
+      })
+      .map_err(|e| e.into())
+  }
+}
 
-// #[derive(Error, Debug, Clone)]
-// pub enum RootCertStoreLoadError {
-//   #[error(
-//     "Unknown certificate store \"{0}\" specified (allowed: \"system,mozilla\")"
-//   )]
-//   UnknownStore(String),
-//   #[error("Unable to add pem file to certificate store: {0}")]
-//   FailedAddPemFile(String),
-//   #[error("Failed opening CA file: {0}")]
-//   CaFileOpenError(String),
-// }
+#[derive(Error, Debug, Clone)]
+pub enum RootCertStoreLoadError {
+  #[error(
+    "Unknown certificate store \"{0}\" specified (allowed: \"system,mozilla\")"
+  )]
+  UnknownStore(String),
+  #[error("Unable to add pem file to certificate store: {0}")]
+  FailedAddPemFile(String),
+  #[error("Failed opening CA file: {0}")]
+  CaFileOpenError(String),
+}
 
-// /// Create and populate a root cert store based on the passed options and
-// /// environment.
-// pub fn get_root_cert_store(
-//   maybe_root_path: Option<PathBuf>,
-//   maybe_ca_stores: Option<Vec<String>>,
-//   maybe_ca_data: Option<CaData>,
-// ) -> Result<RootCertStore, RootCertStoreLoadError> {
-//   let mut root_cert_store = RootCertStore::empty();
-//   let ca_stores: Vec<String> = maybe_ca_stores
-//     .or_else(|| {
-//       let env_ca_store = env::var("DENO_TLS_CA_STORE").ok()?;
-//       Some(
-//         env_ca_store
-//           .split(',')
-//           .map(|s| s.trim().to_string())
-//           .filter(|s| !s.is_empty())
-//           .collect(),
-//       )
-//     })
-//     .unwrap_or_else(|| vec!["mozilla".to_string()]);
+/// Create and populate a root cert store based on the passed options and
+/// environment.
+pub fn get_root_cert_store(
+  maybe_root_path: Option<PathBuf>,
+  maybe_ca_stores: Option<Vec<String>>,
+  maybe_ca_data: Option<CaData>,
+) -> Result<RootCertStore, RootCertStoreLoadError> {
+  let mut root_cert_store = RootCertStore::empty();
+  let ca_stores: Vec<String> = maybe_ca_stores
+    .or_else(|| {
+      let env_ca_store = env::var("DENO_TLS_CA_STORE").ok()?;
+      Some(
+        env_ca_store
+          .split(',')
+          .map(|s| s.trim().to_string())
+          .filter(|s| !s.is_empty())
+          .collect(),
+      )
+    })
+    .unwrap_or_else(|| vec!["mozilla".to_string()]);
 
-//   for store in ca_stores.iter() {
-//     match store.as_str() {
-//       "mozilla" => {
-//         root_cert_store.add_trust_anchors(
-//           webpki_roots::TLS_SERVER_ROOTS.iter().map(|ta| {
-//             rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
-//               ta.subject,
-//               ta.spki,
-//               ta.name_constraints,
-//             )
-//           }),
-//         );
-//       }
-//       "system" => {
-//         let roots = load_native_certs().expect("could not load platform certs");
-//         for root in roots {
-//           root_cert_store
-//             .add(&rustls::Certificate(root.0))
-//             .expect("Failed to add platform cert to root cert store");
-//         }
-//       }
-//       _ => {
-//         return Err(RootCertStoreLoadError::UnknownStore(store.clone()));
-//       }
-//     }
-//   }
+  for store in ca_stores.iter() {
+    match store.as_str() {
+      "mozilla" => {
+        root_cert_store.add_trust_anchors(
+          webpki_roots::TLS_SERVER_ROOTS.iter().map(|ta| {
+            rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
+              ta.subject,
+              ta.spki,
+              ta.name_constraints,
+            )
+          }),
+        );
+      }
+      "system" => {
+        let roots = load_native_certs().expect("could not load platform certs");
+        for root in roots {
+          root_cert_store
+            .add(&rustls::Certificate(root.0))
+            .expect("Failed to add platform cert to root cert store");
+        }
+      }
+      _ => {
+        return Err(RootCertStoreLoadError::UnknownStore(store.clone()));
+      }
+    }
+  }
 
-//   let ca_data =
-//     maybe_ca_data.or_else(|| env::var("DENO_CERT").ok().map(CaData::File));
-//   if let Some(ca_data) = ca_data {
-//     let result = match ca_data {
-//       CaData::File(ca_file) => {
-//         let ca_file = if let Some(root) = &maybe_root_path {
-//           root.join(&ca_file)
-//         } else {
-//           PathBuf::from(ca_file)
-//         };
-//         let certfile = std::fs::File::open(ca_file).map_err(|err| {
-//           RootCertStoreLoadError::CaFileOpenError(err.to_string())
-//         })?;
-//         let mut reader = BufReader::new(certfile);
-//         rustls_pemfile::certs(&mut reader)
-//       }
-//       CaData::Bytes(data) => {
-//         let mut reader = BufReader::new(Cursor::new(data));
-//         rustls_pemfile::certs(&mut reader)
-//       }
-//     };
+  let ca_data =
+    maybe_ca_data.or_else(|| env::var("DENO_CERT").ok().map(CaData::File));
+  if let Some(ca_data) = ca_data {
+    let result = match ca_data {
+      CaData::File(ca_file) => {
+        let ca_file = if let Some(root) = &maybe_root_path {
+          root.join(&ca_file)
+        } else {
+          PathBuf::from(ca_file)
+        };
+        let certfile = std::fs::File::open(ca_file).map_err(|err| {
+          RootCertStoreLoadError::CaFileOpenError(err.to_string())
+        })?;
+        let mut reader = BufReader::new(certfile);
+        rustls_pemfile::certs(&mut reader)
+      }
+      CaData::Bytes(data) => {
+        let mut reader = BufReader::new(Cursor::new(data));
+        rustls_pemfile::certs(&mut reader)
+      }
+    };
 
-//     match result {
-//       Ok(certs) => {
-//         root_cert_store.add_parsable_certificates(&certs);
-//       }
-//       Err(e) => {
-//         return Err(RootCertStoreLoadError::FailedAddPemFile(e.to_string()));
-//       }
-//     }
-//   }
+    match result {
+      Ok(certs) => {
+        root_cert_store.add_parsable_certificates(&certs);
+      }
+      Err(e) => {
+        return Err(RootCertStoreLoadError::FailedAddPemFile(e.to_string()));
+      }
+    }
+  }
 
-//   Ok(root_cert_store)
-// }
+  Ok(root_cert_store)
+}
 
 /// State provided to the process via an environment variable.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -1782,3 +1782,4 @@ pub fn npm_pkg_req_ref_to_binary_command(
   let binary_name = req_ref.sub_path().unwrap_or(req_ref.req().name.as_str());
   binary_name.to_string()
 }
+

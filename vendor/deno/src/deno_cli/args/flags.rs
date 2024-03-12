@@ -25,7 +25,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use crate::util::fs::canonicalize_path;
+use crate::deno_cli::util::fs::canonicalize_path;
 
 use super::flags_net;
 
@@ -228,14 +228,6 @@ pub struct RunFlags {
 }
 
 impl RunFlags {
-  #[cfg(test)]
-  pub fn new_default(script: String) -> Self {
-    Self {
-      script,
-      watch: None,
-    }
-  }
-
   pub fn is_stdin(&self) -> bool {
     self.script == "-"
   }
@@ -905,7 +897,7 @@ pub fn flags_from_vec(args: Vec<String>) -> clap::error::Result<Flags> {
     flags.unstable_config.legacy_flag_enabled = true;
   }
 
-  for (name, _, _) in crate::UNSTABLE_GRANULAR_FLAGS {
+  for (name, _, _) in crate::deno_cli::UNSTABLE_GRANULAR_FLAGS {
     if matches.get_flag(&format!("unstable-{}", name)) {
       flags.unstable_config.features.push(name.to_string());
     }
@@ -1053,7 +1045,7 @@ fn clap_root() -> Command {
         .global(true),
     );
 
-  for (flag_name, help, _) in crate::UNSTABLE_GRANULAR_FLAGS {
+  for (flag_name, help, _) in crate::deno_cli::UNSTABLE_GRANULAR_FLAGS {
     cmd = cmd.arg(
       Arg::new(format!("unstable-{}", flag_name))
         .long(format!("unstable-{}", flag_name))
@@ -3505,7 +3497,7 @@ fn eval_parse(flags: &mut Flags, matches: &mut ArgMatches) {
   if as_typescript {
     eprintln!(
       "⚠️ {}",
-      crate::colors::yellow(
+      deno_terminal::colors::yellow(
         "Use `--ext=ts` instead. The `--ts` and `-T` flags are deprecated and will be removed in Deno 2.0."
       ),
     );
@@ -3757,7 +3749,7 @@ fn test_parse(flags: &mut Flags, matches: &mut ArgMatches) {
     // crate here and this is only done for testing anyway.
     eprintln!(
       "⚠️ {}",
-      crate::colors::yellow("The `--trace-ops` flag is deprecated and will be removed in Deno 2.0.\nUse the `--trace-leaks` flag instead."),
+      deno_terminal::colors::yellow("The `--trace-ops` flag is deprecated and will be removed in Deno 2.0.\nUse the `--trace-leaks` flag instead."),
     );
   }
   let doc = matches.get_flag("doc");
@@ -3801,7 +3793,7 @@ fn test_parse(flags: &mut Flags, matches: &mut ArgMatches) {
     // crate here and this is only done for testing anyway.
     eprintln!(
       "⚠️ {}",
-      crate::colors::yellow("The `--jobs` flag is deprecated and will be removed in Deno 2.0.\nUse the `--parallel` flag with possibly the `DENO_JOBS` environment variable instead.\nLearn more at: https://docs.deno.com/runtime/manual/basics/env_variables"),
+      deno_terminal::colors::yellow("The `--jobs` flag is deprecated and will be removed in Deno 2.0.\nUse the `--parallel` flag with possibly the `DENO_JOBS` environment variable instead.\nLearn more at: https://docs.deno.com/runtime/manual/basics/env_variables"),
     );
     if let Some(value) = matches.remove_one::<NonZeroUsize>("jobs") {
       Some(value)
@@ -4294,3 +4286,4 @@ pub fn resolve_urls(urls: Vec<String>) -> Vec<String> {
   }
   out
 }
+

@@ -159,3 +159,4 @@ impl<'a> Future for TaskQueuePermitAcquireFuture<'a> {
     }
   }
 }
+
