@@ -1,7 +1,0 @@
-[package]
-name = "deno_embed"
-version = "1.42.1"
-edition = "2021"
-
-[dependencies]
-deno_cli = { path = "../deno_cli" }
