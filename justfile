@@ -51,6 +51,9 @@ fmt:
 three-js:
   node ./.github/scripts/ci/benchmark.mjs
 
+script target *ARGS:
+  deno run -A ./scripts/{{target}}.ts {{ARGS}} 
+
 @_create_out_dir:
   rm -rf ./target/{{profile}}
   mkdir -p ./target/{{profile}}

@@ -5,6 +5,7 @@ This project welcomes contributions, feel free to raise a PR.
 ## Dependencies
 
 - Node.js 18+
+- Deno
 - PNPM
 - Rust
 
