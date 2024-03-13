@@ -21,7 +21,7 @@ pub async fn run_script(options: DenoInitOptions) -> Result<i32, AnyError> {
     ..Default::default()
   };
 
-  dbg!(&flags);
+  // dbg!(&flags);
 
   let factory = CliFactory::from_flags(flags).await?;
   // let deno_dir = factory.deno_dir()?;

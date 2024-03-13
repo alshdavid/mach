@@ -40,6 +40,8 @@ markup5ever_rcdom = "0.2.0"
 # -----------------
 # Deno Dependencies
 # -----------------
+deno_core = "0.269.0"
+
 deno_embed = { path = "../vendor/deno_embed" }
 
 # ----------------

@@ -641,7 +641,7 @@ impl CliMainWorkerFactory {
       ),
       stdio,
       feature_checker,
-      skip_op_registration: shared.options.skip_op_registration,
+      skip_op_registration: false,//shared.options.skip_op_registration,
     };
 
     let mut worker = MainWorker::bootstrap_from_options(

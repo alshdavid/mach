@@ -4976,6 +4976,7 @@ dependencies = [
  "async-trait",
  "base64",
  "clap",
+ "deno_core",
  "deno_embed",
  "glob-match",
  "html5ever",

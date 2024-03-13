@@ -10,7 +10,7 @@ pub use deno_broadcast_channel;
 pub use deno_cache;
 pub use deno_canvas;
 pub use deno_console;
-pub use deno_core;
+// pub use deno_core;
 pub use deno_cron;
 pub use deno_cache_dir;
 pub use deno_crypto;
@@ -42,6 +42,9 @@ pub use deno_lint;
 pub use deno_npm;
 pub use deno_config;
 
+pub extern crate deno_core;
+
+pub use deno_core::op2;
 pub use deno_core::url::Url;
 pub use deno_core::ModuleCodeString;
 pub use deno_core::ModuleSpecifier;
