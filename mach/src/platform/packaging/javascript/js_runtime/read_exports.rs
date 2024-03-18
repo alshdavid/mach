@@ -1,4 +1,4 @@
-use ad_swc_ecma_ast::*;
+use swc_core::ecma::ast::*;
 
 /*
     export const foo = ''

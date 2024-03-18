@@ -1,7 +1,7 @@
-use ad_swc_atoms::Atom;
-use ad_swc_common::SourceMap;
-use ad_swc_common::Span;
-use ad_swc_ecma_ast::*;
+use swc_core::atoms::Atom;
+use swc_core::common::SourceMap;
+use swc_core::common::Span;
+use swc_core::ecma::ast::*;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;

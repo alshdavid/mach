@@ -1,4 +1,4 @@
-use ad_swc_ecma_ast::*;
+use swc_core::ecma::ast::*;
 
 #[derive(Debug)]
 pub enum PropAccessType {
@@ -110,8 +110,8 @@ pub fn lookup_property_access(
 
 use std::{path::PathBuf, sync::Arc};
 
-use ad_swc_common::SourceMap;
-use ad_swc_ecma_ast::*;
+use swc_core::common::SourceMap;
+use swc_core::ecma::ast::*;
 
 use crate::{kit::swc::{lookup_property_access, parse_script}, public::Config};
 

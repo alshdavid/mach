@@ -2,11 +2,11 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ad_swc_common::Globals;
-use ad_swc_common::SourceMap;
-use ad_swc_common::Span;
-use ad_swc_ecma_ast::*;
-use ad_swc_ecma_visit::FoldWith;
+use swc_core::common::Globals;
+use swc_core::common::SourceMap;
+use swc_core::common::Span;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::visit::FoldWith;
 use std::sync::Mutex;
 
 use crate::kit::swc::module_item_to_stmt;
@@ -103,7 +103,7 @@ pub async fn package_javascript(
         depends_on: HashSet::new(),
       };
 
-      let (module, javascript_runtime) = ad_swc_common::GLOBALS.set(&Globals::new(), move || {
+      let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
         let module = module.fold_with(&mut javascript_runtime);
         return (module, javascript_runtime);
       });

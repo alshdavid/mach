@@ -2,10 +2,10 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Arc;
 
-use ad_swc_atoms::Atom;
-use ad_swc_ecma_ast::*;
-use ad_swc_ecma_visit::Fold;
-use ad_swc_ecma_visit::FoldWith;
+use swc_core::atoms::Atom;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::visit::Fold;
+use swc_core::ecma::visit::FoldWith;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 

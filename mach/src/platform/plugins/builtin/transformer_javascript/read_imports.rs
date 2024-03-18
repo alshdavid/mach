@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
-use ad_swc_atoms::Atom;
-use ad_swc_ecma_ast::*;
-use ad_swc_ecma_visit::Visit;
-use ad_swc_ecma_visit::VisitWith;
+use swc_core::atoms::Atom;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::visit::Visit;
+use swc_core::ecma::visit::VisitWith;
 use once_cell::sync::Lazy;
 
 use crate::public::DependencyPriority;

@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ad_swc_common::SourceMap;
+use swc_core::common::SourceMap;
 use std::sync::Mutex;
 
 use crate::public;

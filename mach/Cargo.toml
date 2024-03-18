@@ -16,6 +16,7 @@ license = "MIT"
 # path = "src/lib.rs"
 
 [dependencies]
+swc_core = { version = "=0.90.22", features = ["ecma_ast", "ecma_parser", "common", "ecma_visit", "ecma_transforms", "common_concurrent", "ecma_codegen", "ecma_transforms_typescript", "ecma_transforms_react", "ecma_transforms_optimization", "ecma_minifier"] }
 glob-match = "0.2.1"
 normalize-path = "0.2.1"
 num_cpus = "1.16.0"
@@ -36,55 +37,3 @@ thiserror = "1.0.57"
 regex = "1.10.3"
 html5ever = "0.26.0"
 markup5ever_rcdom = "0.2.0"
-
-# ----------------
-# SWC Dependencies
-# ----------------
-# SWC's version bumping is buggy and Deno also uses SWC resulting in version conflicts.
-# To resolve this I vendor SWC as a git submodule. The only changes to SWC are package names
-# and package versions. This ensure Mach has a unique copy of SWC free of collisions.
-[dependencies.ad_swc_atoms]
-# version = "1.0.0"
-path = "../vendor/swc/swc_atoms"
-
-[dependencies.ad_swc_common]
-# version = "1.0.0" 
-features = ["concurrent"]
-path = "../vendor/swc/swc_common"
-
-[dependencies.ad_swc_ecma_ast]
-# version = "1.0.0" 
-features = ["serde-impl"]
-path = "../vendor/swc/swc_ecma_ast"
-
-[dependencies.ad_swc_ecma_codegen]
-# version = "1.0.0" 
-path = "../vendor/swc/swc_ecma_codegen"
-
-[dependencies.ad_swc_ecma_codegen_macros]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_codegen_macros"
-
-[dependencies.ad_swc_ecma_parser]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_parser"
-
-[dependencies.ad_swc_ecma_transforms_base]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_transforms_base"
-
-[dependencies.ad_swc_ecma_transforms_optimization]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_transforms_optimization"
-
-[dependencies.ad_swc_ecma_transforms_react]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_transforms_react"
-
-[dependencies.ad_swc_ecma_transforms_typescript]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_transforms_typescript"
-
-[dependencies.ad_swc_ecma_visit]
-# version = "1.0.0"
-path = "../vendor/swc/swc_ecma_visit"

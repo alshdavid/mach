@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use ad_swc_common::Globals;
-use ad_swc_common::Mark;
-use ad_swc_common::SourceMap;
-use ad_swc_ecma_transforms_base::resolver;
-use ad_swc_ecma_transforms_react::{self as react_transforms};
-use ad_swc_ecma_transforms_typescript::{self as typescript_transforms};
-use ad_swc_ecma_visit::FoldWith;
+use swc_core::common::Globals;
+use swc_core::common::Mark;
+use swc_core::common::SourceMap;
+use swc_core::ecma::transforms::base::resolver;
+use swc_core::ecma::transforms::react::{self as react_transforms};
+use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
+use swc_core::ecma::visit::FoldWith;
 use async_trait::async_trait;
 
 use crate::kit::swc::parse_program;
@@ -30,7 +30,7 @@ impl Transformer for DefaultTransformerJavaScript {
     asset: &mut MutableAsset,
     config: &Config,
   ) -> Result<(), String> {
-    return ad_swc_common::GLOBALS.set(&Globals::new(), move || {
+    return swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
       let code = asset.get_code();
 

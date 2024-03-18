@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use ad_swc_atoms::Atom;
-use ad_swc_common::DUMMY_SP;
-use ad_swc_ecma_ast::*;
-use ad_swc_ecma_visit::Fold;
-use ad_swc_ecma_visit::FoldWith;
+use swc_core::atoms::Atom;
+use swc_core::common::DUMMY_SP;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::visit::Fold;
+use swc_core::ecma::visit::FoldWith;
 
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::PropAccessType;

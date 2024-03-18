@@ -1,17 +1,17 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use ad_swc_common::comments::SingleThreadedComments;
-use ad_swc_common::FileName;
-use ad_swc_common::SourceFile;
-use ad_swc_common::SourceMap;
-use ad_swc_ecma_ast::EsVersion;
-use ad_swc_ecma_ast::Program;
-use ad_swc_ecma_parser::lexer::Lexer;
-use ad_swc_ecma_parser::Parser;
-use ad_swc_ecma_parser::StringInput;
-use ad_swc_ecma_parser::Syntax;
-use ad_swc_ecma_parser::TsConfig;
+use swc_core::common::comments::SingleThreadedComments;
+use swc_core::common::FileName;
+use swc_core::common::SourceFile;
+use swc_core::common::SourceMap;
+use swc_core::ecma::ast::EsVersion;
+use swc_core::ecma::ast::Program;
+use swc_core::ecma::parser::lexer::Lexer;
+use swc_core::ecma::parser::Parser;
+use swc_core::ecma::parser::StringInput;
+use swc_core::ecma::parser::Syntax;
+use swc_core::ecma::parser::TsConfig;
 
 pub fn parse_program(
   file_name: &PathBuf,

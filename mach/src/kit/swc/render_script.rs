@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use ad_swc_common::SourceMap;
-use ad_swc_ecma_ast::*;
-use ad_swc_ecma_codegen::text_writer::JsWriter;
-use ad_swc_ecma_codegen::Config as SWCConfig;
-use ad_swc_ecma_codegen::Emitter;
+use swc_core::common::SourceMap;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::codegen::text_writer::JsWriter;
+use swc_core::ecma::codegen::Config as SWCConfig;
+use swc_core::ecma::codegen::Emitter;
 
 pub fn render_script(
   script: &Script,
