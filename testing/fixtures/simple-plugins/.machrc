@@ -1,12 +1,12 @@
 {
   "resolvers": [
-    "node:./plugins/resolver.mjs",
+    "noop:noop",
+    "nodejs:./plugins/resolver.mjs",
     "mach:resolver"
   ],
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
-      "node:./plugins/transformer.mjs",
-      "mach:transformers/javascript"
+      "mach:transformer/javascript"
     ]
   }
 }

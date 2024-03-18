@@ -13,8 +13,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 #[no_mangle]
-pub extern fn bootstrap(_: AdapterBootstrapOptions) -> AdapterBootstrapResult {
+pub extern fn bootstrap(config: AdapterBootstrapOptions) -> AdapterBootstrapResult {
   return Box::new(Box::pin(async move {
+    dbg!(&config);
     let adapter: Box<dyn Adapter> = Box::new(NoopAdapter{});
     return Ok(adapter);
   }));

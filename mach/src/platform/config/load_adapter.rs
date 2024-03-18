@@ -1,7 +1,18 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
 
+use libloading::Library;
 use libmach::Adapter;
 use libmach::AdapterBootstrapFn;
+use libmach::BundleBehavior;
+use libmach::Dependency;
+use libmach::DependencyPriority;
+use libmach::SpecifierType;
+use once_cell::sync::Lazy;
+
+static LIBS: Lazy<Arc<Mutex<HashMap<String, Arc<Library>>>>> = Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
 
 pub async fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, String> {
   let exe_path = std::env::current_exe().unwrap();
@@ -9,13 +20,23 @@ pub async fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>,
   let mach_dir = exe_dir.parent().unwrap();
   let mach_lib_dir = mach_dir.join("adapters");
   let lib_dir = mach_lib_dir.join(engine_name);
-  let lib_name = libloading::library_filename("lib");
+  let lib_name = libloading::library_filename("");
   let lib_path = lib_dir.join(lib_name);
-  unsafe {
-    let Ok(lib) = libloading::Library::new(&lib_path) else {
-      return Err(format!("Unable to load library {:?}", lib_path));
-    };
-    let bootstrap: libloading::Symbol<AdapterBootstrapFn> = lib.get(b"bootstrap").unwrap();
-    bootstrap(Box::new(HashMap::new())).await
-  }
+  let lib_str = lib_path.to_str().unwrap().to_string();
+
+  let lib = unsafe {
+    Arc::new(libloading::Library::new(lib_path).unwrap())
+  };
+
+  LIBS.lock().unwrap().insert(lib_str.clone(), lib.clone());
+
+  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe {
+    lib.get(b"bootstrap").unwrap()
+  };
+
+  let bootstrap_fn = bootstrap(Box::new(HashMap::new()));
+
+  let adapter = bootstrap_fn.await.unwrap();
+
+  return Ok(adapter);
 }

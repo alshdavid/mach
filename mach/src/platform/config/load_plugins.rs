@@ -25,8 +25,13 @@ pub async fn load_plugins(
         return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
       };
       
+      println!("resolver - {}:{}", engine, specifier);
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(ResolverJavaScript {}));
+        continue;
+      }
+
+      if engine == "mach" {
         continue;
       }
 
@@ -42,6 +47,7 @@ pub async fn load_plugins(
       adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
       adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
       plugins.resolvers.push(adapter.get_resolver(adapter_options).await?);
+
     }
   }
 
@@ -53,6 +59,8 @@ pub async fn load_plugins(
         let Some((engine, specifier)) = plugin_string.split_once(':') else {
           return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
         };
+        println!("resolver - {}:{}", engine, specifier);
+
 
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
@@ -71,6 +79,10 @@ pub async fn load_plugins(
 
         if engine == "mach" && specifier == "transformer/noop" {
           transformers.push(Box::new(DefaultTransformerNoop {}));
+          continue;
+        }
+
+        if engine == "mach" {
           continue;
         }
 
