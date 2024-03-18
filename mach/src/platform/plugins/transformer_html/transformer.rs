@@ -12,10 +12,10 @@ use markup5ever_rcdom::NodeData;
 use markup5ever_rcdom::RcDom;
 
 #[derive(Debug)]
-pub struct DefaultTransformerHtml {}
+pub struct TransformerHtml {}
 
 #[async_trait]
-impl Transformer for DefaultTransformerHtml {
+impl Transformer for TransformerHtml {
   async fn transform(
     &self,
     asset: &mut MutableAsset,

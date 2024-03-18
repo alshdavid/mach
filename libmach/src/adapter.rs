@@ -11,6 +11,7 @@ use super::Transformer;
 #[derive(Debug)]
 pub enum AdapterOption {
   String(String),
+  PathBuf(PathBuf),
   Usize(usize),
   Bool(bool),
   HashMap(HashMap<String, AdapterOption>),
@@ -29,3 +30,5 @@ pub trait Adapter: Send {
 pub type AdapterBootstrapResult = Box<Pin<Box<dyn Future<Output = Result<Box<dyn Adapter>, String>>>>>;
 pub type AdapterBootstrapOptions = Box<AdapterOptions>;
 pub type AdapterBootstrapFn = fn(AdapterBootstrapOptions) -> AdapterBootstrapResult;
+
+pub type AdapterMap = HashMap<String, Box<dyn Adapter>>;

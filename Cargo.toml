@@ -7,7 +7,6 @@ members = [
 ]
 
 exclude = [
-  "adapters/deno",
   "adapters/nodejs",
   "adapters/noop",
 ]

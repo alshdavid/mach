@@ -21,10 +21,10 @@ use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerJavaScript {}
+pub struct TransformerJavaScript {}
 
 #[async_trait]
-impl Transformer for DefaultTransformerJavaScript {
+impl Transformer for TransformerJavaScript {
   async fn transform(
     &self,
     asset: &mut MutableAsset,

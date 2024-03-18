@@ -5,10 +5,10 @@ use libmach::MutableAsset;
 use libmach::Transformer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerCSS {}
+pub struct TransformerCSS {}
 
 #[async_trait]
-impl Transformer for DefaultTransformerCSS {
+impl Transformer for TransformerCSS {
   async fn transform(
     &self,
     _asset: &mut MutableAsset,
