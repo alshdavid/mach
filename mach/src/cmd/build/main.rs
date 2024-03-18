@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::pin::pin;
+use std::pin::Pin;
 
 use libloading::Library;
 use libloading::library_filename;
-use libmach::AdapterBootstrap;
+use libmach::AdapterBootstrapFn;
+use libmach::AdapterOption;
 use libmach::Dependency;
 use libmach::DependencyPriority;
 use libmach::SpecifierType;
@@ -19,18 +22,18 @@ pub fn main(command: BuildCommand) {
     .block_on(main_async());
 }
 
-
 pub async fn main_async() {
   let exe_path = std::env::current_exe().unwrap();
   let exe_dir = exe_path.parent().unwrap();
   let mach_dir = exe_dir.parent().unwrap();
-  let mach_lib_dir = mach_dir.join("lib");
+  let mach_lib_dir = mach_dir.join("adapters");
   println!("{:?}", mach_lib_dir.join("adapter_noop").join("adapter.so"));
   unsafe {
-    let lib = libloading::Library::new(mach_lib_dir.join("adapter_noop").join("adapter.so")).unwrap();
-    let bootstrap: libloading::Symbol<AdapterBootstrap> = lib.get(b"bootstrap").unwrap();
-    let adapter = bootstrap(HashMap::new());
-    let resolver = adapter.get_resolver(HashMap::new());
+    let lib = libloading::Library::new(mach_lib_dir.join("noop").join("lib.so")).unwrap();
+    let bootstrap: libloading::Symbol<AdapterBootstrapFn> = lib.get(b"bootstrap").unwrap();
+    let adapter = bootstrap(Box::new(HashMap::new()));
+    let adapter = adapter.await.unwrap();
+    let resolver = adapter.get_resolver(HashMap::from([("foo".to_string(), AdapterOption::String("bar".to_string()))])).await.unwrap();
 
     resolver.resolve(&Dependency{
       id: "hello world".into(),

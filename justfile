@@ -26,14 +26,17 @@ build:
     {{ if profile != "debug" { "--profile " + profile } else { "" } }} \
     {{ if target != "" { "--target " + target } else { "" } }}
   just _copy_cargo
-  
-  cd ./adapters/mach_adapter_noop && just build
+  just _build_adapters
 
-# build:
-#   @just _create_out_dir
-#   @just _build_npm
-#   cargo build {{profile_cargo}} {{target_cargo}}
-#   @just _copy_cargo
+_build_adapters:
+  #!/usr/bin/env sh
+  set -ev
+  cd adapters
+  for file in `ls .`; do 
+    cd $file
+    just build
+    cd ..
+  done
 
 run *ARGS:
   just build

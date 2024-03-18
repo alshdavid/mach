@@ -7,7 +7,9 @@ members = [
 ]
 
 exclude = [
-  "adapters/mach_adapter_noop"
+  "adapters/deno",
+  "adapters/nodejs",
+  "adapters/noop",
 ]
 
 [profile.release-lto]

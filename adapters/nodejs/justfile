@@ -10,7 +10,7 @@ build:
   just _copy_cargo
 
 _create_out_dir:
-  mkdir -p ../../target/{{profile}}/lib/adapter_noop
+  mkdir -p ../../target/{{profile}}/adapters/nodejs
 
 _copy_cargo:
-  cp ../../target/.cargo/{{profile}}/libmach_adapter_noop.so ../../target/{{profile}}/lib/adapter_noop/adapter.so
+  cp ../../target/.cargo/{{profile}}/libmach_adapter_nodejs.so ../../target/{{profile}}/adapters/nodejs/lib.so
