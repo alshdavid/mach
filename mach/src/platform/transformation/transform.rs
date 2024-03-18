@@ -6,8 +6,8 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::task::JoinSet;
 
-use crate::platform::plugins::PluginContainer;
-use crate::platform::plugins::TransformerTarget;
+use crate::platform::config::PluginContainer;
+use crate::platform::config::TransformerTarget;
 use crate::public;
 use crate::public::Asset;
 use crate::public::AssetGraph;

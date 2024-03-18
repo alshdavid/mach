@@ -8,13 +8,13 @@ use crate::platform::adapters::node_js::NodeAdapter;
 use crate::public::Machrc;
 use crate::public::Transformer;
 
-use super::builtin::resolver::DefaultResolver;
-use super::builtin::resolver_node_js::ResolverNodeJs;
-use super::builtin::transformer_css::DefaultTransformerCSS;
-use super::builtin::transformer_html::DefaultTransformerHtml;
-use super::builtin::transformer_javascript::DefaultTransformerJavaScript;
-use super::builtin::transformer_node_js::TransformerNodeJs;
-use super::builtin::transformer_noop::DefaultTransformerNoop;
+use crate::platform::plugins::resolver::DefaultResolver;
+use crate::platform::plugins::resolver_node_js::ResolverNodeJs;
+use crate::platform::plugins::transformer_css::DefaultTransformerCSS;
+use crate::platform::plugins::transformer_html::DefaultTransformerHtml;
+use crate::platform::plugins::transformer_javascript::DefaultTransformerJavaScript;
+use crate::platform::plugins::transformer_node_js::TransformerNodeJs;
+use crate::platform::plugins::transformer_noop::DefaultTransformerNoop;
 use super::PluginContainer;
 
 pub async fn load_plugins(

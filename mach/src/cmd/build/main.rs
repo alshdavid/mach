@@ -4,7 +4,7 @@ use crate::platform::adapters::node_js::NodeAdapter;
 use crate::platform::bundling::bundle;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
-use crate::platform::plugins::load_plugins;
+use crate::platform::config::load_plugins;
 use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;

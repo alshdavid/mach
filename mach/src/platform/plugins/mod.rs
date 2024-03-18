@@ -1,6 +1,7 @@
-pub mod builtin;
-mod load_plugins;
-mod plugin_container;
-
-pub use crate::platform::plugins::load_plugins::*;
-pub use crate::platform::plugins::plugin_container::*;
+pub mod resolver;
+pub mod resolver_node_js;
+pub mod transformer_css;
+pub mod transformer_html;
+pub mod transformer_javascript;
+pub mod transformer_node_js;
+pub mod transformer_noop;
