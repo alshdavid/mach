@@ -1,17 +1,19 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use libmach::Output;
 use swc_core::common::SourceMap;
 use std::sync::Mutex;
 
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::Bundles;
-use crate::public::DependencyMap;
-use crate::public::Outputs;
+use libmach;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::BundleManifest;
+use libmach::Bundles;
+use libmach::DependencyMap;
+use libmach::Outputs;
+use libmach::Config as MachConfig;
 
 use super::css::package_css;
 use super::html::package_html;
@@ -19,7 +21,7 @@ use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
 pub async fn package(
-  config: &public::Config,
+  config: &MachConfig,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
   bundles: &mut Bundles,
@@ -110,7 +112,7 @@ pub async fn package(
 
   let bundle_manifest_json = serde_json::to_string_pretty(&*bundle_manifest).unwrap();
 
-  outputs_local.lock().unwrap().push(public::Output {
+  outputs_local.lock().unwrap().push(Output {
     content: bundle_manifest_json.as_bytes().to_vec(),
     filepath: PathBuf::from("bundle_manifest.json"),
   });

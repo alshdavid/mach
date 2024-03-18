@@ -1,7 +1,6 @@
 mod cmd;
 mod kit;
 mod platform;
-mod public;
 
 use clap::Parser;
 use clap::Subcommand;

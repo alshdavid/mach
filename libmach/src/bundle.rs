@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-use crate::kit::hash::hash_path_buff_sha_256;
-use crate::kit::hash::hash_sha_256;
-use crate::kit::hash::hash_string_sha_256;
-use crate::kit::hash::truncate;
+use crate::hash::hash_path_buff_sha_256;
+use crate::hash::hash_sha_256;
+use crate::hash::hash_string_sha_256;
+use crate::hash::truncate;
 
 use super::Asset;
 use super::ID_TRUNC;

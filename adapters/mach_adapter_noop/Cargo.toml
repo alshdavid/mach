@@ -3,8 +3,15 @@ name = "mach_adapter_noop"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["dylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# mach = { path = "../../mach" }
+libmach = { path = "../../libmach" }
+serde = "^1.0.196"
 async-trait = "0.1.77"
+
+[profile.release-lto]
+inherits = "release"
+lto = true

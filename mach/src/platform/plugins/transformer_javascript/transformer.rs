@@ -11,10 +11,10 @@ use async_trait::async_trait;
 
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
-use crate::public::Config;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use libmach::Config;
+use libmach::DependencyOptions;
+use libmach::MutableAsset;
+use libmach::Transformer;
 
 // use super::collect_decls;
 use super::read_imports_exports;
@@ -98,7 +98,7 @@ impl Transformer for DefaultTransformerJavaScript {
           priority: dependency.priority,
           resolve_from: asset.file_path.clone(),
           imported_symbols: dependency.imported_symbols,
-          bundle_behavior: crate::public::BundleBehavior::Default,
+          bundle_behavior: libmach::BundleBehavior::Default,
         });
       }
 

@@ -8,9 +8,9 @@ use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 use once_cell::sync::Lazy;
 
-use crate::public::DependencyPriority;
-use crate::public::ImportSymbolType;
-use crate::public::SpecifierType;
+use libmach::DependencyPriority;
+use libmach::ImportSymbolType;
+use libmach::SpecifierType;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 

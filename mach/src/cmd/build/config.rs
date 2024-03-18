@@ -9,8 +9,8 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
-use crate::public::Config;
-use crate::public::Machrc;
+use libmach::Config;
+use libmach::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
@@ -74,7 +74,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     .get(0)
     .unwrap()
     .clone();
-  let package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
+  let _package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
 
   let project_root = package_json_path.parent().unwrap().to_path_buf();
 
@@ -113,7 +113,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     // TODO
     workspace_kind: None,
     project_root,
-    package_json,
+    package_json: (),
     machrc,
     threads,
     node_workers,

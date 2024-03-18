@@ -12,10 +12,10 @@ use std::sync::Mutex;
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::DependencyMap;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::DependencyMap;
 
 use super::super::runtime_factory::ExportNamed;
 use super::super::runtime_factory::ImportNamed;

@@ -21,7 +21,7 @@ pub struct Config {
   pub workspace_root: Option<PathBuf>,
   pub workspace_kind: Option<()>, //Option<WorkspaceKind>,
   pub project_root: PathBuf,
-  pub package_json: serde_json::Value,
+  pub package_json: (),//serde_json::Value,
   pub machrc: Machrc,
   pub threads: usize,
   pub node_workers: usize,

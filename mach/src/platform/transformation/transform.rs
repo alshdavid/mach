@@ -8,18 +8,19 @@ use tokio::task::JoinSet;
 
 use crate::platform::config::PluginContainer;
 use crate::platform::config::TransformerTarget;
-use crate::public;
-use crate::public::Asset;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Dependency;
-use crate::public::DependencyMap;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::ENTRY_ASSET;
+use crate::platform::constants::ENTRY_ASSET;
+use libmach;
+use libmach::Asset;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Dependency;
+use libmach::DependencyMap;
+use libmach::DependencyOptions;
+use libmach::MutableAsset;
+use libmach::Config as MachConfig;
 
 pub async fn link_and_transform(
-  config: &public::Config,
+  config: &MachConfig,
   plugins: &mut PluginContainer,
   asset_map: &mut AssetMap,
   dependency_map: &mut DependencyMap,
@@ -80,7 +81,7 @@ pub async fn link_and_transform(
 }
 
 async fn transform_dependency(
-  config: Arc<public::Config>,
+  config: Arc<MachConfig>,
   plugins: Arc<PluginContainer>,
   in_progress: Arc<Mutex<HashSet<PathBuf>>>,
   asset_map: Arc<Mutex<AssetMap>>,

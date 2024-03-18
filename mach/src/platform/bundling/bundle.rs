@@ -1,17 +1,20 @@
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::Bundles;
-use crate::public::DependencyMap;
-use crate::public::ENTRY_ASSET;
+use libmach;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Bundle;
+use libmach::BundleGraph;
+use libmach::Bundles;
+use libmach::DependencyMap;
+use libmach::DependencyPriority;
+use libmach::Config as MachConfig;
+
+use crate::platform::constants::ENTRY_ASSET;
 
 pub fn bundle(
-  _config: &public::Config,
+  _config: &MachConfig,
   asset_map: &AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
@@ -63,12 +66,12 @@ pub fn bundle(
           let dependency = dependency_map.get(dependency_id).unwrap();
           // dbg!(&dependency);
           match dependency.priority {
-            public::DependencyPriority::Sync => {
+            DependencyPriority::Sync => {
               if sync_dependencies.insert(dependency_id.clone()) {
                 q.push(asset_id.clone());
               };
             }
-            public::DependencyPriority::Lazy => {
+            DependencyPriority::Lazy => {
               entries.push(DepRef {
                 asset_id: asset_id.clone(),
                 from_dependency: dependency_id.clone(),

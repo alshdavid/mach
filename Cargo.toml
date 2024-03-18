@@ -2,7 +2,12 @@
 resolver = "2"
 
 members = [
+  "libmach",
   "mach",
+]
+
+exclude = [
+  "adapters/mach_adapter_noop"
 ]
 
 [profile.release-lto]

@@ -1,5 +1,5 @@
-use crate::kit::hash::hash_string_sha_256;
-use crate::kit::hash::truncate;
+use crate::hash::hash_string_sha_256;
+use crate::hash::truncate;
 
 use super::Dependency;
 use super::ID_TRUNC;

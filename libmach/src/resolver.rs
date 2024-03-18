@@ -2,9 +2,9 @@ use std::fmt::Debug;
 use std::path::PathBuf;
 
 use async_trait::async_trait;
-use dependency::Dependency;
 
-use crate::public::dependency;
+use crate::dependency::Dependency;
+
 
 #[async_trait]
 pub trait Resolver: Debug + Send + Sync {

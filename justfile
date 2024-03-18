@@ -1,13 +1,7 @@
 # Env Variables
 BIN_VERSION := env_var_or_default("BIN_VERSION", "")
-NPM_VERSION := env_var_or_default("NPM_VERSION", "")
-NPM_BIN_TARGET := env_var_or_default("NPM_BIN_TARGET", "")
-
 profile := env_var_or_default("profile", "debug")
-profile_cargo := if profile != "debug" { "--profile " + profile } else { "" }
-
 target := env_var_or_default("target", "")
-target_cargo := if target != "" { "--target " + target } else { "" }
 
 _default:
   @echo "Available Env:"
@@ -26,51 +20,58 @@ _default:
   @just --list --unsorted
 
 build:
-  @just _create_out_dir
-  @just _build_npm
-  cargo build {{profile_cargo}} {{target_cargo}}
-  @just _copy_cargo
+  rm -rf ./target/{{profile}}
+  just _create_out_dir
+  cargo build \
+    {{ if profile != "debug" { "--profile " + profile } else { "" } }} \
+    {{ if target != "" { "--target " + target } else { "" } }}
+  just _copy_cargo
+  
+  cd ./adapters/mach_adapter_noop && just build
+
+# build:
+#   @just _create_out_dir
+#   @just _build_npm
+#   cargo build {{profile_cargo}} {{target_cargo}}
+#   @just _copy_cargo
 
 run *ARGS:
-  @just build
+  just build
   ./target/{{profile}}/bin/mach {{ARGS}}
 
-serve:
-  npx http-server -p 3000 ./testing/fixtures
+# serve:
+#   npx http-server -p 3000 ./testing/fixtures
 
-test:
-  cargo test
+# test:
+#   cargo test
 
-fixture cmd fixture *ARGS:
-  @just build
-  ./target/{{profile}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
+# fixture cmd fixture *ARGS:
+#   @just build
+#   ./target/{{profile}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
-fmt:
-  cargo +nightly fmt
+# fmt:
+#   cargo +nightly fmt
 
-three-js:
-  node ./.github/scripts/ci/benchmark.mjs
+# three-js:
+#   node ./.github/scripts/ci/benchmark.mjs
 
 @_create_out_dir:
-  rm -rf ./target/{{profile}}
   mkdir -p ./target/{{profile}}
   mkdir -p ./target/{{profile}}/bin
-  mkdir -p ./target/{{profile}}/lib
-  mkdir -p ./target/{{profile}}/lib/node-adapter
 
 @_copy_cargo:
   cp ./target/.cargo/{{profile}}/mach ./target/{{profile}}/bin
 
-@_build_npm:
-  @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_actions" } else { "_skip" } }}
+# @_build_npm:
+#   @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_actions" } else { "_skip" } }}
 
-@_build_npm_actions:
-  echo building npm packages
-  pnpm install
-  cd npm/node-adapter && pnpm run build
-  cp -r npm/node-adapter/lib ./target/{{profile}}/lib/node-adapter
-  cp -r npm/node-adapter/types ./target/{{profile}}/lib/node-adapter
-  node .github/scripts/ci/package-sha.mjs set
+# @_build_npm_actions:
+#   echo building npm packages
+#   pnpm install
+#   cd npm/node-adapter && pnpm run build
+#   cp -r npm/node-adapter/lib ./target/{{profile}}/lib/node-adapter
+#   cp -r npm/node-adapter/types ./target/{{profile}}/lib/node-adapter
+#   node .github/scripts/ci/package-sha.mjs set
 
-@_skip:
-  echo skip
+# @_skip:
+#   echo skip

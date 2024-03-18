@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 
-use crate::public::Config;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use libmach::Config;
+use libmach::MutableAsset;
+use libmach::Transformer;
 
 #[derive(Debug)]
 pub struct DefaultTransformerNoop {}

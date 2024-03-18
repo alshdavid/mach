@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
-use crate::public::Config;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use libmach::Config;
+use libmach::DependencyOptions;
+use libmach::MutableAsset;
+use libmach::Transformer;
 
 use html5ever::parse_document;
 use html5ever::tendril::TendrilSink;
@@ -29,11 +29,11 @@ impl Transformer for DefaultTransformerHtml {
     for script_specifier in script_specifiers {
       asset.add_dependency(DependencyOptions {
         specifier: script_specifier,
-        specifier_type: crate::public::SpecifierType::ESM,
-        priority: crate::public::DependencyPriority::Lazy,
+        specifier_type: libmach::SpecifierType::ESM,
+        priority: libmach::DependencyPriority::Lazy,
         resolve_from: asset.file_path.clone(),
-        imported_symbols: vec![crate::public::ImportSymbolType::Namespace("".to_string())],
-        bundle_behavior: crate::public::BundleBehavior::Default,
+        imported_symbols: vec![libmach::ImportSymbolType::Namespace("".to_string())],
+        bundle_behavior: libmach::BundleBehavior::Default,
       });
     }
 

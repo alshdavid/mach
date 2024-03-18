@@ -2,19 +2,20 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::Bundles;
-use crate::public::DependencyMap;
-use crate::public::Output;
-use crate::public::Outputs;
+use libmach;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Bundle;
+use libmach::BundleGraph;
+use libmach::BundleManifest;
+use libmach::Bundles;
+use libmach::DependencyMap;
+use libmach::Output;
+use libmach::Outputs;
+use libmach::Config as MachConfig;
 
 pub fn package_css(
-  _config: Arc<public::Config>,
+  _config: Arc<MachConfig>,
   asset_map: Arc<Mutex<AssetMap>>,
   _dependency_map: Arc<DependencyMap>,
   _asset_graph: Arc<AssetGraph>,
