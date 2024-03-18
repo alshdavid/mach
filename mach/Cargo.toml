@@ -7,13 +7,13 @@ description = "Bundler For The Modern Web"
 edition = "2021"
 license = "MIT"
 
-# [[bin]]
-# name = "mach"
-# path = "src/main.rs"
+[[bin]]
+name = "mach"
+path = "src/main.rs"
 
-# [lib]
-# name = "alshdavid_mach"
-# path = "src/lib.rs"
+[lib]
+name = "alshdavid_mach"
+path = "src/lib.rs"
 
 [dependencies]
 swc_core = { version = "=0.90.22", features = ["ecma_ast", "ecma_parser", "common", "ecma_visit", "ecma_transforms", "common_concurrent", "ecma_codegen", "ecma_transforms_typescript", "ecma_transforms_react", "ecma_transforms_optimization", "ecma_minifier"] }
@@ -37,3 +37,4 @@ thiserror = "1.0.57"
 regex = "1.10.3"
 html5ever = "0.26.0"
 markup5ever_rcdom = "0.2.0"
+libloading = "0.8.3"

@@ -2,7 +2,7 @@
 resolver = "2"
 
 members = [
-    "mach",
+  "mach",
 ]
 
 [profile.release-lto]
