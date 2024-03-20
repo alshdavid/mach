@@ -71,7 +71,7 @@ pub fn link_and_transform(
     let rx = receivers.get_mut(i).unwrap().take().unwrap();
 
     handles.push(std::thread::spawn(move || -> Result<(), String> {
-      loop {
+      'main_loop: loop {
         let Some(dependency) = queue.lock().unwrap().pop() else {
           let Ok(kill) = rx.recv() else {
             break;
@@ -110,8 +110,10 @@ pub fn link_and_transform(
               break 'block resolve_result;
             }
           }
-          kill_threads();
-          return Err("Unable to resolve file".to_string());
+          continue_threads();
+          continue 'main_loop;
+          // kill_threads();
+          // return Err("Unable to resolve file".to_string());
         };
         let file_path_rel =
           pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
