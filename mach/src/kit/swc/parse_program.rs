@@ -5,6 +5,7 @@ use swc_core::common::comments::SingleThreadedComments;
 use swc_core::common::FileName;
 use swc_core::common::SourceFile;
 use swc_core::common::SourceMap;
+use swc_core::ecma::ast::EsVersion;
 use swc_core::ecma::ast::Program;
 use swc_core::ecma::parser::lexer::Lexer;
 use swc_core::ecma::parser::Parser;
@@ -28,7 +29,7 @@ pub fn parse_program(
 
   let lexer = Lexer::new(
     syntax,
-    swc_core::ecma::ast::EsVersion::latest(),
+    EsVersion::latest(),
     StringInput::from(&*source_file),
     Some(&comments),
   );

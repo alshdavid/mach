@@ -62,6 +62,15 @@ three-js:
   cp ./target/.cargo/{{profile}}/mach ./target/{{profile}}/bin
 
 @_build_npm:
-  {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "cd npm/node-adapter && pnpm run build && node ../../.github/scripts/ci/package-sha.mjs set" } else { "echo skip npm build" } }}
+  @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_actions" } else { "_skip" } }}
+
+@_build_npm_actions:
+  echo building npm packages
+  pnpm install
+  cd npm/node-adapter && pnpm run build
   cp -r npm/node-adapter/lib ./target/{{profile}}/lib/node-adapter
   cp -r npm/node-adapter/types ./target/{{profile}}/lib/node-adapter
+  node .github/scripts/ci/package-sha.mjs set
+
+@_skip:
+  echo skip

@@ -1,19 +1,17 @@
-use async_trait::async_trait;
-
 use crate::public::Config;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerCSS {}
+pub struct DefaultTransformerNoop {}
 
-#[async_trait]
-impl Transformer for DefaultTransformerCSS {
-  async fn transform(
+impl Transformer for DefaultTransformerNoop {
+  fn transform(
     &self,
-    _asset: &mut MutableAsset,
+    asset: &mut MutableAsset,
     _config: &Config,
   ) -> Result<(), String> {
+    asset.set_bytes(vec![]);
     return Ok(());
   }
 }

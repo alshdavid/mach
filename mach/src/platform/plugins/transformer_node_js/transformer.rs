@@ -1,8 +1,6 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use async_trait::async_trait;
-
 use crate::platform::adapters::node_js::requests::LoadPluginRequest;
 use crate::platform::adapters::node_js::requests::RunTransformerRequest;
 use crate::platform::adapters::node_js::requests::RunTransformerResponse;
@@ -39,9 +37,8 @@ impl TransformerNodeJs {
   }
 }
 
-#[async_trait]
 impl Transformer for TransformerNodeJs {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     config: &Config,

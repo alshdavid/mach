@@ -30,7 +30,7 @@ pub fn package_html(
   bundle_graph: Arc<BundleGraph>,
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
-  bundle_manifest:Arc<BundleManifest>,
+  bundle_manifest: Arc<BundleManifest>,
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -44,9 +44,11 @@ pub fn package_html(
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
       panic!("could not find asset")
     };
-    (asset.file_path_rel.clone(), std::mem::take(&mut asset.content))
+    (
+      asset.file_path_rel.clone(),
+      std::mem::take(&mut asset.content),
+    )
   };
-
 
   let dom = parse_document(RcDom::default(), Default::default())
     .from_utf8()
@@ -109,7 +111,7 @@ pub fn package_html(
   let document: SerializableHandle = dom.document.clone().into();
   let mut output = Vec::<u8>::new();
   serialize(&mut output, &document, SerializeOpts::default()).unwrap();
-  
+
   outputs.lock().unwrap().push(Output {
     content: output,
     filepath: PathBuf::from(&bundle.name),

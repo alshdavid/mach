@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use crate::public::Config;
 use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
@@ -14,9 +12,8 @@ use markup5ever_rcdom::RcDom;
 #[derive(Debug)]
 pub struct DefaultTransformerHtml {}
 
-#[async_trait]
 impl Transformer for DefaultTransformerHtml {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     _config: &Config,

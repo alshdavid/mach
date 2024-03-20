@@ -1,9 +1,5 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::sync::Arc;
 
-use async_trait::async_trait;
-use swc_core::atoms::JsWord;
 use swc_core::common::Globals;
 use swc_core::common::Mark;
 use swc_core::common::SourceMap;
@@ -19,16 +15,15 @@ use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
-use super::collect_decls;
+// use super::collect_decls;
 use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
 #[derive(Debug)]
 pub struct DefaultTransformerJavaScript {}
 
-#[async_trait]
 impl Transformer for DefaultTransformerJavaScript {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     config: &Config,
@@ -58,17 +53,9 @@ impl Transformer for DefaultTransformerJavaScript {
 
       let mut program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
 
-      let decls = collect_decls(&program);
+      // let decls = collect_decls(&program);
 
-      program = program.fold_with(&mut NodeEnvReplacer {
-        replace_env: true,
-        env: &get_env(&config.env),
-        is_browser: true,
-        decls: &decls,
-        used_env: &mut HashSet::new(),
-        source_map: &source_map.clone(),
-        unresolved_mark,
-      });
+      program = program.fold_with(&mut NodeEnvReplacer { env: &config.env });
 
       if file_extension == "jsx" {
         program = program.fold_with(&mut react_transforms::react(
@@ -118,15 +105,4 @@ impl Transformer for DefaultTransformerJavaScript {
       return Ok(());
     });
   }
-}
-
-fn get_env(config_env: &HashMap<String, String>) -> HashMap<JsWord, JsWord> {
-  let mut env = HashMap::<JsWord, JsWord>::new();
-  for (key, value) in config_env.iter() {
-    env.insert(
-      JsWord::from(key.to_string()),
-      JsWord::from(value.to_string()),
-    );
-  }
-  return env;
 }
