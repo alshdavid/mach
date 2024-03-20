@@ -15,10 +15,18 @@ use std::path::PathBuf;
 #[no_mangle]
 pub extern fn bootstrap(config: AdapterBootstrapOptions) -> AdapterBootstrapResult {
   return Box::new(Box::pin(async move {
+    tokio::runtime::Builder::new_multi_thread()
+      .enable_all()
+      .build()
+      .unwrap()
+      .block_on(bootstrap_async(config))
+  }));
+}
+
+async fn bootstrap_async(config: AdapterBootstrapOptions) -> Result<Box<dyn Adapter>, String> {
     dbg!(&config);
     let adapter: Box<dyn Adapter> = Box::new(NoopAdapter{});
     return Ok(adapter);
-  }));
 }
 
 
@@ -31,6 +39,9 @@ impl Adapter for NoopAdapter {
     config: AdapterOptions,
   ) -> Result<Box<dyn Resolver>, String> {
     dbg!(&config);
+    tokio::task::spawn(async {
+      println!("hi");
+    }).await.unwrap();
     return Ok(Box::new(NoopResolver{}));
   }
 

@@ -27,7 +27,7 @@ pub trait Adapter: Send {
   async fn resolve_specifier(&self, from_path: &Path, specifier: &str) -> Result<PathBuf, String>;
 }
 
-pub type AdapterBootstrapResult = Box<Pin<Box<dyn Future<Output = Result<Box<dyn Adapter>, String>>>>>;
+pub type AdapterBootstrapResult = Box<Pin<Box<dyn Future<Output = Result<Box<dyn Adapter>, String>> +Send>>>;
 pub type AdapterBootstrapOptions = Box<AdapterOptions>;
 pub type AdapterBootstrapFn = fn(AdapterBootstrapOptions) -> AdapterBootstrapResult;
 

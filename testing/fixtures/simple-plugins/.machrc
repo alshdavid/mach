@@ -1,7 +1,6 @@
 {
   "resolvers": [
     "noop:noop",
-    "nodejs:./plugins/resolver.mjs",
     "mach:resolver"
   ],
   "transformers": {

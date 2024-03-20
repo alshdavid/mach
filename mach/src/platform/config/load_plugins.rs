@@ -47,7 +47,6 @@ pub async fn load_plugins(
       adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
       adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
       plugins.resolvers.push(adapter.get_resolver(adapter_options).await?);
-
     }
   }
 
