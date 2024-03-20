@@ -25,7 +25,7 @@ impl Adapter for NoopAdapter {
     &self,
     config: AdapterOptions,
   ) -> Result<Box<dyn Resolver>, String> {
-    dbg!(&config);
+    // dbg!(&config);
     return Ok(Box::new(NoopResolver{}));
   }
 
@@ -53,7 +53,7 @@ impl Resolver for NoopResolver {
     &self,
     d: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {
-    println!("dep: {}", d.id);
+    // println!("dep: {}", d.id);
     return Ok(None);
   }
 }
