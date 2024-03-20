@@ -60,9 +60,9 @@ impl DependencyMap {
     return None;
   }
 
-  pub fn iter(&self) -> impl Iterator<Item = (&String, &Dependency)> {
-    return self.dependencies.iter();
-  }
+  // pub fn iter(&self) -> impl Iterator<Item = (&String, &Dependency)> {
+  //   return self.dependencies.iter();
+  // }
 }
 
 impl Debug for DependencyMap {

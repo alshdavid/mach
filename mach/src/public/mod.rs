@@ -1,6 +1,3 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
-
 mod asset;
 mod asset_graph;
 mod asset_map;
