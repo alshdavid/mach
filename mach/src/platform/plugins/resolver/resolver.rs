@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 
 use crate::public::Dependency;
 use crate::public::ResolveResult;
@@ -9,9 +8,8 @@ use super::resolve;
 #[derive(Debug)]
 pub struct DefaultResolver {}
 
-#[async_trait]
 impl Resolver for DefaultResolver {
-  async fn resolve(
+  fn resolve(
     &self,
     dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {

@@ -9,17 +9,15 @@ use crate::public::Machrc;
 use crate::public::Transformer;
 
 use crate::platform::plugins::resolver::DefaultResolver;
-use crate::platform::plugins::resolver_node_js::ResolverNodeJs;
 use crate::platform::plugins::transformer_css::DefaultTransformerCSS;
 use crate::platform::plugins::transformer_html::DefaultTransformerHtml;
 use crate::platform::plugins::transformer_javascript::DefaultTransformerJavaScript;
-use crate::platform::plugins::transformer_node_js::TransformerNodeJs;
 use crate::platform::plugins::transformer_noop::DefaultTransformerNoop;
 use super::PluginContainer;
 
 pub async fn load_plugins(
   machrc: &Machrc,
-  node_adapter: Arc<NodeAdapter>,
+  _node_adapter: Arc<NodeAdapter>,
 ) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
@@ -33,11 +31,11 @@ pub async fn load_plugins(
         continue;
       }
 
-      if engine == "node" {
-        let plugin = ResolverNodeJs::new(node_adapter.clone(), &specifier).await;
-        plugins.resolvers.push(Box::new(plugin));
-        continue;
-      }
+      // if engine == "node" {
+      //   let plugin = ResolverNodeJs::new(node_adapter.clone(), &specifier).await;
+      //   plugins.resolvers.push(Box::new(plugin));
+      //   continue;
+      // }
     }
   }
 
@@ -68,11 +66,11 @@ pub async fn load_plugins(
           continue;
         }
 
-        if engine == "node" {
-          let plugin = TransformerNodeJs::new(node_adapter.clone(), &specifier).await;
-          transformers.push(Box::new(plugin));
-          continue;
-        }
+        // if engine == "node" {
+        //   let plugin = TransformerNodeJs::new(node_adapter.clone(), &specifier).await;
+        //   transformers.push(Box::new(plugin));
+        //   continue;
+        // }
       }
 
       plugins

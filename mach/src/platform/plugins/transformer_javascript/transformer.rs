@@ -7,7 +7,6 @@ use swc_core::ecma::transforms::base::resolver;
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
-use async_trait::async_trait;
 
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
@@ -23,9 +22,8 @@ use super::NodeEnvReplacer;
 #[derive(Debug)]
 pub struct DefaultTransformerJavaScript {}
 
-#[async_trait]
 impl Transformer for DefaultTransformerJavaScript {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     config: &Config,

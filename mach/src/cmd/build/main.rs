@@ -56,8 +56,7 @@ async fn main_async(config: Config) -> Result<(), String> {
     &mut asset_map,
     &mut dependency_map,
     &mut asset_graph,
-  )
-  .await?;
+  )?;
 
   let time_transform = config.time_elapsed();
   println!(
