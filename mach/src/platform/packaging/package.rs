@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use swc_core::common::SourceMap;
 use std::sync::Mutex;
+use swc_core::common::SourceMap;
 
 use crate::public;
 use crate::public::AssetGraph;
@@ -18,7 +18,7 @@ use super::html::package_html;
 use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
-pub async fn package(
+pub fn package(
   config: &public::Config,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,

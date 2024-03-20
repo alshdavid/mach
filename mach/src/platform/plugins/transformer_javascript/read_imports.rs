@@ -2,11 +2,11 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
+use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
-use once_cell::sync::Lazy;
 
 use crate::public::DependencyPriority;
 use crate::public::ImportSymbolType;

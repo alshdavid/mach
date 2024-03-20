@@ -1,23 +1,20 @@
-use std::sync::Arc;
-
-use crate::platform::adapters::node_js::NodeAdapter;
 use crate::platform::bundling::bundle;
+use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
-use crate::platform::config::load_plugins;
 use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
 use crate::public::Bundles;
-use crate::public::Config;
 use crate::public::DependencyMap;
 use crate::public::Outputs;
 
 use super::parse_config;
 use super::BuildCommand;
 
-async fn main_async(config: Config) -> Result<(), String> {
+pub fn main(command: BuildCommand) -> Result<(), String> {
+  let config = parse_config(command)?;
   config.log_details();
 
   /*
@@ -33,16 +30,10 @@ async fn main_async(config: Config) -> Result<(), String> {
   let mut outputs = Outputs::new();
 
   /*
-    Adapters are responsible for interoperability with
-    external plugin execution contexts (like Node.js)
+    load_plugins() will read source the .machrc and will
+    fetch then initialize the referenced plugins
   */
-  let node_adapter = Arc::new(NodeAdapter::new(config.node_workers).await);
-
-  /*
-  load_plugins() will read source the .machrc and will
-  fetch then initialize the referenced plugins
-  */
-  let mut plugins = load_plugins(&config.machrc, node_adapter.clone()).await?;
+  let mut plugins = load_plugins(&config.machrc)?;
 
   /*
     link_and_transform() will read source files, identify import statements
@@ -101,8 +92,7 @@ async fn main_async(config: Config) -> Result<(), String> {
     &mut bundle_graph,
     &mut asset_map,
     &mut outputs,
-  )
-  .await?;
+  )?;
 
   let time_package = config.time_elapsed();
   println!("  Package:       {:.3}s", time_package - time_bundle);
@@ -123,23 +113,23 @@ async fn main_async(config: Config) -> Result<(), String> {
   main() initializes the config and starts the async runtime
   then main_async() takes over.
 */
-pub fn main(command: BuildCommand) {
-  let config = match parse_config(command) {
-    Ok(config) => config,
-    Err(msg) => {
-      println!("Init Error:");
-      println!("  {}", msg);
-      std::process::exit(1);
-    }
-  };
-  if let Err(msg) = tokio::runtime::Builder::new_multi_thread()
-    .worker_threads(config.threads)
-    .enable_all()
-    .build()
-    .unwrap()
-    .block_on(main_async(config))
-  {
-    println!("Build Error:");
-    println!("{}", msg);
-  };
-}
+// pub fn main(command: BuildCommand) {
+//   let config = match parse_config(command) {
+//     Ok(config) => config,
+//     Err(msg) => {
+//       println!("Init Error:");
+//       println!("  {}", msg);
+//       std::process::exit(1);
+//     }
+//   };
+//   if let Err(msg) = tokio::runtime::Builder::new_multi_thread()
+//     .worker_threads(config.threads)
+//     .enable_all()
+//     .build()
+//     .unwrap()
+//     .block_on(main_async(config))
+//   {
+//     println!("Build Error:");
+//     println!("{}", msg);
+//   };
+// }

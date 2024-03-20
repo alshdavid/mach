@@ -76,7 +76,9 @@ pub fn link_and_transform(
           let Ok(kill) = rx.recv() else {
             break;
           };
-          if (queue.lock().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0) || kill {
+          if (queue.lock().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0)
+            || kill
+          {
             break;
           }
           continue;
@@ -92,7 +94,7 @@ pub fn link_and_transform(
             };
           }
         };
-    
+
         let kill_threads = || {
           for sender in &senders {
             let Ok(_) = sender.send(true) else {
@@ -111,7 +113,8 @@ pub fn link_and_transform(
           kill_threads();
           return Err("Unable to resolve file".to_string());
         };
-        let file_path_rel = pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+        let file_path_rel =
+          pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
         // Resolve Done
 
         // Dependency Graph
@@ -135,7 +138,8 @@ pub fn link_and_transform(
         // Transformation
         let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
-        let mut content = fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+        let mut content =
+          fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
         let mut asset_dependencies = Vec::<DependencyOptions>::new();
         let mut asset_kind = file_target.file_extension.clone();
 
@@ -215,9 +219,18 @@ pub fn link_and_transform(
 
   //Put the results of the transformation back into the bundle state
   *plugins = Arc::try_unwrap(plugins_local).unwrap();
-  *asset_map = Arc::try_unwrap(asset_map_local).unwrap().into_inner().unwrap();
-  *dependency_map = Arc::try_unwrap(dependency_map_local).unwrap().into_inner().unwrap();
-  *asset_graph = Arc::try_unwrap(asset_graph_local).unwrap().into_inner().unwrap();
+  *asset_map = Arc::try_unwrap(asset_map_local)
+    .unwrap()
+    .into_inner()
+    .unwrap();
+  *dependency_map = Arc::try_unwrap(dependency_map_local)
+    .unwrap()
+    .into_inner()
+    .unwrap();
+  *asset_graph = Arc::try_unwrap(asset_graph_local)
+    .unwrap()
+    .into_inner()
+    .unwrap();
 
   Ok(())
 }

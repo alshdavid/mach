@@ -1,30 +1,24 @@
 use std::path::Path;
-use std::sync::Arc;
 
 use normalize_path::NormalizePath;
 
-use crate::platform::adapters::node_js::native_node_resolve;
-use crate::platform::adapters::node_js::NodeAdapter;
 use crate::public::Machrc;
 use crate::public::Transformer;
 
+use super::PluginContainer;
 use crate::platform::plugins::resolver::DefaultResolver;
 use crate::platform::plugins::transformer_css::DefaultTransformerCSS;
 use crate::platform::plugins::transformer_html::DefaultTransformerHtml;
 use crate::platform::plugins::transformer_javascript::DefaultTransformerJavaScript;
 use crate::platform::plugins::transformer_noop::DefaultTransformerNoop;
-use super::PluginContainer;
 
-pub async fn load_plugins(
-  machrc: &Machrc,
-  _node_adapter: Arc<NodeAdapter>,
-) -> Result<PluginContainer, String> {
+pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
-      let (engine, specifier) = parse_plugin_string(&base_path, plugin_string).await?;
+      let (engine, specifier) = parse_plugin_string(&base_path, plugin_string)?;
 
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(DefaultResolver {}));
@@ -44,7 +38,7 @@ pub async fn load_plugins(
       let mut transformers = Vec::<Box<dyn Transformer>>::new();
 
       for plugin_string in specifiers {
-        let (engine, specifier) = parse_plugin_string(&base_path, plugin_string).await?;
+        let (engine, specifier) = parse_plugin_string(&base_path, plugin_string)?;
 
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(DefaultTransformerJavaScript {}));
@@ -82,7 +76,7 @@ pub async fn load_plugins(
   return Ok(plugins);
 }
 
-async fn parse_plugin_string(
+fn parse_plugin_string(
   base_path: &Path,
   plugin_string: &str,
 ) -> Result<(String, String), String> {
@@ -105,11 +99,11 @@ async fn parse_plugin_string(
     return Ok((engine, specifier));
   }
 
-  if engine == "node" {
-    if let Ok(specifier) = native_node_resolve(&base_path, &specifier).await {
-      return Ok((engine.to_string(), specifier));
-    };
-  }
+  // if engine == "node" {
+  //   if let Ok(specifier) = native_node_resolve(&base_path, &specifier).await {
+  //     return Ok((engine.to_string(), specifier));
+  //   };
+  // }
 
   return Err("Could not load plugin string".to_string());
 }

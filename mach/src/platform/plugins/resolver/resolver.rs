@@ -1,4 +1,3 @@
-
 use crate::public::Dependency;
 use crate::public::ResolveResult;
 use crate::public::Resolver;

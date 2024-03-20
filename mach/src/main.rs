@@ -31,7 +31,9 @@ fn main() {
 
   match command.command {
     CommandType::Build(command) => {
-      cmd::build::main(command);
+      if let Err(msg) = cmd::build::main(command) {
+        println!("Build Error\n{}", msg);
+      };
     }
     CommandType::Dev(command) => {
       cmd::dev::main(command);

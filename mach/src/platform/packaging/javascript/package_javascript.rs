@@ -3,12 +3,12 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread::JoinHandle;
 
+use std::sync::Mutex;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
-use std::sync::Mutex;
 
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
@@ -50,7 +50,7 @@ pub fn package_javascript(
     bundle_module_stmts.push(stmt);
   }
 
-  for i in 0..config.threads  {
+  for i in 0..config.threads {
     let mut assets = assets_to_package[i].take().unwrap();
     let asset_map = asset_map.clone();
     let source_map = source_map.clone();
@@ -60,65 +60,68 @@ pub fn package_javascript(
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
 
-    handles.push(std::thread::spawn(move || -> Result<Vec<(Stmt, PathBuf)>, String> {
-      let mut stmts = Vec::<(Stmt, PathBuf)>::new();
+    handles.push(std::thread::spawn(
+      move || -> Result<Vec<(Stmt, PathBuf)>, String> {
+        let mut stmts = Vec::<(Stmt, PathBuf)>::new();
 
-      for asset_id in assets.drain(0..) {
-        let (asset_file_path, asset_content) = {
-          let mut asset_map = asset_map.lock().unwrap();
-          let asset = asset_map.get_mut(&asset_id).unwrap();
-          (
-            asset.file_path_rel.clone(),
-            std::mem::take(&mut asset.content),
+        for asset_id in assets.drain(0..) {
+          let (asset_file_path, asset_content) = {
+            let mut asset_map = asset_map.lock().unwrap();
+            let asset = asset_map.get_mut(&asset_id).unwrap();
+            (
+              asset.file_path_rel.clone(),
+              std::mem::take(&mut asset.content),
+            )
+          };
+
+          let mut module = Module {
+            span: Span::default(),
+            body: vec![],
+            shebang: None,
+          };
+
+          let parse_result = parse_program(
+            &asset_file_path,
+            std::str::from_utf8(&asset_content).unwrap(),
+            source_map.clone(),
           )
-        };
+          .unwrap();
 
-        let mut module = Module {
-          span: Span::default(),
-          body: vec![],
-          shebang: None,
-        };
-  
-        let parse_result = parse_program(
-          &asset_file_path,
-          std::str::from_utf8(&asset_content).unwrap(),
-          source_map.clone(),
-        )
-        .unwrap();
-  
-        match parse_result.program {
-          Program::Module(m) => module.body = m.body,
-          Program::Script(s) => {
-            module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+          match parse_result.program {
+            Program::Module(m) => module.body = m.body,
+            Program::Script(s) => {
+              module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+            }
           }
-        }
 
-        let mut javascript_runtime = JavaScriptRuntime {
-          current_asset_id: &asset_id,
-          current_bundle_id: &bundle_id,
-          dependency_map: &dependency_map,
-          bundle_graph: &bundle_graph,
-          runtime_factory: &runtime_factory,
-          asset_graph: &asset_graph,
-          asset_map: asset_map.clone(),
-          depends_on: HashSet::new(),
-        };
-  
-        let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
-          let module = module.fold_with(&mut javascript_runtime);
-          return (module, javascript_runtime);
-        });
-  
-        let stmt = runtime_factory.module(
-          javascript_runtime.depends_on.len() != 0,
-          asset_id.to_str().unwrap(),
-          module_item_to_stmt(module.body),
-        );
-  
-        stmts.push((stmt, asset_id));
-      }
-      return Ok(stmts);
-    }));
+          let mut javascript_runtime = JavaScriptRuntime {
+            current_asset_id: &asset_id,
+            current_bundle_id: &bundle_id,
+            dependency_map: &dependency_map,
+            bundle_graph: &bundle_graph,
+            runtime_factory: &runtime_factory,
+            asset_graph: &asset_graph,
+            asset_map: asset_map.clone(),
+            depends_on: HashSet::new(),
+          };
+
+          let (module, javascript_runtime) =
+            swc_core::common::GLOBALS.set(&Globals::new(), move || {
+              let module = module.fold_with(&mut javascript_runtime);
+              return (module, javascript_runtime);
+            });
+
+          let stmt = runtime_factory.module(
+            javascript_runtime.depends_on.len() != 0,
+            asset_id.to_str().unwrap(),
+            module_item_to_stmt(module.body),
+          );
+
+          stmts.push((stmt, asset_id));
+        }
+        return Ok(stmts);
+      },
+    ));
   }
 
   let mut results = vec![];
@@ -163,7 +166,10 @@ pub fn package_javascript(
   });
 }
 
-fn divide_assets_by_threads(bundle: &Bundle, threads: usize) -> Vec<Option<Vec<PathBuf>>> {
+fn divide_assets_by_threads(
+  bundle: &Bundle,
+  threads: usize,
+) -> Vec<Option<Vec<PathBuf>>> {
   let mut assets_to_package = Vec::<Option<Vec<PathBuf>>>::new();
 
   for _ in 0..threads {
@@ -173,12 +179,12 @@ fn divide_assets_by_threads(bundle: &Bundle, threads: usize) -> Vec<Option<Vec<P
   let mut t = 0;
   for assets in bundle.assets.iter() {
     assets_to_package[t].as_mut().unwrap().push(assets.clone());
-    
+
     t += 1;
     if t == threads {
       t = 0;
     }
-  };
+  }
 
   return assets_to_package;
 }
