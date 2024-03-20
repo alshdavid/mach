@@ -15,7 +15,6 @@ mod package_json;
 mod packages;
 mod resolver;
 mod transformer;
-mod tsconfig;
 
 pub use crate::public::asset::*;
 pub use crate::public::asset_graph::*;
@@ -30,4 +29,3 @@ pub use crate::public::machrc::*;
 pub use crate::public::packages::*;
 pub use crate::public::resolver::*;
 pub use crate::public::transformer::*;
-pub use crate::public::tsconfig::*;
