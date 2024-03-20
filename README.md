@@ -71,27 +71,23 @@ import * as copy_3 from './copy_3/Three.js'; window.copy_3 = copy_3;
 
 The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are using 16 threads.
 
-**6th March 2024**
+**20th March 2024**
 
 <p align="center">
-  <img align="center" width="100%" src="./.docs/assets/benchmarks/bench-2023-03-06.jpg">
+  <img align="center" width="100%" src="./.docs/assets/benchmarks/bench-2024-03-20.jpg">
   <br>
   <i>Build Time (lower is better)</i>
 </p>
 
-As of the 6th March 2024, this is a benchmark of Mach verses other bundlers. Mach is still in the early phase of development so I haven't spent a lot of time optimizing it.
+As of the 20th March 2024, this is a benchmark of Mach verses other bundlers in a "no minify" build. 
 
-<p align="center">
-  <img align="center" width="100%" src="./.docs/assets/benchmarks/time-2023-03-06.jpg">
-  <br>
-  <i>Time spent during build</i>
-</p>
-
-Mach is spending 50% of its time in the transformation phase (generating AST) and 50% in the packaging phase (where it converts `import` statements into runtime code).
-
-At present Mach doesn't share AST between these phases causing it to double up on the parsing work.
+Mach is still in the early phase of development so I haven't spent a lot of time optimizing it - for example currently Mach doesn't share AST between the build phases causing it to double up on the parsing work.
 
 There is a lot of room for optimization here so the numbers are likely to get better as we go 🙂
+
+I've been working on integrating Deno for plugins and improving Node.js support.
+
+Todo there is still development/watch mode and implementing a better bundling algorithm.
 
 ## Special Thanks
 
