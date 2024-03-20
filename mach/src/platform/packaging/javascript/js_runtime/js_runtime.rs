@@ -2,12 +2,12 @@ use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Arc;
 
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
 use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
-use once_cell::sync::Lazy;
-use std::sync::Mutex;
 
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;

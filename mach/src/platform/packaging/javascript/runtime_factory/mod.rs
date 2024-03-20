@@ -1,10 +1,10 @@
+use std::collections::HashMap;
+use std::path::PathBuf;
+use std::sync::Arc;
 use swc_core::atoms::Atom;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
-use std::collections::HashMap;
-use std::path::PathBuf;
-use std::sync::Arc;
 
 use crate::kit::swc::parse_script;
 

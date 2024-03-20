@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use libmach::Config;
 use libmach::DependencyOptions;
 use libmach::MutableAsset;
@@ -14,9 +12,8 @@ use markup5ever_rcdom::RcDom;
 #[derive(Debug)]
 pub struct TransformerHtml {}
 
-#[async_trait]
 impl Transformer for TransformerHtml {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     _config: &Config,

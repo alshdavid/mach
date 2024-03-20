@@ -1,5 +1,3 @@
-use async_trait::async_trait;
-
 use libmach::Dependency;
 use libmach::ResolveResult;
 use libmach::Resolver;
@@ -9,9 +7,8 @@ use super::resolve;
 #[derive(Debug)]
 pub struct ResolverJavaScript {}
 
-#[async_trait]
 impl Resolver for ResolverJavaScript {
-  async fn resolve(
+  fn resolve(
     &self,
     dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {

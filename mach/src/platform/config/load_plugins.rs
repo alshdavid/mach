@@ -1,18 +1,20 @@
 use libmach::AdapterMap;
+use libmach::AdapterOption;
 use libmach::AdapterOptions;
+
 use libmach::Machrc;
 use libmach::Transformer;
-use libmach::AdapterOption;
 
+use crate::platform::config::load_dynamic_adapter;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
 use crate::platform::plugins::transformer_noop::DefaultTransformerNoop;
-use super::load_dynamic_adapter;
+
 use super::PluginContainer;
 
-pub async fn load_plugins(
+pub fn load_plugins(
   machrc: &Machrc,
   adapter_map: &mut AdapterMap,
 ) -> Result<PluginContainer, String> {
@@ -36,7 +38,7 @@ pub async fn load_plugins(
       }
 
       if !adapter_map.contains_key(engine) {
-        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine).await?); 
+        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
       }
 
       let Some(adapter) = adapter_map.get(engine) else {
@@ -46,7 +48,7 @@ pub async fn load_plugins(
       let mut adapter_options = AdapterOptions::default();
       adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
       adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
-      plugins.resolvers.push(adapter.get_resolver(adapter_options).await?);
+      plugins.resolvers.push(adapter.get_resolver(adapter_options)?);
     }
   }
 
@@ -86,7 +88,7 @@ pub async fn load_plugins(
         }
 
         if !adapter_map.contains_key(engine) {
-          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine).await?); 
+          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
         }
   
         let Some(adapter) = adapter_map.get(engine) else {
@@ -96,7 +98,7 @@ pub async fn load_plugins(
         let mut adapter_options = AdapterOptions::default();
         adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
         adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
-        transformers.push(adapter.get_transformer(adapter_options).await?);
+        transformers.push(adapter.get_transformer(adapter_options)?);
       }
 
       plugins

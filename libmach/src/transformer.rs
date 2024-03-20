@@ -1,7 +1,6 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use async_trait::async_trait;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -11,9 +10,8 @@ use super::BundleBehavior;
 use super::DependencyPriority;
 use super::ImportSymbolType;
 
-#[async_trait]
 pub trait Transformer: Debug + Send + Sync {
-  async fn transform(
+  fn transform(
     &self,
     asset: &mut MutableAsset,
     config: &Config,

@@ -6,6 +6,9 @@
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
       "mach:transformer/javascript"
+    ],
+    "*.{html}": [
+      "mach:transformer/html"
     ]
   }
 }

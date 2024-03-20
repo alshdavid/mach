@@ -1,20 +1,15 @@
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
 use libloading::Library;
 use libmach::Adapter;
 use libmach::AdapterBootstrapFn;
-use libmach::BundleBehavior;
-use libmach::Dependency;
-use libmach::DependencyPriority;
-use libmach::SpecifierType;
 use once_cell::sync::Lazy;
 
 static LIBS: Lazy<Arc<Mutex<HashMap<String, Arc<Library>>>>> = Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
 
-pub async fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, String> {
+pub fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, String> {
   let exe_path = std::env::current_exe().unwrap();
   let exe_dir = exe_path.parent().unwrap();
   let mach_dir = exe_dir.parent().unwrap();
@@ -34,9 +29,9 @@ pub async fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>,
     lib.get(b"bootstrap").unwrap()
   };
 
-  let bootstrap_fn = bootstrap(Box::new(HashMap::new()));
+  let bootstrap_fn = **bootstrap(Box::new(HashMap::new()));
 
-  let adapter = bootstrap_fn.await.unwrap();
+  let adapter = bootstrap_fn?;
 
   return Ok(adapter);
 }
