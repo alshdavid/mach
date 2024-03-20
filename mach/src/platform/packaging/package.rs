@@ -45,8 +45,6 @@ pub async fn package(
     Arc::new(bundle_manifest)
   };
 
-  let mut jobs = vec![];
-
   for bundle in bundles_local.iter() {
     let config_local = config_local.clone();
     let asset_map_local = asset_map_local.clone();
@@ -60,21 +58,18 @@ pub async fn package(
     let bundle_manifest = bundle_manifest.clone();
 
     if bundle.kind == "js" {
-      jobs.push(tokio::task::spawn(async move {
-        package_javascript(
-          config_local,
-          asset_map_local,
-          dependency_map_local,
-          asset_graph_local,
-          bundles_local,
-          bundle_graph_local,
-          outputs_local,
-          runtime_factory,
-          bundle,
-          bundle_manifest,
-        )
-        .await;
-      }));
+      package_javascript(
+        config_local,
+        asset_map_local,
+        dependency_map_local,
+        asset_graph_local,
+        bundles_local,
+        bundle_graph_local,
+        outputs_local,
+        runtime_factory,
+        bundle,
+        bundle_manifest,
+      );
     } else if bundle.kind == "css" {
       package_css(
         config_local,
@@ -88,24 +83,18 @@ pub async fn package(
         bundle_manifest,
       )
     } else if bundle.kind == "html" {
-      jobs.push(tokio::task::spawn(async move {
-        package_html(
-          config_local,
-          asset_map_local,
-          dependency_map_local,
-          asset_graph_local,
-          bundles_local,
-          bundle_graph_local,
-          outputs_local,
-          bundle,
-          bundle_manifest,
-        );
-      }))
+      package_html(
+        config_local,
+        asset_map_local,
+        dependency_map_local,
+        asset_graph_local,
+        bundles_local,
+        bundle_graph_local,
+        outputs_local,
+        bundle,
+        bundle_manifest,
+      );
     }
-  }
-
-  for job in jobs {
-    job.await.unwrap();
   }
 
   let bundle_manifest_json = serde_json::to_string_pretty(&*bundle_manifest).unwrap();

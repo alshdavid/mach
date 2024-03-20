@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::thread::JoinHandle;
 
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
@@ -27,8 +28,8 @@ use crate::public::Outputs;
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;
 
-pub async fn package_javascript(
-  _config: Arc<public::Config>,
+pub fn package_javascript(
+  config: Arc<public::Config>,
   asset_map: Arc<Mutex<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
@@ -40,20 +41,17 @@ pub async fn package_javascript(
   bundle_manifest: Arc<BundleManifest>,
 ) {
   let source_map = Arc::new(SourceMap::default());
+  let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let mut bundle_module_stmts = Vec::<Stmt>::new();
+  let bundle_id = bundle.id.clone();
+  let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
     bundle_module_stmts.push(stmt);
   }
 
-  // let mut bundle_assets = bundle.assets.iter().collect::<Vec<&PathBuf>>();
-  // bundle_assets.sort();
-
-  let mut jobs = Vec::new();
-
-  let bundle_id = bundle.id.clone();
-
-  for asset_id in bundle.assets {
+  for i in 0..config.threads  {
+    let mut assets = assets_to_package[i].take().unwrap();
     let asset_map = asset_map.clone();
     let source_map = source_map.clone();
     let asset_graph = asset_graph.clone();
@@ -62,71 +60,76 @@ pub async fn package_javascript(
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
 
-    jobs.push(tokio::task::spawn(async move {
-      let (asset_file_path, asset_content) = {
-        let mut asset_map = asset_map.lock().unwrap();
-        let asset = asset_map.get_mut(&asset_id).unwrap();
-        (
-          asset.file_path_rel.clone(),
-          std::mem::take(&mut asset.content),
+    handles.push(std::thread::spawn(move || -> Result<Vec<(Stmt, PathBuf)>, String> {
+      let mut stmts = Vec::<(Stmt, PathBuf)>::new();
+
+      for asset_id in assets.drain(0..) {
+        let (asset_file_path, asset_content) = {
+          let mut asset_map = asset_map.lock().unwrap();
+          let asset = asset_map.get_mut(&asset_id).unwrap();
+          (
+            asset.file_path_rel.clone(),
+            std::mem::take(&mut asset.content),
+          )
+        };
+
+        let mut module = Module {
+          span: Span::default(),
+          body: vec![],
+          shebang: None,
+        };
+  
+        let parse_result = parse_program(
+          &asset_file_path,
+          std::str::from_utf8(&asset_content).unwrap(),
+          source_map.clone(),
         )
-      };
-
-      let mut module = Module {
-        span: Span::default(),
-        body: vec![],
-        shebang: None,
-      };
-
-      let parse_result = parse_program(
-        &asset_file_path,
-        std::str::from_utf8(&asset_content).unwrap(),
-        source_map.clone(),
-      )
-      .unwrap();
-
-      match parse_result.program {
-        Program::Module(m) => module.body = m.body,
-        Program::Script(s) => {
-          module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+        .unwrap();
+  
+        match parse_result.program {
+          Program::Module(m) => module.body = m.body,
+          Program::Script(s) => {
+            module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
+          }
         }
+
+        let mut javascript_runtime = JavaScriptRuntime {
+          current_asset_id: &asset_id,
+          current_bundle_id: &bundle_id,
+          dependency_map: &dependency_map,
+          bundle_graph: &bundle_graph,
+          runtime_factory: &runtime_factory,
+          asset_graph: &asset_graph,
+          asset_map: asset_map.clone(),
+          depends_on: HashSet::new(),
+        };
+  
+        let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
+          let module = module.fold_with(&mut javascript_runtime);
+          return (module, javascript_runtime);
+        });
+  
+        let stmt = runtime_factory.module(
+          javascript_runtime.depends_on.len() != 0,
+          asset_id.to_str().unwrap(),
+          module_item_to_stmt(module.body),
+        );
+  
+        stmts.push((stmt, asset_id));
       }
-
-      let mut javascript_runtime = JavaScriptRuntime {
-        current_asset_id: &asset_id,
-        current_bundle_id: &bundle_id,
-        dependency_map: &dependency_map,
-        bundle_graph: &bundle_graph,
-        runtime_factory: &runtime_factory,
-        asset_graph: &asset_graph,
-        asset_map: asset_map.clone(),
-        depends_on: HashSet::new(),
-      };
-
-      let (module, javascript_runtime) = swc_core::common::GLOBALS.set(&Globals::new(), move || {
-        let module = module.fold_with(&mut javascript_runtime);
-        return (module, javascript_runtime);
-      });
-
-      let stmt = runtime_factory.module(
-        javascript_runtime.depends_on.len() != 0,
-        asset_id.to_str().unwrap(),
-        module_item_to_stmt(module.body),
-      );
-
-      (stmt, asset_id)
+      return Ok(stmts);
     }));
   }
 
-  let mut stmts = vec![];
+  let mut results = vec![];
 
-  for job in jobs {
-    let result = job.await.unwrap();
-    stmts.push(result);
+  for handle in handles {
+    results.extend(handle.join().unwrap().unwrap());
   }
 
-  stmts.sort_by(|a, b| a.1.cmp(&b.1));
-  for (stmt, _) in stmts.drain(0..) {
+  results.sort_by(|a, b| a.1.cmp(&b.1));
+
+  for (stmt, _) in results.drain(0..) {
     bundle_module_stmts.push(stmt);
   }
 
@@ -158,4 +161,24 @@ pub async fn package_javascript(
     content: rendered.as_bytes().to_vec(),
     filepath: PathBuf::from(&bundle.name),
   });
+}
+
+fn divide_assets_by_threads(bundle: &Bundle, threads: usize) -> Vec<Option<Vec<PathBuf>>> {
+  let mut assets_to_package = Vec::<Option<Vec<PathBuf>>>::new();
+
+  for _ in 0..threads {
+    assets_to_package.push(Some(Vec::new()));
+  }
+
+  let mut t = 0;
+  for assets in bundle.assets.iter() {
+    assets_to_package[t].as_mut().unwrap().push(assets.clone());
+    
+    t += 1;
+    if t == threads {
+      t = 0;
+    }
+  };
+
+  return assets_to_package;
 }
