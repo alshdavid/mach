@@ -11,6 +11,7 @@ use std::sync::Mutex;
 
 use crate::kit::html;
 use crate::public;
+use crate::public::AssetContent;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -31,28 +32,35 @@ pub fn package_html(
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
   bundle_manifest: Arc<BundleManifest>,
-) {
+) -> Result<(), String> {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
-    return;
+    return Ok(());
   };
   if dependencies.len() == 0 {
-    return;
+    return Ok(());
   }
+
   let (asset_file_path_rel, asset_content) = {
     let mut asset_map = asset_map.lock().unwrap();
-    let Some(asset) = asset_map.get_mut(&entry_asset) else {
-      panic!("could not find asset")
-    };
+    let asset = asset_map.get_mut(&entry_asset).unwrap();
+    let asset_file_path_rel = asset.file_path_rel.clone();
+    let contents = asset.get_content()?;
+    // Clone in case asset is used in multiple places
     (
-      asset.file_path_rel.clone(),
-      std::mem::take(&mut asset.content),
+      asset_file_path_rel,
+      contents.clone() 
     )
+  };
+
+  let bytes = match asset_content {
+    AssetContent::Bytes(bytes) => bytes,
+    _ => return Err("Invalid HTML type".to_string()),
   };
 
   let dom = parse_document(RcDom::default(), Default::default())
     .from_utf8()
-    .read_from(&mut asset_content.as_slice())
+    .read_from(&mut bytes.as_slice())
     .unwrap();
 
   let mut script_nodes = html::query_selector_all(
@@ -116,4 +124,6 @@ pub fn package_html(
     content: output,
     filepath: PathBuf::from(&bundle.name),
   });
+
+  return Ok(());
 }

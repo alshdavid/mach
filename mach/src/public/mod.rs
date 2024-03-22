@@ -1,3 +1,4 @@
+
 mod asset;
 mod asset_graph;
 mod asset_map;
@@ -8,6 +9,7 @@ mod constants;
 mod dependency;
 mod dependency_map;
 mod machrc;
+mod mutable_asset;
 mod package_json;
 mod packages;
 mod resolver;
@@ -23,6 +25,7 @@ pub use crate::public::constants::*;
 pub use crate::public::dependency::*;
 pub use crate::public::dependency_map::*;
 pub use crate::public::machrc::*;
+pub use crate::public::mutable_asset::*;
 pub use crate::public::packages::*;
 pub use crate::public::resolver::*;
 pub use crate::public::transformer::*;

@@ -1,3 +1,4 @@
+use std::hash::Hasher;
 use std::path::PathBuf;
 
 use sha2::Digest;

@@ -69,7 +69,7 @@ pub fn package(
         runtime_factory,
         bundle,
         bundle_manifest,
-      );
+      )?;
     } else if bundle.kind == "css" {
       package_css(
         config_local,
@@ -81,7 +81,7 @@ pub fn package(
         outputs_local,
         bundle,
         bundle_manifest,
-      )
+      )?;
     } else if bundle.kind == "html" {
       package_html(
         config_local,
@@ -93,7 +93,7 @@ pub fn package(
         outputs_local,
         bundle,
         bundle_manifest,
-      );
+      )?;
     }
   }
 

@@ -9,7 +9,7 @@ use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
 use crate::kit::swc::parse_program;
-use crate::kit::swc::render_program;
+use crate::public::AssetContent;
 use crate::public::Config;
 use crate::public::DependencyOptions;
 use crate::public::MutableAsset;
@@ -30,9 +30,10 @@ impl Transformer for DefaultTransformerJavaScript {
   ) -> Result<(), String> {
     return swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
-      let code = asset.get_code();
+      let asset_file_path = asset.file_path.clone();
+      let code = asset.get_str()?;
 
-      let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
+      let Ok(result) = parse_program(&asset_file_path, &code, source_map_og.clone()) else {
         return Err(format!("SWC Parse Error"));
       };
 
@@ -100,7 +101,7 @@ impl Transformer for DefaultTransformerJavaScript {
         });
       }
 
-      asset.set_code(&render_program(&program, source_map_og.clone()));
+      asset.set_content(AssetContent::JavaScript(program));
 
       return Ok(());
     });

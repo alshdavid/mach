@@ -18,7 +18,9 @@ impl Transformer for DefaultTransformerHtml {
     asset: &mut MutableAsset,
     _config: &Config,
   ) -> Result<(), String> {
-    let code = asset.get_code();
+    let asset_file_path = asset.file_path.clone();
+
+    let code = asset.get_str()?;
     let Ok(script_specifiers) = get_script_src_attrs(&code) else {
       return Err("Unable process HTML".to_string());
     };
@@ -28,7 +30,7 @@ impl Transformer for DefaultTransformerHtml {
         specifier: script_specifier,
         specifier_type: crate::public::SpecifierType::ESM,
         priority: crate::public::DependencyPriority::Lazy,
-        resolve_from: asset.file_path.clone(),
+        resolve_from: asset_file_path.clone(),
         imported_symbols: vec![crate::public::ImportSymbolType::Namespace("".to_string())],
         bundle_behavior: crate::public::BundleBehavior::Default,
       });

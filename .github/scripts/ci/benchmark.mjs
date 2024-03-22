@@ -11,10 +11,10 @@ const NO_OPTIMIZE = process.env.NO_OPTIMIZE
 
 const TESTERS = [
   "mach",
-  "esbuild",
-  "parcel",
-  "webpack",
-  "rspack",
+  // "esbuild",
+  // "parcel",
+  // "webpack",
+  // "rspack",
 ]
 
 let generate_fixture = true

@@ -15,6 +15,7 @@ use crate::kit::swc::parse_program;
 
 use crate::kit::swc::render_module;
 use crate::public;
+use crate::public::AssetContent;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -39,7 +40,7 @@ pub fn package_javascript(
   runtime_factory: Arc<RuntimeFactory>,
   bundle: Bundle,
   bundle_manifest: Arc<BundleManifest>,
-) {
+) -> Result<(), String> {
   let source_map = Arc::new(SourceMap::default());
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let mut bundle_module_stmts = Vec::<Stmt>::new();
@@ -65,29 +66,39 @@ pub fn package_javascript(
         let mut stmts = Vec::<(Stmt, PathBuf)>::new();
 
         for asset_id in assets.drain(0..) {
-          let (asset_file_path, asset_content) = {
+          let (asset_file_path_rel, asset_content) = {
             let mut asset_map = asset_map.lock().unwrap();
             let asset = asset_map.get_mut(&asset_id).unwrap();
+            let asset_file_path_rel = asset.file_path_rel.clone();
+            let contents = asset.get_content()?;
+            // Clone in case asset is used in multiple places
             (
-              asset.file_path_rel.clone(),
-              std::mem::take(&mut asset.content),
+              asset_file_path_rel,
+              contents.clone() 
             )
+          };
+
+          let program = match asset_content {
+            AssetContent::Bytes(bytes) => {
+              let parse_result = parse_program(
+                &asset_file_path_rel,
+                std::str::from_utf8(&bytes).unwrap(),
+                source_map.clone(),
+              )
+              .unwrap();
+              parse_result.program
+            },
+            AssetContent::JavaScript(program) => program,
+            // _ => return Err("Invalid JS Asset type".to_string()),
           };
 
           let mut module = Module {
             span: Span::default(),
             body: vec![],
             shebang: None,
-          };
+          };         
 
-          let parse_result = parse_program(
-            &asset_file_path,
-            std::str::from_utf8(&asset_content).unwrap(),
-            source_map.clone(),
-          )
-          .unwrap();
-
-          match parse_result.program {
+          match program {
             Program::Module(m) => module.body = m.body,
             Program::Script(s) => {
               module.body = s.body.into_iter().map(|x| ModuleItem::Stmt(x)).collect()
@@ -164,6 +175,8 @@ pub fn package_javascript(
     content: rendered.as_bytes().to_vec(),
     filepath: PathBuf::from(&bundle.name),
   });
+
+  return Ok(());
 }
 
 fn divide_assets_by_threads(

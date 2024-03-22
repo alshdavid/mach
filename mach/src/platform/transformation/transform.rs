@@ -14,6 +14,7 @@ use crate::platform::config::PluginContainer;
 use crate::platform::config::TransformerTarget;
 use crate::public;
 use crate::public::Asset;
+use crate::public::AssetContent;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Dependency;
@@ -138,8 +139,7 @@ pub fn link_and_transform(
         // Transformation
         let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
-        let mut content =
-          fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+        let mut content = AssetContent::Bytes(fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?);
         let mut asset_dependencies = Vec::<DependencyOptions>::new();
         let mut asset_kind = file_target.file_extension.clone();
 

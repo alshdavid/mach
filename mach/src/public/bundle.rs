@@ -3,7 +3,6 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 
 use crate::kit::hash::hash_path_buff_sha_256;
-use crate::kit::hash::hash_sha_256;
 use crate::kit::hash::hash_string_sha_256;
 use crate::kit::hash::truncate;
 
@@ -38,12 +37,8 @@ impl Bundle {
     assets.sort_by(|a, b| a.file_path_rel.cmp(&b.file_path_rel));
     let mut content_hashes = String::new();
 
-    for asset in assets {
-      let result = format!(
-        "{} {}\n",
-        asset.file_path_rel.to_str().unwrap(),
-        hash_sha_256(&asset.content)
-      );
+    for asset in &mut assets {
+      let result = asset.content_hash().expect("Get content hash");
       content_hashes.push_str(&result);
     }
 
