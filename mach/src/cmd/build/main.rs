@@ -11,12 +11,11 @@ use crate::public::DependencyMap;
 use crate::public::Outputs;
 
 use super::parse_config;
-use super::reports;
+use super::reporter::AppReporter;
 use super::BuildCommand;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;
-  reports::config(&config);
 
   /*
     This is the bundler state. It is passed into
@@ -29,6 +28,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let mut bundles = Bundles::new();
   let mut bundle_graph = BundleGraph::new();
   let mut outputs = Outputs::new();
+  let mut reporter = AppReporter::new(&config);
+
+  reporter.print_config();
 
   /*
     load_plugins() will read source the .machrc and will
@@ -50,7 +52,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut asset_graph,
   )?;
 
-  let time_transform = reports::transform_stats(&config, &asset_map);
+  reporter.print_transform_stats(&asset_map);
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -65,7 +67,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut bundle_graph,
   )?;
 
-  let time_bundle = reports::bundle_stats(time_transform, &config, &bundles);
+  reporter.print_bundle_stats(&bundles);
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -85,14 +87,14 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut outputs,
   )?;
 
-  let time_package = reports::package_stats(time_bundle, &config);
+  reporter.print_package_stats();
 
   /*
     emit() writes the contents of the bundles to disk
   */
   emit(&config, &mut bundles, &mut outputs)?;
 
-  reports::emit_stats(time_package, &config);
-  reports::finished_stats(&config);
+  reporter.print_emit_stats();
+  reporter.print_finished_stats();
   Ok(())
 }
