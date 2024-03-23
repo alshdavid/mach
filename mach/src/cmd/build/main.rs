@@ -11,11 +11,12 @@ use crate::public::DependencyMap;
 use crate::public::Outputs;
 
 use super::parse_config;
+use super::reports;
 use super::BuildCommand;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;
-  config.log_details();
+  reports::config(&config);
 
   /*
     This is the bundler state. It is passed into
@@ -49,12 +50,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut asset_graph,
   )?;
 
-  let time_transform = config.time_elapsed();
-  println!(
-    "  Transform:     {:.3}s  (Assets {})",
-    time_transform,
-    asset_map.len()
-  );
+  let time_transform = reports::transform_stats(&config, &asset_map);
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -69,12 +65,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut bundle_graph,
   )?;
 
-  let time_bundle = config.time_elapsed();
-  println!(
-    "  Bundle:        {:.3}s  (Bundles {})",
-    time_bundle - time_transform,
-    bundles.len()
-  );
+  let time_bundle = reports::bundle_stats(time_transform, &config, &bundles);
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -94,42 +85,14 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut outputs,
   )?;
 
-  let time_package = config.time_elapsed();
-  println!("  Package:       {:.3}s", time_package - time_bundle);
+  let time_package = reports::package_stats(time_bundle, &config);
 
   /*
     emit() writes the contents of the bundles to disk
   */
   emit(&config, &mut bundles, &mut outputs)?;
 
-  let time_emit = config.time_elapsed();
-  println!("  Emit:          {:.3}s", time_emit - time_package);
-
-  println!("Finished in:   {:.3}s", config.time_elapsed(),);
+  reports::emit_stats(time_package, &config);
+  reports::finished_stats(&config);
   Ok(())
 }
-
-/*
-  main() initializes the config and starts the async runtime
-  then main_async() takes over.
-*/
-// pub fn main(command: BuildCommand) {
-//   let config = match parse_config(command) {
-//     Ok(config) => config,
-//     Err(msg) => {
-//       println!("Init Error:");
-//       println!("  {}", msg);
-//       std::process::exit(1);
-//     }
-//   };
-//   if let Err(msg) = tokio::runtime::Builder::new_multi_thread()
-//     .worker_threads(config.threads)
-//     .enable_all()
-//     .build()
-//     .unwrap()
-//     .block_on(main_async(config))
-//   {
-//     println!("Build Error:");
-//     println!("{}", msg);
-//   };
-// }

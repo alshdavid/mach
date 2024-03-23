@@ -229,11 +229,13 @@ impl Visit for Walker {
                             // export const { foo: bar } = { foo: 'text' }
                             //   essentially "foo" as "bar"
                             ObjectPatProp::KeyValue(prop) => {
-                              let Some(ident) = prop.value.as_ident() else { todo!() };
+                              let Some(ident) = prop.value.as_ident() else {
+                                todo!()
+                              };
                               self
                                 .exports
                                 .push(ExportSymbol::Named(ident.sym.to_string()));
-                            },
+                            }
                             ObjectPatProp::Rest(_) => todo!(),
                           }
                         }
