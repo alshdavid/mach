@@ -32,7 +32,7 @@ pub fn lookup_property_access(
       MemberProp::Computed(computed) => {
         keys.push(PropAccessType::Computed(*computed.expr));
       }
-      MemberProp::PrivateName(_) => todo!(),
+      MemberProp::PrivateName(_) => {},
     }
 
     match *member.obj {
