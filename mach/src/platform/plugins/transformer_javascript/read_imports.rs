@@ -218,7 +218,6 @@ impl Visit for Walker {
                       }
                       // export const { foo } = foo
                       Pat::Object(decl) => {
-                        dbg!(&decl);
                         for prop in &decl.props {
                           match prop {
                             ObjectPatProp::Assign(prop) => {
