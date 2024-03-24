@@ -69,10 +69,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   reporter.print_bundle_stats(&bundles);
 
-  // dbg!(&asset_map);
-  // dbg!(&dependency_map);
-  // dbg!(&bundles);
-  // dbg!(&bundle_graph);
   /*
     package() will take the bundles, obtain their referenced Assets
     and modify them such that they can work in the context of an
