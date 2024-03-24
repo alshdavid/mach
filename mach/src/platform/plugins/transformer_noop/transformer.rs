@@ -8,10 +8,9 @@ pub struct DefaultTransformerNoop {}
 impl Transformer for DefaultTransformerNoop {
   fn transform(
     &self,
-    asset: &mut MutableAsset,
+    _asset: &mut MutableAsset,
     _config: &Config,
   ) -> Result<(), String> {
-    asset.set_bytes(vec![]);
     return Ok(());
   }
 }
