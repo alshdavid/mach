@@ -36,7 +36,7 @@ impl Default for Machrc {
         ),
         (
           "*.{svg,png,json,gif,woff2,woff,txt}".to_string(),
-          vec!["mach:transformer/noop".to_string()],
+          vec!["mach:transformer/drop".to_string()],
         ),
       ])),
     }

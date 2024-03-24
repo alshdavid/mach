@@ -2,6 +2,7 @@ use std::path::Path;
 
 use normalize_path::NormalizePath;
 
+use crate::platform::plugins::transformer_drop::DefaultTransformerDrop;
 use crate::public::Machrc;
 use crate::public::Transformer;
 
@@ -57,6 +58,11 @@ pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
 
         if engine == "mach" && specifier == "transformer/noop" {
           transformers.push(Box::new(DefaultTransformerNoop {}));
+          continue;
+        }
+
+        if engine == "mach" && specifier == "transformer/drop" {
+          transformers.push(Box::new(DefaultTransformerDrop {}));
           continue;
         }
 

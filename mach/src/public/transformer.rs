@@ -42,6 +42,19 @@ impl<'a> MutableAsset<'a> {
     };
   }
 
+  #[allow(dead_code)]
+  pub fn get_bytes(&mut self) -> &[u8] {
+    return self.content;
+  }
+
+  #[allow(dead_code)]
+  pub fn set_bytes(
+    &mut self,
+    bytes: Vec<u8>,
+  ) {
+    *self.content = bytes;
+  }
+
   pub fn get_code(&mut self) -> String {
     return String::from_utf8(self.content.to_owned()).unwrap();
   }
