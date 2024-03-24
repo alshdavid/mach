@@ -722,11 +722,11 @@ impl RuntimeFactory {
     let current_body = std::mem::take(&mut block.stmts);
 
     for stmt in stmts {
-      block.stmts.push(stmt.clone());
+      block.stmts.push(stmt);
     }
 
     for stmt in current_body {
-      block.stmts.push(stmt.clone());
+      block.stmts.push(stmt);
     }
 
     Stmt::Expr(ExprStmt {
