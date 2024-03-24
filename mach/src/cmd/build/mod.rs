@@ -1,5 +1,6 @@
 mod config;
 mod main;
+mod reporter;
 
-pub use super::build::config::*;
-pub use super::build::main::*;
+pub use self::config::*;
+pub use self::main::*;

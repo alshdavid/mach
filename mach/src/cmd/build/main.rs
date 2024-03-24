@@ -11,11 +11,11 @@ use crate::public::DependencyMap;
 use crate::public::Outputs;
 
 use super::parse_config;
+use super::reporter::AppReporter;
 use super::BuildCommand;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;
-  config.log_details();
 
   /*
     This is the bundler state. It is passed into
@@ -28,6 +28,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let mut bundles = Bundles::new();
   let mut bundle_graph = BundleGraph::new();
   let mut outputs = Outputs::new();
+  let mut reporter = AppReporter::new(&config);
+
+  reporter.print_config();
 
   /*
     load_plugins() will read source the .machrc and will
@@ -49,12 +52,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut asset_graph,
   )?;
 
-  let time_transform = config.time_elapsed();
-  println!(
-    "  Transform:     {:.3}s  (Assets {})",
-    time_transform,
-    asset_map.len()
-  );
+  reporter.print_transform_stats(&asset_map);
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -69,12 +67,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut bundle_graph,
   )?;
 
-  let time_bundle = config.time_elapsed();
-  println!(
-    "  Bundle:        {:.3}s  (Bundles {})",
-    time_bundle - time_transform,
-    bundles.len()
-  );
+  reporter.print_bundle_stats(&bundles);
 
   // dbg!(&asset_map);
   // dbg!(&dependency_map);
@@ -98,42 +91,14 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &mut outputs,
   )?;
 
-  let time_package = config.time_elapsed();
-  println!("  Package:       {:.3}s", time_package - time_bundle);
+  reporter.print_package_stats();
 
   /*
     emit() writes the contents of the bundles to disk
   */
   emit(&config, &mut bundles, &mut outputs)?;
 
-  let time_emit = config.time_elapsed();
-  println!("  Emit:          {:.3}s", time_emit - time_package);
-
-  println!("Finished in:   {:.3}s", config.time_elapsed(),);
+  reporter.print_emit_stats();
+  reporter.print_finished_stats();
   Ok(())
 }
-
-/*
-  main() initializes the config and starts the async runtime
-  then main_async() takes over.
-*/
-// pub fn main(command: BuildCommand) {
-//   let config = match parse_config(command) {
-//     Ok(config) => config,
-//     Err(msg) => {
-//       println!("Init Error:");
-//       println!("  {}", msg);
-//       std::process::exit(1);
-//     }
-//   };
-//   if let Err(msg) = tokio::runtime::Builder::new_multi_thread()
-//     .worker_threads(config.threads)
-//     .enable_all()
-//     .build()
-//     .unwrap()
-//     .block_on(main_async(config))
-//   {
-//     println!("Build Error:");
-//     println!("{}", msg);
-//   };
-// }

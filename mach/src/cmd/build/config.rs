@@ -29,6 +29,10 @@ pub struct BuildCommand {
   #[arg(long = "no-optimize")]
   pub no_optimize: bool,
 
+  /// Enable bundle splitting (experimental)
+  #[arg(long = "bundle-splitting")]
+  pub bundle_splitting: bool,
+
   /// How many threads to use for compilation
   #[arg(short = 't', long = "threads", env = "MACH_THREADS")]
   pub threads: Option<usize>,
@@ -110,6 +114,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     workspace_root: None,
     // TODO
     workspace_kind: None,
+    bundle_splitting: command.bundle_splitting,
     project_root,
     package_json,
     machrc,
