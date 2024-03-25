@@ -25,3 +25,4 @@ clap = { version = "4.5.3", features = ["derive", "env"] }
 serde = "1.0.197"
 html5ever = "0.26.0"
 markup5ever_rcdom = "0.2.0"
+dashmap = "5.5.3"
