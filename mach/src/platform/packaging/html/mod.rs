@@ -1,3 +1,3 @@
 mod package_html;
 
-pub use crate::platform::packaging::html::package_html::*;
+pub use self::package_html::*;

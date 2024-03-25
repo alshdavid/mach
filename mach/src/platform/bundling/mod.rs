@@ -3,4 +3,4 @@ mod bundle_single;
 mod bundle_splitting;
 mod infer_exports;
 
-pub use crate::platform::bundling::bundle::*;
+pub use self::bundle::*;

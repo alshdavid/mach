@@ -1,5 +1,5 @@
 mod config;
 mod main;
 
-pub use crate::cmd::watch::config::*;
-pub use crate::cmd::watch::main::*;
+pub use self::config::*;
+pub use self::main::*;

@@ -16,6 +16,12 @@ use cmd::watch::WatchCommand;
   Main just acts as a router to run CLI commands
 */
 
+#[derive(Parser, Debug)]
+struct Commands {
+  #[clap(subcommand)]
+  command: CommandType,
+}
+
 #[derive(Debug, Subcommand)]
 pub enum CommandType {
   /// Build a project
@@ -47,10 +53,4 @@ fn main() {
       cmd::version::main();
     }
   }
-}
-
-#[derive(Parser, Debug)]
-struct Commands {
-  #[clap(subcommand)]
-  command: CommandType,
 }

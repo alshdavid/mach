@@ -1,3 +1,3 @@
 pub mod hash;
 
-pub use crate::kit::hash::hash::*;
+pub use self::hash::*;
