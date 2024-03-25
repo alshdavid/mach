@@ -77,7 +77,6 @@ pub fn package(
       );
     } else if bundle.kind == "css" {
       package_css(
-        asset_map_local,
         asset_content_map_local,
         outputs_local,
         bundle,

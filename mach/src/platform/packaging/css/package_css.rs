@@ -3,13 +3,11 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use crate::public::AssetContentMap;
-use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::Output;
 use crate::public::Outputs;
 
 pub fn package_css(
-  asset_map: Arc<Mutex<AssetMap>>,
   asset_content_map: Arc<Mutex<AssetContentMap>>,
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,

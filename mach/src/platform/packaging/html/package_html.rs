@@ -12,7 +12,6 @@ use std::sync::Mutex;
 use crate::kit::html;
 use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
-use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleManifest;
