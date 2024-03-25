@@ -7,6 +7,7 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
+use crate::kit::profiler::Profiler;
 use crate::public::Config;
 use crate::public::Machrc;
 
@@ -108,6 +109,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
   return Ok(Config {
     start_time,
     entry_point,
+    profiler: Profiler::new(),
     dist_dir,
     clean_dist_dir: command.clean,
     // TODO

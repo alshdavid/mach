@@ -4,6 +4,8 @@ use std::time::SystemTime;
 
 use serde::Serialize;
 
+use crate::kit::profiler::Profiler;
+
 use super::Machrc;
 
 // #[derive(Clone, Debug)]
@@ -15,6 +17,7 @@ use super::Machrc;
 #[derive(Clone, Debug, Serialize)]
 pub struct Config {
   pub start_time: SystemTime,
+  pub profiler: Profiler,
   pub entry_point: PathBuf,
   pub dist_dir: PathBuf,
   pub clean_dist_dir: bool,
