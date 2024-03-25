@@ -14,6 +14,7 @@ use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
 
 use crate::kit::swc::render_module;
+use crate::kit::profiler::PROFILER;
 use crate::public;
 use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
@@ -42,12 +43,13 @@ pub fn package_javascript(
   bundle: Bundle,
   bundle_manifest: Arc<BundleManifest>,
 ) {
+  PROFILER.start("package-js");
+
   let source_map = Arc::new(SourceMap::default());
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let mut bundle_module_stmts = Vec::<Stmt>::new();
   let bundle_id = bundle.id.clone();
   let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
-  config.profiler.start("package");
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
     bundle_module_stmts.push(stmt);
@@ -67,6 +69,7 @@ pub fn package_javascript(
     handles.push(std::thread::spawn(
       move || -> Result<Vec<(Stmt, PathBuf)>, String> {
         let mut stmts = Vec::<(Stmt, PathBuf)>::new();
+        PROFILER.start("thread");
 
         for asset_id in assets.drain(0..) {
           let asset_content = {
@@ -107,11 +110,14 @@ pub fn package_javascript(
             depends_on: HashSet::new(),
           };
 
+          PROFILER.start("runtime");
           let (module, javascript_runtime) =
             swc_core::common::GLOBALS.set(&Globals::new(), move || {
               let module = module.fold_with(&mut javascript_runtime);
               return (module, javascript_runtime);
             });
+          PROFILER.lap("runtime");
+          
 
           let stmt = runtime_factory.module(
             javascript_runtime.depends_on.len() != 0,
@@ -121,6 +127,8 @@ pub fn package_javascript(
 
           stmts.push((stmt, asset_id));
         }
+
+        PROFILER.lap("thread");
         return Ok(stmts);
       },
     ));
@@ -167,7 +175,13 @@ pub fn package_javascript(
     filepath: PathBuf::from(&bundle.name),
   });
 
-  config.profiler.log_seconds("package");
+  // PROFILER.log_millis_average("runtime");
+  // PROFILER.log_millis_total("runtime");
+  PROFILER.log_millis_average("thread");
+  PROFILER.log_millis_total("thread");
+  PROFILER.log_nanos_total("package-js");
+  PROFILER.log_millis_total("package-js");
+  PROFILER.log_seconds_total("package-js");
 }
 
 fn divide_assets_by_threads(
