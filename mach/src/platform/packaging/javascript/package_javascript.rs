@@ -47,6 +47,7 @@ pub fn package_javascript(
   let mut bundle_module_stmts = Vec::<Stmt>::new();
   let bundle_id = bundle.id.clone();
   let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
+  config.profiler.start("package");
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
     bundle_module_stmts.push(stmt);
@@ -165,6 +166,8 @@ pub fn package_javascript(
     content: rendered.as_bytes().to_vec(),
     filepath: PathBuf::from(&bundle.name),
   });
+
+  config.profiler.log_seconds("package");
 }
 
 fn divide_assets_by_threads(
