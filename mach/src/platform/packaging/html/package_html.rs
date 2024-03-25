@@ -10,7 +10,7 @@ use markup5ever_rcdom::SerializableHandle;
 use std::sync::Mutex;
 
 use crate::kit::html;
-use crate::public;
+use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -22,8 +22,7 @@ use crate::public::Output;
 use crate::public::Outputs;
 
 pub fn package_html(
-  _config: Arc<public::Config>,
-  asset_map: Arc<Mutex<AssetMap>>,
+  asset_content_map: Arc<Mutex<AssetContentMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
   bundles: Arc<Bundles>,
@@ -39,15 +38,12 @@ pub fn package_html(
   if dependencies.len() == 0 {
     return;
   }
-  let (asset_file_path_rel, asset_content) = {
-    let mut asset_map = asset_map.lock().unwrap();
-    let Some(asset) = asset_map.get_mut(&entry_asset) else {
+  let asset_content = {
+    let mut asset_content_map = asset_content_map.lock().unwrap();
+    let Some(contents) = asset_content_map.bytes.get_mut(entry_asset) else {
       panic!("could not find asset")
     };
-    (
-      asset.file_path_rel.clone(),
-      std::mem::take(&mut asset.content),
-    )
+    *contents.clone()
   };
 
   let dom = parse_document(RcDom::default(), Default::default())
@@ -69,7 +65,7 @@ pub fn package_html(
     };
 
     let Some(dependency) =
-      dependency_map.get_dependency_for_specifier(&asset_file_path_rel, &specifier)
+      dependency_map.get_dependency_for_specifier(entry_asset, &specifier)
     else {
       continue;
     };

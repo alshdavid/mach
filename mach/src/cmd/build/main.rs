@@ -3,6 +3,7 @@ use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
+use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
@@ -23,6 +24,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     depending on how that phase uses them
   */
   let mut asset_map = AssetMap::new();
+  let mut asset_content_map = AssetContentMap::new();
   let mut dependency_map = DependencyMap::new();
   let mut asset_graph = AssetGraph::new();
   let mut bundles = Bundles::new();
@@ -48,6 +50,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &config,
     &mut plugins,
     &mut asset_map,
+    &mut asset_content_map,
     &mut dependency_map,
     &mut asset_graph,
   )?;
@@ -81,6 +84,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     &config,
     &mut dependency_map,
     &mut asset_graph,
+    &mut asset_content_map,
     &mut bundles,
     &mut bundle_graph,
     &mut asset_map,

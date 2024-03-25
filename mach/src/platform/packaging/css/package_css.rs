@@ -2,35 +2,24 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use crate::public;
-use crate::public::AssetGraph;
+use crate::public::AssetContentMap;
 use crate::public::AssetMap;
 use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::Bundles;
-use crate::public::DependencyMap;
 use crate::public::Output;
 use crate::public::Outputs;
 
 pub fn package_css(
-  _config: Arc<public::Config>,
   asset_map: Arc<Mutex<AssetMap>>,
-  _dependency_map: Arc<DependencyMap>,
-  _asset_graph: Arc<AssetGraph>,
-  _bundles: Arc<Bundles>,
-  _bundle_graph: Arc<BundleGraph>,
+  asset_content_map: Arc<Mutex<AssetContentMap>>,
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
-  _bundle_manifest: Arc<BundleManifest>,
 ) {
   let mut bundle_content = String::new();
 
   for asset_id in &bundle.assets {
-    let mut asset_map = asset_map.lock().unwrap();
-    let asset = asset_map.get_mut(&asset_id).unwrap();
-    let contents = std::mem::take(&mut asset.content);
-    bundle_content.push_str(&String::from_utf8(contents).unwrap())
+    let mut asset_map = asset_content_map.lock().unwrap();
+    let contents = asset_map.bytes.get_mut(asset_id).unwrap();
+    bundle_content.push_str(&String::from_utf8(*contents.clone()).unwrap())
   }
 
   outputs.lock().unwrap().push(Output {

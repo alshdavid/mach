@@ -40,9 +40,9 @@ impl Bundle {
 
     for asset in assets {
       let result = format!(
-        "{} {}\n",
+        "{}\n",
         asset.file_path_rel.to_str().unwrap(),
-        hash_sha_256(&asset.content)
+        // hash_sha_256(&asset.content)
       );
       content_hashes.push_str(&result);
     }

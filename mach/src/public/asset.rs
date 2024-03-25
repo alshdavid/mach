@@ -10,7 +10,6 @@ pub struct Asset {
   pub file_path_rel: PathBuf,
   /// Describes the type of the Asset. Stars as the file extension
   pub kind: String,
-  pub content: Vec<u8>,
   pub bundle_behavior: BundleBehavior,
 }
 

@@ -5,6 +5,7 @@ use std::sync::Mutex;
 use swc_core::common::SourceMap;
 
 use crate::public;
+use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
@@ -22,6 +23,7 @@ pub fn package(
   config: &public::Config,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
+  asset_content_map: &mut AssetContentMap,
   bundles: &mut Bundles,
   bundle_graph: &mut BundleGraph,
   asset_map: &mut AssetMap,
@@ -33,6 +35,7 @@ pub fn package(
   let bundles_local = Arc::new(std::mem::take(bundles));
   let bundle_graph_local = Arc::new(std::mem::take(bundle_graph));
   let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
+  let asset_content_map_local = Arc::new(Mutex::new(std::mem::take(asset_content_map)));
   let outputs_local = Arc::new(Mutex::new(std::mem::take(outputs)));
   let source_map = Arc::new(SourceMap::default());
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
@@ -48,6 +51,7 @@ pub fn package(
   for bundle in bundles_local.iter() {
     let config_local = config_local.clone();
     let asset_map_local = asset_map_local.clone();
+    let asset_content_map_local = asset_content_map_local.clone();
     let dependency_map_local = dependency_map_local.clone();
     let asset_graph_local = asset_graph_local.clone();
     let bundles_local = bundles_local.clone();
@@ -61,6 +65,7 @@ pub fn package(
       package_javascript(
         config_local,
         asset_map_local,
+        asset_content_map_local,
         dependency_map_local,
         asset_graph_local,
         bundles_local,
@@ -72,20 +77,14 @@ pub fn package(
       );
     } else if bundle.kind == "css" {
       package_css(
-        config_local,
         asset_map_local,
-        dependency_map_local,
-        asset_graph_local,
-        bundles_local,
-        bundle_graph_local,
+        asset_content_map_local,
         outputs_local,
         bundle,
-        bundle_manifest,
       )
     } else if bundle.kind == "html" {
       package_html(
-        config_local,
-        asset_map_local,
+        asset_content_map_local,
         dependency_map_local,
         asset_graph_local,
         bundles_local,
@@ -123,6 +122,10 @@ pub fn package(
     .unwrap()
     .into_inner()
     .unwrap();
+  *asset_content_map = Arc::try_unwrap(asset_content_map_local)
+  .unwrap()
+  .into_inner()
+  .unwrap();
 
   return Ok(());
 }

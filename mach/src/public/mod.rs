@@ -1,4 +1,5 @@
 mod asset;
+mod asset_content_map;
 mod asset_graph;
 mod asset_map;
 mod bundle;
@@ -14,6 +15,7 @@ mod resolver;
 mod transformer;
 
 pub use self::asset::*;
+pub use self::asset_content_map::*;
 pub use self::asset_graph::*;
 pub use self::asset_map::*;
 pub use self::bundle::*;

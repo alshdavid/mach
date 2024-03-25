@@ -15,6 +15,7 @@ use crate::kit::swc::parse_program;
 
 use crate::kit::swc::render_module;
 use crate::public;
+use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Bundle;
@@ -31,6 +32,7 @@ use super::runtime_factory::RuntimeFactory;
 pub fn package_javascript(
   config: Arc<public::Config>,
   asset_map: Arc<Mutex<AssetMap>>,
+  asset_content_map: Arc<Mutex<AssetContentMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
   bundles: Arc<Bundles>,
@@ -59,19 +61,18 @@ pub fn package_javascript(
     let bundle_graph = bundle_graph.clone();
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
+    let asset_content_map = asset_content_map.clone();
 
     handles.push(std::thread::spawn(
       move || -> Result<Vec<(Stmt, PathBuf)>, String> {
         let mut stmts = Vec::<(Stmt, PathBuf)>::new();
 
         for asset_id in assets.drain(0..) {
-          let (asset_file_path, asset_content) = {
-            let mut asset_map = asset_map.lock().unwrap();
-            let asset = asset_map.get_mut(&asset_id).unwrap();
-            (
-              asset.file_path_rel.clone(),
-              std::mem::take(&mut asset.content),
-            )
+          let asset_content = {
+            let mut asset_content_map = asset_content_map.lock().unwrap();
+            let contents = asset_content_map.bytes.get_mut(&asset_id).unwrap();
+            let contents = std::mem::take(&mut **contents);
+            contents
           };
 
           let mut module = Module {
@@ -81,7 +82,7 @@ pub fn package_javascript(
           };
 
           let parse_result = parse_program(
-            &asset_file_path,
+            &asset_id,
             std::str::from_utf8(&asset_content).unwrap(),
             source_map.clone(),
           )

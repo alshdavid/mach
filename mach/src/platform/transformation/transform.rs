@@ -14,6 +14,7 @@ use crate::platform::config::PluginContainer;
 use crate::platform::config::TransformerTarget;
 use crate::public;
 use crate::public::Asset;
+use crate::public::AssetContentMap;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::Dependency;
@@ -26,6 +27,7 @@ pub fn link_and_transform(
   config: &public::Config,
   plugins: &mut PluginContainer,
   asset_map: &mut AssetMap,
+  asset_content_map: &mut AssetContentMap,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
 ) -> Result<(), String> {
@@ -34,6 +36,7 @@ pub fn link_and_transform(
   let config_local = Arc::new(config.clone());
   let plugins_local = Arc::new(std::mem::take(plugins));
   let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
+  let asset_content_map_local = Arc::new(Mutex::new(std::mem::take(asset_content_map)));
   let dependency_map_local = Arc::new(Mutex::new(std::mem::take(dependency_map)));
   let asset_graph_local = Arc::new(Mutex::new(std::mem::take(asset_graph)));
   let in_progress = Arc::new(Mutex::new(HashSet::<PathBuf>::new()));
@@ -62,6 +65,7 @@ pub fn link_and_transform(
     let config = config_local.clone();
     let plugins = plugins_local.clone();
     let asset_map = asset_map_local.clone();
+    let asset_content_map = asset_content_map_local.clone();
     let dependency_map = dependency_map_local.clone();
     let asset_graph = asset_graph_local.clone();
     let in_progress = in_progress.clone();
@@ -138,8 +142,8 @@ pub fn link_and_transform(
         // Transformation
         let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
-        let mut content =
-          fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+        let mut content = Box::new(
+          fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?);
         let mut asset_dependencies = Vec::<DependencyOptions>::new();
         let mut asset_kind = file_target.file_extension.clone();
 
@@ -181,10 +185,11 @@ pub fn link_and_transform(
           name: file_target.file_stem.clone(),
           file_path: resolve_result.file_path.clone(),
           file_path_rel: file_path_rel.clone(),
-          content,
           kind: asset_kind,
           bundle_behavior: dependency_bundle_behavior,
         });
+
+        asset_content_map.lock().unwrap().bytes.insert(file_path_rel.clone(), content);
         // Transformation Done
 
         let mut new_dependencies = Vec::<Dependency>::new();
@@ -220,6 +225,10 @@ pub fn link_and_transform(
   //Put the results of the transformation back into the bundle state
   *plugins = Arc::try_unwrap(plugins_local).unwrap();
   *asset_map = Arc::try_unwrap(asset_map_local)
+    .unwrap()
+    .into_inner()
+    .unwrap();
+  *asset_content_map = Arc::try_unwrap(asset_content_map_local)
     .unwrap()
     .into_inner()
     .unwrap();
