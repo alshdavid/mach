@@ -39,15 +39,14 @@ pub fn package_html(
   if dependencies.len() == 0 {
     return;
   }
-  let (asset_file_path_rel, asset_content) = {
+  let asset_file_path_rel = entry_asset.clone();
+  
+  let asset_content = {
     let mut asset_map = asset_map.lock().unwrap();
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
       panic!("could not find asset")
     };
-    (
-      asset.file_path_rel.clone(),
-      std::mem::take(&mut asset.content),
-    )
+    std::mem::take(&mut asset.content)
   };
 
   let dom = parse_document(RcDom::default(), Default::default())

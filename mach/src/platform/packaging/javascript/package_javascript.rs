@@ -65,13 +65,12 @@ pub fn package_javascript(
         let mut stmts = Vec::<(Stmt, PathBuf)>::new();
 
         for asset_id in assets.drain(0..) {
-          let (asset_file_path, asset_content) = {
+          let asset_file_path = asset_id.clone();
+          
+          let asset_content = {
             let mut asset_map = asset_map.lock().unwrap();
             let asset = asset_map.get_mut(&asset_id).unwrap();
-            (
-              asset.file_path_rel.clone(),
-              std::mem::take(&mut asset.content),
-            )
+            std::mem::take(&mut asset.content)
           };
 
           let mut module = Module {
