@@ -13,7 +13,7 @@ if (action !== 'read' && action !== 'set') {
 let target_file = path.join(Paths.ScriptsTmp, 'sums', 'node-adapter')
 
 let results = crawlDir({
-  targetPath: path.join(Paths.Root, 'npm', 'node-adapter'),
+  targetPath: path.join(Paths.RootStr, 'npm', 'node-adapter'),
   dontCrawl: ['node_modules', 'lib', 'types'],
   match: [TargetType.FILE]
 })

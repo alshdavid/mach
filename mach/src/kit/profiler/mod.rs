@@ -15,6 +15,7 @@ use dashmap::mapref::one::Ref;
 use dashmap::DashMap;
 use once_cell::sync::Lazy;
 use serde::Serialize;
+use normalize_path::NormalizePath;
 
 pub static PROFILER: Lazy<Profiler> = Lazy::new(|| Profiler::new());
 
@@ -32,8 +33,9 @@ impl Profiler {
     if let Ok(value) = std::env::var("mach_profiler") {
       let mut path = PathBuf::from(value);
       if path.is_relative() {
-        path = std::env::current_dir().unwrap().join(path);
+        path = std::env::current_dir().unwrap().join(path).normalize();
       }
+      println!("profiler writing to: {:?}", path);
       let file = OpenOptions::new()
         .write(true)
         .append(true)

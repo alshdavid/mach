@@ -13,8 +13,8 @@ const target_map = {
 }
 
 export function main(args) {
-  if (!fs.existsSync(Paths.Root, 'node_modules')) {
-    child_process.execSync(`pnpm install`, { cwd: Paths.Root, stdio: 'inherit' })
+  if (!fs.existsSync(Paths.RootStr, 'node_modules')) {
+    child_process.execSync(`pnpm install`, { cwd: Paths.RootStr, stdio: 'inherit' })
   }
 
   const BIN_VERSION = process.env.BIN_VERSION || ''
@@ -37,13 +37,13 @@ export function main(args) {
     const [branch, buildno] = BIN_VERSION.split('.')
     const verno = branch === 'main' ? `0.0.${buildno}` : `0.0.${buildno}-${branch}`
     console.log(verno)
-    const toml = fs.readFileSync(path.join(Paths.Root, 'mach', 'Cargo.toml'), 'utf8')
+    const toml = fs.readFileSync(path.join(Paths.RootStr, 'mach', 'Cargo.toml'), 'utf8')
     const updated = toml.replace('version = "0.0.0-local"', `version = "${verno}"`)
-    fs.writeFileSync(path.join(Paths.Root, 'mach', 'Cargo.toml'), updated, 'utf8')
+    fs.writeFileSync(path.join(Paths.RootStr, 'mach', 'Cargo.toml'), updated, 'utf8')
   }
 
   console.log(`cargo build ${args._raw || ''}`)
-  child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.Root, stdio: 'inherit' })
+  child_process.execSync(`cargo build ${args._raw || ''}`, { cwd: Paths.RootStr, stdio: 'inherit' })
 
   if (TARGET) {
     console.log(Paths.CargoOutput)
@@ -57,7 +57,7 @@ export function main(args) {
   fs.mkdirSync(path.join(__output, 'lib'), { recursive: true })
   fs.mkdirSync(path.join(__output, 'bin'), { recursive: true })
 
-  fs.cpSync(path.join(Paths.Root, 'npm', 'node-adapter'), path.join(__output, 'lib', 'node_adapter'), { recursive: true })
+  fs.cpSync(path.join(Paths.RootStr, 'npm', 'node-adapter'), path.join(__output, 'lib', 'node_adapter'), { recursive: true })
   fs.rmSync(path.join(__output, 'lib', 'node_adapter', 'node_modules'), { force: true, recursive: true })
 
   let binary_path = path.join(__output, 'bin', 'mach')

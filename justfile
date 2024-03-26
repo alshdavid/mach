@@ -48,8 +48,16 @@ fixture cmd fixture *ARGS:
 fmt:
   cargo +nightly fmt
 
-three-js:
-  node ./.github/scripts/ci/benchmark.mjs
+benchmark project="mach" count="50" script="build":
+  just benchmark-generate {{project}} {{count}}
+  cd benchmarks/{{project}}_{{count}} && \
+  mach_profiler=../{{project}}_{{count}}.csv \
+  pnpm run {{script}}
+
+benchmark-generate project="mach" count="50":
+  PROJECT={{project}} \
+  BENCH_COPIES={{count}} \
+  node .github/scripts/ci/generate_benchmark.mjs
 
 @_create_out_dir:
   rm -rf ./target/{{profile}}
