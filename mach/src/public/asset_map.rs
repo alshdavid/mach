@@ -5,44 +5,53 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use super::Asset;
+use super::AssetId;
 
 #[derive(Default)]
 pub struct AssetMap {
-  assets: HashMap<PathBuf, Asset>,
+  assets: HashMap<AssetId, Asset>,
+  file_paths: HashMap<PathBuf, AssetId>,
 }
 
 impl AssetMap {
   pub fn new() -> Self {
-    return AssetMap {
-      assets: HashMap::new(),
-    };
+    Self::default()
   }
 
   pub fn insert(
     &mut self,
     asset: Asset,
-  ) {
-    let asset_path = asset.file_path_relative.clone();
-    self.assets.insert(asset_path.clone(), asset);
+  ) -> AssetId {
+    let asset_id = asset.id.clone();
+    self.file_paths.insert(asset.file_path_absolute.clone(), asset_id.clone());
+    self.assets.insert(asset_id.clone(), asset);
+    asset_id
   }
 
   pub fn get_mut(
     &mut self,
-    file_path: &Path,
+    asset_id: &AssetId,
   ) -> Option<&mut Asset> {
-    return self.assets.get_mut(file_path);
+    return self.assets.get_mut(asset_id);
   }
 
   pub fn get(
     &self,
-    file_path: &Path,
+    asset_id: &AssetId,
   ) -> Option<&Asset> {
-    return self.assets.get(file_path);
+    return self.assets.get(asset_id);
+  }
+
+  pub fn get_asset_id_for_file_path(
+    &self,
+    path: &Path,
+  ) -> Option<&AssetId> {
+    return self.file_paths.get(path);
   }
 
   pub fn get_many(
     &self,
-    asset_ids: &[&PathBuf],
+    asset_ids: &[&AssetId],
   ) -> Result<Vec<&Asset>, String> {
     let mut results = Vec::<&Asset>::new();
 
@@ -56,11 +65,11 @@ impl AssetMap {
     return Ok(results);
   }
 
-  pub fn contains_key(
+  pub fn contains(
     &self,
-    file_path: &Path,
+    asset_id: &AssetId,
   ) -> bool {
-    return self.assets.contains_key(file_path);
+    return self.assets.contains_key(asset_id);
   }
 
   pub fn len(&self) -> usize {
@@ -98,6 +107,5 @@ impl Debug for AssetMap {
   ) -> std::fmt::Result {
     let values = self.assets.values().collect::<Vec<&Asset>>();
     f.debug_list().entries(&values).finish()
-    // f.debug_struct("AssetMap").field("assets", &self.assets).finish()
   }
 }

@@ -113,23 +113,25 @@ pub fn link_and_transform(
           kill_threads();
           return Err("Unable to resolve file".to_string());
         };
-        let file_path_rel =
-          pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
         // Resolve Done
 
         // Dependency Graph
-        let dependency_source_path = dependency.resolve_from_rel.clone();
         let dependency_bundle_behavior = dependency.bundle_behavior.clone();
-        let dependency_id = dependency_map.lock().unwrap().insert(dependency);
-        asset_graph.lock().unwrap().add_edge(
-          dependency_source_path.clone(),
-          (dependency_id, file_path_rel.clone()),
-        );
-        if asset_map.lock().unwrap().contains_key(&file_path_rel) {
+        let dependency_id = dependency.id.clone();
+        let source_asset = dependency.source_asset.clone();
+
+        dependency_map.lock().unwrap().insert(dependency);
+
+        if let Some(parent_asset_id) = asset_map.lock().unwrap().get_asset_id_for_file_path(&resolve_result.file_path) {
+          asset_graph.lock().unwrap().add_edge(
+            source_asset.clone(),
+            parent_asset_id.clone(),
+            dependency_id.clone(),
+          );
           continue_threads();
           continue;
         }
-        if !in_progress.lock().unwrap().insert(file_path_rel.clone()) {
+        if !in_progress.lock().unwrap().insert(resolve_result.file_path.clone()) {
           continue_threads();
           continue;
         }
@@ -177,7 +179,10 @@ pub fn link_and_transform(
           i += 1;
         }
 
-        asset_map.lock().unwrap().insert(Asset {
+        let file_path_rel =
+          pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+
+        let asset_id = asset_map.lock().unwrap().insert(Asset {
           name: file_target.file_stem.clone(),
           file_path_absolute: resolve_result.file_path.clone(),
           file_path_relative: file_path_rel.clone(),
@@ -186,6 +191,12 @@ pub fn link_and_transform(
           bundle_behavior: dependency_bundle_behavior,
           ..Default::default()
         });
+
+        asset_graph.lock().unwrap().add_edge(
+          source_asset.clone(),
+          asset_id.clone(),
+          dependency_id.clone(),
+        );
         // Transformation Done
 
         let mut new_dependencies = Vec::<Dependency>::new();
@@ -193,13 +204,12 @@ pub fn link_and_transform(
         // Add new items to the queue
         while let Some(dependency_options) = asset_dependencies.pop() {
           new_dependencies.push(Dependency {
-            content_key: String::new(),
             specifier: dependency_options.specifier.clone(),
             specifier_type: dependency_options.specifier_type,
             is_entry: false,
             source_path: resolve_result.file_path.clone(),
+            source_asset: asset_id.clone(),
             resolve_from: resolve_result.file_path.clone(),
-            resolve_from_rel: file_path_rel.clone(),
             priority: dependency_options.priority,
             imported_symbols: dependency_options.imported_symbols,
             bundle_behavior: dependency_options.bundle_behavior,

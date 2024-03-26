@@ -1,7 +1,7 @@
-use crate::platform::bundling::bundle;
+// use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
-use crate::platform::packaging::package;
+// use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
@@ -54,18 +54,23 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   reporter.print_transform_stats(&asset_map);
 
+  dbg!(&asset_map);
+  dbg!(&asset_graph);
+  dbg!(&dependency_map);
+  return Ok(());
+
   /*
     bundle() will take the asset graph and organize related assets
     into groupings. Each grouping will be emitted as a "bundle"
   */
-  bundle(
-    &config,
-    &asset_map,
-    &dependency_map,
-    &asset_graph,
-    &mut bundles,
-    &mut bundle_graph,
-  )?;
+  // bundle(
+  //   &config,
+  //   &asset_map,
+  //   &dependency_map,
+  //   &asset_graph,
+  //   &mut bundles,
+  //   &mut bundle_graph,
+  // )?;
 
   reporter.print_bundle_stats(&bundles);
 
@@ -77,15 +82,15 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     It also injects the runtime and rewrites import
     statements to point to the new paths
   */
-  package(
-    &config,
-    &mut dependency_map,
-    &mut asset_graph,
-    &mut bundles,
-    &mut bundle_graph,
-    &mut asset_map,
-    &mut outputs,
-  )?;
+  // package(
+  //   &config,
+  //   &mut dependency_map,
+  //   &mut asset_graph,
+  //   &mut bundles,
+  //   &mut bundle_graph,
+  //   &mut asset_map,
+  //   &mut outputs,
+  // )?;
 
   reporter.print_package_stats();
 

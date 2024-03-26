@@ -1,16 +1,18 @@
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fmt::Debug;
-use std::path::Path;
-use std::path::PathBuf;
 
+use super::AssetId;
 use super::Dependency;
+use super::DependencyId;
 
 #[derive(Default)]
 pub struct AssetGraph {
-  /// AssetRelPath -> [](DependencyId, AssetRelPath)
-  edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
-  parents: HashMap<String, PathBuf>,
+  /// This is the dependencies and resolved assets for a given asset
+  dependencies: BTreeMap<AssetId, HashSet<(DependencyId, AssetId)>>,
+  /// This is the resolved asset for a given dependency
+  resolved: HashMap<DependencyId, AssetId>,
 }
 
 impl AssetGraph {
@@ -20,26 +22,27 @@ impl AssetGraph {
 
   pub fn add_edge(
     &mut self,
-    from: PathBuf,
-    to: (String, PathBuf),
+    child: AssetId,
+    parent: AssetId,
+    dependency: DependencyId,
   ) {
-    self.parents.insert(to.0.clone(), to.1.clone());
-    if let Some(edges) = self.edges.get_mut(&from) {
-      edges.insert(to);
+    self.resolved.insert(dependency.clone(), parent.clone());
+    if let Some(edges) = self.dependencies.get_mut(&child) {
+      edges.insert((dependency, parent));
     } else {
-      self.edges.insert(from, HashSet::from([to]));
+      self.dependencies.insert(child, HashSet::from([(dependency, parent)]));
     }
   }
 
   pub fn get_dependencies(
     &self,
-    asset_id: &Path,
-  ) -> Option<Vec<(&String, &PathBuf)>> {
-    let Some(dependencies) = self.edges.get(asset_id) else {
+    asset_id: &AssetId,
+  ) -> Option<Vec<(&DependencyId, &AssetId)>> {
+    let Some(dependencies) = self.dependencies.get(asset_id) else {
       return None;
     };
 
-    let mut result = Vec::<(&String, &PathBuf)>::new();
+    let mut result = Vec::<(&DependencyId, &AssetId)>::new();
 
     for (dependency_id, resolved_asset) in dependencies {
       result.push((dependency_id, resolved_asset));
@@ -51,15 +54,11 @@ impl AssetGraph {
   pub fn get_asset_id_for_dependency(
     &self,
     dependency: &Dependency,
-  ) -> Option<PathBuf> {
-    let Some(asset_id) = self.parents.get(&dependency.content_key) else {
+  ) -> Option<AssetId> {
+    let Some(asset_id) = self.resolved.get(&dependency.id) else {
       return None;
     };
     return Some(asset_id.clone());
-  }
-
-  pub fn _iter(&self) -> impl Iterator<Item = (&PathBuf, &HashSet<(String, PathBuf)>)> {
-    self.edges.iter()
   }
 }
 
@@ -68,6 +67,14 @@ impl Debug for AssetGraph {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    f.debug_map().entries(&self.edges).finish()
+    let mut map = BTreeMap::<String, Vec<String>>::new();
+    for (k, s) in &self.dependencies {
+      let mut deps = vec![];
+      for (dep_id, asset_id) in s {
+        deps.push(format!("Dependency({}) -> Asset({})", dep_id.0.to_string(), asset_id.0.to_string()))
+      }
+      map.insert(format!("Asset({})", k.0.to_string()), deps);
+    }
+    f.debug_map().entries(&map).finish()
   }
 }

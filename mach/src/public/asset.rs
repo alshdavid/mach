@@ -1,11 +1,14 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 use super::BundleBehavior;
 use super::InternalId;
 
-#[derive(Clone, Default, Debug)]
-pub struct AssetId(InternalId);
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct AssetId(pub InternalId);
 
 #[derive(Clone, Default)]
 pub struct Asset {

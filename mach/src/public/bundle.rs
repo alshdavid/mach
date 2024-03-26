@@ -23,22 +23,6 @@ pub struct Bundle {
   pub entry_asset: Option<PathBuf>,
 }
 
-impl std::fmt::Debug for Bundle {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    f.debug_struct("Bundle")
-      .field("id", &self.id.0)
-      .field("content_key", &self.content_key)
-      .field("name", &self.name)
-      .field("kind", &self.kind)
-      .field("assets", &self.assets)
-      .field("entry_asset", &self.entry_asset)
-      .finish()
-  }
-}
-
 impl Bundle {
   pub fn generate_id(&self) -> String {
     let mut names = String::new();
@@ -81,5 +65,21 @@ impl Bundle {
     let mut v = self.assets.iter().collect::<Vec<&PathBuf>>();
     v.sort();
     return v;
+  }
+}
+
+impl std::fmt::Debug for Bundle {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("Bundle")
+      .field("id", &self.id.0)
+      .field("content_key", &self.content_key)
+      .field("name", &self.name)
+      .field("kind", &self.kind)
+      .field("assets", &self.assets)
+      .field("entry_asset", &self.entry_asset)
+      .finish()
   }
 }

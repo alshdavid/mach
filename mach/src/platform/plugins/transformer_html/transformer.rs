@@ -29,7 +29,7 @@ impl Transformer for DefaultTransformerHtml {
         specifier_type: crate::public::SpecifierType::ESM,
         priority: crate::public::DependencyPriority::Lazy,
         resolve_from: asset.file_path.clone(),
-        imported_symbols: vec![crate::public::ImportSymbolType::Namespace("".to_string())],
+        imported_symbols: vec![crate::public::ImportSymbol::Namespace("".to_string())],
         bundle_behavior: crate::public::BundleBehavior::Default,
       });
     }
