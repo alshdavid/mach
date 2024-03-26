@@ -106,6 +106,42 @@ impl Profiler {
     total
   }
 
+  pub fn get_nanos_max(
+    &self,
+    name: &str,
+  ) -> u128 {
+    if !self.end_times.contains_key(name) {
+      self.lap(name);
+    }
+    let end_times = self.get_end_times(name);
+    let mut max: u128 = 0;
+    for end_time in end_times.iter() {
+      let elapsed = end_time.as_nanos();
+      if elapsed > max {
+        max = elapsed
+      }
+    }
+    max
+  }
+
+  pub fn get_nanos_min(
+    &self,
+    name: &str,
+  ) -> u128 {
+    if !self.end_times.contains_key(name) {
+      self.lap(name);
+    }
+    let end_times = self.get_end_times(name);
+    let mut min: u128 = 0;
+    for end_time in end_times.iter() {
+      let elapsed = end_time.as_nanos();
+      if elapsed < min {
+        min = elapsed
+      }
+    }
+    min
+  }
+
   pub fn get_millis_average(
     &self,
     name: &str,
@@ -135,6 +171,26 @@ impl Profiler {
     return elapsed_ms;
   }
 
+  pub fn get_millis_max(
+    &self,
+    name: &str,
+  ) -> f64 {
+    let elapsed = self.get_nanos_max(name);
+    let elapsed_ns = elapsed as f64;
+    let elapsed_ms = elapsed_ns as f64 / 1_000_000 as f64;
+    return elapsed_ms;
+  }
+
+  pub fn get_millis_min(
+    &self,
+    name: &str,
+  ) -> f64 {
+    let elapsed = self.get_nanos_min(name);
+    let elapsed_ns = elapsed as f64;
+    let elapsed_ms = elapsed_ns as f64 / 1_000_000 as f64;
+    return elapsed_ms;
+  }
+
   pub fn get_seconds_average(
     &self,
     name: &str,
@@ -156,6 +212,22 @@ impl Profiler {
     name: &str,
   ) -> f64 {
     let elapsed_ms = self.get_millis_total(name);
+    return elapsed_ms / 1_000 as f64;
+  }
+
+  pub fn get_seconds_max(
+    &self,
+    name: &str,
+  ) -> f64 {
+    let elapsed_ms = self.get_millis_max(name);
+    return elapsed_ms / 1_000 as f64;
+  }
+
+  pub fn get_seconds_min(
+    &self,
+    name: &str,
+  ) -> f64 {
+    let elapsed_ms = self.get_millis_min(name);
     return elapsed_ms / 1_000 as f64;
   }
 
@@ -186,13 +258,31 @@ impl Profiler {
     self.write_log(name, &count, &format!("{}", elapsed), "ns");
   }
 
+  pub fn log_nanos_max(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed = self.get_nanos_max(name);
+    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+  }
+
+  pub fn log_nanos_min(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed = self.get_nanos_min(name);
+    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+  }
+
   pub fn log_millis_average(
     &self,
     name: &str,
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_average(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_ms), "ms");
+    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_median(
@@ -201,7 +291,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_median(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_ms), "ms");
+    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_total(
@@ -210,7 +300,25 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_total(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_ms), "ms");
+    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+  }
+
+  pub fn log_millis_max(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed_ms = self.get_millis_max(name);
+    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+  }
+
+  pub fn log_millis_min(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed_ms = self.get_millis_min(name);
+    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_seconds_average(
@@ -237,6 +345,24 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_total(name);
+    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+  }
+
+  pub fn log_seconds_max(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed_s = self.get_seconds_max(name);
+    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+  }
+
+  pub fn log_seconds_min(
+    &self,
+    name: &str,
+  ) {
+    let count = self.get_end_times(name).len();
+    let elapsed_s = self.get_seconds_min(name);
     self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
   }
 
