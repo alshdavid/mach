@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::public::AssetMap;
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::Config;
 
 pub struct AppReporter<'a> {
@@ -58,7 +58,7 @@ impl<'a> AppReporter<'a> {
 
   pub fn print_bundle_stats(
     &mut self,
-    bundles: &Bundles,
+    bundles: &BundleMap,
   ) {
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();

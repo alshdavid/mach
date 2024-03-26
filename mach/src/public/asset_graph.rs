@@ -10,7 +10,7 @@ use super::DependencyId;
 #[derive(Default)]
 pub struct AssetGraph {
   /// This is the dependencies and resolved assets for a given asset
-  dependencies: BTreeMap<AssetId, HashSet<(DependencyId, AssetId)>>,
+  dependencies: HashMap<AssetId, HashSet<(DependencyId, AssetId)>>,
   /// This is the resolved asset for a given dependency
   resolved: HashMap<DependencyId, AssetId>,
 }
@@ -71,9 +71,9 @@ impl Debug for AssetGraph {
     for (k, s) in &self.dependencies {
       let mut deps = vec![];
       for (dep_id, asset_id) in s {
-        deps.push(format!("Dependency({}) -> Asset({})", dep_id.0.to_string(), asset_id.0.to_string()))
+        deps.push(format!("DependencyId({}) -> AssetId({})", dep_id.0.to_string(), asset_id.0.to_string()))
       }
-      map.insert(format!("Asset({})", k.0.to_string()), deps);
+      map.insert(format!("AssetId({})", k.0.to_string()), deps);
     }
     f.debug_map().entries(&map).finish()
   }

@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::fmt::Debug;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -10,7 +11,7 @@ use super::ImportSymbol;
 use super::InternalId;
 use super::SpecifierType;
 
-#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DependencyId(pub InternalId);
 
 #[derive(Default, Clone, Serialize, Deserialize)]
@@ -51,5 +52,11 @@ impl std::fmt::Debug for Dependency {
       .field("imported_symbols", &self.imported_symbols)
       .field("bundle_behavior", &self.bundle_behavior)
       .finish()
+  }
+}
+
+impl Debug for DependencyId {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "DependencyId({})", &self.0.to_string())
   }
 }

@@ -50,7 +50,8 @@ impl Debug for DependencyMap {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    let values = self.dependencies.values().collect::<Vec<&Dependency>>();
+    let mut values = self.dependencies.values().collect::<Vec<&Dependency>>();
+    values.sort_by(|a, b| a.id.cmp(&b.id));
     f.debug_list().entries(&values).finish()
   }
 }

@@ -105,7 +105,8 @@ impl Debug for AssetMap {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    let values = self.assets.values().collect::<Vec<&Asset>>();
+    let mut values = self.assets.values().collect::<Vec<&Asset>>();
+    values.sort_by(|a, b| a.id.cmp(&b.id));
     f.debug_list().entries(&values).finish()
   }
 }

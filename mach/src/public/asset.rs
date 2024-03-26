@@ -7,7 +7,7 @@ use serde::Serialize;
 use super::BundleBehavior;
 use super::InternalId;
 
-#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct AssetId(pub InternalId);
 
 #[derive(Clone, Default)]
@@ -40,5 +40,11 @@ impl Debug for Asset {
       .field("bundle_behavior", &self.bundle_behavior)
       .field("kind", &self.kind)
       .finish()
+  }
+}
+
+impl Debug for AssetId {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "AssetId({})", &self.0.to_string())
   }
 }

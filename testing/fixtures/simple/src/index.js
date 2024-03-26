@@ -1,4 +1,6 @@
-import { a } from './a.js'
-import './b.js'
+// import { a } from './a.js'
+// import './b.js'
 
-console.log(a)
+// console.log(a)
+
+console.log('hello world')

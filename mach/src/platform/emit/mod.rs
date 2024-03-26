@@ -1,12 +1,12 @@
 use std::fs;
 
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::Outputs;
 use crate::public::{self};
 
 pub fn emit(
   config: &public::Config,
-  _bundles: &Bundles,
+  _bundles: &BundleMap,
   outputs: &Outputs,
 ) -> Result<(), String> {
   if config.dist_dir.exists() && config.clean_dist_dir {

@@ -2,7 +2,7 @@ use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::DependencyMap;
 
 use super::bundle_single::bundle_single;
@@ -13,7 +13,7 @@ pub fn bundle(
   asset_map: &AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
-  bundles: &mut Bundles,
+  bundles: &mut BundleMap,
   bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
   if config.bundle_splitting {

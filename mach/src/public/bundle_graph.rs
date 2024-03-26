@@ -1,3 +1,5 @@
 use std::collections::HashMap;
 
-pub type BundleGraph = HashMap<String, String>;
+use super::{BundleId, DependencyId};
+
+pub type BundleGraph = HashMap<DependencyId, BundleId>;
