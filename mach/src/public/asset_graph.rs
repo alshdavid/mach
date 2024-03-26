@@ -10,13 +10,12 @@ use super::Dependency;
 pub struct AssetGraph {
   /// AssetRelPath -> [](DependencyId, AssetRelPath)
   edges: HashMap<PathBuf, HashSet<(String, PathBuf)>>,
+  parents: HashMap<String, PathBuf>,
 }
 
 impl AssetGraph {
   pub fn new() -> Self {
-    return AssetGraph {
-      edges: HashMap::new(),
-    };
+    Self::default()
   }
 
   pub fn add_edge(
@@ -24,6 +23,7 @@ impl AssetGraph {
     from: PathBuf,
     to: (String, PathBuf),
   ) {
+    self.parents.insert(to.0.clone(), to.1.clone());
     if let Some(edges) = self.edges.get_mut(&from) {
       edges.insert(to);
     } else {
@@ -52,17 +52,10 @@ impl AssetGraph {
     &self,
     dependency: &Dependency,
   ) -> Option<PathBuf> {
-    let Some(asset_graph_entries) = self.get_dependencies(&dependency.resolve_from_rel) else {
+    let Some(asset_id) = self.parents.get(&dependency.id) else {
       return None;
     };
-
-    for (dep_id, target_asset_id) in asset_graph_entries {
-      if *dep_id == dependency.id {
-        return Some(target_asset_id.clone());
-      }
-    }
-
-    return None;
+    return Some(asset_id.clone());
   }
 
   pub fn _iter(&self) -> impl Iterator<Item = (&PathBuf, &HashSet<(String, PathBuf)>)> {
