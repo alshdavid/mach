@@ -376,10 +376,7 @@ impl Visit for Walker {
         let Lit::Str(import_specifier) = import_specifier_arg else {
           return;
         };
-        self.insert_import_lazy(
-          &import_specifier.value.to_string(),
-          ImportSymbol::Dynamic,
-        );
+        self.insert_import_lazy(&import_specifier.value.to_string(), ImportSymbol::Dynamic);
       }
       // require("specifier")
       Callee::Expr(expr) => {
@@ -395,10 +392,7 @@ impl Visit for Walker {
         let Lit::Str(import_specifier) = import_specifier_arg else {
           return;
         };
-        self.insert_import_require(
-          &import_specifier.value.to_string(),
-          ImportSymbol::Commonjs,
-        );
+        self.insert_import_require(&import_specifier.value.to_string(), ImportSymbol::Commonjs);
       }
       Callee::Super(_) => {}
     }

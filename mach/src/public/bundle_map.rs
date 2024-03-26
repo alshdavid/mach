@@ -1,6 +1,8 @@
-use std::collections::{hash_map::Values, HashMap};
+use std::collections::hash_map::Values;
+use std::collections::HashMap;
 
-use super::{Bundle, BundleId};
+use super::Bundle;
+use super::BundleId;
 
 #[derive(Default, Clone)]
 pub struct BundleMap {

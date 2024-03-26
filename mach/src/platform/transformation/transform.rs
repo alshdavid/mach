@@ -122,7 +122,11 @@ pub fn link_and_transform(
 
         dependency_map.lock().unwrap().insert(dependency);
 
-        if let Some(parent_asset_id) = asset_map.lock().unwrap().get_asset_id_for_file_path(&resolve_result.file_path) {
+        if let Some(parent_asset_id) = asset_map
+          .lock()
+          .unwrap()
+          .get_asset_id_for_file_path(&resolve_result.file_path)
+        {
           asset_graph.lock().unwrap().add_edge(
             source_asset.clone(),
             parent_asset_id.clone(),
@@ -131,7 +135,11 @@ pub fn link_and_transform(
           continue_threads();
           continue;
         }
-        if !in_progress.lock().unwrap().insert(resolve_result.file_path.clone()) {
+        if !in_progress
+          .lock()
+          .unwrap()
+          .insert(resolve_result.file_path.clone())
+        {
           continue_threads();
           continue;
         }

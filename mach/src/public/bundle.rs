@@ -69,7 +69,10 @@ impl std::fmt::Debug for Bundle {
 }
 
 impl Debug for BundleId {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
     write!(f, "BundleId({})", &self.0.to_string())
   }
 }

@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 pub enum ImportSymbol {
@@ -20,21 +21,24 @@ pub enum ImportSymbol {
 }
 
 impl std::fmt::Debug for ImportSymbol {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Unnamed => write!(f, "Unnamed"),
-            Self::Named(arg0) =>  write!(f, "Named \"{}\"", arg0),
-            Self::Default => write!(f, "Default"),
-            Self::Namespace(arg0) => {
-              if arg0 == "" {
-                write!(f, "Namespace \"*\"")
-              } else {
-                write!(f, "Namespace \"{}\"", arg0)
-              }
-            },
-            Self::Reexport => write!(f, "Reexport"),
-            Self::Dynamic => write!(f, "Dynamic"),
-            Self::Commonjs => write!(f, "Commonjs"),
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    match self {
+      Self::Unnamed => write!(f, "Unnamed"),
+      Self::Named(arg0) => write!(f, "Named \"{}\"", arg0),
+      Self::Default => write!(f, "Default"),
+      Self::Namespace(arg0) => {
+        if arg0 == "" {
+          write!(f, "Namespace \"*\"")
+        } else {
+          write!(f, "Namespace \"{}\"", arg0)
         }
+      }
+      Self::Reexport => write!(f, "Reexport"),
+      Self::Dynamic => write!(f, "Dynamic"),
+      Self::Commonjs => write!(f, "Commonjs"),
     }
+  }
 }

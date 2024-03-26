@@ -44,7 +44,10 @@ impl Debug for Asset {
 }
 
 impl Debug for AssetId {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
     write!(f, "AssetId({})", &self.0.to_string())
   }
 }

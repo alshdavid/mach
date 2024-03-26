@@ -78,15 +78,12 @@ pub fn bundle_single(
   }
 
   for mut html_bundle in html_bundles {
-    let entry_asset_id = html_bundle
-      .entry_asset
-      .as_ref()
-      .unwrap();
+    let entry_asset_id = html_bundle.entry_asset.as_ref().unwrap();
 
-    let entry_asset = asset_map.get(entry_asset_id)
-      .unwrap();
+    let entry_asset = asset_map.get(entry_asset_id).unwrap();
 
-    html_bundle.name = entry_asset.file_path_absolute
+    html_bundle.name = entry_asset
+      .file_path_absolute
       .file_name()
       .unwrap()
       .to_str()

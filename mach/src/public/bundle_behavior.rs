@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub enum BundleBehavior {

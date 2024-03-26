@@ -23,7 +23,9 @@ impl AssetMap {
     asset: Asset,
   ) -> AssetId {
     let asset_id = asset.id.clone();
-    self.file_paths.insert(asset.file_path_absolute.clone(), asset_id.clone());
+    self
+      .file_paths
+      .insert(asset.file_path_absolute.clone(), asset_id.clone());
     self.assets.insert(asset_id.clone(), asset);
     asset_id
   }
