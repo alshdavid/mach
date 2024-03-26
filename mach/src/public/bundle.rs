@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 
@@ -85,5 +84,3 @@ impl Bundle {
   }
 }
 
-pub type Bundles = Vec<Bundle>;
-pub type BundleGraph = HashMap<String, String>;
