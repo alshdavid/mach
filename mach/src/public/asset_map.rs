@@ -22,7 +22,7 @@ impl AssetMap {
     &mut self,
     asset: Asset,
   ) {
-    let asset_path = asset.file_path_rel.clone();
+    let asset_path = asset.file_path_relative.clone();
     self.assets.insert(asset_path.clone(), asset);
   }
 

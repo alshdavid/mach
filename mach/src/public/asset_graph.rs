@@ -52,7 +52,7 @@ impl AssetGraph {
     &self,
     dependency: &Dependency,
   ) -> Option<PathBuf> {
-    let Some(asset_id) = self.parents.get(&dependency.id) else {
+    let Some(asset_id) = self.parents.get(&dependency.content_key) else {
       return None;
     };
     return Some(asset_id.clone());

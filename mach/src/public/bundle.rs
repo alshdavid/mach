@@ -8,15 +8,36 @@ use crate::kit::hash::hash_string_sha_256;
 use crate::kit::hash::truncate;
 
 use super::Asset;
+use super::InternalId;
 use super::ID_TRUNC;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Clone, Default, Debug)]
+pub struct BundleId(InternalId);
+
+#[derive(Default, Clone)]
 pub struct Bundle {
-  pub id: String,
+  pub id: BundleId,
+  pub content_key: String,
   pub name: String,
   pub kind: String,
   pub assets: HashSet<PathBuf>,
   pub entry_asset: Option<PathBuf>,
+}
+
+impl std::fmt::Debug for Bundle {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("Bundle")
+      .field("id", &self.id.0)
+      .field("content_key", &self.content_key)
+      .field("name", &self.name)
+      .field("kind", &self.kind)
+      .field("assets", &self.assets)
+      .field("entry_asset", &self.entry_asset)
+      .finish()
+  }
 }
 
 impl Bundle {
@@ -35,13 +56,13 @@ impl Bundle {
     &self,
     mut assets: Vec<&Asset>,
   ) -> String {
-    assets.sort_by(|a, b| a.file_path_rel.cmp(&b.file_path_rel));
+    assets.sort_by(|a, b| a.file_path_relative.cmp(&b.file_path_relative));
     let mut content_hashes = String::new();
 
     for asset in assets {
       let result = format!(
         "{} {}\n",
-        asset.file_path_rel.to_str().unwrap(),
+        asset.file_path_relative.to_str().unwrap(),
         hash_sha_256(&asset.content)
       );
       content_hashes.push_str(&result);

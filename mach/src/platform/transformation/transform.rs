@@ -179,11 +179,12 @@ pub fn link_and_transform(
 
         asset_map.lock().unwrap().insert(Asset {
           name: file_target.file_stem.clone(),
-          file_path: resolve_result.file_path.clone(),
-          file_path_rel: file_path_rel.clone(),
+          file_path_absolute: resolve_result.file_path.clone(),
+          file_path_relative: file_path_rel.clone(),
           content,
           kind: asset_kind,
           bundle_behavior: dependency_bundle_behavior,
+          ..Default::default()
         });
         // Transformation Done
 
@@ -192,7 +193,7 @@ pub fn link_and_transform(
         // Add new items to the queue
         while let Some(dependency_options) = asset_dependencies.pop() {
           new_dependencies.push(Dependency {
-            id: String::new(),
+            content_key: String::new(),
             specifier: dependency_options.specifier.clone(),
             specifier_type: dependency_options.specifier_type,
             is_entry: false,
@@ -202,6 +203,7 @@ pub fn link_and_transform(
             priority: dependency_options.priority,
             imported_symbols: dependency_options.imported_symbols,
             bundle_behavior: dependency_options.bundle_behavior,
+            ..Default::default()
           });
         }
 

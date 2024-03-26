@@ -40,7 +40,7 @@ pub fn package(
   let bundle_manifest = {
     let mut bundle_manifest = BundleManifest::new();
     for bundle in bundles_local.iter() {
-      bundle_manifest.insert(bundle.id.clone(), bundle.name.clone());
+      bundle_manifest.insert(bundle.content_key.clone(), bundle.name.clone());
     }
     Arc::new(bundle_manifest)
   };

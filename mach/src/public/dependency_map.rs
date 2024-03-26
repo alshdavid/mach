@@ -34,7 +34,7 @@ impl DependencyMap {
       dependency.imported_symbols
     );
     let dependency_id = truncate(&hash_string_sha_256(&key), ID_TRUNC);
-    dependency.id = dependency_id.clone();
+    dependency.content_key = dependency_id.clone();
     self.dependencies.insert(dependency_id.clone(), dependency);
     dependency_id
   }

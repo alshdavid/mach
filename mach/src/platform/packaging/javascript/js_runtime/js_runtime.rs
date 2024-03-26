@@ -58,7 +58,7 @@ impl<'a> JavaScriptRuntime<'a> {
     let Some(asset_id) = self.asset_graph.get_asset_id_for_dependency(&dependency) else {
       panic!(
         "Could not get asset_id for dependency:\n  Dependency: {:?}",
-        dependency.id
+        dependency.content_key
       );
     };
 
@@ -77,10 +77,10 @@ impl<'a> JavaScriptRuntime<'a> {
       return None;
     }
 
-    let Some(bundle_id) = self.bundle_graph.get(&dependency.id) else {
+    let Some(bundle_id) = self.bundle_graph.get(&dependency.content_key) else {
       panic!(
         "Could not get Bundle for Dependency:\n  Dependency: {}",
-        dependency.id
+        dependency.content_key
       );
     };
 

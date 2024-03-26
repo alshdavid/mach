@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -9,13 +10,12 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
-use std::io::Write;
 
 use dashmap::mapref::one::Ref;
 use dashmap::DashMap;
+use normalize_path::NormalizePath;
 use once_cell::sync::Lazy;
 use serde::Serialize;
-use normalize_path::NormalizePath;
 
 pub static PROFILER: Lazy<Profiler> = Lazy::new(|| Profiler::new());
 
@@ -24,7 +24,7 @@ pub struct Profiler {
   start_times: Arc<DashMap<String, SystemTime>>,
   end_times: Arc<DashMap<String, Vec<Duration>>>,
   log_file: Arc<Mutex<Option<File>>>,
-  logs: Vec<String>
+  logs: Vec<String>,
 }
 
 impl Profiler {
@@ -60,7 +60,12 @@ impl Profiler {
     &self,
     name: &str,
   ) {
-    let end_time = self.start_times.get(name).unwrap().elapsed().expect(&format!("could not find performance mark \"{}\"", name));
+    let end_time = self
+      .start_times
+      .get(name)
+      .unwrap()
+      .elapsed()
+      .expect(&format!("could not find performance mark \"{}\"", name));
     if let Some(mut end_times) = self.end_times.get_mut(name) {
       end_times.push(end_time);
     } else {
@@ -88,7 +93,10 @@ impl Profiler {
       self.lap(name);
     }
     let end_times = self.get_end_times(name).clone();
-    let mut end_times = end_times.iter().map(|d| d.as_nanos()).collect::<Vec<u128>>();
+    let mut end_times = end_times
+      .iter()
+      .map(|d| d.as_nanos())
+      .collect::<Vec<u128>>();
     end_times.sort();
     let mid = end_times.len() / 2;
     end_times[mid]
@@ -369,7 +377,14 @@ impl Profiler {
     self.write_log(name, "min", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
-  fn write_log(&self, name: &str, kind: &str, count: &usize, elapsed: &str, unit: &str) {
+  fn write_log(
+    &self,
+    name: &str,
+    kind: &str,
+    count: &usize,
+    elapsed: &str,
+    unit: &str,
+  ) {
     let key = format!("{}_{}:", name, kind);
     let count = format!("({})", count);
     println!("{:<10}{:<20} {} {}", count, key, elapsed, unit);
@@ -381,12 +396,15 @@ impl Profiler {
 
   fn get_end_times(
     &self,
-    name: &str
+    name: &str,
   ) -> Ref<'_, String, Vec<Duration>> {
     if !self.end_times.contains_key(name) {
       self.lap(name);
     }
-    let times = self.end_times.get(name).expect(&format!("could not find end performance mark \"{}\"", name));
+    let times = self
+      .end_times
+      .get(name)
+      .expect(&format!("could not find end performance mark \"{}\"", name));
     return times;
   }
 }

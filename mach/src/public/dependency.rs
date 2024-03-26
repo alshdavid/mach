@@ -3,9 +3,15 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use super::InternalId;
+
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+pub struct DependencyId(InternalId);
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Dependency {
-  pub id: String,
+  pub id: DependencyId,
+  pub content_key: String,
   /// Identifier of the import
   pub specifier: String,
   pub specifier_type: SpecifierType,
@@ -24,10 +30,32 @@ pub struct Dependency {
   pub bundle_behavior: BundleBehavior,
 }
 
+impl std::fmt::Debug for Dependency {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("Dependency")
+      .field("id", &self.id.0)
+      .field("content_key", &self.content_key)
+      .field("specifier", &self.specifier)
+      .field("specifier_type", &self.specifier_type)
+      .field("is_entry", &self.is_entry)
+      .field("priority", &self.priority)
+      .field("source_path", &self.source_path)
+      .field("resolve_from", &self.resolve_from)
+      .field("resolve_from_rel", &self.resolve_from_rel)
+      .field("imported_symbols", &self.imported_symbols)
+      .field("bundle_behavior", &self.bundle_behavior)
+      .finish()
+  }
+}
+
 impl Default for Dependency {
   fn default() -> Self {
     Self {
-      id: String::new(),
+      id: DependencyId::default(),
+      content_key: String::new(),
       specifier: Default::default(),
       specifier_type: SpecifierType::ESM,
       is_entry: Default::default(),

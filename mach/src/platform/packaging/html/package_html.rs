@@ -40,7 +40,7 @@ pub fn package_html(
     return;
   }
   let asset_file_path_rel = entry_asset.clone();
-  
+
   let asset_content = {
     let mut asset_map = asset_map.lock().unwrap();
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
@@ -73,7 +73,7 @@ pub fn package_html(
       continue;
     };
 
-    let bundle_id = bundle_graph.get(&dependency.id).unwrap();
+    let bundle_id = bundle_graph.get(&dependency.content_key).unwrap();
     let file_path = bundle_manifest.get(bundle_id).unwrap();
 
     html::set_attribute(script_node, "src", file_path);

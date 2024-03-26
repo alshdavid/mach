@@ -43,7 +43,7 @@ pub fn package_javascript(
   let source_map = Arc::new(SourceMap::default());
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let mut bundle_module_stmts = Vec::<Stmt>::new();
-  let bundle_id = bundle.id.clone();
+  let bundle_id = bundle.content_key.clone();
   let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
@@ -66,7 +66,7 @@ pub fn package_javascript(
 
         for asset_id in assets.drain(0..) {
           let asset_file_path = asset_id.clone();
-          
+
           let asset_content = {
             let mut asset_map = asset_map.lock().unwrap();
             let asset = asset_map.get_mut(&asset_id).unwrap();

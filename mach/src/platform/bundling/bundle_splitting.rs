@@ -109,11 +109,11 @@ pub fn bundle_with_splitting(
       }
     }
 
-    bundle.id = bundle.generate_id();
+    bundle.content_key = bundle.generate_id();
 
     if bundle.kind == "js" {
       for dep_id in sync_dependencies {
-        bundle_graph.insert(dep_id, bundle.id.clone());
+        bundle_graph.insert(dep_id, bundle.content_key.clone());
       }
       bundle.name = bundle.generate_name(asset_map.get_many(&bundle.get_assets()).unwrap());
     }
@@ -130,12 +130,12 @@ pub fn bundle_with_splitting(
         .to_string();
     }
 
-    bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.id.clone());
+    bundle_graph.insert(dep_ref.from_dependency.clone(), bundle.content_key.clone());
     bundles.push(bundle);
   }
 
   if css_bundle.assets.len() > 0 {
-    css_bundle.id = css_bundle.generate_id();
+    css_bundle.content_key = css_bundle.generate_id();
     css_bundle.name =
       css_bundle.generate_name(asset_map.get_many(&css_bundle.get_assets()).unwrap());
     bundles.push(css_bundle);

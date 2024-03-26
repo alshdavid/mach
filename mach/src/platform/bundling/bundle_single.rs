@@ -31,25 +31,25 @@ pub fn bundle_single(
 
   for asset in asset_map.iter() {
     if asset.kind == "js" {
-      js_bundle.assets.insert(asset.file_path_rel.clone());
+      js_bundle.assets.insert(asset.file_path_relative.clone());
     }
 
     if asset.kind == "css" {
-      css_bundle.assets.insert(asset.file_path_rel.clone());
+      css_bundle.assets.insert(asset.file_path_relative.clone());
     }
 
     if asset.kind == "html" {
       html_bundles.push(Bundle {
         kind: "html".to_string(),
-        assets: HashSet::<PathBuf>::from_iter(vec![asset.file_path_rel.clone()]),
-        entry_asset: Some(asset.file_path_rel.clone()),
+        assets: HashSet::<PathBuf>::from_iter(vec![asset.file_path_relative.clone()]),
+        entry_asset: Some(asset.file_path_relative.clone()),
         ..Bundle::default()
       });
     }
   }
 
   if css_bundle.assets.len() > 0 {
-    css_bundle.id = css_bundle.generate_id();
+    css_bundle.content_key = css_bundle.generate_id();
     css_bundle.name =
       css_bundle.generate_name(asset_map.get_many(&css_bundle.get_assets()).unwrap());
 
@@ -59,13 +59,13 @@ pub fn bundle_single(
       };
 
       for dependency in dependencies {
-        bundle_graph.insert(dependency.0.clone(), css_bundle.id.clone());
+        bundle_graph.insert(dependency.0.clone(), css_bundle.content_key.clone());
       }
     }
   }
 
   if js_bundle.assets.len() > 0 {
-    js_bundle.id = js_bundle.generate_id();
+    js_bundle.content_key = js_bundle.generate_id();
     js_bundle.name = js_bundle.generate_name(asset_map.get_many(&js_bundle.get_assets()).unwrap());
 
     for asset_id in &js_bundle.assets {
@@ -74,7 +74,7 @@ pub fn bundle_single(
       };
 
       for dependency in dependencies {
-        bundle_graph.insert(dependency.0.clone(), js_bundle.id.clone());
+        bundle_graph.insert(dependency.0.clone(), js_bundle.content_key.clone());
       }
     }
   }
@@ -98,10 +98,10 @@ pub fn bundle_single(
       for (dependency_id, asset_id) in dependencies {
         let asset = asset_map.get(&asset_id).unwrap();
         if asset.kind == "js" {
-          bundle_graph.insert(dependency_id.clone(), js_bundle.id.clone());
+          bundle_graph.insert(dependency_id.clone(), js_bundle.content_key.clone());
         }
         if asset.kind == "css" {
-          bundle_graph.insert(dependency_id.clone(), css_bundle.id.clone());
+          bundle_graph.insert(dependency_id.clone(), css_bundle.content_key.clone());
         }
       }
     }
