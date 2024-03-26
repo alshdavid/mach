@@ -49,6 +49,7 @@ fmt:
   cargo +nightly fmt
 
 benchmark project="mach" count="50" script="build":
+  @just {{ if project == "mach" { "build" } else { "_skip" } }}
   just benchmark-generate {{project}} {{count}}
   cd benchmarks/{{project}}_{{count}} && \
   mach_profiler=../{{project}}_{{count}}.csv \
@@ -80,5 +81,5 @@ benchmark-generate project="mach" count="50":
   cp -r npm/node-adapter/types ./target/{{profile}}/lib/node-adapter
   node .github/scripts/ci/package-sha.mjs set
 
-@_skip:
-  echo skip
+_skip:
+  echo "skip"

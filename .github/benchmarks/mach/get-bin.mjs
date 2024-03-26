@@ -4,7 +4,7 @@ import * as url from 'node:url';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-let PROFILE = process.env.PROFILE || 'release-lto'
+let PROFILE = process.env.profile || 'release-lto'
 let PROFILE_BIN = path.join(PROFILE, 'bin', 'mach')
 
 let current_dir = __dirname
@@ -23,4 +23,5 @@ if (!fs.existsSync(target_bin)) {
   process.exit(1)
 }
 
+process.stderr.write(`Using ${target_bin}\n`)
 process.stdout.write(target_bin)

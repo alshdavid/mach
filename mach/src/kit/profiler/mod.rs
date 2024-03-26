@@ -73,8 +73,11 @@ impl Profiler {
     name: &str,
   ) -> u128 {
     let end_times = self.get_end_times(name).clone();
-    let average_end_time = end_times.iter().map(|d| d.as_nanos()).sum::<u128>() / end_times.len() as u128;
-    return average_end_time;
+    let mut total: u128 = 0;
+    for end_time in end_times.iter() {
+      total += end_time.as_nanos();
+    }
+    return total / end_times.len() as u128;
   }
 
   pub fn get_nanos_median(
@@ -132,7 +135,7 @@ impl Profiler {
       self.lap(name);
     }
     let end_times = self.get_end_times(name);
-    let mut min: u128 = 0;
+    let mut min: u128 = end_times[0].clone().as_nanos();
     for end_time in end_times.iter() {
       let elapsed = end_time.as_nanos();
       if elapsed < min {
@@ -237,7 +240,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed = self.get_nanos_average(name);
-    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+    self.write_log(name, "average", &count, &format!("{}", elapsed), "ns");
   }
 
   pub fn log_nanos_median(
@@ -246,7 +249,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed = self.get_nanos_median(name);
-    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+    self.write_log(name, "median", &count, &format!("{}", elapsed), "ns");
   }
 
   pub fn log_nanos_total(
@@ -255,7 +258,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed = self.get_nanos_total(name);
-    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+    self.write_log(name, "total", &count, &format!("{}", elapsed), "ns");
   }
 
   pub fn log_nanos_max(
@@ -264,7 +267,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed = self.get_nanos_max(name);
-    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+    self.write_log(name, "max", &count, &format!("{}", elapsed), "ns");
   }
 
   pub fn log_nanos_min(
@@ -273,7 +276,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed = self.get_nanos_min(name);
-    self.write_log(name, &count, &format!("{}", elapsed), "ns");
+    self.write_log(name, "min", &count, &format!("{}", elapsed), "ns");
   }
 
   pub fn log_millis_average(
@@ -282,7 +285,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_average(name);
-    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+    self.write_log(name, "average", &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_median(
@@ -291,7 +294,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_median(name);
-    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+    self.write_log(name, "median", &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_total(
@@ -300,7 +303,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_total(name);
-    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+    self.write_log(name, "total", &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_max(
@@ -309,7 +312,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_max(name);
-    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+    self.write_log(name, "max", &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_millis_min(
@@ -318,7 +321,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_ms = self.get_millis_min(name);
-    self.write_log(name, &count, &format!("{}", elapsed_ms), "ms");
+    self.write_log(name, "min", &count, &format!("{}", elapsed_ms), "ms");
   }
 
   pub fn log_seconds_average(
@@ -327,7 +330,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_average(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+    self.write_log(name, "average", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
   pub fn log_seconds_median(
@@ -336,7 +339,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_median(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+    self.write_log(name, "median", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
   pub fn log_seconds_total(
@@ -345,7 +348,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_total(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+    self.write_log(name, "total", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
   pub fn log_seconds_max(
@@ -354,7 +357,7 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_max(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+    self.write_log(name, "max", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
   pub fn log_seconds_min(
@@ -363,11 +366,14 @@ impl Profiler {
   ) {
     let count = self.get_end_times(name).len();
     let elapsed_s = self.get_seconds_min(name);
-    self.write_log(name, &count, &format!("{:.3}", elapsed_s), "s");
+    self.write_log(name, "min", &count, &format!("{:.3}", elapsed_s), "s");
   }
 
-  fn write_log(&self, name: &str, count: &usize, elapsed: &str, unit: &str) {
-    println!("[{}] {}: {} {}", count, name, elapsed, unit);
+  fn write_log(&self, name: &str, kind: &str, count: &usize, elapsed: &str, unit: &str) {
+    let key = format!("{}_{}:", name, kind);
+    let count = format!("({})", count);
+    println!("{:<10}{:<20} {} {}", count, key, elapsed, unit);
+
     if let Some(log_file) = self.log_file.lock().unwrap().as_mut() {
       writeln!(log_file, "{},{},{},{}", name, count, elapsed, unit).unwrap();
     }
