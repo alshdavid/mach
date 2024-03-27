@@ -8,7 +8,7 @@ use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleManifest;
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::DependencyMap;
 use crate::public::Output;
 use crate::public::Outputs;
@@ -18,11 +18,11 @@ pub fn package_css(
   asset_map: Arc<Mutex<AssetMap>>,
   _dependency_map: Arc<DependencyMap>,
   _asset_graph: Arc<AssetGraph>,
-  _bundles: Arc<Bundles>,
+  _bundles: Arc<BundleMap>,
   _bundle_graph: Arc<BundleGraph>,
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
-  _bundle_manifest: Arc<BundleManifest>,
+  _bundle_manifest: &BundleManifest,
 ) {
   let mut bundle_content = String::new();
 

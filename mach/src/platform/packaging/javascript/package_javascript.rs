@@ -20,7 +20,7 @@ use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleManifest;
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::DependencyMap;
 use crate::public::Output;
 use crate::public::Outputs;
@@ -33,7 +33,7 @@ pub fn package_javascript(
   asset_map: Arc<Mutex<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
-  bundles: Arc<Bundles>,
+  bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
   outputs: Arc<Mutex<Outputs>>,
   runtime_factory: Arc<RuntimeFactory>,

@@ -1,3 +1,5 @@
 use std::collections::HashMap;
 
-pub type BundleManifest = HashMap<String, String>;
+use super::BundleId;
+
+pub type BundleManifest = HashMap<BundleId, String>;

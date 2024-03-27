@@ -1,25 +1,25 @@
+use super::AssetId;
 use super::Dependency;
 use super::DependencyId;
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::path::Path;
 
 #[derive(Default)]
 pub struct DependencyMap {
   pub dependencies: HashMap<DependencyId, Dependency>,
+  pub specifiers: HashMap<(AssetId, String), DependencyId>,
 }
 
 impl DependencyMap {
   pub fn new() -> Self {
-    DependencyMap {
-      dependencies: HashMap::new(),
-    }
+    Self::default()
   }
 
   pub fn insert(
     &mut self,
     dependency: Dependency,
   ) {
+    self.specifiers.insert((dependency.source_asset.clone(), dependency.specifier.clone()), dependency.id.clone());
     self.dependencies.insert(dependency.id.clone(), dependency);
   }
 
@@ -30,19 +30,16 @@ impl DependencyMap {
     return self.dependencies.get(dependency_id);
   }
 
-  // pub fn get_dependency_for_specifier<'a>(
-  //   &'a self,
-  //   from_asset_id: &Path,
-  //   specifier: &str,
-  // ) -> Option<&'a Dependency> {
-  //   // TODO this can be done more efficiently
-  //   for (_, dependency) in &self.dependencies {
-  //     if dependency.specifier == *specifier && dependency.resolve_from_rel == from_asset_id {
-  //       return Some(dependency);
-  //     }
-  //   }
-  //   return None;
-  // }
+  pub fn get_dependency_for_specifier<'a>(
+    &'a self,
+    source_asset_id: &AssetId,
+    specifier: &str,
+  ) -> Option<&'a Dependency> {
+    let Some(dependency_id) = self.specifiers.get(&(source_asset_id.clone(), specifier.to_string())) else {
+      return None;
+    };
+    return self.get(&dependency_id);
+  }
 }
 
 impl Debug for DependencyMap {

@@ -1,6 +1,2 @@
-// import { a } from './a.js'
-// import './b.js'
-
-// console.log(a)
-
+import "./styles.css"
 console.log('hello world')

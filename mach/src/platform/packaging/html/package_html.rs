@@ -16,7 +16,7 @@ use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleManifest;
-use crate::public::Bundles;
+use crate::public::BundleMap;
 use crate::public::DependencyMap;
 use crate::public::Output;
 use crate::public::Outputs;
@@ -26,11 +26,11 @@ pub fn package_html(
   asset_map: Arc<Mutex<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
-  bundles: Arc<Bundles>,
+  bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
-  bundle_manifest: Arc<BundleManifest>,
+  bundle_manifest: &BundleManifest,
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -73,7 +73,7 @@ pub fn package_html(
       continue;
     };
 
-    let bundle_id = bundle_graph.get(&dependency.content_key).unwrap();
+    let bundle_id = bundle_graph.get(&dependency.id).unwrap();
     let file_path = bundle_manifest.get(bundle_id).unwrap();
 
     html::set_attribute(script_node, "src", file_path);
