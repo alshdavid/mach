@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fmt::Debug;
+use std::fmt::Display;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -69,6 +70,15 @@ impl std::fmt::Debug for Bundle {
 }
 
 impl Debug for BundleId {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    write!(f, "BundleId({})", &self.0.to_string())
+  }
+}
+
+impl Display for BundleId {
   fn fmt(
     &self,
     f: &mut std::fmt::Formatter<'_>,

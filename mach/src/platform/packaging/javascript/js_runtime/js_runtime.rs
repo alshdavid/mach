@@ -13,8 +13,10 @@ use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
 use crate::public::AssetGraph;
+use crate::public::AssetId;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
+use crate::public::BundleId;
 use crate::public::DependencyMap;
 
 use super::super::runtime_factory::ExportNamed;
@@ -30,14 +32,14 @@ use super::read_import_assignments::ImportAssignment;
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 
 pub struct JavaScriptRuntime<'a> {
-  pub current_asset_id: &'a Path,
-  pub current_bundle_id: &'a str,
+  pub current_asset_id: &'a AssetId,
+  pub current_bundle_id: &'a BundleId,
   pub dependency_map: &'a DependencyMap,
   pub asset_graph: &'a AssetGraph,
   pub asset_map: Arc<Mutex<AssetMap>>,
   pub bundle_graph: &'a BundleGraph,
   pub runtime_factory: &'a RuntimeFactory,
-  pub depends_on: HashSet<String>,
+  pub depends_on: HashSet<BundleId>,
 }
 
 impl<'a> JavaScriptRuntime<'a> {
@@ -58,11 +60,11 @@ impl<'a> JavaScriptRuntime<'a> {
     let Some(asset_id) = self.asset_graph.get_asset_id_for_dependency(&dependency) else {
       panic!(
         "Could not get asset_id for dependency:\n  Dependency: {:?}",
-        dependency.content_key
+        dependency.id
       );
     };
 
-    let asset_kind = {
+    let (asset_kind, asset_filepath_relative) = {
       let asset_map = self.asset_map.lock().unwrap();
       let Some(asset) = asset_map.get(&asset_id) else {
         panic!(
@@ -70,27 +72,32 @@ impl<'a> JavaScriptRuntime<'a> {
           asset_id
         );
       };
-      asset.kind.clone()
+      (
+        asset.kind.clone(),
+        asset.file_path_relative.clone(),
+      )
     };
 
     if asset_kind != "js" {
       return None;
     }
 
-    let Some(bundle_id) = self.bundle_graph.get(&dependency.content_key) else {
+    let Some(bundle_id) = self.bundle_graph.get(&dependency.id) else {
       panic!(
         "Could not get Bundle for Dependency:\n  Dependency: {}",
-        dependency.content_key
+        dependency.id
       );
     };
 
+    let require_specifier = asset_filepath_relative.to_str().unwrap().to_string();
+
     if bundle_id == self.current_bundle_id {
-      return Some((vec![], asset_id.to_str().unwrap().to_string()));
+      return Some((vec![], require_specifier));
     } else {
       self.depends_on.insert(bundle_id.clone());
       return Some((
-        vec![bundle_id.clone()],
-        asset_id.to_str().unwrap().to_string(),
+        vec![bundle_id.to_string()],
+        require_specifier,
       ));
     }
   }

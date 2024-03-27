@@ -16,6 +16,7 @@ use crate::kit::swc::parse_program;
 use crate::kit::swc::render_module;
 use crate::public;
 use crate::public::AssetGraph;
+use crate::public::AssetId;
 use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
@@ -43,7 +44,7 @@ pub fn package_javascript(
   let source_map = Arc::new(SourceMap::default());
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let mut bundle_module_stmts = Vec::<Stmt>::new();
-  let bundle_id = bundle.content_key.clone();
+  let bundle_id = bundle.id.clone();
   let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
 
   for stmt in runtime_factory.prelude("PROJECT_HASH") {
@@ -65,12 +66,20 @@ pub fn package_javascript(
         let mut stmts = Vec::<(Stmt, PathBuf)>::new();
 
         for asset_id in assets.drain(0..) {
-          let asset_file_path = asset_id.clone();
+          let asset_id = asset_id.clone();
 
-          let asset_content = {
+          let (
+            asset_content,
+            _asset_file_path_absolute,
+            asset_file_path_relative,
+          ) = {
             let mut asset_map = asset_map.lock().unwrap();
             let asset = asset_map.get_mut(&asset_id).unwrap();
-            std::mem::take(&mut asset.content)
+            (
+              std::mem::take(&mut asset.content),
+              asset.file_path_absolute.clone(),
+              asset.file_path_relative.clone(),
+            )
           };
 
           let mut module = Module {
@@ -80,7 +89,7 @@ pub fn package_javascript(
           };
 
           let parse_result = parse_program(
-            &asset_file_path,
+            &asset_file_path_relative,
             std::str::from_utf8(&asset_content).unwrap(),
             source_map.clone(),
           )
@@ -112,11 +121,11 @@ pub fn package_javascript(
 
           let stmt = runtime_factory.module(
             javascript_runtime.depends_on.len() != 0,
-            asset_id.to_str().unwrap(),
+            asset_file_path_relative.to_str().unwrap(),
             module_item_to_stmt(module.body),
           );
 
-          stmts.push((stmt, asset_id));
+          stmts.push((stmt, asset_file_path_relative));
         }
         return Ok(stmts);
       },
@@ -143,7 +152,7 @@ pub fn package_javascript(
     bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
 
     bundle_module_stmts.push(runtime_factory.mach_require(
-      entry_asset_id.to_str().unwrap(),
+      &entry_asset_id.to_string(),
       &[],
       None,
     ));
@@ -168,8 +177,8 @@ pub fn package_javascript(
 fn divide_assets_by_threads(
   bundle: &Bundle,
   threads: usize,
-) -> Vec<Option<Vec<PathBuf>>> {
-  let mut assets_to_package = Vec::<Option<Vec<PathBuf>>>::new();
+) -> Vec<Option<Vec<AssetId>>> {
+  let mut assets_to_package = Vec::<Option<Vec<AssetId>>>::new();
 
   for _ in 0..threads {
     assets_to_package.push(Some(Vec::new()));

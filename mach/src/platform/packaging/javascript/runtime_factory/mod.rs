@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use swc_core::atoms::Atom;
@@ -7,6 +6,7 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 
 use crate::kit::swc::parse_script;
+use crate::public::BundleManifest;
 
 const JS_DEFINE_EXPORT: &str = include_str!("./js/define_export.js");
 const JS_IMPORT_SCRIPT_CLASSIC: &str = include_str!("./js/import_script_classic.js");
@@ -354,7 +354,7 @@ impl RuntimeFactory {
 
   pub fn manifest(
     &self,
-    bundles: &HashMap<String, String>,
+    bundles: &BundleManifest,
   ) -> Result<Stmt, String> {
     let mut manifest = self.decl_manifest.clone();
 

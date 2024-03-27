@@ -14,8 +14,8 @@ use crate::public::Outputs;
 
 use super::css::package_css;
 use super::html::package_html;
-// use super::javascript::package_javascript;
-// use super::javascript::runtime_factory::RuntimeFactory;
+use super::javascript::package_javascript;
+use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
   config: &public::Config,
@@ -34,7 +34,7 @@ pub fn package(
   let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
   let outputs_local = Arc::new(Mutex::new(std::mem::take(outputs)));
   let source_map = Arc::new(SourceMap::default());
-  // let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
+  let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 
   let bundle_manifest = {
     let mut bundle_manifest = BundleManifest::new();
@@ -53,23 +53,23 @@ pub fn package(
     let bundles_local = bundles_local.clone();
     let bundle_graph_local = bundle_graph_local.clone();
     let outputs_local = outputs_local.clone();
-    // let runtime_factory = runtime_factory.clone();
+    let runtime_factory = runtime_factory.clone();
     let bundle = bundle.clone();
-    // let bundle_manifest = bundle_manifest.clone();
+    let bundle_manifest = bundle_manifest.clone();
 
     if bundle.kind == "js" {
-      // package_javascript(
-      //   config_local,
-      //   asset_map_local,
-      //   dependency_map_local,
-      //   asset_graph_local,
-      //   bundles_local,
-      //   bundle_graph_local,
-      //   outputs_local,
-      //   runtime_factory,
-      //   bundle,
-      //   bundle_manifest,
-      // );
+      package_javascript(
+        config_local,
+        asset_map_local,
+        dependency_map_local,
+        asset_graph_local,
+        bundles_local,
+        bundle_graph_local,
+        outputs_local,
+        runtime_factory,
+        bundle,
+        bundle_manifest,
+      );
     } else if bundle.kind == "css" {
       package_css(
         config_local,
