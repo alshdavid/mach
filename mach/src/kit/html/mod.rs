@@ -16,23 +16,27 @@ use markup5ever_rcdom::NodeData;
   "db89c592f62b063": "index.html"
 }
 */
+#[derive(Default)]
 pub struct CreateElementOptions<'a> {
   pub tag_name: &'a str,
-  pub attributes: &'a [(&'a str, &'a str)],
+  pub attributes: Option<&'a [(&'a str, &'a str)]>,
+  pub body: Option<&'a str>,
 }
 
 pub fn create_element(options: CreateElementOptions) -> Rc<Node> {
   let mut attrs = Vec::<Attribute>::new();
 
-  for (attribute_key, attribute_value) in options.attributes {
-    attrs.push(Attribute {
-      name: QualName {
-        prefix: None,
-        ns: Namespace::from(""),
-        local: LocalName::from(*attribute_key),
-      },
-      value: From::from(*attribute_value),
-    })
+  if let Some(attributes) = options.attributes {
+    for (attribute_key, attribute_value) in attributes {
+      attrs.push(Attribute {
+        name: QualName {
+          prefix: None,
+          ns: Namespace::from(""),
+          local: LocalName::from(*attribute_key),
+        },
+        value: From::from(*attribute_value),
+      })
+    }
   }
 
   let element = NodeData::Element {
@@ -46,7 +50,15 @@ pub fn create_element(options: CreateElementOptions) -> Rc<Node> {
     mathml_annotation_xml_integration_point: false,
   };
 
-  return Node::new(element);
+  let node = Node::new(element);
+
+  if let Some(body) = options.body {
+    node.children.borrow_mut().push(Node::new(NodeData::Text { 
+      contents: RefCell::new(body.into()),
+    }));
+  }
+
+  return node;
 }
 
 pub fn set_attribute(
@@ -64,6 +76,14 @@ pub fn set_attribute(
         attr.value = From::from(attribute_value);
         return true;
       }
+      attrs.borrow_mut().push(Attribute {
+        name: QualName {
+          prefix: None,
+          ns: Namespace::from(""),
+          local: LocalName::from(attribute_key),
+        },
+        value: From::from(attribute_value),
+      })
     }
     _ => {}
   }

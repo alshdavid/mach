@@ -40,6 +40,10 @@ pub struct BuildCommand {
   /// How many Node.js workers to spawn for plugins
   #[arg(long = "node-workers", env = "MACH_NODE_WORKERS", default_value = "1")]
   pub node_workers: Option<usize>,
+
+  /// Enable logging debug info
+  #[arg(long = "debug")]
+  pub debug: bool,
 }
 
 pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
@@ -122,6 +126,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     node_workers,
     optimize: !command.no_optimize,
     env,
+    debug: command.debug,
   });
 }
 

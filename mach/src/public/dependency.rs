@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-use std::fmt::Display;
 use std::path::PathBuf;
 
 use serde::Deserialize;
@@ -7,13 +5,10 @@ use serde::Serialize;
 
 use super::AssetId;
 use super::BundleBehavior;
+use super::DependencyId;
 use super::DependencyPriority;
 use super::ImportSymbol;
-use super::InternalId;
 use super::SpecifierType;
-
-#[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct DependencyId(pub InternalId);
 
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct Dependency {
@@ -53,23 +48,5 @@ impl std::fmt::Debug for Dependency {
       .field("imported_symbols", &self.imported_symbols)
       .field("bundle_behavior", &self.bundle_behavior)
       .finish()
-  }
-}
-
-impl Debug for DependencyId {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    write!(f, "DependencyId({})", &self.0.to_string())
-  }
-}
-
-impl Display for DependencyId {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    write!(f, "DependencyId({})", &self.0.to_string())
   }
 }

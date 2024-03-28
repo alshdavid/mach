@@ -28,6 +28,7 @@ pub struct Config {
   pub optimize: bool,
   pub bundle_splitting: bool,
   pub env: HashMap<String, String>,
+  pub debug: bool,
 }
 
 impl Config {

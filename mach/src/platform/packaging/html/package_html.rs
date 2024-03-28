@@ -7,9 +7,11 @@ use html5ever::serialize::SerializeOpts;
 use html5ever::tendril::TendrilSink;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
+use swc_core::common::SourceMap;
 use std::sync::Mutex;
 
 use crate::kit::html;
+use crate::kit::swc;
 use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
@@ -21,6 +23,8 @@ use crate::public::DependencyMap;
 use crate::public::Output;
 use crate::public::Outputs;
 
+use super::super::javascript::runtime_factory::RuntimeFactory;
+
 pub fn package_html(
   _config: Arc<public::Config>,
   asset_map: Arc<Mutex<AssetMap>>,
@@ -31,6 +35,7 @@ pub fn package_html(
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
   bundle_manifest: &BundleManifest,
+  js_runtime_factory: &RuntimeFactory
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -39,9 +44,9 @@ pub fn package_html(
   if dependencies.len() == 0 {
     return;
   }
-  let asset_file_path_rel = entry_asset.clone();
+  let asset_id = entry_asset.clone();
 
-  let asset_content = {
+  let (asset_content) = {
     let mut asset_map = asset_map.lock().unwrap();
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
       panic!("could not find asset")
@@ -54,6 +59,20 @@ pub fn package_html(
     .read_from(&mut asset_content.as_slice())
     .unwrap();
 
+  let head = html::query_selector(
+      &dom.document,
+      html::QuerySelectorOptions {
+        tag_name: Some("head".to_string()),
+        attribute: None,
+      });
+
+  let body = html::query_selector(
+    &dom.document,
+    html::QuerySelectorOptions {
+      tag_name: Some("body".to_string()),
+      attribute: None,
+    });
+
   let mut script_nodes = html::query_selector_all(
     &dom.document.clone(),
     html::QuerySelectorOptions {
@@ -62,48 +81,65 @@ pub fn package_html(
     },
   );
 
+  if script_nodes.len() > 0 {
+    let mut stmts = js_runtime_factory.prelude("PROJECT_HASH");
+    stmts.push(js_runtime_factory.manifest(&bundle_manifest).unwrap());
+    stmts.push(js_runtime_factory.import_script());
+    stmts.extend(js_runtime_factory.prelude_mach_require().into_iter());
+    let stmts = js_runtime_factory.wrapper(stmts);
+    let js = swc::render_stmts(&vec![stmts], Arc::new(SourceMap::default()));
+
+    let import = html::create_element(html::CreateElementOptions {
+      tag_name: "script",
+      body: Some(&js),
+      ..Default::default()
+    });
+
+    if let Some(head) = &head {
+      head.children.borrow_mut().push(import);
+    } else if let Some(body) = &body {
+      body.children.borrow_mut().push(import);
+    } else {
+      dom.document.children.borrow_mut().push(import);
+    }
+  }
+
   for script_node in &mut script_nodes {
     let Some(specifier) = html::get_attribute(&script_node, "src") else {
       continue;
     };
 
     let Some(dependency) =
-      dependency_map.get_dependency_for_specifier(&asset_file_path_rel, &specifier)
+      dependency_map.get_dependency_for_specifier(&asset_id, &specifier)
     else {
       continue;
     };
 
-    let bundle_id = bundle_graph.get(&dependency.id).unwrap();
-    let file_path = bundle_manifest.get(bundle_id).unwrap();
+    let x = asset_graph.get_asset_id_for_dependency(dependency).unwrap();
+    let asset = asset_map.lock().unwrap().get(&x).unwrap().file_path_relative.to_str().unwrap().to_string();
 
+    let bundle_id = bundle_graph.get(&dependency.id).unwrap();
+    let bundle_hash = bundles.iter().find(|b| &b.id == bundle_id).unwrap().content_hash();
+    let file_path = bundle_manifest.get(&bundle_hash).unwrap();
+
+    html::set_attribute(script_node, "onload", &format!("globalThis['PROJECT_HASH'].mach_require('{}', ['{}'])", asset, bundle_hash));
     html::set_attribute(script_node, "src", file_path);
   }
 
-  let css_home = 'block: {
-    for tag_name in ["head", "body"] {
-      let Some(css_home) = html::query_selector(
-        &dom.document,
-        html::QuerySelectorOptions {
-          tag_name: Some(tag_name.to_string()),
-          attribute: None,
-        },
-      ) else {
-        continue;
-      };
-      break 'block css_home;
-    }
-    break 'block dom.document.clone();
-  };
-
   for bundle in bundles.iter() {
     if bundle.kind == "css" {
-      css_home
-        .children
-        .borrow_mut()
-        .push(html::create_element(html::CreateElementOptions {
-          tag_name: "link",
-          attributes: &[("rel", "stylesheet"), ("href", &bundle.name)],
-        }));
+      let elm = html::create_element(html::CreateElementOptions {
+        tag_name: "link",
+        attributes: Some(&[("rel", "stylesheet"), ("href", &bundle.name)]),
+        ..Default::default()
+      });
+      if let Some(head) = &head {
+        head.children.borrow_mut().push(elm);
+      } else if let Some(body) = &body {
+        body.children.borrow_mut().push(elm);
+      } else {
+        dom.document.children.borrow_mut().push(elm);
+      }
     }
   }
 

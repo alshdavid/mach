@@ -1,8 +1,5 @@
-use std::collections::HashSet;
-
 use crate::public;
 use crate::public::AssetGraph;
-use crate::public::AssetId;
 use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
@@ -31,28 +28,28 @@ pub fn bundle_single(
 
   for asset in asset_map.iter() {
     if asset.kind == "js" {
-      js_bundle.assets.insert(asset.id.clone());
+      js_bundle.add_asset(&asset);
     }
 
     if asset.kind == "css" {
-      css_bundle.assets.insert(asset.id.clone());
+      css_bundle.add_asset(&asset);
     }
 
     if asset.kind == "html" {
-      html_bundles.push(Bundle {
+      let mut bundle = Bundle {
         kind: "html".to_string(),
-        assets: HashSet::<AssetId>::from_iter(vec![asset.id.clone()]),
-        entry_asset: Some(asset.id.clone()),
         ..Bundle::default()
-      });
+      };
+      bundle.set_entry_asset(&asset);
+      bundle.add_asset(&asset);
+      html_bundles.push(bundle);
     }
   }
 
   if css_bundle.assets.len() > 0 {
-    css_bundle.name =
-      css_bundle.generate_name(asset_map.get_many(&css_bundle.get_assets()).unwrap());
+    css_bundle.name = format!("{}.css", css_bundle.content_hash());
 
-    for asset_id in &css_bundle.assets {
+    for (asset_id, _, _) in &css_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };
@@ -64,9 +61,9 @@ pub fn bundle_single(
   }
 
   if js_bundle.assets.len() > 0 {
-    js_bundle.name = js_bundle.generate_name(asset_map.get_many(&js_bundle.get_assets()).unwrap());
+    js_bundle.name = format!("{}.js", css_bundle.content_hash());
 
-    for asset_id in &js_bundle.assets {
+    for (asset_id, _, _) in &js_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };
@@ -79,18 +76,11 @@ pub fn bundle_single(
 
   for mut html_bundle in html_bundles {
     let entry_asset_id = html_bundle.entry_asset.as_ref().unwrap();
-
     let entry_asset = asset_map.get(entry_asset_id).unwrap();
 
-    html_bundle.name = entry_asset
-      .file_path_absolute
-      .file_name()
-      .unwrap()
-      .to_str()
-      .unwrap()
-      .to_string();
+    html_bundle.name = format!("{}.html", entry_asset.name);
 
-    for asset_id in &html_bundle.assets {
+    for (asset_id, _, _) in &html_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };

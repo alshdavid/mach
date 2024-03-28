@@ -19,7 +19,13 @@ impl DependencyMap {
     &mut self,
     dependency: Dependency,
   ) {
-    self.specifiers.insert((dependency.source_asset.clone(), dependency.specifier.clone()), dependency.id.clone());
+    self.specifiers.insert(
+      (
+        dependency.source_asset.clone(),
+        dependency.specifier.clone(),
+      ),
+      dependency.id.clone(),
+    );
     self.dependencies.insert(dependency.id.clone(), dependency);
   }
 
@@ -35,7 +41,10 @@ impl DependencyMap {
     source_asset_id: &AssetId,
     specifier: &str,
   ) -> Option<&'a Dependency> {
-    let Some(dependency_id) = self.specifiers.get(&(source_asset_id.clone(), specifier.to_string())) else {
+    let Some(dependency_id) = self
+      .specifiers
+      .get(&(source_asset_id.clone(), specifier.to_string()))
+    else {
       return None;
     };
     return self.get(&dependency_id);

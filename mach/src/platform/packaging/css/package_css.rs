@@ -26,7 +26,7 @@ pub fn package_css(
 ) {
   let mut bundle_content = String::new();
 
-  for asset_id in &bundle.assets {
+  for (asset_id, _, _) in &bundle.assets {
     let mut asset_map = asset_map.lock().unwrap();
     let asset = asset_map.get_mut(&asset_id).unwrap();
     let contents = std::mem::take(&mut asset.content);

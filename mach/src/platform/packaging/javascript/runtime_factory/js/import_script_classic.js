@@ -1,7 +1,7 @@
 /*
   This can be swapped out via configuration
 */
-async function import_script(src) {
+const import_script = mach_global.import_script = async src => {
   const existing = document.querySelector(`script[src="${src}"]`)
   if (existing && existing.loaded) {
     return

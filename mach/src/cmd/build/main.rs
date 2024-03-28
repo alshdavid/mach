@@ -6,6 +6,7 @@ use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
 use crate::public::BundleGraph;
+use crate::public::BundleManifest;
 use crate::public::BundleMap;
 use crate::public::DependencyMap;
 use crate::public::Outputs;
@@ -27,6 +28,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let mut asset_graph = AssetGraph::new();
   let mut bundles = BundleMap::new();
   let mut bundle_graph = BundleGraph::new();
+  let mut bundle_manifest = BundleManifest::new();
   let mut outputs = Outputs::new();
   let mut reporter = AppReporter::new(&config);
 
@@ -89,12 +91,14 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   reporter.print_package_stats();
 
-  dbg!(&asset_map);
-  dbg!(&asset_graph);
-  dbg!(&dependency_map);
-  dbg!(&bundles);
-  dbg!(&bundle_graph);
-  dbg!(&outputs);
+  if config.debug {
+    dbg!(&asset_map);
+    dbg!(&dependency_map);
+    dbg!(&asset_graph);
+    dbg!(&bundles);
+    dbg!(&bundle_graph);
+    dbg!(&outputs);
+  }
 
   /*
     emit() writes the contents of the bundles to disk

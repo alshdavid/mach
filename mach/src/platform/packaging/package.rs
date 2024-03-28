@@ -40,10 +40,12 @@ pub fn package(
     let mut bundle_manifest = BundleManifest::new();
 
     for bundle in bundles_local.iter() {
-      bundle_manifest.insert(bundle.id.clone(), bundle.name.clone());
+      bundle_manifest.insert(bundle.content_hash(), bundle.name.clone());
     }
     Arc::new(bundle_manifest)
   };
+
+  dbg!(&bundle_manifest);
 
   for bundle in bundles_local.iter() {
     let config_local = config_local.clone();
@@ -93,6 +95,7 @@ pub fn package(
         outputs_local,
         bundle,
         &bundle_manifest,
+        &runtime_factory,
       );
     }
   }

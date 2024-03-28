@@ -72,10 +72,7 @@ impl<'a> JavaScriptRuntime<'a> {
           asset_id
         );
       };
-      (
-        asset.kind.clone(),
-        asset.file_path_relative.clone(),
-      )
+      (asset.kind.clone(), asset.file_path_relative.clone())
     };
 
     if asset_kind != "js" {
@@ -95,10 +92,7 @@ impl<'a> JavaScriptRuntime<'a> {
       return Some((vec![], require_specifier));
     } else {
       self.depends_on.insert(bundle_id.clone());
-      return Some((
-        vec![bundle_id.to_string()],
-        require_specifier,
-      ));
+      return Some((vec![bundle_id.to_string()], require_specifier));
     }
   }
 

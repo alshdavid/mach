@@ -26,6 +26,12 @@ pub fn bundle(
       bundle_graph,
     );
   } else {
-    return bundle_single(config, asset_map, asset_graph, bundles, bundle_graph);
+    return bundle_single(
+      config,
+      asset_map,
+      asset_graph,
+      bundles,
+      bundle_graph,
+    );
   }
 }

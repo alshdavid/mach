@@ -68,11 +68,7 @@ pub fn package_javascript(
         for asset_id in assets.drain(0..) {
           let asset_id = asset_id.clone();
 
-          let (
-            asset_content,
-            _asset_file_path_absolute,
-            asset_file_path_relative,
-          ) = {
+          let (asset_content, _asset_file_path_absolute, asset_file_path_relative) = {
             let mut asset_map = asset_map.lock().unwrap();
             let asset = asset_map.get_mut(&asset_id).unwrap();
             (
@@ -151,11 +147,7 @@ pub fn package_javascript(
     }
     bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
 
-    bundle_module_stmts.push(runtime_factory.mach_require(
-      &entry_asset_id.to_string(),
-      &[],
-      None,
-    ));
+    bundle_module_stmts.push(runtime_factory.mach_require(&entry_asset_id.to_string(), &[], None));
   }
 
   let bundle_module = Module {
@@ -185,7 +177,7 @@ fn divide_assets_by_threads(
   }
 
   let mut t = 0;
-  for assets in bundle.assets.iter() {
+  for (assets, _, _) in bundle.assets.iter() {
     assets_to_package[t].as_mut().unwrap().push(assets.clone());
 
     t += 1;

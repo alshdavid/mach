@@ -6,7 +6,7 @@
  * @param {boolean} [settings]
  * @returns {void}
  * */
-const mach_define_property = (target, key, getter, setter, settings = true) => Object.defineProperty(target, key, {
+const mach_define_property = mach_global.mach_define_property = (target, key, getter, setter, settings = true) => Object.defineProperty(target, key, {
   get: getter,
   set: setter,
   enumerable: settings,
@@ -22,7 +22,7 @@ const mach_define_property = (target, key, getter, setter, settings = true) => O
  * @param {(module: *) => void} [callback] Used for re-exports
  * @returns {* | Promise<*>}
  * */
-const mach_require = (module_id, bundle_ids, callback) => {
+const mach_require = mach_global.mach_require = (module_id, bundle_ids, callback) => {
   if (mach_modules[module_id]) {
     callback && callback(mach_modules[module_id])
     return mach_modules[module_id];

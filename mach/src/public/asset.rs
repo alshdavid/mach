@@ -1,15 +1,10 @@
 use std::fmt::Debug;
-use std::fmt::Display;
 use std::path::PathBuf;
 
-use serde::Deserialize;
-use serde::Serialize;
+use crate::kit::hash::hash_sha_256;
 
+use super::AssetId;
 use super::BundleBehavior;
-use super::InternalId;
-
-#[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct AssetId(pub InternalId);
 
 #[derive(Clone, Default)]
 pub struct Asset {
@@ -29,6 +24,13 @@ pub struct Asset {
   pub bundle_behavior: BundleBehavior,
 }
 
+impl Asset {
+  pub fn content_hash(&self) -> String {
+    // Todo, cache this
+    return hash_sha_256(&self.content);
+  }
+}
+
 impl Debug for Asset {
   fn fmt(
     &self,
@@ -41,24 +43,5 @@ impl Debug for Asset {
       .field("bundle_behavior", &self.bundle_behavior)
       .field("kind", &self.kind)
       .finish()
-  }
-}
-
-impl Debug for AssetId {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    write!(f, "AssetId({})", &self.0.to_string())
-  }
-}
-
-
-impl Display for AssetId {
-  fn fmt(
-    &self,
-    f: &mut std::fmt::Formatter<'_>,
-  ) -> std::fmt::Result {
-    write!(f, "AssetId({})", &self.0.to_string())
   }
 }
