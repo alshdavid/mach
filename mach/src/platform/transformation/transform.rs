@@ -58,7 +58,7 @@ pub fn link_and_transform(
     receivers.push(Some(rx));
   }
 
-  for i in 0..config.threads {
+  for t in 0..config.threads {
     let config = config_local.clone();
     let plugins = plugins_local.clone();
     let asset_map = asset_map_local.clone();
@@ -68,7 +68,7 @@ pub fn link_and_transform(
     let active_threads = active_threads.clone();
     let queue = queue.clone();
     let senders = senders.clone();
-    let rx = receivers.get_mut(i).unwrap().take().unwrap();
+    let rx = receivers.get_mut(t).unwrap().take().unwrap();
 
     handles.push(std::thread::spawn(move || -> Result<(), String> {
       loop {
@@ -127,8 +127,6 @@ pub fn link_and_transform(
           .unwrap()
           .get_asset_id_for_file_path(&resolve_result.file_path)
         {
-          println!("adding dep for {} -> {:?} {}", source_asset, resolve_result.file_path, parent_asset_id);
-
           asset_graph.lock().unwrap().add_edge(
             source_asset.clone(),
             parent_asset_id.clone(),
@@ -137,15 +135,25 @@ pub fn link_and_transform(
           continue_threads();
           continue;
         }
-        if !in_progress
-          .lock()
-          .unwrap()
-          .insert(resolve_result.file_path.clone())
-        {
+
+        let (asset_id, inserted) = asset_map.lock().unwrap().insert(Asset {
+          file_path_absolute: resolve_result.file_path.clone(),
+          file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &config.project_root)
+            .unwrap(),
+          bundle_behavior: dependency_bundle_behavior,
+          ..Default::default()
+        });
+
+        if !inserted {
+          asset_graph.lock().unwrap().add_edge(
+            source_asset.clone(),
+            asset_id.clone(),
+            dependency_id.clone(),
+          );
           continue_threads();
           continue;
         }
-        
+
         // Dependency Graph Done
 
         // Transformation
@@ -190,17 +198,13 @@ pub fn link_and_transform(
           i += 1;
         }
 
-        let asset_id = asset_map.lock().unwrap().insert(Asset {
-          name: file_target.file_stem.clone(),
-          file_path_absolute: resolve_result.file_path.clone(),
-          file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap(),
-          content,
-          kind: asset_kind,
-          bundle_behavior: dependency_bundle_behavior,
-          ..Default::default()
-        });
-
-        println!("adding dep for {} -> {:?} {}", source_asset, resolve_result.file_path, asset_id);
+        {
+          let mut asset_map = asset_map.lock().unwrap();
+          let asset = asset_map.get_mut(&asset_id).unwrap();
+          asset.name = file_target.file_stem.clone();
+          asset.content = content;
+          asset.kind = asset_kind;
+        }
 
         asset_graph.lock().unwrap().add_edge(
           source_asset.clone(),
@@ -230,7 +234,10 @@ pub fn link_and_transform(
         }
 
         queue.lock().unwrap().extend(new_dependencies);
-        in_progress.lock().unwrap().remove(&resolve_result.file_path);
+        in_progress
+          .lock()
+          .unwrap()
+          .remove(&resolve_result.file_path);
         continue_threads();
       }
       return Ok(());

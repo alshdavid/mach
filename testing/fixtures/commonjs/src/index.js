@@ -1,62 +1,53 @@
-exports.b6 = function() {
-  const foo = require('./noop')
-  require('./noop')
-}
+const { 
+  a1, 
+  a2, 
+  a3, 
+  a4_ident,
+  a4_ident_1,
+  a4_ident_2,
+} = require('./a')
 
-// // const { 
-// //   a1, 
-// //   a2, 
-// //   a3, 
-// //   a4_ident,
-// //   // a4_ident_1,
-// //   // a4_ident_2,
-// // } = require('./a')
+console.log({
+  a1, 
+  a2,
+  a3,
+  a4_ident,
+  a4_ident_1,
+  a4_ident_2,
+})
 
-// // console.log({
-// //   a1, 
-// //   a2,
-// //   a3,
-// //   a4_ident,
-// //   // a4_ident_1,
-// //   // a4_ident_2,
-// // })
+const { 
+  b1, 
+  b2, 
+  b3, 
+  b4_ident,
+  b4_ident_1,
+} = require('./b')
 
-// // const { 
-// //   b1, 
-// //   b2, 
-// //   b3, 
-// //   b4_ident,
-// //   // b4_ident_1,
-// //   // b4_ident_2,
-// // } = require('./b')
+console.log({
+  b1, 
+  b2,
+  b3,
+  b4_ident,
+  b4_ident_1,
+})
 
-// // console.log({
-// //   b1, 
-// //   b2,
-// //   b3,
-// //   b4_ident,
-// //   // b4_ident_1,
-// //   // b4_ident_2,
-// // })
+;(() => {
+  const { 
+    b1, 
+    b2, 
+    b3, 
+    b4_ident,
+    b4_ident_1,
+  } = require('./b-nested')
 
-// ;(() => {
-//   const { 
-//     b1, 
-//     b2, 
-//     b3, 
-//     b4_ident,
-//     // b4_ident_1,
-//     // b4_ident_2,
-//   } = require('./b-nested')
+  console.log({
+    b1, 
+    b2,
+    b3,
+    b4_ident,
+    b4_ident_1,
+  })
+})()
 
-//   console.log({
-//     b1, 
-//     b2,
-//     b3,
-//     b4_ident,
-//     // b4_ident_1,
-//     // b4_ident_2,
-//   })
-// })()
-
-// // console.log(require('./c'))
+console.log(require('./c'))

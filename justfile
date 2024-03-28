@@ -48,12 +48,14 @@ fixture cmd fixture *ARGS:
 fmt:
   cargo +nightly fmt
 
-benchmark project="mach" count="50" script="build":
+benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
   just benchmark-generate {{project}} {{count}}
   cd benchmarks/{{project}}_{{count}} && \
+  CMD="console.log(require(\"./package.json\").scripts[\"build\"])" && \
+  CMD="$(echo $CMD | node)" && \
   mach_profiler=../{{project}}_{{count}}.csv \
-  pnpm run {{script}}
+  bash -c "$CMD {{ARGS}}"
 
 benchmark-generate project="mach" count="50":
   PROJECT={{project}} \

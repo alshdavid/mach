@@ -11,8 +11,3 @@ exports['b3'] = 'value_b3'
 exports[ident_b4] = 'value_b4'
 exports.b5 = b5
 exports.b5()
-const foo = exports.b5()
-
-// TODO
-// exports[a4_ident + '_1'] = 'value_a4.1'
-// exports[`${a4_ident + '_2'}`] = 'value_a4.2'

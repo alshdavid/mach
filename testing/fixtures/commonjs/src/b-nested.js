@@ -11,9 +11,9 @@
   exports[ident_b4] = 'value_b4'
   exports.b5 = b5
   exports.b5()
-  const foo = exports.b5()
+  
   exports.b6 = function() {
-    const foo = require('./noop')
+    const _ = require('./noop')
     require('./noop')
   }
 })()

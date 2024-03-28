@@ -51,7 +51,7 @@ pub fn bundle_single(
   if css_bundle.assets.len() > 0 {
     css_bundle.name = format!("{}.css", css_bundle.content_hash());
 
-    for (asset_id, _, _) in &css_bundle.assets {
+    for (_, (asset_id, _)) in &css_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };
@@ -63,9 +63,9 @@ pub fn bundle_single(
   }
 
   if js_bundle.assets.len() > 0 {
-    js_bundle.name = format!("{}.js", css_bundle.content_hash());
+    js_bundle.name = format!("{}.js", js_bundle.content_hash());
 
-    for (asset_id, _, _) in &js_bundle.assets {
+    for (_, (asset_id, _)) in &js_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };
@@ -92,7 +92,7 @@ pub fn bundle_single(
 
     html_bundle.name = format!("{}.html", entry_asset.name);
 
-    for (asset_id, _, _) in &html_bundle.assets {
+    for (_, (asset_id, _)) in &html_bundle.assets {
       let Some(dependencies) = asset_graph.get_dependencies(&asset_id) else {
         continue;
       };

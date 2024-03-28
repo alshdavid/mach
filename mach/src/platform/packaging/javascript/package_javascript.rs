@@ -188,8 +188,11 @@ fn divide_assets_by_threads(
   }
 
   let mut t = 0;
-  for (assets, _, _) in bundle.assets.iter() {
-    assets_to_package[t].as_mut().unwrap().push(assets.clone());
+  for (_, (asset_id, _)) in bundle.assets.iter() {
+    assets_to_package[t]
+      .as_mut()
+      .unwrap()
+      .push(asset_id.clone());
 
     t += 1;
     if t == threads {
