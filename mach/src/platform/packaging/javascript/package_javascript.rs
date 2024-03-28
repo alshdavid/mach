@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -43,13 +44,9 @@ pub fn package_javascript(
 ) {
   let source_map = Arc::new(SourceMap::default());
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
-  let mut bundle_module_stmts = Vec::<Stmt>::new();
   let bundle_id = bundle.id.clone();
-  let mut handles = Vec::<JoinHandle<Result<Vec<(Stmt, PathBuf)>, String>>>::new();
-
-  for stmt in runtime_factory.prelude("PROJECT_HASH") {
-    bundle_module_stmts.push(stmt);
-  }
+  let mut handles = Vec::<JoinHandle<Result<(), String>>>::new();
+  let stmts = Arc::new(Mutex::new(BTreeMap::<PathBuf, Stmt>::new()));
 
   for i in 0..config.threads {
     let mut assets = assets_to_package[i].take().unwrap();
@@ -60,11 +57,10 @@ pub fn package_javascript(
     let bundle_graph = bundle_graph.clone();
     let runtime_factory = runtime_factory.clone();
     let bundle_id = bundle_id.clone();
+    let stmts = stmts.clone();
 
     handles.push(std::thread::spawn(
-      move || -> Result<Vec<(Stmt, PathBuf)>, String> {
-        let mut stmts = Vec::<(Stmt, PathBuf)>::new();
-
+      move || -> Result<(), String> {
         for asset_id in assets.drain(0..) {
           let asset_id = asset_id.clone();
 
@@ -121,24 +117,27 @@ pub fn package_javascript(
             module_item_to_stmt(module.body),
           );
 
-          stmts.push((stmt, asset_file_path_relative));
+          stmts.lock().unwrap().insert(asset_file_path_relative, stmt);
         }
-        return Ok(stmts);
+
+        return Ok(());
       },
     ));
   }
 
-  let mut results = vec![];
-
   for handle in handles {
-    results.extend(handle.join().unwrap().unwrap());
+    handle.join().unwrap().unwrap();
   }
 
-  results.sort_by(|a, b| a.1.cmp(&b.1));
+  let mut bundle_module_stmts = Vec::<Stmt>::new();
 
-  for (stmt, _) in results.drain(0..) {
+  for stmt in runtime_factory.prelude("PROJECT_HASH") {
     bundle_module_stmts.push(stmt);
   }
+
+  // Take ownership of stmts and store them
+  let stmts = Arc::try_unwrap(stmts).unwrap().into_inner().unwrap();
+  bundle_module_stmts.extend(stmts.into_values().collect::<Vec<Stmt>>());
 
   if let Some(entry_asset_id) = &bundle.entry_asset {
     let entry_asset_filepath_relative = asset_map

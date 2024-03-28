@@ -52,10 +52,12 @@ benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
   just benchmark-generate {{project}} {{count}}
   cd benchmarks/{{project}}_{{count}} && \
+  rm -rf dist && \
   CMD="console.log(require(\"./package.json\").scripts[\"build\"])" && \
   CMD="$(echo $CMD | node)" && \
+  echo $CMD && \
   mach_profiler=../{{project}}_{{count}}.csv \
-  bash -c "$CMD {{ARGS}}"
+  time bash -c "$CMD {{ARGS}}"
 
 benchmark-generate project="mach" count="50":
   PROJECT={{project}} \
