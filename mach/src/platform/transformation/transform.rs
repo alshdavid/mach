@@ -127,6 +127,8 @@ pub fn link_and_transform(
           .unwrap()
           .get_asset_id_for_file_path(&resolve_result.file_path)
         {
+          println!("adding dep for {} -> {:?} {}", source_asset, resolve_result.file_path, parent_asset_id);
+
           asset_graph.lock().unwrap().add_edge(
             source_asset.clone(),
             parent_asset_id.clone(),
@@ -143,6 +145,7 @@ pub fn link_and_transform(
           continue_threads();
           continue;
         }
+        
         // Dependency Graph Done
 
         // Transformation
@@ -187,18 +190,17 @@ pub fn link_and_transform(
           i += 1;
         }
 
-        let file_path_rel =
-          pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
-
         let asset_id = asset_map.lock().unwrap().insert(Asset {
           name: file_target.file_stem.clone(),
           file_path_absolute: resolve_result.file_path.clone(),
-          file_path_relative: file_path_rel.clone(),
+          file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap(),
           content,
           kind: asset_kind,
           bundle_behavior: dependency_bundle_behavior,
           ..Default::default()
         });
+
+        println!("adding dep for {} -> {:?} {}", source_asset, resolve_result.file_path, asset_id);
 
         asset_graph.lock().unwrap().add_edge(
           source_asset.clone(),
@@ -211,7 +213,7 @@ pub fn link_and_transform(
 
         // Add new items to the queue
         while let Some(dependency_options) = asset_dependencies.pop() {
-          new_dependencies.push(Dependency {
+          let new_dependency = Dependency {
             specifier: dependency_options.specifier.clone(),
             specifier_type: dependency_options.specifier_type,
             is_entry: false,
@@ -222,11 +224,13 @@ pub fn link_and_transform(
             imported_symbols: dependency_options.imported_symbols,
             bundle_behavior: dependency_options.bundle_behavior,
             ..Default::default()
-          });
+          };
+
+          new_dependencies.push(new_dependency);
         }
 
-        in_progress.lock().unwrap().remove(&file_path_rel);
         queue.lock().unwrap().extend(new_dependencies);
+        in_progress.lock().unwrap().remove(&resolve_result.file_path);
         continue_threads();
       }
       return Ok(());

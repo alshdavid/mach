@@ -54,6 +54,11 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   reporter.print_transform_stats(&asset_map);
 
+  if config.debug {
+    dbg!(&asset_map);
+    dbg!(&dependency_map);
+    dbg!(&asset_graph);
+  }
   /*
     bundle() will take the asset graph and organize related assets
     into groupings. Each grouping will be emitted as a "bundle"
@@ -68,6 +73,11 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   )?;
 
   reporter.print_bundle_stats(&bundles);
+
+  if config.debug {
+    dbg!(&bundles);
+    dbg!(&bundle_graph);
+  }
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -90,11 +100,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   reporter.print_package_stats();
 
   if config.debug {
-    dbg!(&asset_map);
-    dbg!(&dependency_map);
-    dbg!(&asset_graph);
-    dbg!(&bundles);
-    dbg!(&bundle_graph);
     dbg!(&outputs);
   }
 

@@ -22,17 +22,17 @@ impl AssetGraph {
 
   pub fn add_edge(
     &mut self,
-    child: AssetId,
-    parent: AssetId,
+    source: AssetId,
+    resolved: AssetId,
     dependency: DependencyId,
   ) {
-    self.resolved.insert(dependency.clone(), parent.clone());
-    if let Some(edges) = self.dependencies.get_mut(&child) {
-      edges.insert((dependency, parent));
+    self.resolved.insert(dependency.clone(), resolved.clone());
+    if let Some(edges) = self.dependencies.get_mut(&source) {
+      edges.insert((dependency, resolved));
     } else {
       self
         .dependencies
-        .insert(child, HashSet::from([(dependency, parent)]));
+        .insert(source, HashSet::from([(dependency, resolved)]));
     }
   }
 
@@ -74,9 +74,9 @@ impl Debug for AssetGraph {
       let mut deps = vec![];
       for (dep_id, asset_id) in s {
         deps.push(format!(
-          "DependencyId({}) -> AssetId({})",
+          "AssetId({}) via DependencyId({})",
+          asset_id.0.to_string(),
           dep_id.0.to_string(),
-          asset_id.0.to_string()
         ))
       }
       map.insert(format!("AssetId({})", k.0.to_string()), deps);

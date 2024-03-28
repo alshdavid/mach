@@ -45,8 +45,6 @@ pub fn package(
     Arc::new(bundle_manifest)
   };
 
-  dbg!(&bundle_manifest);
-
   for bundle in bundles_local.iter() {
     let config_local = config_local.clone();
     let asset_map_local = asset_map_local.clone();
