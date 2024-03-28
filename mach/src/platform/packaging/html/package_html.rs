@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 
 use html5ever::parse_document;
 use html5ever::serialize::serialize;
@@ -8,7 +9,6 @@ use html5ever::tendril::TendrilSink;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
-use std::sync::Mutex;
 
 use crate::kit::html;
 use crate::kit::swc;
@@ -35,7 +35,7 @@ pub fn package_html(
   outputs: Arc<Mutex<Outputs>>,
   bundle: Bundle,
   bundle_manifest: &BundleManifest,
-  js_runtime_factory: &RuntimeFactory
+  js_runtime_factory: &RuntimeFactory,
 ) {
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -46,7 +46,7 @@ pub fn package_html(
   }
   let asset_id = entry_asset.clone();
 
-  let (asset_content) = {
+  let asset_content = {
     let mut asset_map = asset_map.lock().unwrap();
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
       panic!("could not find asset")
@@ -60,18 +60,20 @@ pub fn package_html(
     .unwrap();
 
   let head = html::query_selector(
-      &dom.document,
-      html::QuerySelectorOptions {
-        tag_name: Some("head".to_string()),
-        attribute: None,
-      });
+    &dom.document,
+    html::QuerySelectorOptions {
+      tag_name: Some("head".to_string()),
+      attribute: None,
+    },
+  );
 
   let body = html::query_selector(
     &dom.document,
     html::QuerySelectorOptions {
       tag_name: Some("body".to_string()),
       attribute: None,
-    });
+    },
+  );
 
   let mut script_nodes = html::query_selector_all(
     &dom.document.clone(),
@@ -109,20 +111,38 @@ pub fn package_html(
       continue;
     };
 
-    let Some(dependency) =
-      dependency_map.get_dependency_for_specifier(&asset_id, &specifier)
+    let Some(dependency) = dependency_map.get_dependency_for_specifier(&asset_id, &specifier)
     else {
       continue;
     };
 
     let x = asset_graph.get_asset_id_for_dependency(dependency).unwrap();
-    let asset = asset_map.lock().unwrap().get(&x).unwrap().file_path_relative.to_str().unwrap().to_string();
+    let asset = asset_map
+      .lock()
+      .unwrap()
+      .get(&x)
+      .unwrap()
+      .file_path_relative
+      .to_str()
+      .unwrap()
+      .to_string();
 
     let bundle_id = bundle_graph.get(&dependency.id).unwrap();
-    let bundle_hash = bundles.iter().find(|b| &b.id == bundle_id).unwrap().content_hash();
+    let bundle_hash = bundles
+      .iter()
+      .find(|b| &b.id == bundle_id)
+      .unwrap()
+      .content_hash();
     let file_path = bundle_manifest.get(&bundle_hash).unwrap();
 
-    html::set_attribute(script_node, "onload", &format!("globalThis['PROJECT_HASH'].mach_require('{}', ['{}'])", asset, bundle_hash));
+    html::set_attribute(
+      script_node,
+      "onload",
+      &format!(
+        "globalThis['PROJECT_HASH'].mach_require('{}', ['{}'])",
+        asset, bundle_hash
+      ),
+    );
     html::set_attribute(script_node, "src", file_path);
   }
 

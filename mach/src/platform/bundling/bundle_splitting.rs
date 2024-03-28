@@ -1,23 +1,18 @@
-use std::collections::HashSet;
-use std::path::PathBuf;
-
 use crate::public;
 use crate::public::AssetGraph;
 use crate::public::AssetMap;
-use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleMap;
 use crate::public::DependencyMap;
-use crate::public::ENTRY_ASSET;
 
 /// This will try to create lazy JavaScript, CSS bundles + multiple HTML "bundles".
 pub fn bundle_with_splitting(
   _config: &public::Config,
-  asset_map: &AssetMap,
-  dependency_map: &DependencyMap,
-  asset_graph: &AssetGraph,
-  bundles: &mut BundleMap,
-  bundle_graph: &mut BundleGraph,
+  _asset_map: &AssetMap,
+  _dependency_map: &DependencyMap,
+  _asset_graph: &AssetGraph,
+  _bundles: &mut BundleMap,
+  _bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
   todo!();
   // let mut css_bundle = Bundle {
@@ -145,9 +140,9 @@ pub fn bundle_with_splitting(
   // return Ok(());
 }
 
-#[derive(Debug)]
-struct DepRef {
-  asset_id: PathBuf,
-  from_dependency: String,
-  is_entry: bool,
-}
+// #[derive(Debug)]
+// struct DepRef {
+//   asset_id: PathBuf,
+//   from_dependency: String,
+//   is_entry: bool,
+// }

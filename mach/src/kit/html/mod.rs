@@ -53,7 +53,7 @@ pub fn create_element(options: CreateElementOptions) -> Rc<Node> {
   let node = Node::new(element);
 
   if let Some(body) = options.body {
-    node.children.borrow_mut().push(Node::new(NodeData::Text { 
+    node.children.borrow_mut().push(Node::new(NodeData::Text {
       contents: RefCell::new(body.into()),
     }));
   }

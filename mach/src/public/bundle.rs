@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use crate::kit::hash::hash_path_buff_sha_256;
 use crate::kit::hash::hash_string_sha_256;
 use crate::kit::hash::truncate;
 use crate::public::ID_TRUNC;
@@ -19,7 +18,10 @@ pub struct Bundle {
 }
 
 impl Bundle {
-  pub fn set_entry_asset(&mut self, asset: &Asset) {
+  pub fn set_entry_asset(
+    &mut self,
+    asset: &Asset,
+  ) {
     self.entry_asset.replace(asset.id.clone());
   }
 

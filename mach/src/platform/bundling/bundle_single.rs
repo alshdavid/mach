@@ -4,6 +4,7 @@ use crate::public::AssetMap;
 use crate::public::Bundle;
 use crate::public::BundleGraph;
 use crate::public::BundleMap;
+use crate::public::DependencyMap;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"
@@ -13,6 +14,7 @@ pub fn bundle_single(
   asset_graph: &AssetGraph,
   bundles: &mut BundleMap,
   bundle_graph: &mut BundleGraph,
+  dependency_map: &DependencyMap,
 ) -> Result<(), String> {
   let mut css_bundle = Bundle {
     kind: "css".to_string(),
@@ -70,6 +72,16 @@ pub fn bundle_single(
 
       for dependency in dependencies {
         bundle_graph.insert(dependency.0.clone(), js_bundle.id.clone());
+      }
+    }
+  }
+
+  if js_bundle.assets.len() > 0 && html_bundles.len() == 0 {
+    for dependency in dependency_map.dependencies.values() {
+      if dependency.is_entry {
+        let asset_id = asset_graph.get_asset_id_for_dependency(dependency).unwrap();
+        js_bundle.entry_asset.replace(asset_id);
+        break;
       }
     }
   }

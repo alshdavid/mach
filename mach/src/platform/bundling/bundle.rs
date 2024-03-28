@@ -32,6 +32,7 @@ pub fn bundle(
       asset_graph,
       bundles,
       bundle_graph,
+      dependency_map,
     );
   }
 }

@@ -141,13 +141,24 @@ pub fn package_javascript(
   }
 
   if let Some(entry_asset_id) = &bundle.entry_asset {
+    let entry_asset_filepath_relative = asset_map
+      .lock()
+      .unwrap()
+      .get(entry_asset_id)
+      .unwrap()
+      .file_path_relative
+      .clone();
     if bundles.len() > 1 {
       bundle_module_stmts.push(runtime_factory.manifest(&bundle_manifest).unwrap());
       bundle_module_stmts.push(runtime_factory.import_script());
     }
     bundle_module_stmts.extend(runtime_factory.prelude_mach_require());
 
-    bundle_module_stmts.push(runtime_factory.mach_require(&entry_asset_id.to_string(), &[], None));
+    bundle_module_stmts.push(runtime_factory.mach_require(
+      entry_asset_filepath_relative.to_str().unwrap(),
+      &[],
+      None,
+    ));
   }
 
   let bundle_module = Module {
