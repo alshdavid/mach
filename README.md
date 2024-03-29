@@ -55,12 +55,45 @@ $ mach dev ./src/index.html
 > Serving on http://localhost:4242
 ```
 
-## Plugins
+## Custom Plugins
 
-Plugins are supported by an embedded Deno runtime with support for Node.js, TypeScript, etc
-This is still under development
+Mach supports user-added plugins written in TypeScript, JavaScript, Rust and WASM.
 
-## Benchmark
+### TypeScript & JavaScript Plugins
+
+_Currently in development_
+
+TypeScript and JavaScript plugins are executed within an embedded Deno runtime that is [compatible with the Node.js standard library](https://docs.deno.com/runtime/manual/node/compatibility).
+
+No transpilation is required for TypeScript files or for ES Module formatted plugins. 
+
+Mach uses the existing Parcel plugin APIs:
+
+- [Resolver](https://parceljs.org/features/plugins/#resolvers) (in progress)
+- [Transformer](https://parceljs.org/features/plugins/#transformers) (todo)
+- [Reporter](https://parceljs.org/features/plugins/#reporters) (todo)
+- [Namer](https://parceljs.org/features/plugins/#namers) (todo)
+
+### Rust Plugins
+
+_Preliminary Support, lacking a resolution mechanism - will probably devise a manifest file format in conjunction with distribution via npm_
+
+Dynamically loaded Rust plugins are supported using the [abi_stable](https://crates.io/crates/abi_stable) crate and are loaded by their platform respective `.so`, `.dylib`, `.dll` files.
+
+The plugin API is largely a port of Parcel's to Rust
+
+- [Resolver](mach/src/public/resolver.rs)
+- [Transformer](mach/src/public/transformer.rs)
+
+_This isn't yet published to crates.io, but first-class Rust plugin support is coming._
+
+### WASM Plugins
+
+To extend support to other languages, like Go, Python, Dart, etc - plugin developers can build their Plugin to WASM binaries.
+
+This is something I want to do but is low priority.
+
+## Benchmarks
 
 The benchmark takes the three-js source code, copies it 50 times, imports the 50 copies from a single entrypoint and measures the time to build.
 
@@ -73,13 +106,16 @@ import * as copy_3 from './copy_3/Three.js'; window.copy_3 = copy_3;
 
 The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are using 16 threads.
 
-**29th March 2024**
 
 <p align="center">
   <img align="center" width="100%" src="./.docs/assets/benchmarks/bench-2024-03-29.jpg">
   <br>
   <i>Build Time (lower is better)</i>
 </p>
+
+## Blog
+
+**29th March 2024**
 
 As of the 29th March 2024, this is a benchmark of Mach verses other bundlers in a "no minify" build. 
 
