@@ -105,6 +105,10 @@ The remaining plugins are cool but I don't want to make them modular without a c
 
 ## Remaining work
 
+The goal of Mach 1 will be a super fast production ready bundler with plugin support but has features that still need to be added. 
+
+The order of these may change and some may be pushed back to Mach 2
+
 **Alpha 1 - Codenamed [Flyer](https://en.wikipedia.org/wiki/Wright_Flyer)**
 - Plugin support
 - Minification
