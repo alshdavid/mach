@@ -105,25 +105,25 @@ The remaining plugins are cool but I don't want to make them modular without a c
 
 ## Remaining work
 
-**Pre-release 1 - Codenamed [Flyer](https://en.wikipedia.org/wiki/Wright_Flyer)**
+**Alpha 1 - Codenamed [Flyer](https://en.wikipedia.org/wiki/Wright_Flyer)**
 - Plugin support
 - Minification
 
-**Pre-release 2 ([Fokker Dr.I](https://en.wikipedia.org/wiki/Fokker_Dr.I))**
+**Alpha 2 [Fokker Dr.I](https://en.wikipedia.org/wiki/Fokker_Dr.I)**
 - Source Maps
 
-**Pre-release 3 ([Spitfire](https://en.wikipedia.org/wiki/Supermarine_Spitfire))**
+**Alpha 3 [Spitfire](https://en.wikipedia.org/wiki/Supermarine_Spitfire)**
 - Watch mode / Auto-recompilation 
 - Development server
 - Hot reload
 
-**Pre-release 4 ([Mustang](https://en.wikipedia.org/wiki/North_American_P-51_Mustang))**
+**Alpha 4 [Mustang](https://en.wikipedia.org/wiki/North_American_P-51_Mustang)**
 - Bundle splitting (help wanted 🚩)
 
-**Pre-release 5 ([Shooting Star](https://en.wikipedia.org/wiki/Lockheed_P-80_Shooting_Star))**
+**Alpha 5 [Shooting Star](https://en.wikipedia.org/wiki/Lockheed_P-80_Shooting_Star)**
 - Incremental Bundling for Development
 
-**Beta 1 ([X-1](https://en.wikipedia.org/wiki/Bell_X-1))**
+**Release Candidate [X-1](https://en.wikipedia.org/wiki/Bell_X-1)**
 - TBD
 
 **Mach 1 ([Concorde](https://en.wikipedia.org/wiki/Concorde))**
