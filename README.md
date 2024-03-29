@@ -6,7 +6,7 @@
   Mach is a super fast multi-threaded bundler written in Rust that puts an emphasis on<br>
   developer experience and the runtime performance of the compiled application.<br>
   <br>
-  Mach is inspired by the <a href="https://parceljs.org/">Parcel bundler</a>
+  Mach is heavily inspired by the <a href="https://parceljs.org/">Parcel bundler</a>
 </i></p>
 
 <p align="center">
