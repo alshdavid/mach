@@ -87,6 +87,8 @@ The next big push will be completing the Deno integration and completing support
 
 There is already support for dynamically loaded Rust plugins (incomplete but it's there) but JS plugins are all the rage these days so supporting them is vital.
 
+The cool thing about using Deno is that it supports the Node.js standard library and comes with TypeScript support out of the box. This means plugins can be written in TypeScript and target either the Node.js or Deno runtimes.
+
 I intend to support:
 
 - [Resolvers](https://parceljs.org/features/plugins/#resolvers)
