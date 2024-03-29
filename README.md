@@ -109,24 +109,24 @@ The remaining plugins are cool but I don't want to make them modular without a c
 - Plugin support
 - Minification
 
-**Alpha 2 [Fokker Dr.I](https://en.wikipedia.org/wiki/Fokker_Dr.I)**
+**Alpha 2 - Codenamed [Fokker Dr.I](https://en.wikipedia.org/wiki/Fokker_Dr.I)**
 - Source Maps
 
-**Alpha 3 [Spitfire](https://en.wikipedia.org/wiki/Supermarine_Spitfire)**
+**Alpha 3 - Codenamed [Spitfire](https://en.wikipedia.org/wiki/Supermarine_Spitfire)**
 - Watch mode / Auto-recompilation 
 - Development server
 - Hot reload
 
-**Alpha 4 [Mustang](https://en.wikipedia.org/wiki/North_American_P-51_Mustang)**
+**Alpha 4 - Codenamed [Mustang](https://en.wikipedia.org/wiki/North_American_P-51_Mustang)**
 - Bundle splitting (help wanted 🚩)
 
-**Alpha 5 [Shooting Star](https://en.wikipedia.org/wiki/Lockheed_P-80_Shooting_Star)**
+**Alpha 5 - Codenamed [Shooting Star](https://en.wikipedia.org/wiki/Lockheed_P-80_Shooting_Star)**
 - Incremental Bundling for Development
 
-**Release Candidate [X-1](https://en.wikipedia.org/wiki/Bell_X-1)**
+**Release Candidate - Codenamed [X-1](https://en.wikipedia.org/wiki/Bell_X-1)**
 - TBD
 
-**Mach 1 ([Concorde](https://en.wikipedia.org/wiki/Concorde))**
+**Mach 1 - Codenamed [Concorde](https://en.wikipedia.org/wiki/Concorde)**
 - TBD
 
 ## Special Thanks
