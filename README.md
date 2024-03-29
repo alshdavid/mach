@@ -103,7 +103,7 @@ I intend to support:
 The remaining plugins are cool but I don't want to make them modular without a compelling case, especially at the expense of other features.
 
 
-**Remaining work**
+## Remaining work
 
 Remaining work and release schedule:
 
