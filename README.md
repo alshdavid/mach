@@ -83,7 +83,9 @@ As of the 29th March 2024, this is a benchmark of Mach verses other bundlers in 
 
 There are still a lot of optimizations left here so the numbers are likely to get better as we go 🙂
 
-The next big push will be completing the Deno integration and completing support for Parcel's plugin API.
+The next big push will be completing the Deno integration and completing support for Parcel's JS plugin API.
+
+There is already support for dynamically loaded Rust plugins (incomplete but it's there) but JS plugins are all the rage these days so supporting them is vital.
 
 I intend to support:
 
