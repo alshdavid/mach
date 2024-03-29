@@ -8,10 +8,7 @@
     stroke-linecap="round" 
     fill-rule="evenodd"
     font-size="9pt"
-    stroke="#000"
-    stroke-width="0.25mm"
-    fill="#000"
-    style="stroke:#000;stroke-width:0.25mm;fill:#000">
+    stroke-width="0.25mm">
       <style>
         use {
           fill: #000;
