@@ -38,22 +38,21 @@ npx mach --version
 
 [Read more here](.docs/usage.md)
 
-#### Simple Build
-
 ```bash
 $ mach build ./src/index.html
-> Build Success
-
-$ ls ./dist
-> index.html index.js index.css
-```
-
-#### Dev Server
-
-```bash
 $ mach dev ./src/index.html
-> Serving on http://localhost:4242
 ```
+
+## Supported Types
+
+Mach has built-in support for the most common source files.
+
+- [TypeScript](mach/src/platform/plugins/transformer_javascript/transformer.rs)
+- [JavaScript](mach/src/platform/plugins/transformer_javascript/transformer.rs)
+- [JSX and TSX](mach/src/platform/plugins/transformer_javascript/transformer.rs)
+- [CSS](mach/src/platform/plugins/transformer_html/transformer.rs)
+- [HTML](mach/src/platform/plugins/transformer_css/transformer.rs)
+- Images
 
 ## Custom Plugins
 
