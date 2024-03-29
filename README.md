@@ -105,7 +105,7 @@ The remaining plugins are cool but I don't want to make them modular without a c
 
 ## Remaining work
 
-The goal of Mach 1 will be a super fast production ready bundler with plugin support but has features that still need to be added. 
+The goal of Mach 1 will be a super fast production ready bundler with plugin support with some features remaining to be added (for instance - incremental bundling, or caching). 
 
 The order of these may change and some may be pushed back to Mach 2
 
