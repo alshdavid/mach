@@ -1,6 +1,6 @@
-<h1 align="center">🌏️ <img height="40px" align="center" src="./.docs/assets/logo.svg"></img> <img height="20px" align="top" src="./.docs/assets/prerelease.svg"></img> 🚀</h1>
+<h1 align="center">🌏️ <img height="30px" align="center" src="./.docs/assets/logo.svg"></img> 🚀 <img height="20px" align="top" src="./.docs/assets/prerelease.svg"></img></h1>
 
-<h3 align="center">Modern Web Bundler.</br>Zero Configuration. Zero Dependencies.</h3>
+<h3 align="center">Zero Configuration. Zero Dependencies.</h3>
 
 <p align="center"><i>
   Mach is a super fast multi-threaded bundler written in Rust that puts an emphasis on<br>
