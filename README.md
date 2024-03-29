@@ -50,8 +50,8 @@ Mach has built-in support for the most common source files.
 - [TypeScript](mach/src/platform/plugins/transformer_javascript/transformer.rs)
 - [JavaScript](mach/src/platform/plugins/transformer_javascript/transformer.rs)
 - [JSX and TSX](mach/src/platform/plugins/transformer_javascript/transformer.rs)
-- [CSS](mach/src/platform/plugins/transformer_html/transformer.rs)
-- [HTML](mach/src/platform/plugins/transformer_css/transformer.rs)
+- [CSS](mach/src/platform/plugins/transformer_css/transformer.rs)
+- [HTML](mach/src/platform/plugins/transformer_html/transformer.rs)
 - Images
 
 ## Custom Plugins
