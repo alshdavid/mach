@@ -105,9 +105,7 @@ The remaining plugins are cool but I don't want to make them modular without a c
 
 ## Remaining work
 
-Remaining work and release schedule:
-
-**Pre-release 1 ([Flyer](https://en.wikipedia.org/wiki/Wright_Flyer))**
+**Pre-release 1 - Codenamed [Flyer](https://en.wikipedia.org/wiki/Wright_Flyer)**
 - Plugin support
 - Minification
 
