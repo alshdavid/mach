@@ -1,4 +1,4 @@
-<h1 align="center">🌏️ Mach Bundler🚀 (Alpha)</h1>
+<h1 align="center">🌏️ Mach Bundler (Alpha) 🚀</h1>
 
 <h3 align="center">Zero Configuration. Zero Dependencies.</h3>
 
