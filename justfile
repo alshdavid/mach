@@ -68,6 +68,7 @@ build:
   @just _create_out_dir
   @just _copy_cargo
   @just _copy_npm
+  just _build_adapters
 
 run *ARGS:
   @just build
@@ -101,6 +102,16 @@ benchmark-generate project="mach" count="50":
   PROJECT={{project}} \
   BENCH_COPIES={{count}} \
   node .github/scripts/ci/generate_benchmark.mjs
+
+_build_adapters:
+  #!/usr/bin/env sh
+  set -ev
+  cd adapters
+  for file in `ls .`; do 
+    cd $file
+    just build
+    cd ..
+  done
 
 @_create_out_dir:
   rm -rf {{out_dir}}
