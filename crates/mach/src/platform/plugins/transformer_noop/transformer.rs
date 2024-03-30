@@ -3,9 +3,9 @@ use libmach::MutableAsset;
 use libmach::Transformer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerNoop {}
+pub struct TransformerNoop {}
 
-impl Transformer for DefaultTransformerNoop {
+impl Transformer for TransformerNoop {
   fn transform(
     &self,
     _asset: &mut MutableAsset,

@@ -3,9 +3,9 @@ use libmach::MutableAsset;
 use libmach::Transformer;
 
 #[derive(Debug)]
-pub struct DefaultTransformerCSS {}
+pub struct TransformerCSS {}
 
-impl Transformer for DefaultTransformerCSS {
+impl Transformer for TransformerCSS {
   fn transform(
     &self,
     _asset: &mut MutableAsset,

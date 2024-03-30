@@ -14,9 +14,9 @@ use markup5ever_rcdom::NodeData;
 use markup5ever_rcdom::RcDom;
 
 #[derive(Debug)]
-pub struct DefaultTransformerHtml {}
+pub struct TransformerHtml {}
 
-impl Transformer for DefaultTransformerHtml {
+impl Transformer for TransformerHtml {
   fn transform(
     &self,
     asset: &mut MutableAsset,

@@ -2,16 +2,16 @@ use std::path::Path;
 
 use normalize_path::NormalizePath;
 
-use crate::platform::plugins::transformer_drop::DefaultTransformerDrop;
+use crate::platform::plugins::transformer_drop::TransformerDrop;
 use libmach::Machrc;
 use libmach::Transformer;
 
 use super::PluginContainer;
 use crate::platform::plugins::resolver::DefaultResolver;
-use crate::platform::plugins::transformer_css::DefaultTransformerCSS;
-use crate::platform::plugins::transformer_html::DefaultTransformerHtml;
-use crate::platform::plugins::transformer_javascript::DefaultTransformerJavaScript;
-use crate::platform::plugins::transformer_noop::DefaultTransformerNoop;
+use crate::platform::plugins::transformer_css::TransformerCSS;
+use crate::platform::plugins::transformer_html::TransformerHtml;
+use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
+use crate::platform::plugins::transformer_noop::TransformerNoop;
 
 pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
@@ -42,27 +42,27 @@ pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
         let (engine, specifier) = parse_plugin_string(&base_path, plugin_string)?;
 
         if engine == "mach" && specifier == "transformer/javascript" {
-          transformers.push(Box::new(DefaultTransformerJavaScript {}));
+          transformers.push(Box::new(TransformerJavaScript {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/css" {
-          transformers.push(Box::new(DefaultTransformerCSS {}));
+          transformers.push(Box::new(TransformerCSS {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/html" {
-          transformers.push(Box::new(DefaultTransformerHtml {}));
+          transformers.push(Box::new(TransformerHtml {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/noop" {
-          transformers.push(Box::new(DefaultTransformerNoop {}));
+          transformers.push(Box::new(TransformerNoop {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/drop" {
-          transformers.push(Box::new(DefaultTransformerDrop {}));
+          transformers.push(Box::new(TransformerDrop {}));
           continue;
         }
 

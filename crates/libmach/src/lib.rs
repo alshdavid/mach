@@ -1,6 +1,7 @@
 #![deny(unused_crate_dependencies)]
 
 mod hash;
+mod adapter;
 mod asset;
 mod asset_graph;
 mod asset_id;
@@ -29,6 +30,7 @@ mod specifier_type;
 mod transformer;
 
 pub use self::hash::*;
+pub use self::adapter::*;
 pub use self::asset::*;
 pub use self::asset_graph::*;
 pub use self::asset_id::*;

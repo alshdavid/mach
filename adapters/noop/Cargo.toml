@@ -1,5 +1,5 @@
 [package]
-name = "mach_adapter_deno"
+name = "mach_adapter_noop"
 version = "0.1.0"
 edition = "2021"
 
