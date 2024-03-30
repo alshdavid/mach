@@ -1,5 +1,5 @@
 [package]
-name = "mach_deno"
+name = "mach_adapter_deno"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["dylib"]
 
 [dependencies]
-libmach = { path = "../libmach" }
+libmach = { path = "../../crates/libmach" }
 
 [profile.release-lto]
 inherits = "release"

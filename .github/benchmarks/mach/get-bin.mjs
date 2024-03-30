@@ -4,8 +4,20 @@ import * as url from 'node:url';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-let PROFILE = process.env.profile || 'release-lto'
-let PROFILE_BIN = path.join(PROFILE, 'bin', 'mach')
+const OS = {
+  'win32': 'windows',
+  'darwin': 'macos',
+  'linux': 'linux'
+}[process.env.os || process.platform]
+
+const ARCH = {
+  'arm64': 'arm64',
+  'x64': 'amd64',
+}[process.env.arch || process.arch]
+
+let PROFILE = process.env.profile || 'release'
+
+let PROFILE_BIN = path.join(`${OS}_${ARCH}_${PROFILE}`, 'bin', 'mach')
 
 let current_dir = __dirname
 

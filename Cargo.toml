@@ -1,8 +1,22 @@
 [workspace]
 resolver = "2"
 
-members = ["mach", "libmach", "mach_deno"]
+members = [
+  "crates/mach",
+  "crates/libmach",
+]
 
-[profile.release-lto]
-inherits = "release"
+exclude = [
+  "adapters/deno",
+  "adapters/noop",
+]
+
+[profile.release]
+opt-level = 3
+debug = false
 lto = true
+strip = "debuginfo"
+panic = 'unwind'
+incremental = false
+codegen-units = 1
+rpath = false
