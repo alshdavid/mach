@@ -11,27 +11,27 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetId;
+use libmach::AssetMap;
+use libmach::Bundle;
+use libmach::BundleGraph;
+use libmach::BundleManifest;
+use libmach::BundleMap;
+use libmach::DependencyMap;
+use libmach::Output;
+use libmach::Outputs;
+
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
-
 use crate::kit::swc::render_module;
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetId;
-use crate::public::AssetMap;
-use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
-use crate::public::Output;
-use crate::public::Outputs;
 
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;
 
 pub fn package_javascript(
-  config: Arc<public::Config>,
+  config: Arc<MachConfig>,
   asset_map: Arc<Mutex<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,

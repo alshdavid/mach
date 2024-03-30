@@ -10,23 +10,24 @@ use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Bundle;
+use libmach::BundleGraph;
+use libmach::BundleManifest;
+use libmach::BundleMap;
+use libmach::DependencyMap;
+use libmach::Output;
+use libmach::Outputs;
+
 use crate::kit::html;
 use crate::kit::swc;
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
-use crate::public::Output;
-use crate::public::Outputs;
 
 use super::super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package_html(
-  _config: Arc<public::Config>,
+  _config: Arc<MachConfig>,
   asset_map: Arc<Mutex<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,

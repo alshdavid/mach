@@ -3,12 +3,12 @@ use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
-use crate::public::Outputs;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::BundleMap;
+use libmach::DependencyMap;
+use libmach::Outputs;
 
 use super::parse_config;
 use super::reporter::AppReporter;

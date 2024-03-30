@@ -7,8 +7,8 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
-use crate::public::Config;
-use crate::public::Machrc;
+use libmach::MachConfig;
+use libmach::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
@@ -46,7 +46,7 @@ pub struct BuildCommand {
   pub debug: bool,
 }
 
-pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
+pub fn parse_config(command: BuildCommand) -> Result<MachConfig, String> {
   let start_time = SystemTime::now();
 
   let entry_arg = 'block: {
@@ -109,7 +109,7 @@ pub fn parse_config(command: BuildCommand) -> Result<Config, String> {
     vars
   };
 
-  return Ok(Config {
+  return Ok(MachConfig {
     start_time,
     entry_point,
     dist_dir,

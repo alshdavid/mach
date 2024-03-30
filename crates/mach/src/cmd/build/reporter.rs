@@ -1,18 +1,18 @@
 use std::collections::HashMap;
 
-use crate::public::AssetMap;
-use crate::public::BundleMap;
-use crate::public::Config;
+use libmach::AssetMap;
+use libmach::BundleMap;
+use libmach::MachConfig;
 
 pub struct AppReporter<'a> {
-  config: &'a Config,
+  config: &'a MachConfig,
   time_transform: f64,
   time_bundle: f64,
   time_package: f64,
 }
 
 impl<'a> AppReporter<'a> {
-  pub fn new(config: &'a Config) -> Self {
+  pub fn new(config: &'a MachConfig) -> Self {
     return Self {
       config,
       time_transform: 0.0,

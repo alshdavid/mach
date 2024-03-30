@@ -1,13 +1,13 @@
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::BundleMap;
+use libmach::DependencyMap;
 
 /// This will try to create lazy JavaScript, CSS bundles + multiple HTML "bundles".
 pub fn bundle_with_splitting(
-  _config: &public::Config,
+  _config: &MachConfig,
   _asset_map: &AssetMap,
   _dependency_map: &DependencyMap,
   _asset_graph: &AssetGraph,

@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-use crate::kit::hash::hash_string_sha_256;
-use crate::kit::hash::truncate;
-use crate::public::ID_TRUNC;
+use super::hash::hash_string_sha_256;
+use super::hash::truncate;
 
+use super::ID_TRUNC;
 use super::Asset;
 use super::AssetId;
 use super::BundleId;

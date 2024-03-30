@@ -8,14 +8,15 @@ use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
+use libmach::BundleBehavior;
+use libmach::MachConfig;
+use libmach::DependencyOptions;
+use libmach::MutableAsset;
+use libmach::Transformer;
+
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
-use crate::public::Config;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
 
-// use super::collect_decls;
 use super::read_imports_exports;
 use super::NodeEnvReplacer;
 
@@ -26,7 +27,7 @@ impl Transformer for DefaultTransformerJavaScript {
   fn transform(
     &self,
     asset: &mut MutableAsset,
-    config: &Config,
+    config: &MachConfig,
   ) -> Result<(), String> {
     return swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
@@ -96,7 +97,7 @@ impl Transformer for DefaultTransformerJavaScript {
           priority: dependency.priority,
           resolve_from: asset.file_path.clone(),
           imported_symbols: dependency.imported_symbols,
-          bundle_behavior: crate::public::BundleBehavior::Default,
+          bundle_behavior: BundleBehavior::Default,
         });
       }
 

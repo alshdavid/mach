@@ -13,7 +13,7 @@ use super::Machrc;
 // }
 
 #[derive(Clone, Debug, Serialize)]
-pub struct Config {
+pub struct MachConfig {
   pub start_time: SystemTime,
   pub entry_point: PathBuf,
   pub dist_dir: PathBuf,
@@ -31,7 +31,7 @@ pub struct Config {
   pub debug: bool,
 }
 
-impl Config {
+impl MachConfig {
   pub fn time_elapsed(&self) -> f64 {
     self.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
   }

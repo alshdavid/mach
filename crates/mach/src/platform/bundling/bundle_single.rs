@@ -1,15 +1,15 @@
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Bundle;
-use crate::public::BundleGraph;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Bundle;
+use libmach::BundleGraph;
+use libmach::BundleMap;
+use libmach::DependencyMap;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"
 pub fn bundle_single(
-  _config: &public::Config,
+  _config: &MachConfig,
   asset_map: &AssetMap,
   asset_graph: &AssetGraph,
   bundles: &mut BundleMap,

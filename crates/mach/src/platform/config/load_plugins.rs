@@ -3,8 +3,8 @@ use std::path::Path;
 use normalize_path::NormalizePath;
 
 use crate::platform::plugins::transformer_drop::DefaultTransformerDrop;
-use crate::public::Machrc;
-use crate::public::Transformer;
+use libmach::Machrc;
+use libmach::Transformer;
 
 use super::PluginContainer;
 use crate::platform::plugins::resolver::DefaultResolver;

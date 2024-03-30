@@ -496,7 +496,9 @@ name = "libmach"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "serde_json",
  "sha2",
+ "snowflake",
 ]
 
 [[package]]
@@ -529,6 +531,7 @@ dependencies = [
  "dashmap",
  "glob-match",
  "html5ever",
+ "libmach",
  "markup5ever_rcdom",
  "normalize-path",
  "num_cpus",
@@ -538,7 +541,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "snowflake",
  "swc_core",
 ]
 

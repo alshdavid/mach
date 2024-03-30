@@ -1,7 +1,11 @@
-use crate::public::Config;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use libmach::MachConfig;
+use libmach::SpecifierType;
+use libmach::DependencyPriority;
+use libmach::DependencyOptions;
+use libmach::ImportSymbol;
+use libmach::BundleBehavior;
+use libmach::MutableAsset;
+use libmach::Transformer;
 
 use html5ever::parse_document;
 use html5ever::tendril::TendrilSink;
@@ -16,7 +20,7 @@ impl Transformer for DefaultTransformerHtml {
   fn transform(
     &self,
     asset: &mut MutableAsset,
-    _config: &Config,
+    _config: &MachConfig,
   ) -> Result<(), String> {
     let code = asset.get_code();
     let Ok(script_specifiers) = get_script_src_attrs(&code) else {
@@ -26,11 +30,11 @@ impl Transformer for DefaultTransformerHtml {
     for script_specifier in script_specifiers {
       asset.add_dependency(DependencyOptions {
         specifier: script_specifier,
-        specifier_type: crate::public::SpecifierType::ESM,
-        priority: crate::public::DependencyPriority::Lazy,
+        specifier_type: SpecifierType::ESM,
+        priority: DependencyPriority::Lazy,
         resolve_from: asset.file_path.clone(),
-        imported_symbols: vec![crate::public::ImportSymbol::Namespace("".to_string())],
-        bundle_behavior: crate::public::BundleBehavior::Default,
+        imported_symbols: vec![ImportSymbol::Namespace("".to_string())],
+        bundle_behavior: BundleBehavior::Default,
       });
     }
 

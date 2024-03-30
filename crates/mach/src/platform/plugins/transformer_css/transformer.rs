@@ -1,6 +1,6 @@
-use crate::public::Config;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use libmach::MachConfig;
+use libmach::MutableAsset;
+use libmach::Transformer;
 
 #[derive(Debug)]
 pub struct DefaultTransformerCSS {}
@@ -9,7 +9,7 @@ impl Transformer for DefaultTransformerCSS {
   fn transform(
     &self,
     _asset: &mut MutableAsset,
-    _config: &Config,
+    _config: &MachConfig,
   ) -> Result<(), String> {
     return Ok(());
   }

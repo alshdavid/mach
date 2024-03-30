@@ -10,20 +10,21 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread::JoinHandle;
 
+use libmach::MachConfig;
+use libmach::Asset;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::Dependency;
+use libmach::DependencyMap;
+use libmach::DependencyOptions;
+use libmach::MutableAsset;
+
 use crate::platform::config::PluginContainer;
 use crate::platform::config::TransformerTarget;
-use crate::public;
-use crate::public::Asset;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::Dependency;
-use crate::public::DependencyMap;
-use crate::public::DependencyOptions;
-use crate::public::MutableAsset;
-use crate::public::ENTRY_ASSET;
+use crate::platform::config::ENTRY_ASSET;
 
 pub fn link_and_transform(
-  config: &public::Config,
+  config: &MachConfig,
   plugins: &mut PluginContainer,
   asset_map: &mut AssetMap,
   dependency_map: &mut DependencyMap,

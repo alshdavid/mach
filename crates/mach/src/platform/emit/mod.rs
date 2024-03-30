@@ -1,11 +1,12 @@
 use std::fs;
 
-use crate::public::BundleMap;
-use crate::public::Outputs;
-use crate::public::{self};
+use libmach::MachConfig;
+use libmach::BundleMap;
+use libmach::Outputs;
+use libmach::{self};
 
 pub fn emit(
-  config: &public::Config,
+  config: &MachConfig,
   _bundles: &BundleMap,
   outputs: &Outputs,
 ) -> Result<(), String> {

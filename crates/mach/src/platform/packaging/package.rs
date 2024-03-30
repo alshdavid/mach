@@ -3,14 +3,14 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use swc_core::common::SourceMap;
 
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::BundleManifest;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
-use crate::public::Outputs;
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::BundleManifest;
+use libmach::BundleMap;
+use libmach::DependencyMap;
+use libmach::Outputs;
 
 use super::css::package_css;
 use super::html::package_html;
@@ -18,7 +18,7 @@ use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
-  config: &public::Config,
+  config: &MachConfig,
   dependency_map: &mut DependencyMap,
   asset_graph: &mut AssetGraph,
   bundles: &mut BundleMap,

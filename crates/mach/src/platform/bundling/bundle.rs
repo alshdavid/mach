@@ -1,15 +1,15 @@
-use crate::public;
-use crate::public::AssetGraph;
-use crate::public::AssetMap;
-use crate::public::BundleGraph;
-use crate::public::BundleMap;
-use crate::public::DependencyMap;
+use libmach::MachConfig;
+use libmach::AssetGraph;
+use libmach::AssetMap;
+use libmach::BundleGraph;
+use libmach::BundleMap;
+use libmach::DependencyMap;
 
 use super::bundle_single::bundle_single;
 use super::bundle_splitting::bundle_with_splitting;
 
 pub fn bundle(
-  config: &public::Config,
+  config: &MachConfig,
   asset_map: &AssetMap,
   dependency_map: &DependencyMap,
   asset_graph: &AssetGraph,
