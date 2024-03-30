@@ -1,0 +1,16 @@
+BIN_VERSION := env_var_or_default("BIN_VERSION", "")
+profile := env_var_or_default("profile", "debug")
+target := env_var_or_default("target", "")
+
+build:
+  just _create_out_dir
+  cargo build \
+    {{ if profile != "debug" { "--profile " + profile } else { "" } }} \
+    {{ if target != "" { "--target " + target } else { "" } }}
+  just _copy_cargo
+
+_create_out_dir:
+  mkdir -p ../../target/{{profile}}/adapters/noop
+
+_copy_cargo:
+  cp ../../target/.cargo/{{profile}}/libmach_adapter_noop.so ../../target/{{profile}}/adapters/noop/lib.so

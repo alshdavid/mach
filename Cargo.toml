@@ -1,9 +1,7 @@
 [workspace]
 resolver = "2"
 
-members = [
-    "mach",
-]
+members = ["mach", "libmach", "mach_deno"]
 
 [profile.release-lto]
 inherits = "release"
