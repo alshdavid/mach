@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::SystemTime;
-
-use serde::Serialize;
 
 use super::Machrc;
 
@@ -12,7 +11,7 @@ use super::Machrc;
 //   NpmOrYarn,
 // }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug)]
 pub struct MachConfig {
   pub start_time: SystemTime,
   pub entry_point: PathBuf,
@@ -21,7 +20,7 @@ pub struct MachConfig {
   pub workspace_root: Option<PathBuf>,
   pub workspace_kind: Option<()>, //Option<WorkspaceKind>,
   pub project_root: PathBuf,
-  pub package_json: serde_json::Value,
+  pub package_json: Arc<serde_json::Value>,
   pub machrc: Machrc,
   pub threads: usize,
   pub node_workers: usize,

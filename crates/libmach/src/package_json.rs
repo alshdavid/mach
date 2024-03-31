@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct PackageJson {
   pub name: Option<String>,
   pub version: Option<String>,
@@ -13,6 +13,12 @@ pub struct PackageJson {
   pub exports: Option<PackageJsonExports>,
   pub workspaces: Option<String>,
   pub targets: Option<PackageJsonTargets>,
+}
+
+impl PackageJson {
+  pub fn get(&self, key: &str) -> Value {
+    todo!();
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -32,4 +38,19 @@ pub enum PackageJsonExportsPath {
 pub struct PackageJsonTargets {
   pub source: Option<String>,
   pub dist_dir: Option<String>,
+}
+
+#[derive(Clone)]
+pub enum Value {
+  Null,
+  Bool(bool),
+  NumberInt(usize),
+  NumberFloat(f64),
+  String(String),
+  Array(Vec<Value>),
+  Object(HashMap<String, Value>),
+}
+
+pub fn from_json_serde(input: serde_json::Value) {
+
 }

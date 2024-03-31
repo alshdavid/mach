@@ -22,7 +22,10 @@ pub fn load_plugins(
 ) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
-
+  
+  println!("  Plugins:");
+  println!("    Resolvers:");
+  
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
       let Some((engine, specifier)) = plugin_string.split_once(':') else {
@@ -32,7 +35,8 @@ pub fn load_plugins(
         ));
       };
 
-      println!("resolver - {}:{}", engine, specifier);
+      println!("      {}:{}", engine, specifier);
+
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(ResolverJavaScript {}));
         continue;
@@ -61,6 +65,8 @@ pub fn load_plugins(
     }
   }
 
+  println!("    Transformers:");
+
   if let Some(transformers) = &machrc.transformers {
     for (pattern, specifiers) in transformers {
       let mut transformers = Vec::<Box<dyn Transformer>>::new();
@@ -72,8 +78,7 @@ pub fn load_plugins(
             plugin_string
           ));
         };
-        println!("transformer - {}:{}", engine, specifier);
-
+        println!("      {}:{:<25} {}", engine, specifier, pattern);
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
           continue;

@@ -37,8 +37,6 @@ pub fn load_dynamic_adapter(
 
   LIBS.lock().unwrap().insert(lib_str.clone(), lib.clone());
 
-  println!("1");
-
   let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe { 
     let Ok(bootstrap) = lib.get(b"bootstrap") else {
       return Err(format!(
@@ -48,13 +46,10 @@ pub fn load_dynamic_adapter(
     };
     bootstrap
   };
-  println!("2");
 
   let bootstrap_fn = **bootstrap(Box::new(AdapterOptions {
     config: config.clone(),
   }));
-
-  println!("3");
 
   let adapter = bootstrap_fn?;
 

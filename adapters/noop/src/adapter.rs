@@ -11,9 +11,8 @@ pub struct NoopAdapter {}
 impl Adapter for NoopAdapter {
   fn get_resolver(
     &self,
-    config: AdapterGetPluginOptions,
+    _: AdapterGetPluginOptions,
   ) -> Result<Box<dyn Resolver>, String> {
-    dbg!(&config);
     return Ok(Box::new(NoopResolver{}));
   }
 

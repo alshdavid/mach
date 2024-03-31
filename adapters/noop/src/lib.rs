@@ -8,14 +8,7 @@ mod resolver;
 mod transformer;
 
 #[no_mangle]
-pub extern fn bootstrap(config: AdapterBootstrapOptions) -> AdapterBootstrapResult {
-  println!("ho");
-  // if config.config.debug == true {
-  //   dbg!(&config);
-  // }
+pub extern fn bootstrap(_config: AdapterBootstrapOptions) -> AdapterBootstrapResult {
   let adapter: Box<dyn Adapter> = Box::new(NoopAdapter{});
-
-  println!("ho");
-
   return Box::new(Box::new(Ok(adapter)));
 }

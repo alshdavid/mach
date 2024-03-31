@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::SystemTime;
 
 use clap::Parser;
@@ -120,7 +121,7 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfig, String> {
     workspace_kind: None,
     bundle_splitting: command.bundle_splitting,
     project_root,
-    package_json,
+    package_json: Arc::new(package_json),
     machrc,
     threads,
     node_workers,
