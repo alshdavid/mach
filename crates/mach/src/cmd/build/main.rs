@@ -38,11 +38,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let mut plugins = load_plugins(
-    &config,
-    &config.machrc,
-    &mut adapter_map,
-  )?;
+  let mut plugins = load_plugins(&config, &config.machrc, &mut adapter_map)?;
 
   /*
     link_and_transform() will read source files, identify import statements

@@ -26,7 +26,7 @@ pub struct AdapterOptions {
 pub struct AdapterGetPluginOptions {
   pub specifier: String,
   pub cwd: PathBuf,
-  pub meta: HashMap<String, AdapterOption>
+  pub meta: HashMap<String, AdapterOption>,
 }
 
 pub type AdapterMeta = HashMap<String, AdapterOption>;

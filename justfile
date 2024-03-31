@@ -31,7 +31,11 @@ else if \
 else \
   { env_var_or_default("target", "debug") }
 
-profile_cargo := if profile != "debug" { "--profile " + profile } else { "" }
+profile_cargo := \
+if \
+  profile != "debug" { "--profile " + profile } \
+else \
+  { "" }
 
 target_cargo := \
 if \
@@ -85,7 +89,15 @@ fixture cmd fixture *ARGS:
   {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
 fmt:
+  #!/usr/bin/env sh
   cargo +nightly fmt
+  set -ev
+  cd adapters
+  for file in `ls .`; do 
+    cd $file
+    cargo +nightly fmt
+    cd ..
+  done
 
 benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}

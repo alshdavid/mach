@@ -37,7 +37,7 @@ pub fn load_dynamic_adapter(
 
   LIBS.lock().unwrap().insert(lib_str.clone(), lib.clone());
 
-  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe { 
+  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe {
     let Ok(bootstrap) = lib.get(b"bootstrap") else {
       return Err(format!(
         "Unable to load bootstrap form adapter: \"{}\"\nFrom for:\n\t{:?}",

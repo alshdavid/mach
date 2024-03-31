@@ -1,4 +1,4 @@
 #[no_mangle]
-pub extern fn test() {
+pub extern "C" fn test() {
   println!("from deno_embed")
 }

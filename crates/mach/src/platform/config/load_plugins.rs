@@ -22,10 +22,10 @@ pub fn load_plugins(
 ) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
-  
+
   println!("  Plugins:");
   println!("    Resolvers:");
-  
+
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
       let Some((engine, specifier)) = plugin_string.split_once(':') else {
@@ -54,7 +54,7 @@ pub fn load_plugins(
         return Err(format!("Unable to find adapter for: \"{}\"", engine));
       };
 
-      let adapter_plugin_options = AdapterGetPluginOptions{
+      let adapter_plugin_options = AdapterGetPluginOptions {
         specifier: specifier.to_string().clone(),
         cwd: base_path.to_path_buf().clone(),
         meta: AdapterMeta::new(),
@@ -111,7 +111,7 @@ pub fn load_plugins(
           return Err(format!("Unable to find adapter for: {}", engine));
         };
 
-        let adapter_plugin_options = AdapterGetPluginOptions{
+        let adapter_plugin_options = AdapterGetPluginOptions {
           specifier: specifier.to_string().clone(),
           cwd: base_path.to_path_buf().clone(),
           meta: AdapterMeta::new(),

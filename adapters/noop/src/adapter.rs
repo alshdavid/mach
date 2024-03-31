@@ -13,13 +13,13 @@ impl Adapter for NoopAdapter {
     &self,
     _: AdapterGetPluginOptions,
   ) -> Result<Box<dyn Resolver>, String> {
-    return Ok(Box::new(NoopResolver{}));
+    return Ok(Box::new(NoopResolver {}));
   }
 
   fn get_transformer(
     &self,
     _: AdapterGetPluginOptions,
   ) -> Result<Box<dyn Transformer>, String> {
-    return Ok(Box::new(NoopTransformer{}));
+    return Ok(Box::new(NoopTransformer {}));
   }
 }

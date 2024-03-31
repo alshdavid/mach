@@ -16,7 +16,11 @@ pub struct PackageJson {
 }
 
 impl PackageJson {
-  pub fn get(&self, key: &str) -> Value {
+  #[allow(dead_code, unused)]
+  pub fn get(
+    &self,
+    key: &str,
+  ) -> Value {
     todo!();
   }
 }
@@ -40,6 +44,7 @@ pub struct PackageJsonTargets {
   pub dist_dir: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub enum Value {
   Null,
@@ -51,6 +56,5 @@ pub enum Value {
   Object(HashMap<String, Value>),
 }
 
-pub fn from_json_serde(input: serde_json::Value) {
-
-}
+#[allow(dead_code, unused)]
+pub fn from_json_serde(input: serde_json::Value) {}
