@@ -5,9 +5,9 @@ use libmach::Resolver;
 use super::resolve;
 
 #[derive(Debug)]
-pub struct DefaultResolver {}
+pub struct ResolverJavaScript {}
 
-impl Resolver for DefaultResolver {
+impl Resolver for ResolverJavaScript {
   fn resolve(
     &self,
     dependency: &Dependency,

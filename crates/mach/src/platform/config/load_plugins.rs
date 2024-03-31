@@ -1,36 +1,54 @@
-use std::path::Path;
+use libmach::AdapterMap;
+use libmach::AdapterOption;
+use libmach::AdapterOptions;
 
-use normalize_path::NormalizePath;
-
-use crate::platform::plugins::transformer_drop::TransformerDrop;
 use libmach::Machrc;
 use libmach::Transformer;
 
-use super::PluginContainer;
-use crate::platform::plugins::resolver::DefaultResolver;
+use crate::platform::config::load_dynamic_adapter;
+use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::transformer_css::TransformerCSS;
+use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
-use crate::platform::plugins::transformer_noop::TransformerNoop;
 
-pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
+use super::PluginContainer;
+
+pub fn load_plugins(
+  machrc: &Machrc,
+  adapter_map: &mut AdapterMap,
+) -> Result<PluginContainer, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
-      let (engine, specifier) = parse_plugin_string(&base_path, plugin_string)?;
-
+      let Some((engine, specifier)) = plugin_string.split_once(':') else {
+        return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
+      };
+      
+      println!("resolver - {}:{}", engine, specifier);
       if engine == "mach" && specifier == "resolver" {
-        plugins.resolvers.push(Box::new(DefaultResolver {}));
+        plugins.resolvers.push(Box::new(ResolverJavaScript {}));
         continue;
       }
 
-      // if engine == "node" {
-      //   let plugin = ResolverNodeJs::new(node_adapter.clone(), &specifier).await;
-      //   plugins.resolvers.push(Box::new(plugin));
-      //   continue;
-      // }
+      if engine == "mach" {
+        return Err(format!("Unable to find plugin: {}", plugin_string));
+      }
+
+      if !adapter_map.contains_key(engine) {
+        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
+      }
+
+      let Some(adapter) = adapter_map.get(engine) else {
+        return Err(format!("Unable to find adapter for: \"{}\"", engine));
+      };
+
+      let mut adapter_options = AdapterOptions::default();
+      adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
+      adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
+      plugins.resolvers.push(adapter.get_resolver(adapter_options)?);
     }
   }
 
@@ -39,7 +57,11 @@ pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
       let mut transformers = Vec::<Box<dyn Transformer>>::new();
 
       for plugin_string in specifiers {
-        let (engine, specifier) = parse_plugin_string(&base_path, plugin_string)?;
+        let Some((engine, specifier)) = plugin_string.split_once(':') else {
+          return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
+        };
+        println!("transformer - {}:{}", engine, specifier);
+
 
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
@@ -56,21 +78,27 @@ pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
           continue;
         }
 
-        if engine == "mach" && specifier == "transformer/noop" {
-          transformers.push(Box::new(TransformerNoop {}));
-          continue;
-        }
-
         if engine == "mach" && specifier == "transformer/drop" {
           transformers.push(Box::new(TransformerDrop {}));
           continue;
         }
 
-        // if engine == "node" {
-        //   let plugin = TransformerNodeJs::new(node_adapter.clone(), &specifier).await;
-        //   transformers.push(Box::new(plugin));
-        //   continue;
-        // }
+        if engine == "mach" {
+          return Err(format!("Unable to find plugin: \"{}\"", plugin_string));
+        }
+
+        if !adapter_map.contains_key(engine) {
+          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
+        }
+  
+        let Some(adapter) = adapter_map.get(engine) else {
+          return Err(format!("Unable to find adapter for: {}", engine));
+        };
+  
+        let mut adapter_options = AdapterOptions::default();
+        adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
+        adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
+        transformers.push(adapter.get_transformer(adapter_options)?);
       }
 
       plugins
@@ -80,36 +108,4 @@ pub fn load_plugins(machrc: &Machrc) -> Result<PluginContainer, String> {
     }
   }
   return Ok(plugins);
-}
-
-fn parse_plugin_string(
-  base_path: &Path,
-  plugin_string: &str,
-) -> Result<(String, String), String> {
-  let (engine, specifier) = plugin_string.split_once(':').unwrap();
-
-  let engine = engine.to_string();
-  let specifier = specifier.to_string();
-
-  if engine == "mach" {
-    return Ok((engine, specifier));
-  }
-
-  if specifier.starts_with('.') {
-    let new_path = base_path.join(specifier).normalize();
-    let specifier = new_path.to_str().unwrap().to_string();
-    return Ok((engine, specifier));
-  }
-
-  if specifier.starts_with('/') || specifier.starts_with('\\') {
-    return Ok((engine, specifier));
-  }
-
-  // if engine == "node" {
-  //   if let Ok(specifier) = native_node_resolve(&base_path, &specifier).await {
-  //     return Ok((engine.to_string(), specifier));
-  //   };
-  // }
-
-  return Err("Could not load plugin string".to_string());
 }

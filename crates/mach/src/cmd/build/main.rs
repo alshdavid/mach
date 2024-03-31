@@ -3,6 +3,7 @@ use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
+use libmach::AdapterMap;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::BundleGraph;
@@ -29,6 +30,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let mut bundle_graph = BundleGraph::new();
   let mut outputs = Outputs::new();
   let mut reporter = AppReporter::new(&config);
+  let mut adapter_map = AdapterMap::new();
 
   reporter.print_config();
 
@@ -36,7 +38,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let mut plugins = load_plugins(&config.machrc)?;
+  let mut plugins = load_plugins(&config.machrc, &mut adapter_map)?;
 
   /*
     link_and_transform() will read source files, identify import statements
