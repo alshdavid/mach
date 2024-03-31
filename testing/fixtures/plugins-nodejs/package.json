@@ -1,5 +1,5 @@
 {
-  "name": "fixture-simple",
+  "name": "fixture-plugins-nodejs",
   "scripts": {
     "serve": "npx http-server -c=-1 -p=3000 ."
   },

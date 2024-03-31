@@ -8,7 +8,6 @@ crate-type = ["dylib"]
 
 [dependencies]
 libmach = { path = "../../crates/libmach" }
-stabby = { version = "4.0.3", features = ["libloading"] }
 
 # This needs to be copy/pasted from the root Cargo.toml
 [profile.release]
