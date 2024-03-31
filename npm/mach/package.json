@@ -1,8 +1,10 @@
 {
   "name": "@alshdavid/mach",
   "version": "0.0.0",
-  "main": "lib/index.js",
-  "types": "types/index.d.js",
+  "license": "MIT",
+  "main": "./lib/index.mjs",
+  "types": "./types/index.d.js",
+  "type": "module",
   "bin": "./bin/bin.cmd",
   "mach": {
     "bin": ""

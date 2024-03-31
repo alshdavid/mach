@@ -156,7 +156,7 @@ impl SharedWorkerState {
 pub struct CliMainWorker {
   main_module: ModuleSpecifier,
   is_main_cjs: bool,
-  worker: MainWorker,
+  pub worker: MainWorker,
   shared: Arc<SharedWorkerState>,
 }
 

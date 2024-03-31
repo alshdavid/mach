@@ -10,6 +10,9 @@ crate-type = ["dylib"]
 
 [dependencies]
 libmach = { path = "../../crates/libmach" }
+oxc_resolver = "^1.6.2"
+normalize-path = "^0.2.1"
+
 tokio = { version = "1.36.0", features = ["full", "sync"] }
 async-trait = "0.1.77"
 serde = "1.0.197"
@@ -196,6 +199,7 @@ text-size = "=1.1.0"
 twox-hash = "=1.6.3"
 unicode-width = "0.1"
 zeromq = { version = "=0.3.4", default-features = false, features = ["tcp-transport", "tokio-runtime"] }
+snowflake = "1.3.0"
 
 # This needs to be copy/pasted from the root Cargo.toml
 [profile.release]
