@@ -3,9 +3,9 @@ use libmach::ResolveResult;
 use libmach::Resolver;
 
 #[derive(Debug)]
-pub struct NoopResolver {}
+pub struct DenoResolver {}
 
-impl Resolver for NoopResolver {
+impl Resolver for DenoResolver {
   fn resolve(
     &self,
     _d: &Dependency,
