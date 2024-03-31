@@ -19,7 +19,6 @@
     "pnpm-workspace.yaml": false,
     "rust-toolchain": false,
     "rustfmt.toml": false,
-    "Cargo.toml": false,
     ".npmrc": false,
     "package.json": false
   },

@@ -13,7 +13,7 @@ use std::path::PathBuf;
 
 #[no_mangle]
 pub extern fn bootstrap(config: AdapterBootstrapOptions) -> AdapterBootstrapResult {
-  dbg!(&config);
+  // dbg!(&config);
   let adapter: Box<dyn Adapter> = Box::new(NoopAdapter{});
   return Box::new(Box::new(Ok(adapter)));
 }
