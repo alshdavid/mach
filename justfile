@@ -136,7 +136,7 @@ _build_adapters:
   cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
 
 @_build_npm:
-  @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_actions" } else { "_skip" } }}
+  @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_internal_actions" } else { "_skip" } }}
 
 @_build_npm_internal_actions:
   echo building npm packages
