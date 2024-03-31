@@ -1,7 +1,8 @@
+use libmach::AdapterGetPluginOptions;
 use libmach::AdapterMap;
-use libmach::AdapterOption;
-use libmach::AdapterOptions;
+use libmach::AdapterMeta;
 
+use libmach::MachConfig;
 use libmach::Machrc;
 use libmach::Transformer;
 
@@ -15,6 +16,7 @@ use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
 use super::PluginContainer;
 
 pub fn load_plugins(
+  config: &MachConfig,
   machrc: &Machrc,
   adapter_map: &mut AdapterMap,
 ) -> Result<PluginContainer, String> {
@@ -41,25 +43,21 @@ pub fn load_plugins(
       }
 
       if !adapter_map.contains_key(engine) {
-        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?);
+        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&config, &engine)?);
       }
 
       let Some(adapter) = adapter_map.get(engine) else {
         return Err(format!("Unable to find adapter for: \"{}\"", engine));
       };
 
-      let mut adapter_options = AdapterOptions::default();
-      adapter_options.insert(
-        "specifier".to_string(),
-        AdapterOption::String(specifier.to_string()),
-      );
-      adapter_options.insert(
-        "cwd".to_string(),
-        AdapterOption::PathBuf(base_path.to_path_buf()),
-      );
+      let adapter_plugin_options = AdapterGetPluginOptions{
+        specifier: specifier.to_string().clone(),
+        cwd: base_path.to_path_buf().clone(),
+        meta: AdapterMeta::new(),
+      };
       plugins
         .resolvers
-        .push(adapter.get_resolver(adapter_options)?);
+        .push(adapter.get_resolver(adapter_plugin_options)?);
     }
   }
 
@@ -101,23 +99,19 @@ pub fn load_plugins(
         }
 
         if !adapter_map.contains_key(engine) {
-          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?);
+          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&config, &engine)?);
         }
 
         let Some(adapter) = adapter_map.get(engine) else {
           return Err(format!("Unable to find adapter for: {}", engine));
         };
 
-        let mut adapter_options = AdapterOptions::default();
-        adapter_options.insert(
-          "specifier".to_string(),
-          AdapterOption::String(specifier.to_string()),
-        );
-        adapter_options.insert(
-          "cwd".to_string(),
-          AdapterOption::PathBuf(base_path.to_path_buf()),
-        );
-        transformers.push(adapter.get_transformer(adapter_options)?);
+        let adapter_plugin_options = AdapterGetPluginOptions{
+          specifier: specifier.to_string().clone(),
+          cwd: base_path.to_path_buf().clone(),
+          meta: AdapterMeta::new(),
+        };
+        transformers.push(adapter.get_transformer(adapter_plugin_options)?);
       }
 
       plugins

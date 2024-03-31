@@ -1,6 +1,6 @@
 {
   "resolvers": [
-    "nooop:resolver",
+    "noop:resolver",
     "mach:resolver"
   ],
   "transformers": {

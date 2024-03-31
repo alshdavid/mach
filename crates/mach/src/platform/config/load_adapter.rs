@@ -5,12 +5,17 @@ use std::sync::Mutex;
 use libloading::Library;
 use libmach::Adapter;
 use libmach::AdapterBootstrapFn;
+use libmach::AdapterOptions;
+use libmach::MachConfig;
 use once_cell::sync::Lazy;
 
 static LIBS: Lazy<Arc<Mutex<HashMap<String, Arc<Library>>>>> =
   Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
 
-pub fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, String> {
+pub fn load_dynamic_adapter(
+  config: &MachConfig,
+  engine_name: &str,
+) -> Result<Box<dyn Adapter>, String> {
   let exe_path = std::env::current_exe().unwrap();
   let exe_dir = exe_path.parent().unwrap();
   let mach_dir = exe_dir.parent().unwrap();
@@ -32,9 +37,24 @@ pub fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, Strin
 
   LIBS.lock().unwrap().insert(lib_str.clone(), lib.clone());
 
-  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe { lib.get(b"bootstrap").unwrap() };
+  println!("1");
 
-  let bootstrap_fn = **bootstrap(Box::new(HashMap::new()));
+  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe { 
+    let Ok(bootstrap) = lib.get(b"bootstrap") else {
+      return Err(format!(
+        "Unable to load bootstrap form adapter: \"{}\"\nFrom for:\n\t{:?}",
+        engine_name, lib_path
+      ));
+    };
+    bootstrap
+  };
+  println!("2");
+
+  let bootstrap_fn = **bootstrap(Box::new(AdapterOptions {
+    config: config.clone(),
+  }));
+
+  println!("3");
 
   let adapter = bootstrap_fn?;
 

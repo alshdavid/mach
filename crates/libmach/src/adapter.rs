@@ -1,6 +1,7 @@
 use std::collections::HashMap;
-use std::path::Path;
 use std::path::PathBuf;
+
+use crate::MachConfig;
 
 use super::Resolver;
 use super::Transformer;
@@ -15,22 +16,31 @@ pub enum AdapterOption {
   Vec(Vec<AdapterOption>),
 }
 
-pub type AdapterOptions = HashMap<String, AdapterOption>;
+#[derive(Debug)]
+pub struct AdapterOptions {
+  pub config: MachConfig,
+  // pub meta: HashMap<String, AdapterOption>
+}
+
+#[derive(Debug)]
+pub struct AdapterGetPluginOptions {
+  pub specifier: String,
+  pub cwd: PathBuf,
+  pub meta: HashMap<String, AdapterOption>
+}
+
+pub type AdapterMeta = HashMap<String, AdapterOption>;
 
 pub trait Adapter: Send {
   fn get_transformer(
     &self,
-    transformer_config: AdapterOptions,
+    transformer_config: AdapterGetPluginOptions,
   ) -> Result<Box<dyn Transformer>, String>;
+
   fn get_resolver(
     &self,
-    resolver_config: AdapterOptions,
+    resolver_config: AdapterGetPluginOptions,
   ) -> Result<Box<dyn Resolver>, String>;
-  fn resolve_specifier(
-    &self,
-    from_path: &Path,
-    specifier: &str,
-  ) -> Result<PathBuf, String>;
 }
 
 pub type AdapterBootstrapResult = Box<Box<Result<Box<dyn Adapter>, String>>>;
