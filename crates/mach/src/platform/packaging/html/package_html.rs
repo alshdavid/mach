@@ -10,7 +10,6 @@ use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::Bundle;
@@ -18,6 +17,7 @@ use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 use libmach::Output;
 use libmach::Outputs;
 

@@ -1,10 +1,10 @@
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::Bundle;
 use libmach::BundleGraph;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"

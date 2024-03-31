@@ -1,9 +1,9 @@
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::BundleGraph;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 
 /// This will try to create lazy JavaScript, CSS bundles + multiple HTML "bundles".
 pub fn bundle_with_splitting(

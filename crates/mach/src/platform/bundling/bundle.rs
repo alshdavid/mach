@@ -1,9 +1,9 @@
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::BundleGraph;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 
 use super::bundle_single::bundle_single;
 use super::bundle_splitting::bundle_with_splitting;

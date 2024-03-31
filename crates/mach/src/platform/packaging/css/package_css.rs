@@ -2,7 +2,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::Bundle;
@@ -10,6 +9,7 @@ use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 use libmach::Output;
 use libmach::Outputs;
 

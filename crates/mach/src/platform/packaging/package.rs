@@ -3,13 +3,13 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use swc_core::common::SourceMap;
 
-use libmach::MachConfig;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
 use libmach::DependencyMap;
+use libmach::MachConfig;
 use libmach::Outputs;
 
 use super::css::package_css;

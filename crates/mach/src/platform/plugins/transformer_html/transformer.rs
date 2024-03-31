@@ -1,10 +1,10 @@
-use libmach::MachConfig;
-use libmach::SpecifierType;
-use libmach::DependencyPriority;
-use libmach::DependencyOptions;
-use libmach::ImportSymbol;
 use libmach::BundleBehavior;
+use libmach::DependencyOptions;
+use libmach::DependencyPriority;
+use libmach::ImportSymbol;
+use libmach::MachConfig;
 use libmach::MutableAsset;
+use libmach::SpecifierType;
 use libmach::Transformer;
 
 use html5ever::parse_document;

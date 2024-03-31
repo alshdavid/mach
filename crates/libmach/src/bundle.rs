@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use super::hash::hash_string_sha_256;
 use super::hash::truncate;
 
-use super::ID_TRUNC;
 use super::Asset;
 use super::AssetId;
 use super::BundleId;
+use super::ID_TRUNC;
 
 #[derive(Default, Clone)]
 pub struct Bundle {

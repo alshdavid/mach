@@ -1,7 +1,7 @@
 use std::fs;
 
-use libmach::MachConfig;
 use libmach::BundleMap;
+use libmach::MachConfig;
 use libmach::Outputs;
 use libmach::{self};
 

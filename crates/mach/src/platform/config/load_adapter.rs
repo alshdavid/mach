@@ -7,7 +7,8 @@ use libmach::Adapter;
 use libmach::AdapterBootstrapFn;
 use once_cell::sync::Lazy;
 
-static LIBS: Lazy<Arc<Mutex<HashMap<String, Arc<Library>>>>> = Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
+static LIBS: Lazy<Arc<Mutex<HashMap<String, Arc<Library>>>>> =
+  Lazy::new(|| Arc::new(Mutex::new(HashMap::new())));
 
 pub fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, String> {
   let exe_path = std::env::current_exe().unwrap();
@@ -21,16 +22,17 @@ pub fn load_dynamic_adapter(engine_name: &str) -> Result<Box<dyn Adapter>, Strin
 
   let lib = unsafe {
     let Ok(lib) = libloading::Library::new(&lib_path) else {
-      return Err(format!("Unable to load adapter: \"{}\"\nLooking for:\n\t{:?}", engine_name, lib_path));
+      return Err(format!(
+        "Unable to load adapter: \"{}\"\nLooking for:\n\t{:?}",
+        engine_name, lib_path
+      ));
     };
     Arc::new(lib)
   };
 
   LIBS.lock().unwrap().insert(lib_str.clone(), lib.clone());
 
-  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe {
-    lib.get(b"bootstrap").unwrap()
-  };
+  let bootstrap: libloading::Symbol<AdapterBootstrapFn> = unsafe { lib.get(b"bootstrap").unwrap() };
 
   let bootstrap_fn = **bootstrap(Box::new(HashMap::new()));
 

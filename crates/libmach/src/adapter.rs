@@ -18,9 +18,19 @@ pub enum AdapterOption {
 pub type AdapterOptions = HashMap<String, AdapterOption>;
 
 pub trait Adapter: Send {
-  fn get_transformer(&self, transformer_config: AdapterOptions) -> Result<Box<dyn Transformer>, String>;
-  fn get_resolver(&self, resolver_config: AdapterOptions) -> Result<Box<dyn Resolver>, String>;
-  fn resolve_specifier(&self, from_path: &Path, specifier: &str) -> Result<PathBuf, String>;
+  fn get_transformer(
+    &self,
+    transformer_config: AdapterOptions,
+  ) -> Result<Box<dyn Transformer>, String>;
+  fn get_resolver(
+    &self,
+    resolver_config: AdapterOptions,
+  ) -> Result<Box<dyn Resolver>, String>;
+  fn resolve_specifier(
+    &self,
+    from_path: &Path,
+    specifier: &str,
+  ) -> Result<PathBuf, String>;
 }
 
 pub type AdapterBootstrapResult = Box<Box<Result<Box<dyn Adapter>, String>>>;

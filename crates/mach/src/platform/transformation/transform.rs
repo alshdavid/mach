@@ -10,13 +10,13 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread::JoinHandle;
 
-use libmach::MachConfig;
 use libmach::Asset;
 use libmach::AssetGraph;
 use libmach::AssetMap;
 use libmach::Dependency;
 use libmach::DependencyMap;
 use libmach::DependencyOptions;
+use libmach::MachConfig;
 use libmach::MutableAsset;
 
 use crate::platform::config::PluginContainer;

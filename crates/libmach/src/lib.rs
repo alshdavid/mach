@@ -1,6 +1,5 @@
 #![deny(unused_crate_dependencies)]
 
-mod hash;
 mod adapter;
 mod asset;
 mod asset_graph;
@@ -19,6 +18,7 @@ mod dependency_id;
 mod dependency_map;
 mod dependency_options;
 mod dependency_priority;
+mod hash;
 mod import_symbol;
 mod internal_id;
 mod machrc;
@@ -29,7 +29,6 @@ mod resolver;
 mod specifier_type;
 mod transformer;
 
-pub use self::hash::*;
 pub use self::adapter::*;
 pub use self::asset::*;
 pub use self::asset_graph::*;
@@ -48,6 +47,7 @@ pub use self::dependency_id::*;
 pub use self::dependency_map::*;
 pub use self::dependency_options::*;
 pub use self::dependency_priority::*;
+pub use self::hash::*;
 pub use self::import_symbol::*;
 pub use self::internal_id::*;
 pub use self::machrc::*;

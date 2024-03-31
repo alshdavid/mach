@@ -24,9 +24,12 @@ pub fn load_plugins(
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
       let Some((engine, specifier)) = plugin_string.split_once(':') else {
-        return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
+        return Err(format!(
+          "Unable to parse engine:specifier for {}",
+          plugin_string
+        ));
       };
-      
+
       println!("resolver - {}:{}", engine, specifier);
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(ResolverJavaScript {}));
@@ -38,7 +41,7 @@ pub fn load_plugins(
       }
 
       if !adapter_map.contains_key(engine) {
-        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
+        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?);
       }
 
       let Some(adapter) = adapter_map.get(engine) else {
@@ -46,9 +49,17 @@ pub fn load_plugins(
       };
 
       let mut adapter_options = AdapterOptions::default();
-      adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
-      adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
-      plugins.resolvers.push(adapter.get_resolver(adapter_options)?);
+      adapter_options.insert(
+        "specifier".to_string(),
+        AdapterOption::String(specifier.to_string()),
+      );
+      adapter_options.insert(
+        "cwd".to_string(),
+        AdapterOption::PathBuf(base_path.to_path_buf()),
+      );
+      plugins
+        .resolvers
+        .push(adapter.get_resolver(adapter_options)?);
     }
   }
 
@@ -58,10 +69,12 @@ pub fn load_plugins(
 
       for plugin_string in specifiers {
         let Some((engine, specifier)) = plugin_string.split_once(':') else {
-          return Err(format!("Unable to parse engine:specifier for {}", plugin_string));
+          return Err(format!(
+            "Unable to parse engine:specifier for {}",
+            plugin_string
+          ));
         };
         println!("transformer - {}:{}", engine, specifier);
-
 
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
@@ -88,16 +101,22 @@ pub fn load_plugins(
         }
 
         if !adapter_map.contains_key(engine) {
-          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?); 
+          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&engine)?);
         }
-  
+
         let Some(adapter) = adapter_map.get(engine) else {
           return Err(format!("Unable to find adapter for: {}", engine));
         };
-  
+
         let mut adapter_options = AdapterOptions::default();
-        adapter_options.insert("specifier".to_string(), AdapterOption::String(specifier.to_string()));
-        adapter_options.insert("cwd".to_string(), AdapterOption::PathBuf(base_path.to_path_buf()));
+        adapter_options.insert(
+          "specifier".to_string(),
+          AdapterOption::String(specifier.to_string()),
+        );
+        adapter_options.insert(
+          "cwd".to_string(),
+          AdapterOption::PathBuf(base_path.to_path_buf()),
+        );
         transformers.push(adapter.get_transformer(adapter_options)?);
       }
 

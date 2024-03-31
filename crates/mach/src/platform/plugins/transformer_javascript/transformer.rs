@@ -9,8 +9,8 @@ use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
 use libmach::BundleBehavior;
-use libmach::MachConfig;
 use libmach::DependencyOptions;
+use libmach::MachConfig;
 use libmach::MutableAsset;
 use libmach::Transformer;
 
