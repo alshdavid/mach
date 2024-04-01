@@ -72,7 +72,7 @@ build:
   @just _create_out_dir
   @just _copy_cargo
   @just _copy_npm
-  just _build_adapters
+  # just _build_adapters
 
 run *ARGS:
   @just build

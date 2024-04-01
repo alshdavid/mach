@@ -18,7 +18,7 @@ impl AssetMap {
     Self::default()
   }
 
-  pub fn insert(
+  pub fn get_or_insert(
     &mut self,
     asset: Asset,
   ) -> (AssetId, bool) {

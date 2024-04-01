@@ -37,7 +37,6 @@ pub fn link_and_transform(
   let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
   let dependency_map_local = Arc::new(Mutex::new(std::mem::take(dependency_map)));
   let asset_graph_local = Arc::new(Mutex::new(std::mem::take(asset_graph)));
-  let in_progress = Arc::new(Mutex::new(HashSet::<PathBuf>::new()));
   let active_threads = Arc::new(AtomicUsize::new(0));
   let queue = Arc::new(Mutex::new(vec![]));
 
@@ -65,7 +64,6 @@ pub fn link_and_transform(
     let asset_map = asset_map_local.clone();
     let dependency_map = dependency_map_local.clone();
     let asset_graph = asset_graph_local.clone();
-    let in_progress = in_progress.clone();
     let active_threads = active_threads.clone();
     let queue = queue.clone();
     let senders = senders.clone();
@@ -87,13 +85,17 @@ pub fn link_and_transform(
 
         active_threads.fetch_add(1, Ordering::Relaxed);
 
-        let continue_threads = || {
+        let unpark_threads = || {
           active_threads.fetch_sub(1, Ordering::Relaxed);
           for sender in &senders {
             let Ok(_) = sender.send(false) else {
               continue;
             };
           }
+        };
+
+        let park_thread = || {
+          active_threads.fetch_sub(1, Ordering::Relaxed);
         };
 
         let kill_threads = || {
@@ -124,25 +126,8 @@ pub fn link_and_transform(
 
         dependency_map.lock().unwrap().insert(dependency);
 
-        if let Some(parent_asset_id) = asset_map
-          .lock()
-          .unwrap()
-          .get_asset_id_for_file_path(&resolve_result.file_path)
-        {
-          asset_graph.lock().unwrap().add_edge(
-            source_asset.clone(),
-            parent_asset_id.clone(),
-            dependency_id.clone(),
-          );
-          continue_threads();
-          continue;
-        }
-
-        let (asset_id, inserted) = asset_map.lock().unwrap().insert(Asset {
+        let (asset_id, inserted) = asset_map.lock().unwrap().get_or_insert(Asset {
           file_path_absolute: resolve_result.file_path.clone(),
-          file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &config.project_root)
-            .unwrap(),
-          bundle_behavior: dependency_bundle_behavior,
           ..Default::default()
         });
 
@@ -152,7 +137,7 @@ pub fn link_and_transform(
             asset_id.clone(),
             dependency_id.clone(),
           );
-          continue_threads();
+          park_thread();
           continue;
         }
 
@@ -206,6 +191,8 @@ pub fn link_and_transform(
           asset.name = file_target.file_stem.clone();
           asset.content = content;
           asset.kind = asset_kind;
+          asset.file_path_relative = pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+          asset.bundle_behavior = dependency_bundle_behavior;
         }
 
         asset_graph.lock().unwrap().add_edge(
@@ -236,11 +223,7 @@ pub fn link_and_transform(
         }
 
         queue.lock().unwrap().extend(new_dependencies);
-        in_progress
-          .lock()
-          .unwrap()
-          .remove(&resolve_result.file_path);
-        continue_threads();
+        unpark_threads();
       }
       return Ok(());
     }));
