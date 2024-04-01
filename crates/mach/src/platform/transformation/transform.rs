@@ -1,13 +1,11 @@
-use std::collections::HashSet;
 use std::fs;
-use std::path::PathBuf;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::RwLock;
 use std::thread::JoinHandle;
 
 use libmach::Asset;
@@ -34,17 +32,17 @@ pub fn link_and_transform(
   // We know they cannot be used elsewhere so this is safe to
   let config_local = Arc::new(config.clone());
   let plugins_local = Arc::new(std::mem::take(plugins));
-  let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
-  let dependency_map_local = Arc::new(Mutex::new(std::mem::take(dependency_map)));
-  let asset_graph_local = Arc::new(Mutex::new(std::mem::take(asset_graph)));
+  let asset_map_local = Arc::new(RwLock::new(std::mem::take(asset_map)));
+  let dependency_map_local = Arc::new(RwLock::new(std::mem::take(dependency_map)));
+  let asset_graph_local = Arc::new(RwLock::new(std::mem::take(asset_graph)));
   let active_threads = Arc::new(AtomicUsize::new(0));
-  let queue = Arc::new(Mutex::new(vec![]));
+  let queue = Arc::new(RwLock::new(vec![]));
 
   let mut handles = Vec::<JoinHandle<Result<(), String>>>::new();
   let mut senders = Vec::<Sender<bool>>::new();
   let mut receivers = Vec::<Option<Receiver<bool>>>::new();
 
-  queue.lock().unwrap().push(Dependency {
+  queue.write().unwrap().push(Dependency {
     specifier: config.entry_point.to_str().unwrap().to_string(),
     is_entry: true,
     source_path: ENTRY_ASSET.clone(),
@@ -71,11 +69,11 @@ pub fn link_and_transform(
 
     handles.push(std::thread::spawn(move || -> Result<(), String> {
       loop {
-        let Some(dependency) = queue.lock().unwrap().pop() else {
+        let Some(dependency) = queue.write().unwrap().pop() else {
           let Ok(kill) = rx.recv() else {
             break;
           };
-          if (queue.lock().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0)
+          if (queue.read().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0)
             || kill
           {
             break;
@@ -124,19 +122,20 @@ pub fn link_and_transform(
         let dependency_id = dependency.id.clone();
         let source_asset = dependency.source_asset.clone();
 
-        dependency_map.lock().unwrap().insert(dependency);
+        dependency_map.write().unwrap().insert(dependency);
 
-        let (asset_id, inserted) = asset_map.lock().unwrap().get_or_insert(Asset {
+        let (asset_id, inserted) = asset_map.write().unwrap().get_or_insert(Asset {
           file_path_absolute: resolve_result.file_path.clone(),
           ..Default::default()
         });
 
+        asset_graph.write().unwrap().add_edge(
+          source_asset.clone(),
+          asset_id.clone(),
+          dependency_id.clone(),
+        );
+
         if !inserted {
-          asset_graph.lock().unwrap().add_edge(
-            source_asset.clone(),
-            asset_id.clone(),
-            dependency_id.clone(),
-          );
           park_thread();
           continue;
         }
@@ -186,20 +185,16 @@ pub fn link_and_transform(
         }
 
         {
-          let mut asset_map = asset_map.lock().unwrap();
+          let mut asset_map = asset_map.write().unwrap();
           let asset = asset_map.get_mut(&asset_id).unwrap();
           asset.name = file_target.file_stem.clone();
           asset.content = content;
           asset.kind = asset_kind;
-          asset.file_path_relative = pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+          asset.file_path_relative =
+            pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
           asset.bundle_behavior = dependency_bundle_behavior;
         }
 
-        asset_graph.lock().unwrap().add_edge(
-          source_asset.clone(),
-          asset_id.clone(),
-          dependency_id.clone(),
-        );
         // Transformation Done
 
         let mut new_dependencies = Vec::<Dependency>::new();
@@ -222,7 +217,7 @@ pub fn link_and_transform(
           new_dependencies.push(new_dependency);
         }
 
-        queue.lock().unwrap().extend(new_dependencies);
+        queue.write().unwrap().extend(new_dependencies);
         unpark_threads();
       }
       return Ok(());

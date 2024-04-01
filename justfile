@@ -89,6 +89,9 @@ fixture cmd fixture *ARGS:
   {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
 fmt:
+  cargo +nightly fmt
+  
+_fmt:
   #!/usr/bin/env sh
   cargo +nightly fmt
   set -ev

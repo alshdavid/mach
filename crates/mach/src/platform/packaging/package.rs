@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use std::sync::Mutex;
+use std::sync::RwLock;
 use swc_core::common::SourceMap;
 
 use libmach::AssetGraph;
@@ -31,8 +31,8 @@ pub fn package(
   let asset_graph_local = Arc::new(std::mem::take(asset_graph));
   let bundles_local = Arc::new(std::mem::take(bundles));
   let bundle_graph_local = Arc::new(std::mem::take(bundle_graph));
-  let asset_map_local = Arc::new(Mutex::new(std::mem::take(asset_map)));
-  let outputs_local = Arc::new(Mutex::new(std::mem::take(outputs)));
+  let asset_map_local = Arc::new(RwLock::new(std::mem::take(asset_map)));
+  let outputs_local = Arc::new(RwLock::new(std::mem::take(outputs)));
   let source_map = Arc::new(SourceMap::default());
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 

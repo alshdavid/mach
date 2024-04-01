@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 use std::sync::Arc;
+use std::sync::RwLock;
 
 use once_cell::sync::Lazy;
-use std::sync::Mutex;
 use swc_core::atoms::Atom;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
@@ -35,7 +35,7 @@ pub struct JavaScriptRuntime<'a> {
   pub current_bundle_id: &'a BundleId,
   pub dependency_map: &'a DependencyMap,
   pub asset_graph: &'a AssetGraph,
-  pub asset_map: Arc<Mutex<AssetMap>>,
+  pub asset_map: Arc<RwLock<AssetMap>>,
   pub bundle_graph: &'a BundleGraph,
   pub runtime_factory: &'a RuntimeFactory,
   pub depends_on: HashSet<BundleId>,
@@ -64,7 +64,7 @@ impl<'a> JavaScriptRuntime<'a> {
     };
 
     let (asset_kind, asset_filepath_relative) = {
-      let asset_map = self.asset_map.lock().unwrap();
+      let asset_map = self.asset_map.read().unwrap();
       let Some(asset) = asset_map.get(&asset_id) else {
         panic!(
           "Could not get Asset for AssetID:\n  AssetID: {:?}",

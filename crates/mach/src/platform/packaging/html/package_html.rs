@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::RwLock;
 
 use html5ever::parse_document;
 use html5ever::serialize::serialize;
@@ -28,12 +28,12 @@ use super::super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package_html(
   _config: Arc<MachConfig>,
-  asset_map: Arc<Mutex<AssetMap>>,
+  asset_map: Arc<RwLock<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
   bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
-  outputs: Arc<Mutex<Outputs>>,
+  outputs: Arc<RwLock<Outputs>>,
   bundle: Bundle,
   bundle_manifest: &BundleManifest,
   js_runtime_factory: &RuntimeFactory,
@@ -48,7 +48,7 @@ pub fn package_html(
   let asset_id = entry_asset.clone();
 
   let asset_content = {
-    let mut asset_map = asset_map.lock().unwrap();
+    let mut asset_map = asset_map.write().unwrap();
     let Some(asset) = asset_map.get_mut(&entry_asset) else {
       panic!("could not find asset")
     };
@@ -119,7 +119,7 @@ pub fn package_html(
 
     let x = asset_graph.get_asset_id_for_dependency(dependency).unwrap();
     let asset = asset_map
-      .lock()
+      .read()
       .unwrap()
       .get(&x)
       .unwrap()
@@ -168,7 +168,7 @@ pub fn package_html(
   let mut output = Vec::<u8>::new();
   serialize(&mut output, &document, SerializeOpts::default()).unwrap();
 
-  outputs.lock().unwrap().push(Output {
+  outputs.write().unwrap().push(Output {
     content: output,
     filepath: PathBuf::from(&bundle.name),
   });

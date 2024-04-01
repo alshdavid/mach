@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::RwLock;
 use std::thread::JoinHandle;
 
 use std::sync::Mutex;
@@ -32,12 +33,12 @@ use super::runtime_factory::RuntimeFactory;
 
 pub fn package_javascript(
   config: Arc<MachConfig>,
-  asset_map: Arc<Mutex<AssetMap>>,
+  asset_map: Arc<RwLock<AssetMap>>,
   dependency_map: Arc<DependencyMap>,
   asset_graph: Arc<AssetGraph>,
   bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
-  outputs: Arc<Mutex<Outputs>>,
+  outputs: Arc<RwLock<Outputs>>,
   runtime_factory: Arc<RuntimeFactory>,
   bundle: Bundle,
   bundle_manifest: Arc<BundleManifest>,
@@ -64,7 +65,7 @@ pub fn package_javascript(
         let asset_id = asset_id.clone();
 
         let (asset_content, _asset_file_path_absolute, asset_file_path_relative) = {
-          let mut asset_map = asset_map.lock().unwrap();
+          let mut asset_map = asset_map.write().unwrap();
           let asset = asset_map.get_mut(&asset_id).unwrap();
           (
             std::mem::take(&mut asset.content),
@@ -139,7 +140,7 @@ pub fn package_javascript(
 
   if let Some(entry_asset_id) = &bundle.entry_asset {
     let entry_asset_filepath_relative = asset_map
-      .lock()
+      .read()
       .unwrap()
       .get(entry_asset_id)
       .unwrap()
@@ -168,7 +169,7 @@ pub fn package_javascript(
 
   let rendered = render_module(&bundle_module, source_map);
 
-  outputs.lock().unwrap().push(Output {
+  outputs.write().unwrap().push(Output {
     content: rendered.as_bytes().to_vec(),
     filepath: PathBuf::from(&bundle.name),
   });
