@@ -1,8 +1,10 @@
-// #![deny(unused_crate_dependencies)]
+#![deny(unused_crate_dependencies)]
 
 mod cmd;
 mod kit;
 mod platform;
+
+use std::time::SystemTime;
 
 use clap::Parser;
 use clap::Subcommand;
@@ -34,22 +36,28 @@ pub enum CommandType {
 }
 
 fn main() {
-  let command = Commands::parse();
+  let start_time = SystemTime::now();
+  
+  {
+    let command = Commands::parse();
 
-  match command.command {
-    CommandType::Build(command) => {
-      if let Err(msg) = cmd::build::main(command) {
-        println!("Build Error\n{}", msg);
-      };
-    }
-    CommandType::Dev(command) => {
-      cmd::dev::main(command);
-    }
-    CommandType::Watch(command) => {
-      cmd::watch::main(command);
-    }
-    CommandType::Version(_) => {
-      cmd::version::main();
+    match command.command {
+      CommandType::Build(command) => {
+        if let Err(msg) = cmd::build::main(command) {
+          println!("Build Error\n{}", msg);
+        };
+      }
+      CommandType::Dev(command) => {
+        cmd::dev::main(command);
+      }
+      CommandType::Watch(command) => {
+        cmd::watch::main(command);
+      }
+      CommandType::Version(_) => {
+        cmd::version::main();
+      }
     }
   }
+
+  println!("Total Time:    {:.3}s", start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
 }
