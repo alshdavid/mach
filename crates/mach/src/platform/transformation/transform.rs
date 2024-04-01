@@ -83,17 +83,13 @@ pub fn link_and_transform(
 
         active_threads.fetch_add(1, Ordering::Relaxed);
 
-        let unpark_threads = || {
+        let wake_threads = || {
           active_threads.fetch_sub(1, Ordering::Relaxed);
           for sender in &senders {
             let Ok(_) = sender.send(false) else {
               continue;
             };
           }
-        };
-
-        let park_thread = || {
-          active_threads.fetch_sub(1, Ordering::Relaxed);
         };
 
         let kill_threads = || {
@@ -136,7 +132,7 @@ pub fn link_and_transform(
         );
 
         if !inserted {
-          park_thread();
+          wake_threads();
           continue;
         }
 
@@ -218,7 +214,7 @@ pub fn link_and_transform(
         }
 
         queue.write().unwrap().extend(new_dependencies);
-        unpark_threads();
+        wake_threads();
       }
       return Ok(());
     }));
