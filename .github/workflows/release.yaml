@@ -75,20 +75,22 @@ jobs:
 
           profile=release os=linux arch=amd64 just build-publish
 
+          mkdir ${{ github.workspace }}/artifact
+
           cd ${{ github.workspace }}/target/linux-amd64
           mv release mach
           tar -czvf mach-linux-amd64.tar.gz mach
+          mv mach-linux-amd64.tar.gz ${{ github.workspace }}/artifact
 
           cd ${{ github.workspace }}/npm/mach-os-arch
           npm pack
-          mv *.tgz npm-mach-linux-amd64.tar.gz
+          mv *.tgz npm-mach-linux-amd64.tgz
+          mv *.tgz ${{ github.workspace }}/artifact/npm-mach-linux-amd64.tgz
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }}.tar.gz
-          path: |
-            target/linux-amd64/mach-linux-amd64.tar.gz
-            npm/mach-os-arch/npm-mach-linux-amd64.tar.gz
+          path: ${{ github.workspace }}/artifact/**/*
           if-no-files-found: error
           retention-days: 1
 
