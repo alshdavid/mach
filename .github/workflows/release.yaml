@@ -80,7 +80,7 @@ jobs:
   #         cd ${{ github.workspace }}/target/${{ github.job }}
   #         mv release mach
   #         tar -czvf mach-${{ github.job }}.tar.gz mach
-  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
   #         cd ${{ github.workspace }}/npm/mach-os-arch
   #         npm pack
@@ -126,7 +126,7 @@ jobs:
   #         cd ${{ github.workspace }}/target/${{ github.job }}
   #         mv release mach
   #         tar -czvf mach-${{ github.job }}.tar.gz mach
-  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
   #         cd ${{ github.workspace }}/npm/mach-os-arch
   #         npm pack
@@ -168,7 +168,7 @@ jobs:
   #         cd ${{ github.workspace }}/target/${{ github.job }}
   #         mv release mach
   #         tar -czvf mach-${{ github.job }}.tar.gz mach
-  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
   #         cd ${{ github.workspace }}/npm/mach-os-arch
   #         npm pack
@@ -210,7 +210,7 @@ jobs:
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
           tar -czvf mach-${{ github.job }}.tar.gz mach
-          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
           cd ${{ github.workspace }}/npm/mach-os-arch
           npm pack
@@ -254,7 +254,7 @@ jobs:
   #         cd ${{ github.workspace }}/target/${{ github.job }}
   #         mv release mach
   #         tar -czvf mach-${{ github.job }}.tar.gz mach
-  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
   #         cd ${{ github.workspace }}/npm/mach-os-arch
   #         npm pack
@@ -296,7 +296,7 @@ jobs:
   #         cd ${{ github.workspace }}/target/${{ github.job }}
   #         mv release mach
   #         tar -czvf mach-${{ github.job }}.tar.gz mach
-  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifact
+  #         mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
 
   #         cd ${{ github.workspace }}/npm/mach-os-arch
   #         npm pack
@@ -408,19 +408,19 @@ jobs:
           ls -l
 
           PACKAGES=(
-            # "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-linux-amd64.tgz"
-            # "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-linux-arm64.tgz"
-            # "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-macos-amd64.tgz"
-            "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-macos-arm64.tgz"
-            # "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-windows-amd64.tgz"
-            # "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-windows-arm64.tgz"
+            # "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
+            # "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
+            # "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
+            "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-mach-macos-arm64.tgz"
+            # "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"
+            # "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-mach-windows-arm64.tgz"
             "${{ github.workspace }}/artifacts/npm-package.tar.gz/npm-mach.tgz"
           )
 
           for PACKAGE in ${PACKAGES[@]}; do
             cd $(dirname $PACKAGE)
             ls -l
-            
+
             if [ "$BRANCH_NAME" == "main" ]; then
               echo Publishing latest tag
               npm publish --dry-run --access=public $PACKAGE
