@@ -67,22 +67,28 @@ jobs:
         env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
+          set -ev
           sudo apt-get update
           npm install -g npm pnpm
           pnpm install
           rustup target add x86_64-unknown-linux-gnu
-          os=linux arch=arm64 just build-publish
 
-      - name: Package
-        run: |
-          cd target/linux-amd64
-          mv release-lto mach
+          os=linux arch=amd64 just build-publish
+
+          cd ${{ github.workspace }}/target/linux-amd64
+          mv release mach
           tar -czvf mach-linux-amd64.tar.gz mach
+
+          cd ${{ github.workspace }}/npm/mach-os-arch
+          npm pack
+          mv *.tgz npm-mach-linux-amd64.tar.gz
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ github.job }}.tar.gz
-          path: target/linux-amd64/mach-linux-amd64.tar.gz
+          path: |
+            target/linux-amd64/mach-linux-amd64.tar.gz
+            npm/mach-os-arch/npm-mach-linux-amd64.tar.gz
           if-no-files-found: error
           retention-days: 1
 
