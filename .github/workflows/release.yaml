@@ -382,7 +382,8 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    # needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [vars, npm-package, macos-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -398,24 +399,27 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
           cd artifacts
+          ls -l
+          cd npm-package.tar.gz
+          ls -l
 
           PACKAGES=(
-            "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-linux-amd64.tgz"
-            "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-linux-arm64.tgz"
-            "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-macos-amd64.tgz"
+            # "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-linux-amd64.tgz"
+            # "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-linux-arm64.tgz"
+            # "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-macos-amd64.tgz"
             "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-macos-arm64.tgz"
-            "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-windows-amd64.tgz"
-            "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-windows-arm64.tgz"
+            # "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-windows-amd64.tgz"
+            # "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-windows-arm64.tgz"
             "${{ github.workspace }}/artifacts/npm-package.tar.gz/npm-mach.tgz"
           )
 
           for PACKAGE in ${PACKAGES[@]}; do
             if [ "$BRANCH_NAME" == "main" ]; then
               echo Publishing latest tag
-              npm publish --access=public $PACKAGE
+              npm publish --dry-run --access=public $PACKAGE
             else
               echo Publishing $BRANCH_NAME tag
-              npm publish --access=public --tag="$BRANCH_NAME" $PACKAGE
+              npm publish --dry-run --access=public --tag="$BRANCH_NAME" $PACKAGE
             fi
           done
 
