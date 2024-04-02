@@ -6,21 +6,21 @@ use std::sync::RwLock;
 use std::thread::JoinHandle;
 
 use std::sync::Mutex;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
+use libmach::DependencyMapSync;
+use libmach::MachConfigSync;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
-use libmach::AssetGraph;
 use libmach::AssetId;
-use libmach::AssetMap;
 use libmach::Bundle;
 use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
-use libmach::DependencyMap;
-use libmach::MachConfig;
 use libmach::Output;
 use libmach::Outputs;
 
@@ -31,11 +31,11 @@ use crate::kit::swc::render_module;
 use super::js_runtime::js_runtime::JavaScriptRuntime;
 use super::runtime_factory::RuntimeFactory;
 
-pub fn package_javascript(
-  config: Arc<MachConfig>,
-  asset_map: Arc<RwLock<AssetMap>>,
-  dependency_map: Arc<DependencyMap>,
-  asset_graph: Arc<AssetGraph>,
+pub fn package_javascript<'a>(
+  config: MachConfigSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
   bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
   outputs: Arc<RwLock<Outputs>>,
@@ -44,6 +44,7 @@ pub fn package_javascript(
   bundle_manifest: Arc<BundleManifest>,
 ) {
   let source_map = Arc::new(SourceMap::default());
+  
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let bundle_id = bundle.id.clone();
   let mut handles = Vec::<JoinHandle<Result<(), String>>>::new();
@@ -61,6 +62,9 @@ pub fn package_javascript(
     let stmts = stmts.clone();
 
     handles.push(std::thread::spawn(move || -> Result<(), String> {
+      let asset_graph = asset_graph.read().unwrap();
+      let dependency_map = dependency_map.read().unwrap();
+
       for asset_id in assets.drain(0..) {
         let asset_id = asset_id.clone();
 

@@ -14,12 +14,13 @@ use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
 
 use super::PluginContainer;
+use super::PluginContainerSync;
 
 pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
   adapter_map: &mut AdapterMap,
-) -> Result<PluginContainer, String> {
+) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
   let base_path = machrc.file_path.parent().unwrap();
 
@@ -125,5 +126,5 @@ pub fn load_plugins(
         .insert(pattern.clone(), transformers);
     }
   }
-  return Ok(plugins);
+  return Ok(plugins.to_sync());
 }

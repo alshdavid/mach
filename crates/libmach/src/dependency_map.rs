@@ -3,6 +3,10 @@ use super::Dependency;
 use super::DependencyId;
 use std::collections::HashMap;
 use std::fmt::Debug;
+use std::sync::Arc;
+use std::sync::RwLock;
+
+pub type DependencyMapSync = Arc<RwLock<DependencyMap>>;
 
 #[derive(Default)]
 pub struct DependencyMap {

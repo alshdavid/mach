@@ -6,6 +6,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use clap::Parser;
+use libmach::MachConfigSync;
 use normalize_path::NormalizePath;
 
 use libmach::MachConfig;
@@ -47,7 +48,7 @@ pub struct BuildCommand {
   pub debug: bool,
 }
 
-pub fn parse_config(command: BuildCommand) -> Result<MachConfig, String> {
+pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();
 
   let entry_arg = 'block: {
@@ -110,7 +111,7 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfig, String> {
     vars
   };
 
-  return Ok(MachConfig {
+  return Ok(Arc::new(MachConfig {
     start_time,
     entry_point,
     dist_dir,
@@ -128,7 +129,7 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfig, String> {
     optimize: !command.no_optimize,
     env,
     debug: command.debug,
-  });
+  }));
 }
 
 fn get_entry(entry_arg: &Path) -> Option<PathBuf> {

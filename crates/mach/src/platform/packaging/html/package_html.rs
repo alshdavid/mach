@@ -6,18 +6,17 @@ use html5ever::parse_document;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;
 use html5ever::tendril::TendrilSink;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
+use libmach::DependencyMapSync;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
-use libmach::AssetGraph;
-use libmach::AssetMap;
 use libmach::Bundle;
 use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
-use libmach::DependencyMap;
-use libmach::MachConfig;
 use libmach::Output;
 use libmach::Outputs;
 
@@ -27,17 +26,19 @@ use crate::kit::swc;
 use super::super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package_html(
-  _config: Arc<MachConfig>,
-  asset_map: Arc<RwLock<AssetMap>>,
-  dependency_map: Arc<DependencyMap>,
-  asset_graph: Arc<AssetGraph>,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
   bundles: Arc<BundleMap>,
   bundle_graph: Arc<BundleGraph>,
   outputs: Arc<RwLock<Outputs>>,
   bundle: Bundle,
   bundle_manifest: &BundleManifest,
-  js_runtime_factory: &RuntimeFactory,
+  js_runtime_factory: Arc<RuntimeFactory>,
 ) {
+  let asset_graph = asset_graph.read().unwrap();
+  let dependency_map = dependency_map.read().unwrap();
+
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
     return;

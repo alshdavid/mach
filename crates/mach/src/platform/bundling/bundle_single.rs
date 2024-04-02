@@ -1,21 +1,25 @@
-use libmach::AssetGraph;
-use libmach::AssetMap;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
 use libmach::Bundle;
 use libmach::BundleGraph;
 use libmach::BundleMap;
-use libmach::DependencyMap;
-use libmach::MachConfig;
+use libmach::DependencyMapSync;
+use libmach::MachConfigSync;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"
 pub fn bundle_single(
-  _config: &MachConfig,
-  asset_map: &AssetMap,
-  asset_graph: &AssetGraph,
+  _config: MachConfigSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
   bundles: &mut BundleMap,
   bundle_graph: &mut BundleGraph,
-  dependency_map: &DependencyMap,
 ) -> Result<(), String> {
+  let asset_map = asset_map.write().unwrap();
+  let asset_graph = asset_graph.write().unwrap();
+  let dependency_map = dependency_map.write().unwrap();
+
   let mut css_bundle = Bundle {
     kind: "css".to_string(),
     ..Bundle::default()

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use libmach::AssetMap;
+use libmach::AssetMapSync;
 use libmach::BundleMap;
 use libmach::MachConfig;
 
@@ -45,13 +45,13 @@ impl<'a> AppReporter<'a> {
 
   pub fn print_transform_stats(
     &mut self,
-    asset_map: &AssetMap,
+    asset_map: &AssetMapSync,
   ) {
     let time_transform = self.config.time_elapsed();
     println!(
       "  Transform:     {:.3}s  (Assets {})",
       time_transform,
-      asset_map.len()
+      asset_map.read().unwrap().len()
     );
     self.time_transform = time_transform;
   }

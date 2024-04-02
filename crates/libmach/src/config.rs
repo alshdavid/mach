@@ -11,6 +11,8 @@ use super::Machrc;
 //   NpmOrYarn,
 // }
 
+pub type MachConfigSync = Arc<MachConfig>;
+
 #[derive(Clone, Debug)]
 pub struct MachConfig {
   pub start_time: SystemTime,

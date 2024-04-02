@@ -9,32 +9,27 @@ use std::sync::RwLock;
 use std::thread::JoinHandle;
 
 use libmach::Asset;
-use libmach::AssetGraph;
-use libmach::AssetMap;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
 use libmach::Dependency;
-use libmach::DependencyMap;
+use libmach::DependencyMapSync;
 use libmach::DependencyOptions;
-use libmach::MachConfig;
+use libmach::MachConfigSync;
 use libmach::MutableAsset;
 
-use crate::platform::config::PluginContainer;
+use crate::platform::config::PluginContainerSync;
 use crate::platform::config::TransformerTarget;
 use crate::platform::config::ENTRY_ASSET;
 
 pub fn link_and_transform(
-  config: &MachConfig,
-  plugins: &mut PluginContainer,
-  asset_map: &mut AssetMap,
-  dependency_map: &mut DependencyMap,
-  asset_graph: &mut AssetGraph,
+  config: MachConfigSync,
+  plugins: PluginContainerSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
 ) -> Result<(), String> {
   // Take ownership of the bundling state while we transform the files.
   // We know they cannot be used elsewhere so this is safe to
-  let config_local = Arc::new(config.clone());
-  let plugins_local = Arc::new(std::mem::take(plugins));
-  let asset_map_local = Arc::new(RwLock::new(std::mem::take(asset_map)));
-  let dependency_map_local = Arc::new(RwLock::new(std::mem::take(dependency_map)));
-  let asset_graph_local = Arc::new(RwLock::new(std::mem::take(asset_graph)));
   let active_threads = Arc::new(AtomicUsize::new(0));
   let queue = Arc::new(RwLock::new(vec![]));
 
@@ -57,11 +52,11 @@ pub fn link_and_transform(
   }
 
   for t in 0..config.threads {
-    let config = config_local.clone();
-    let plugins = plugins_local.clone();
-    let asset_map = asset_map_local.clone();
-    let dependency_map = dependency_map_local.clone();
-    let asset_graph = asset_graph_local.clone();
+    let config = config.clone();
+    let plugins = plugins.clone();
+    let asset_map = asset_map.clone();
+    let dependency_map = dependency_map.clone();
+    let asset_graph = asset_graph.clone();
     let active_threads = active_threads.clone();
     let queue = queue.clone();
     let senders = senders.clone();
@@ -223,21 +218,6 @@ pub fn link_and_transform(
   for handle in handles.drain(0..) {
     handle.join().unwrap().unwrap();
   }
-
-  //Put the results of the transformation back into the bundle state
-  *plugins = Arc::try_unwrap(plugins_local).unwrap();
-  *asset_map = Arc::try_unwrap(asset_map_local)
-    .unwrap()
-    .into_inner()
-    .unwrap();
-  *dependency_map = Arc::try_unwrap(dependency_map_local)
-    .unwrap()
-    .into_inner()
-    .unwrap();
-  *asset_graph = Arc::try_unwrap(asset_graph_local)
-    .unwrap()
-    .into_inner()
-    .unwrap();
 
   Ok(())
 }

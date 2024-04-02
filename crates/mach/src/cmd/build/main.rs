@@ -4,11 +4,11 @@ use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
 use libmach::AdapterMap;
-use libmach::AssetGraph;
-use libmach::AssetMap;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
 use libmach::BundleGraph;
 use libmach::BundleMap;
-use libmach::DependencyMap;
+use libmach::DependencyMapSync;
 use libmach::Outputs;
 
 use super::parse_config;
@@ -23,9 +23,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     the bundling phases with read or write permissions
     depending on how that phase uses them
   */
-  let mut asset_map = AssetMap::new();
-  let mut dependency_map = DependencyMap::new();
-  let mut asset_graph = AssetGraph::new();
+  let asset_map = AssetMapSync::default();
+  let dependency_map = DependencyMapSync::default();
+  let asset_graph = AssetGraphSync::default();
   let mut bundles = BundleMap::new();
   let mut bundle_graph = BundleGraph::new();
   let mut outputs = Outputs::new();
@@ -38,7 +38,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let mut plugins = load_plugins(&config, &config.machrc, &mut adapter_map)?;
+  let plugins = load_plugins(&config, &config.machrc, &mut adapter_map)?;
 
   /*
     link_and_transform() will read source files, identify import statements
@@ -47,11 +47,11 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     This will loop until there are no more import statements to resolve
   */
   link_and_transform(
-    &config,
-    &mut plugins,
-    &mut asset_map,
-    &mut dependency_map,
-    &mut asset_graph,
+    config.clone(),
+    plugins.clone(),
+    asset_map.clone(),
+    asset_graph.clone(),
+    dependency_map.clone(),
   )?;
 
   reporter.print_transform_stats(&asset_map);
@@ -66,10 +66,10 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     into groupings. Each grouping will be emitted as a "bundle"
   */
   bundle(
-    &config,
-    &asset_map,
-    &dependency_map,
-    &asset_graph,
+    config.clone(),
+    asset_map.clone(),
+    asset_graph.clone(),
+    dependency_map.clone(),
     &mut bundles,
     &mut bundle_graph,
   )?;
@@ -90,12 +90,12 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     statements to point to the new paths
   */
   package(
-    &config,
-    &mut dependency_map,
-    &mut asset_graph,
+    config.clone(),
+    asset_map.clone(),
+    asset_graph.clone(),
+    dependency_map.clone(),
     &mut bundles,
     &mut bundle_graph,
-    &mut asset_map,
     &mut outputs,
   )?;
 

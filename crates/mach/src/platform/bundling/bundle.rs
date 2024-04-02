@@ -1,38 +1,38 @@
-use libmach::AssetGraph;
-use libmach::AssetMap;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
 use libmach::BundleGraph;
 use libmach::BundleMap;
-use libmach::DependencyMap;
-use libmach::MachConfig;
+use libmach::DependencyMapSync;
+use libmach::MachConfigSync;
 
 use super::bundle_single::bundle_single;
-use super::bundle_splitting::bundle_with_splitting;
 
 pub fn bundle(
-  config: &MachConfig,
-  asset_map: &AssetMap,
-  dependency_map: &DependencyMap,
-  asset_graph: &AssetGraph,
+  config: MachConfigSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
   bundles: &mut BundleMap,
   bundle_graph: &mut BundleGraph,
 ) -> Result<(), String> {
   if config.bundle_splitting {
-    return bundle_with_splitting(
-      config,
-      asset_map,
-      dependency_map,
-      asset_graph,
-      bundles,
-      bundle_graph,
-    );
+    todo!();
+    // return bundle_with_splitting(
+    //   config,
+    //   asset_map,
+    //   dependency_map,
+    //   asset_graph,
+    //   bundles,
+    //   bundle_graph,
+    // );
   } else {
     return bundle_single(
       config,
       asset_map,
       asset_graph,
+      dependency_map,
       bundles,
       bundle_graph,
-      dependency_map,
     );
   }
 }

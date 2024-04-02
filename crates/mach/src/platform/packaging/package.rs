@@ -1,15 +1,15 @@
 use std::sync::Arc;
 
 use std::sync::RwLock;
+use libmach::AssetGraphSync;
+use libmach::AssetMapSync;
+use libmach::DependencyMapSync;
+use libmach::MachConfigSync;
 use swc_core::common::SourceMap;
 
-use libmach::AssetGraph;
-use libmach::AssetMap;
 use libmach::BundleGraph;
 use libmach::BundleManifest;
 use libmach::BundleMap;
-use libmach::DependencyMap;
-use libmach::MachConfig;
 use libmach::Outputs;
 
 use super::css::package_css;
@@ -18,21 +18,19 @@ use super::javascript::package_javascript;
 use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
-  config: &MachConfig,
-  dependency_map: &mut DependencyMap,
-  asset_graph: &mut AssetGraph,
+  config: MachConfigSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  dependency_map: DependencyMapSync,
   bundles: &mut BundleMap,
   bundle_graph: &mut BundleGraph,
-  asset_map: &mut AssetMap,
   outputs: &mut Outputs,
 ) -> Result<(), String> {
-  let config_local = Arc::new(config.clone());
-  let dependency_map_local = Arc::new(std::mem::take(dependency_map));
-  let asset_graph_local = Arc::new(std::mem::take(asset_graph));
+  let asset_map = asset_map;
   let bundles_local = Arc::new(std::mem::take(bundles));
   let bundle_graph_local = Arc::new(std::mem::take(bundle_graph));
-  let asset_map_local = Arc::new(RwLock::new(std::mem::take(asset_map)));
   let outputs_local = Arc::new(RwLock::new(std::mem::take(outputs)));
+
   let source_map = Arc::new(SourceMap::default());
   let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 
@@ -46,54 +44,42 @@ pub fn package(
   };
 
   for bundle in bundles_local.iter() {
-    let config_local = config_local.clone();
-    let asset_map_local = asset_map_local.clone();
-    let dependency_map_local = dependency_map_local.clone();
-    let asset_graph_local = asset_graph_local.clone();
-    let bundles_local = bundles_local.clone();
-    let bundle_graph_local = bundle_graph_local.clone();
-    let outputs_local = outputs_local.clone();
-    let runtime_factory = runtime_factory.clone();
+    let bundles = bundles_local.clone();
+    let bundle_graph = bundle_graph_local.clone();
+    let outputs = outputs_local.clone();
     let bundle = bundle.clone();
     let bundle_manifest = bundle_manifest.clone();
 
     if bundle.kind == "js" {
       package_javascript(
-        config_local,
-        asset_map_local,
-        dependency_map_local,
-        asset_graph_local,
-        bundles_local,
-        bundle_graph_local,
-        outputs_local,
-        runtime_factory,
+        config.clone(),
+        asset_map.clone(),
+        asset_graph.clone(),
+        dependency_map.clone(),
+        bundles,
+        bundle_graph,
+        outputs,
+        runtime_factory.clone(),
         bundle,
         bundle_manifest,
       );
     } else if bundle.kind == "css" {
       package_css(
-        config_local,
-        asset_map_local,
-        dependency_map_local,
-        asset_graph_local,
-        bundles_local,
-        bundle_graph_local,
-        outputs_local,
-        bundle,
-        &bundle_manifest,
+        asset_map.clone(),
+        outputs.clone(),
+        bundle.clone(),
       )
     } else if bundle.kind == "html" {
       package_html(
-        config_local,
-        asset_map_local,
-        dependency_map_local,
-        asset_graph_local,
-        bundles_local,
-        bundle_graph_local,
-        outputs_local,
+        asset_map.clone(),
+        asset_graph.clone(),
+        dependency_map.clone(),
+        bundles,
+        bundle_graph,
+        outputs,
         bundle,
         &bundle_manifest,
-        &runtime_factory,
+        runtime_factory.clone(),
       );
     }
   }
@@ -112,14 +98,8 @@ pub fn package(
   //   filepath: PathBuf::from("bundle_graph.json"),
   // });
 
-  *dependency_map = Arc::try_unwrap(dependency_map_local).unwrap();
-  *asset_graph = Arc::try_unwrap(asset_graph_local).unwrap();
   *bundles = Arc::try_unwrap(bundles_local).unwrap();
   *bundle_graph = Arc::try_unwrap(bundle_graph_local).unwrap();
-  *asset_map = Arc::try_unwrap(asset_map_local)
-    .unwrap()
-    .into_inner()
-    .unwrap();
   *outputs = Arc::try_unwrap(outputs_local)
     .unwrap()
     .into_inner()

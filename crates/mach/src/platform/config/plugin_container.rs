@@ -1,13 +1,22 @@
 use std::collections::HashMap;
 use std::path::Path;
+use std::sync::Arc;
 
 use libmach::Resolver;
 use libmach::Transformer;
+
+pub type PluginContainerSync = Arc<PluginContainer>;
 
 #[derive(Default, Debug)]
 pub struct PluginContainer {
   pub resolvers: Vec<Box<dyn Resolver>>,
   pub transformers: TransformerMap,
+}
+
+impl PluginContainer {
+  pub fn to_sync(&mut self) -> PluginContainerSync {
+    Arc::new(std::mem::take(self))
+  }
 }
 
 #[derive(Default, Debug)]

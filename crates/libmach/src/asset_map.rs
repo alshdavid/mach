@@ -3,9 +3,13 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::RwLock;
 
 use super::Asset;
 use super::AssetId;
+
+pub type AssetMapSync = Arc<RwLock<AssetMap>>;
 
 #[derive(Default)]
 pub struct AssetMap {
