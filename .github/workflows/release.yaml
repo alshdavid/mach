@@ -69,7 +69,7 @@ jobs:
   #       run: |
   #         set -ev
 
-  #         mkdir ${{ github.workspace }}/artifact
+  #         mkdir ${{ github.workspace }}/artifacts
   #         sudo apt-get update
   #         npm install -g npm pnpm
   #         pnpm install
@@ -112,7 +112,7 @@ jobs:
   #       run: |
   #         set -ev
 
-  #         mkdir ${{ github.workspace }}/artifact
+  #         mkdir ${{ github.workspace }}/artifacts
   #         sudo apt-get update
   #         npm install -g npm pnpm
   #         pnpm install
@@ -158,7 +158,7 @@ jobs:
   #       run: |
   #         set -ev
 
-  #         mkdir ${{ github.workspace }}/artifact
+  #         mkdir ${{ github.workspace }}/artifacts
   #         npm install -g npm pnpm
   #         pnpm install
   #         rustup target add x86_64-apple-darwin
@@ -200,7 +200,7 @@ jobs:
         run: |
           set -ev
 
-          mkdir ${{ github.workspace }}/artifact
+          mkdir ${{ github.workspace }}/artifacts
           npm install -g npm pnpm
           pnpm install
           rustup target add aarch64-apple-darwin
@@ -243,7 +243,7 @@ jobs:
   #         os: windows
   #         arch: amd64
   #       run: |
-  #         mkdir ${{ github.workspace }}/artifact
+  #         mkdir ${{ github.workspace }}/artifacts
 
   #         npm install -g npm pnpm
   #         pnpm install
@@ -285,7 +285,7 @@ jobs:
   #         os: windows
   #         arch: arm64
   #       run: |
-  #         mkdir ${{ github.workspace }}/artifact
+  #         mkdir ${{ github.workspace }}/artifacts
 
   #         npm install -g npm pnpm
   #         pnpm install
@@ -322,7 +322,7 @@ jobs:
         env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
-          mkdir ${{ github.workspace }}/artifact
+          mkdir ${{ github.workspace }}/artifacts
 
           npm install -g npm pnpm
           pnpm install
