@@ -77,7 +77,7 @@ jobs:
 
           cd ${{ github.workspace }}
           ls -l
-          cd /target
+          cd target
           ls -l
           cd linux-amd64
           ls -l

@@ -130,9 +130,9 @@ build-publish:
     "0.0.0-local" \
     {{MACH_VERSION}}
 
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
     "./npm/mach/package.json" \
-    "version" \
+    "0.0.0-local" \
     "{{MACH_VERSION}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
