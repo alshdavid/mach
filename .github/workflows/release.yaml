@@ -217,7 +217,7 @@ jobs:
           mv *.tgz npm-mach-${{ github.job }}.tgz
           mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
 
-          ls -l ${{ github.workspace }}/artifact
+          ls -l ${{ github.workspace }}/artifacts
       
       - uses: actions/upload-artifact@v4
         with:
