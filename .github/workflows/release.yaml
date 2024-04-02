@@ -8,19 +8,7 @@ on:
   push:
     branches:
       - "main"
-
-# on: 
-#   workflow_dispatch:
-#     inputs:
-#       bin-codename:
-#         # Use the names of planes in increasing increments of speed
-#         description: 'Binary Release Codename'
-#         required: false
-#         default: ""
-#         type: string
-
-# env:
-#   BIN_CODENAME: ${{ inputs.bin-codename }}
+      - "develop"
 
 jobs:
   vars:
@@ -345,45 +333,36 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # publish-github-release:
-  #   name: "🔁 Github Release"
-  #   runs-on: ubuntu-latest
-  #   needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #     - name: Publish` Github Release
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         BIN_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
-  #         BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-  #       run: |
-  #         if [ "$PUBLISH_BIN" != "true" ]; then
-  #           echo Skipping publish
-  #           exit 0
-  #         fi
+  publish-github-release:
+    name: "🔁 Github Release"
+    runs-on: ubuntu-latest
+    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - name: Publish` Github Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
+        run: |
+          gh release create $MACH_VERSION --draft --notes "Automatically built binaries"
 
-  #         gh release create $BIN_VERSION --draft --notes "Automatically built binaries"
-
-  #         if [ "$BRANCH_NAME" == "main" ]; then
-  #           if [ "$BIN_CODENAME" != "" ]; then
-  #             gh release edit $BIN_VERSION --title "🚀 Mach - $BIN_CODENAME"
-  #           else
-  #             gh release edit $BIN_VERSION --title "🚀 Mach"
-  #           fi
-  #         else
-  #           gh release edit $BIN_VERSION --prerelease
-  #           gh release edit $BIN_VERSION --title "🧪 Branch: $BRANCH_NAME"
-  #         fi
+          if [ "$BRANCH_NAME" == "main" ]; then
+            gh release edit $MACH_VERSION --title "🚀 Mach"
+          else
+            gh release edit $MACH_VERSION --prerelease
+            gh release edit $MACH_VERSION --title "🧪 Branch: $BRANCH_NAME"
+          fi
           
-  #         gh release upload $BIN_VERSION linux-amd64.tar.gz/mach-linux-amd64.tar.gz
-  #         gh release upload $BIN_VERSION linux-arm64.tar.gz/mach-linux-arm64.tar.gz
-  #         gh release upload $BIN_VERSION macos-amd64.tar.gz/mach-macos-amd64.tar.gz
-  #         gh release upload $BIN_VERSION macos-arm64.tar.gz/mach-macos-arm64.tar.gz
-  #         gh release upload $BIN_VERSION windows-amd64.tar.gz/mach-windows-amd64.tar.gz
-  #         gh release upload $BIN_VERSION windows-arm64.tar.gz/mach-windows-arm64.tar.gz
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-mach-macos-arm64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-mach-windows-arm64.tgz"
           
-  #         gh release edit $BIN_VERSION --draft=false
+          gh release edit $MACH_VERSION --draft=false
 
   publish-npm-package:
     name: "🔁 Publish: NPM"
@@ -405,32 +384,22 @@ jobs:
           npm install -g npm pnpm
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
-          cd artifacts
-          ls -l
-          cd npm-package.tar.gz
-          ls -l
-
           PACKAGES=(
-            # "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
-            # "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
-            # "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
+            "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
+            "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
+            "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
             "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-mach-macos-arm64.tgz"
-            # "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"
-            # "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-mach-windows-arm64.tgz"
+            "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"
+            "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-mach-windows-arm64.tgz"
             "${{ github.workspace }}/artifacts/npm-package.tar.gz/npm-mach.tgz"
           )
 
           for PACKAGE in ${PACKAGES[@]}; do
-            cd $(dirname $PACKAGE)
-            ls -l
-
             if [ "$BRANCH_NAME" == "main" ]; then
               echo Publishing latest tag
-              npm publish --dry-run --access=public $PACKAGE
+              npm publish --access=public $PACKAGE
             else
               echo Publishing $BRANCH_NAME tag
-              npm publish --dry-run --access=public --tag="$BRANCH_NAME" $PACKAGE
+              npm publish --access=public --tag="$BRANCH_NAME" $PACKAGE
             fi
           done
-
-          
