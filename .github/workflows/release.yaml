@@ -359,9 +359,6 @@ jobs:
             gh release edit $MACH_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
-          ls -l artifacts
-          ls -l artifacts/linux-amd64.tar.gz
-
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/mach-linux-amd64.tar.gz"
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/mach-linux-arm64.tar.gz"
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/mach-macos-amd64.tar.gz"
