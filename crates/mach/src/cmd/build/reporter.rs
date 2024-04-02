@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use libmach::AssetMapSync;
-use libmach::BundleMap;
+use libmach::BundleMapSync;
 use libmach::MachConfig;
 
 pub struct AppReporter<'a> {
@@ -58,8 +58,9 @@ impl<'a> AppReporter<'a> {
 
   pub fn print_bundle_stats(
     &mut self,
-    bundles: &BundleMap,
+    bundles: &BundleMapSync,
   ) {
+    let bundles = bundles.read().unwrap();
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
     for bundle in bundles.iter() {

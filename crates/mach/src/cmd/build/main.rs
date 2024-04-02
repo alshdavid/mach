@@ -6,10 +6,10 @@ use crate::platform::transformation::link_and_transform;
 use libmach::AdapterMap;
 use libmach::AssetGraphSync;
 use libmach::AssetMapSync;
-use libmach::BundleGraph;
-use libmach::BundleMap;
+use libmach::BundleGraphSync;
+use libmach::BundleMapSync;
 use libmach::DependencyMapSync;
-use libmach::Outputs;
+use libmach::OutputsSync;
 
 use super::parse_config;
 use super::reporter::AppReporter;
@@ -26,9 +26,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let asset_map = AssetMapSync::default();
   let dependency_map = DependencyMapSync::default();
   let asset_graph = AssetGraphSync::default();
-  let mut bundles = BundleMap::new();
-  let mut bundle_graph = BundleGraph::new();
-  let mut outputs = Outputs::new();
+  let bundles = BundleMapSync::default();
+  let bundle_graph = BundleGraphSync::default();
+  let outputs = OutputsSync::default();
   let mut reporter = AppReporter::new(&config);
   let mut adapter_map = AdapterMap::new();
 
@@ -57,9 +57,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   reporter.print_transform_stats(&asset_map);
 
   if config.debug {
-    dbg!(&asset_map);
-    dbg!(&dependency_map);
-    dbg!(&asset_graph);
+    dbg!(&asset_map.read().unwrap());
+    dbg!(&dependency_map.read().unwrap());
+    dbg!(&asset_graph.read().unwrap());
   }
   /*
     bundle() will take the asset graph and organize related assets
@@ -70,15 +70,15 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     asset_map.clone(),
     asset_graph.clone(),
     dependency_map.clone(),
-    &mut bundles,
-    &mut bundle_graph,
+    bundles.clone(),
+    bundle_graph.clone(),
   )?;
 
   reporter.print_bundle_stats(&bundles);
 
   if config.debug {
-    dbg!(&bundles);
-    dbg!(&bundle_graph);
+    dbg!(&bundles.read().unwrap());
+    dbg!(&bundle_graph.read().unwrap());
   }
 
   /*
@@ -94,21 +94,21 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     asset_map.clone(),
     asset_graph.clone(),
     dependency_map.clone(),
-    &mut bundles,
-    &mut bundle_graph,
-    &mut outputs,
+    bundles.clone(),
+    bundle_graph.clone(),
+    outputs.clone(),
   )?;
 
   reporter.print_package_stats();
 
   if config.debug {
-    dbg!(&outputs);
+    dbg!(&outputs.read().unwrap());
   }
 
   /*
     emit() writes the contents of the bundles to disk
   */
-  emit(&config, &mut bundles, &mut outputs)?;
+  emit(config.clone(), outputs)?;
 
   reporter.print_emit_stats();
   reporter.print_finished_stats();

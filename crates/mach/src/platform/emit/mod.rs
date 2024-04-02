@@ -1,22 +1,22 @@
 use std::fs;
 
-use libmach::BundleMap;
-use libmach::MachConfig;
-use libmach::Outputs;
+use libmach::MachConfigSync;
+use libmach::OutputsSync;
 use libmach::{self};
 
 pub fn emit(
-  config: &MachConfig,
-  _bundles: &BundleMap,
-  outputs: &Outputs,
+  config: MachConfigSync,
+  outputs: OutputsSync,
 ) -> Result<(), String> {
+  let outputs = outputs.read().unwrap();
+
   if config.dist_dir.exists() && config.clean_dist_dir {
     fs::remove_dir_all(&config.dist_dir).unwrap();
   }
 
   fs::create_dir_all(&config.dist_dir).unwrap();
 
-  for output in outputs {
+  for output in outputs.iter() {
     let complete_path = config.dist_dir.join(&output.filepath);
     let basename = complete_path.parent().unwrap();
     fs::create_dir_all(basename).unwrap();

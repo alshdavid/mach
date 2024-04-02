@@ -1,7 +1,7 @@
 use libmach::AssetGraphSync;
 use libmach::AssetMapSync;
-use libmach::BundleGraph;
-use libmach::BundleMap;
+use libmach::BundleGraphSync;
+use libmach::BundleMapSync;
 use libmach::DependencyMapSync;
 use libmach::MachConfigSync;
 
@@ -12,8 +12,8 @@ pub fn bundle(
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
-  bundles: &mut BundleMap,
-  bundle_graph: &mut BundleGraph,
+  bundles: BundleMapSync,
+  bundle_graph: BundleGraphSync,
 ) -> Result<(), String> {
   if config.bundle_splitting {
     todo!();

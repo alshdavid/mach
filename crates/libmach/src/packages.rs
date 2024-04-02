@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::{Arc, RwLock}};
 
+pub type OutputsSync = Arc<RwLock<Vec<Output>>>;
 pub type Outputs = Vec<Output>;
 
 pub struct Output {

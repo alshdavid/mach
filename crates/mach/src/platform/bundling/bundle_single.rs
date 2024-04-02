@@ -1,8 +1,8 @@
 use libmach::AssetGraphSync;
 use libmach::AssetMapSync;
 use libmach::Bundle;
-use libmach::BundleGraph;
-use libmach::BundleMap;
+use libmach::BundleGraphSync;
+use libmach::BundleMapSync;
 use libmach::DependencyMapSync;
 use libmach::MachConfigSync;
 
@@ -13,12 +13,14 @@ pub fn bundle_single(
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
-  bundles: &mut BundleMap,
-  bundle_graph: &mut BundleGraph,
+  bundle_map: BundleMapSync,
+  bundle_graph: BundleGraphSync,
 ) -> Result<(), String> {
-  let asset_map = asset_map.write().unwrap();
-  let asset_graph = asset_graph.write().unwrap();
-  let dependency_map = dependency_map.write().unwrap();
+  let asset_map = asset_map.read().unwrap();
+  let asset_graph = asset_graph.read().unwrap();
+  let dependency_map = dependency_map.read().unwrap();
+  let mut bundle_map = bundle_map.write().unwrap();
+  let mut bundle_graph = bundle_graph.write().unwrap();
 
   let mut css_bundle = Bundle {
     kind: "css".to_string(),
@@ -112,15 +114,15 @@ pub fn bundle_single(
       }
     }
 
-    bundles.insert(html_bundle);
+    bundle_map.insert(html_bundle);
   }
 
   if css_bundle.assets.len() > 0 {
-    bundles.insert(css_bundle);
+    bundle_map.insert(css_bundle);
   }
 
   if js_bundle.assets.len() > 0 {
-    bundles.insert(js_bundle);
+    bundle_map.insert(js_bundle);
   }
 
   return Ok(());

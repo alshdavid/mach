@@ -8,15 +8,15 @@ use html5ever::serialize::SerializeOpts;
 use html5ever::tendril::TendrilSink;
 use libmach::AssetGraphSync;
 use libmach::AssetMapSync;
+use libmach::BundleGraphSync;
+use libmach::BundleMapSync;
 use libmach::DependencyMapSync;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
 use libmach::Bundle;
-use libmach::BundleGraph;
 use libmach::BundleManifest;
-use libmach::BundleMap;
 use libmach::Output;
 use libmach::Outputs;
 
@@ -29,8 +29,8 @@ pub fn package_html(
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
-  bundles: Arc<BundleMap>,
-  bundle_graph: Arc<BundleGraph>,
+  bundle_map: BundleMapSync,
+  bundle_graph: BundleGraphSync,
   outputs: Arc<RwLock<Outputs>>,
   bundle: Bundle,
   bundle_manifest: &BundleManifest,
@@ -38,6 +38,8 @@ pub fn package_html(
 ) {
   let asset_graph = asset_graph.read().unwrap();
   let dependency_map = dependency_map.read().unwrap();
+  let bundle_map = bundle_map.read().unwrap();
+  let bundle_graph = bundle_graph.read().unwrap();
 
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -130,7 +132,7 @@ pub fn package_html(
       .to_string();
 
     let bundle_id = bundle_graph.get(&dependency.id).unwrap();
-    let bundle_hash = bundles
+    let bundle_hash = bundle_map
       .iter()
       .find(|b| &b.id == bundle_id)
       .unwrap()
@@ -148,7 +150,7 @@ pub fn package_html(
     html::set_attribute(script_node, "src", file_path);
   }
 
-  for bundle in bundles.iter() {
+  for bundle in bundle_map.iter() {
     if bundle.kind == "css" {
       let elm = html::create_element(html::CreateElementOptions {
         tag_name: "link",

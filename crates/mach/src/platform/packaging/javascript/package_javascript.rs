@@ -8,6 +8,8 @@ use std::thread::JoinHandle;
 use std::sync::Mutex;
 use libmach::AssetGraphSync;
 use libmach::AssetMapSync;
+use libmach::BundleGraphSync;
+use libmach::BundleMapSync;
 use libmach::DependencyMapSync;
 use libmach::MachConfigSync;
 use swc_core::common::Globals;
@@ -18,9 +20,7 @@ use swc_core::ecma::visit::FoldWith;
 
 use libmach::AssetId;
 use libmach::Bundle;
-use libmach::BundleGraph;
 use libmach::BundleManifest;
-use libmach::BundleMap;
 use libmach::Output;
 use libmach::Outputs;
 
@@ -36,13 +36,15 @@ pub fn package_javascript<'a>(
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
-  bundles: Arc<BundleMap>,
-  bundle_graph: Arc<BundleGraph>,
+  bundle_map: BundleMapSync,
+  bundle_graph: BundleGraphSync,
   outputs: Arc<RwLock<Outputs>>,
   runtime_factory: Arc<RuntimeFactory>,
   bundle: Bundle,
   bundle_manifest: Arc<BundleManifest>,
 ) {
+  let bundle_map = bundle_map.read().unwrap();
+  let bundle_graph = bundle_graph.read().unwrap();
   let source_map = Arc::new(SourceMap::default());
   
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
@@ -150,7 +152,7 @@ pub fn package_javascript<'a>(
       .unwrap()
       .file_path_relative
       .clone();
-    if bundles.len() > 1 {
+    if bundle_map.len() > 1 {
       bundle_module_stmts.push(runtime_factory.manifest(&bundle_manifest).unwrap());
       bundle_module_stmts.push(runtime_factory.import_script());
     }
