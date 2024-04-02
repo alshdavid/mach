@@ -131,6 +131,11 @@ build-publish:
     {{MACH_VERSION}}
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach/package.json" \
+    "version" \
+    "{{MACH_VERSION}}"
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
     "./npm/mach-os-arch/package.json" \
     "name" \
     "@alshdavid/mach-{{os}}-{{arch}}"
@@ -161,7 +166,7 @@ build-publish:
     if os == "windows" \
       { "Copy-Item " + out_dir + "\\* -Destination npm/mach-os-arch -Recurse | Out-Null" } \
     else \
-      { "_fixture_default" } \
+      { "cp -r " + out_dir + "/* npm/mach-os-arch" } \
   }}
 
 benchmark project="mach" count="50" script="build" *ARGS="":
