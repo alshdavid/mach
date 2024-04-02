@@ -2,14 +2,16 @@
   "name": "@alshdavid/mach",
   "version": "0.0.0",
   "license": "MIT",
-  "main": "./lib/index.mjs",
-  "types": "./types/index.d.js",
-  "type": "module",
   "bin": "./bin/bin.cmd",
   "mach": {
     "bin": ""
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alshdavid/mach.git",
+    "directory": "packages/react"
+  },
   "scripts": {
-    "postinstall": "node ./_scripts/postinstall/postinstall.mjs"
+    "postinstall": "node ./postinstall/postinstall.mjs"
   }
 }

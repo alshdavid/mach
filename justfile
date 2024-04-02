@@ -1,13 +1,22 @@
-BIN_VERSION := env_var_or_default("BIN_VERSION", "")
+set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
+
+MACH_VERSION := env_var_or_default("MACH_VERSION", "")
 NPM_VERSION := env_var_or_default("NPM_VERSION", "")
-NPM_BIN_TARGET := env_var_or_default("NPM_BIN_TARGET", "")
+NPM_MACH_TARGETVERSION := env_var_or_default("NPM_MACH_TARGETVERSION", "")
 
 profile := env_var_or_default("profile", "debug")
 
-os := env_var_or_default("os", os())
+os := \
+if \
+  env_var_or_default("os", "") == "Windows_NT" { "windows" } \
+else if \
+  env_var_or_default("os", "") != "" { env_var("os") } \
+else \
+  { os() }
+
 arch := \
 if \
-  env_var_or_default("arch", "") != "" { env_var_or_default("arch", "") } \
+  env_var_or_default("arch", "") != "" { env_var("arch") } \
 else if \
   arch() == "x86_64" { "amd64" } \
 else if \
@@ -39,15 +48,14 @@ else \
 
 target_cargo := \
 if \
-target == "debug" \
-  { "" } \
+  target == "debug" { "" } \
 else if \
-target == "" \
-  { "" } \
+  target == "" { "" } \
 else \
   { "--target " + target } 
 
-out_dir := "./target/" + os + "_" + arch + "_" + profile
+out_dir :=  join(justfile_directory(), "target", os + "-" + arch, profile)
+out_dir_link :=  join(justfile_directory(), "target", profile)
 
 _default:
   @echo "Available Env:"
@@ -67,16 +75,48 @@ _default:
   @just --list --unsorted
 
 build:
-  @just _build_npm
+  @echo "Building: {{os}}-{{arch}}"
+  just {{ if os == "windows" { "_build_windows" } else { "_build_default" } }}
+
+_build_default:
   cargo build {{profile_cargo}} {{target_cargo}}
-  @just _create_out_dir
-  @just _copy_cargo
-  @just _copy_npm
-  # just _build_adapters
+  @rm -rf {{out_dir}}
+  @rm -rf {{out_dir_link}}
+  @mkdir -p {{out_dir}}
+  @mkdir -p {{out_dir}}/bin
+  @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
+  @ln -s {{out_dir}} {{out_dir_link}}
+
+_build_windows:
+  cargo build {{profile_cargo}} {{target_cargo}}
+  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
+  @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
+  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null| Out-Null
+  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}/bin" | Out-Null
+  @Copy-Item "./target/.cargo/{{target}}/{{profile}}/mach.exe" -Destination "{{out_dir}}/bin" | Out-Null
+  @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
 run *ARGS:
-  @just build
+  @just {{ if os == "windows" { "_run_windows" } else { "_run_default" } }} {{ARGS}}
+
+_run_default *ARGS:
+  just build
   {{out_dir}}/bin/mach {{ARGS}}
+
+_run_windows *ARGS:
+  just build
+  {{out_dir}}/bin/mach.exe {{ARGS}}
+
+fixture cmd fixture *ARGS:
+  @just {{ if os == "windows" { "_fixture_windows" } else { "_fixture_default" } }} {{cmd}} {{fixture}} {{ARGS}}
+
+_fixture_default cmd fixture *ARGS:
+  @just build
+  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
+
+_fixture_windows cmd fixture *ARGS:
+  @just build
+  {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
 serve:
   npx http-server -p 3000 ./testing/fixtures
@@ -84,23 +124,34 @@ serve:
 test:
   cargo test
 
-fixture cmd fixture *ARGS:
-  @just build
-  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
-
 fmt:
   cargo +nightly fmt
-  
-_fmt:
-  #!/usr/bin/env sh
-  cargo +nightly fmt
-  set -ev
-  cd adapters
-  for file in `ls .`; do 
-    cd $file
-    cargo +nightly fmt
-    cd ..
-  done
+
+prepare_publish:
+  @just {{ if os == "windows" { "_prepare_publish_windows" } else { "_prepare_publish_default" } }}
+
+_prepare_publish_default:
+
+_prepare_publish_windows:
+  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
+    "./crates/mach/Cargo.toml" \
+    "0.0.0-local" \
+    {{MACH_VERSION}}
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach-os-arch/package.json" \
+    "name" \
+    "@alshdavid/mach-{{os}}-{{arch}}"
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach-os-arch/package.json" \
+    "version" \
+    "{{MACH_VERSION}}"
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach-os-arch/package.json" \
+    "bin" \
+    ".\bin\mach.exe"
 
 benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
@@ -117,39 +168,3 @@ benchmark-generate project="mach" count="50":
   PROJECT={{project}} \
   BENCH_COPIES={{count}} \
   node .github/scripts/ci/generate_benchmark.mjs
-
-_build_adapters:
-  #!/usr/bin/env sh
-  set -ev
-  cd adapters
-  for file in `ls .`; do 
-    cd $file
-    just build
-    cd ..
-  done
-
-@_create_out_dir:
-  rm -rf {{out_dir}}
-  mkdir -p {{out_dir}}
-  mkdir -p {{out_dir}}/bin
-  mkdir -p {{out_dir}}/lib
-  mkdir -p {{out_dir}}/lib/node-adapter
-
-@_copy_cargo:
-  cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-
-@_build_npm:
-  @just {{ if `node .github/scripts/ci/package-sha.mjs read` == "true" { "_build_npm_internal_actions" } else { "_skip" } }}
-
-@_build_npm_internal_actions:
-  echo building npm packages
-  pnpm install
-  cd npm/node-adapter && pnpm run build
-  node .github/scripts/ci/package-sha.mjs set
-
-@_copy_npm:
-  cp -r npm/node-adapter/lib {{out_dir}}/lib/node-adapter
-  cp -r npm/node-adapter/types {{out_dir}}/lib/node-adapter
-
-_skip:
-  echo "skip"
