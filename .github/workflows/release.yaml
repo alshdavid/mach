@@ -353,7 +353,7 @@ jobs:
           gh release create $MACH_VERSION --draft --notes "Automatically built binaries"
 
           if [ "$BRANCH_NAME" == "main" ]; then
-            gh release edit $MACH_VERSION --title "🚀 Mach"
+            gh release edit $MACH_VERSION --title "🚀 Mach - $MACH_VERSION"
           else
             gh release edit $MACH_VERSION --prerelease
             gh release edit $MACH_VERSION --title "🧪 Branch: $BRANCH_NAME"

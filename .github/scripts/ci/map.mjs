@@ -9,8 +9,8 @@ process.stdout.write({
     "amd64": "x64",
   },
   bin: {
-    "windows": ".\\bin\\mach.exe",
-    "linux": "./bin/mach",
-    "macos": "./bin/mach",
+    "windows": "bin\\mach.exe",
+    "linux": "bin/mach",
+    "macos": "bin/mach",
   }
 }[process.argv[2]][process.argv[3]])

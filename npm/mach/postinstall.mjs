@@ -27,7 +27,7 @@ if (ARCH && OS) {
   const package_json_path = require.resolve(path.join('@alshdavid', `mach-${OS}-${ARCH}`, 'package.json'))
   const package_path = path.dirname(package_json_path)
   const json = JSON.parse(fs.readFileSync(package_json_path, 'utf8'))
-  bin_path = path.join(package_path, json.bin.mach)
+  bin_path = path.join(package_path, json.bin.mach_bin)
 } else {
   console.warn('Could not find Mach binary for your system. Please compile from source')
   console.warn('Override the built in binary by setting the $MACH_BIN_PATH_OVERRIDE environment variable')

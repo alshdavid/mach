@@ -3,12 +3,11 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "bin": {
-    "mach": "./bin/mach",
-    "mach2": "./bin/mach"
+    "mach_bin": "bin/mach"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alshdavid/mach.git"
+    "url": "git+https://github.com/alshdavid/mach.git"
   },
   "os": [],
   "cpu": []
