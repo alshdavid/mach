@@ -29,7 +29,7 @@ jobs:
     outputs:
       BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
       NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
-      NEXT_NPM_VERSION: ${{ steps.step1.outputs.NEXT_NPM_VERSION }}
+      NEXT_MACH_VERSION: ${{ steps.step1.outputs.NEXT_MACH_VERSION }}
     steps:
       - uses: actions/checkout@v4
       - id: step1
