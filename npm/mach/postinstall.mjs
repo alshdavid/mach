@@ -21,21 +21,16 @@ const ARCH = {
   'x64': 'amd64',
 }[process.arch]
 
-let bin_path = ""
-
-if (ARCH && OS) {
-  const package_json_path = require.resolve(path.join('@alshdavid', `mach-${OS}-${ARCH}`, 'package.json'))
-  const package_path = path.dirname(package_json_path)
-  const json = JSON.parse(fs.readFileSync(package_json_path, 'utf8'))
-  bin_path = path.join(package_path, json.bin.mach_bin)
-} else {
+if (!ARCH || !OS) {
   console.warn('Could not find Mach binary for your system. Please compile from source')
   console.warn('Override the built in binary by setting the $MACH_BIN_PATH_OVERRIDE environment variable')
 }
 
 const pwsh = `
 @echo off
-"${bin_path}" %*
+SET TARGET_PATH=
+FOR /F %%I IN ('node -e "const { dirname } = require(\\"path\\"); console.log(dirname(dirname(require.resolve(\\"@alshdavid/mach-${OS}-${ARCH}\\"))))"') DO @SET "TARGET_PATH=%%I"
+"%TARGET_PATH%\\bin\\mach.exe" %*
 `
 
 const bash = `
