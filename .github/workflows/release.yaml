@@ -77,7 +77,6 @@ jobs:
 
           profile=release os=linux arch=amd64 just build-publish
 
-
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
           tar -czvf mach-${{ github.job }}.tar.gz mach
@@ -164,7 +163,7 @@ jobs:
           pnpm install
           rustup target add x86_64-apple-darwin
 
-          profile=release os=linux arch=arm64 just build-publish
+          profile=release os=macos arch=amd64 just build-publish
 
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
@@ -206,6 +205,8 @@ jobs:
           pnpm install
           rustup target add aarch64-apple-darwin
 
+          profile=release os=macos arch=arm64 just build-publish
+
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
           tar -czvf mach-${{ github.job }}.tar.gz mach
@@ -245,6 +246,8 @@ jobs:
           pnpm install
           rustup target add x86_64-pc-windows-msvc
 
+          profile=release os=windows arch=amd64 just build-publish
+
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
           tar -czvf mach-${{ github.job }}.tar.gz mach
@@ -279,6 +282,8 @@ jobs:
           npm install -g npm pnpm
           pnpm install
           rustup target add aarch64-pc-windows-msvc
+
+          profile=release os=windows arch=arm64 just build-publish
 
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
