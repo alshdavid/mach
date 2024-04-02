@@ -1,8 +1,10 @@
 {
   "name": "@alshdavid/mach-os-arch",
-  "version": "0.0.0",
+  "version": "0.0.0-local",
   "license": "MIT",
-  "bin": "./bin/mach",
+  "bin": {
+    "mach": "bin/mach"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alshdavid/mach.git"

@@ -1,9 +1,6 @@
 set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
 
 MACH_VERSION := env_var_or_default("MACH_VERSION", "")
-NPM_VERSION := env_var_or_default("NPM_VERSION", "")
-NPM_MACH_TARGETVERSION := env_var_or_default("NPM_MACH_TARGETVERSION", "")
-
 profile := env_var_or_default("profile", "debug")
 
 os := \
@@ -127,12 +124,7 @@ test:
 fmt:
   cargo +nightly fmt
 
-prepare_publish:
-  @just {{ if os == "windows" { "_prepare_publish_windows" } else { "_prepare_publish_default" } }}
-
-_prepare_publish_default:
-
-_prepare_publish_windows:
+build-publish:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
     "./crates/mach/Cargo.toml" \
     "0.0.0-local" \
@@ -150,8 +142,27 @@ _prepare_publish_windows:
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
     "./npm/mach-os-arch/package.json" \
-    "bin" \
-    ".\bin\mach.exe"
+    "bin.mach" \
+    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "bin" {{os}})
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach-os-arch/package.json" \
+    "os.0" \
+    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "os" {{os}})
+
+  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
+    "./npm/mach-os-arch/package.json" \
+    "cpu.0" \
+    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "arch" {{arch}})
+
+  just build
+
+  {{ \
+    if os == "windows" \
+      { "Copy-Item " + out_dir + "\\* -Destination npm/mach-os-arch -Recurse | Out-Null" } \
+    else \
+      { "_fixture_default" } \
+  }}
 
 benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
