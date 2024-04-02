@@ -2,10 +2,16 @@
   "name": "@alshdavid/mach",
   "version": "0.0.0-local",
   "license": "MIT",
+  "bin": {
+    "mach": "bin.cmd"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alshdavid/mach.git",
     "directory": "packages/react"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.mjs"
   },
   "optionalDependencies": {
     "@alshdavid/mach-linux-amd64": "0.0.0-local",
