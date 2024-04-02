@@ -340,6 +340,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/artifacts
       - name: Publish` Github Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -359,7 +361,7 @@ jobs:
           
           ls -l artifacts
           ls -l artifacts/linux-amd64.tar.gz
-          
+
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/mach-linux-amd64.tar.gz"
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/mach-linux-arm64.tar.gz"
           gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/mach-macos-amd64.tar.gz"
