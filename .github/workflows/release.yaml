@@ -239,6 +239,9 @@ jobs:
       - name: Build
         env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+          profile: release
+          os: windows
+          arch: amd64
         run: |
           mkdir ${{ github.workspace }}/artifact
 
@@ -246,7 +249,7 @@ jobs:
           pnpm install
           rustup target add x86_64-pc-windows-msvc
 
-          profile=release os=windows arch=amd64 just build-publish
+          just build-publish
 
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
@@ -276,6 +279,11 @@ jobs:
         with: { node-version: 20 }
 
       - name: Build
+        env:
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+          profile: release
+          os: windows
+          arch: arm64
         run: |
           mkdir ${{ github.workspace }}/artifact
 
@@ -283,7 +291,7 @@ jobs:
           pnpm install
           rustup target add aarch64-pc-windows-msvc
 
-          profile=release os=windows arch=arm64 just build-publish
+          just build-publish
 
           cd ${{ github.workspace }}/target/${{ github.job }}
           mv release mach
