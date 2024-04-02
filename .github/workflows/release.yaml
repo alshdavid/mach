@@ -355,12 +355,12 @@ jobs:
             gh release edit $MACH_VERSION --title "🧪 Branch: $BRANCH_NAME"
           fi
           
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/npm-mach-macos-arm64.tgz"
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"
-          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/npm-mach-windows-arm64.tgz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-amd64.tar.gz/mach-linux-amd64.tar.gz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/linux-arm64.tar.gz/mach-linux-arm64.tar.gz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-amd64.tar.gz/mach-macos-amd64.tar.gz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/macos-arm64.tar.gz/mach-macos-arm64.tar.gz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-amd64.tar.gz/mach-windows-amd64.tar.gz"
+          gh release upload $MACH_VERSION "${{ github.workspace }}/artifacts/windows-arm64.tar.gz/mach-windows-arm64.tar.gz"
           
           gh release edit $MACH_VERSION --draft=false
 
