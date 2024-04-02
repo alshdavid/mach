@@ -37,9 +37,9 @@ const bash = `
 #!/bin/sh
 set -e
 
-$BIN_PATH=$MACH_BIN_OVERRIDE
+BIN_PATH=$MACH_BIN_OVERRIDE
 
-if [ "$MACH_BIN_OVERRIDE" == "" ]; then
+if [ "$MACH_BIN_OVERRIDE" = "" ]; then
   BIN_PATH="$(node -e \"const { dirname } = require('node:path'); process.stdout.write(dirname(require.resolve('@alshdavid/mach-${OS}-${ARCH}/package.json')))\")"
   BIN_PATH="$BIN_PATH/bin/mach"
 fi
