@@ -65,7 +65,7 @@ jobs:
 
       - name: Build
         env:
-          MACH_VERSION: ${{ needs.vars.outputs.NEXT_BIN_VERSION }}
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
           sudo apt-get update
           npm install -g npm pnpm
