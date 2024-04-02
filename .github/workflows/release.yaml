@@ -398,7 +398,7 @@ jobs:
           BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
           set -ev
-          
+
           npm install -g npm pnpm
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
@@ -418,6 +418,9 @@ jobs:
           )
 
           for PACKAGE in ${PACKAGES[@]}; do
+            cd $(dirname $PACKAGE)
+            ls -l
+            
             if [ "$BRANCH_NAME" == "main" ]; then
               echo Publishing latest tag
               npm publish --dry-run --access=public $PACKAGE
