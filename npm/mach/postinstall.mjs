@@ -23,23 +23,27 @@ const ARCH = {
 
 if (!ARCH || !OS) {
   console.warn('Could not find Mach binary for your system. Please compile from source')
-  console.warn('Override the built in binary by setting the $MACH_BIN_PATH_OVERRIDE environment variable')
+  console.warn('Override the built in binary by setting the $MACH_BIN_OVERRIDE environment variable')
 }
 
 const pwsh = `
 @echo off
 SET TARGET_PATH=
-FOR /F %%I IN ('node -e "const { dirname } = require(\\"path\\"); console.log(dirname(dirname(require.resolve(\\"@alshdavid/mach-${OS}-${ARCH}\\"))))"') DO @SET "TARGET_PATH=%%I"
+FOR /F %%I IN ('node -e "const { dirname } = require(\\"path\\"); process.stdout.write(dirname(require.resolve(\\"@alshdavid/mach-${OS}-${ARCH}/package.json\\")))"') DO @SET "TARGET_PATH=%%I"
 "%TARGET_PATH%\\bin\\mach.exe" %*
 `
 
 const bash = `
 #!/bin/sh
-if [ "$MACH_BIN_PATH_OVERRIDE" != "" ]; then
-  "$MACH_BIN_PATH_OVERRIDE" $@
-else
-  "${bin_path}" $@
+set -e
+
+$BIN_PATH=$MACH_BIN_OVERRIDE
+
+if [ "$MACH_BIN_OVERRIDE" == "" ]; then
+  BIN_PATH="$(node -e \"const { dirname } = require('node:path'); process.stdout.write(dirname(require.resolve('@alshdavid/mach-${OS}-${ARCH}/package.json')))\")"
 fi
+
+"$BIN_PATH/bin/mach" $@
 `
 
 if (OS === 'windows') {
