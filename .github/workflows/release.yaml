@@ -316,6 +316,7 @@ jobs:
     needs: [vars]
     steps:
       - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - name: Build
@@ -325,9 +326,12 @@ jobs:
           set -ev
 
           mkdir ${{ github.workspace }}/artifacts
-
+          sudo apt-get update
           npm install -g npm pnpm
           pnpm install
+          rustup target add x86_64-unknown-linux-gnu
+
+          profile=release os=macos arch=arm64 just build-publish
 
           cd npm/mach
           npm pack
