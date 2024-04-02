@@ -388,8 +388,7 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    # needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-    needs: [vars, npm-package, macos-arm64]
+    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
