@@ -10,45 +10,36 @@ if (JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).ve
   process.exit(0)
 }
 
-const OS = {
+const OS_TYPE = {
   'win32': 'windows',
   'darwin': 'macos',
   'linux': 'linux'
-}[process.platform]
-
-const ARCH = {
-  'arm64': 'arm64',
-  'x64': 'amd64',
-}[process.arch]
-
-if (!ARCH || !OS) {
-  console.warn('Could not find Mach binary for your system. Please compile from source')
-  console.warn('Override the built in binary by setting the $MACH_BIN_OVERRIDE environment variable')
 }
 
-const pwsh = `
-@echo off
-SET TARGET_PATH=
-FOR /F %%I IN ('node -e "const { dirname } = require(\\"path\\"); process.stdout.write(dirname(require.resolve(\\"@alshdavid/mach-${OS}-${ARCH}/package.json\\")))"') DO @SET "TARGET_PATH=%%I"
-"%TARGET_PATH%\\bin\\mach.exe" %*
-`
+const ARCH_TYPE = {
+  'arm64': 'arm64',
+  'x64': 'amd64',
+}
 
-const bash = `
-#!/bin/sh
-set -e
+const OS = OS_TYPE[process.platform]
+const ARCH = ARCH_TYPE[process.arch]
 
-BIN_PATH=$MACH_BIN_OVERRIDE
-
-if [ "$MACH_BIN_OVERRIDE" = "" ]; then
-  BIN_PATH="$(node -e \"const { dirname } = require('node:path'); process.stdout.write(dirname(require.resolve('@alshdavid/mach-${OS}-${ARCH}/package.json')))\")"
-  BIN_PATH="$BIN_PATH/bin/mach"
-fi
-
-"$BIN_PATH" $@
-`
+// Might be cached by pnpm or yarn
+if (ARCH && OS && !fs.existsSync(path.join(__dirname, `mach-${OS}-${ARCH}`))) {
+  let bin_pkg_path = path.dirname(require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.json`))
+  fs.cpSync(bin_pkg_path, path.join(__dirname, `mach-${OS}-${ARCH}`), { recursive: true })
+}
 
 if (OS === 'windows') {
-  fs.appendFileSync(path.join(__dirname, 'bin.cmd'), pwsh.trim(),  'utf8')
+  fs.appendFileSync(
+    path.join(__dirname, 'bin.cmd'),
+    fs.readFileSync(path.join(__dirname, 'bin', 'windows.cmd')),
+    'utf8',
+  )
 } else {
-  fs.appendFileSync(path.join(__dirname, 'bin.cmd'), bash.trim(),  'utf8')
+  fs.appendFileSync(
+    path.join(__dirname, 'bin.cmd'),
+    fs.readFileSync(path.join(__dirname, 'bin', 'unix.bash')),
+    'utf8',
+  )
 }
