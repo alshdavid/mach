@@ -1,0 +1,6 @@
+This is a placeholder file that will be replaced at install time
+
+The application binary is symlinked to this file path in the postinstall script
+
+It has the ".exe" extension so Windows will know how to interpret it - but this 
+will also work for the Linux & MacOS binaries

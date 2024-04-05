@@ -24,22 +24,30 @@ const ARCH_TYPE = {
 const OS = OS_TYPE[process.platform]
 const ARCH = ARCH_TYPE[process.arch]
 
-// Might be cached by pnpm or yarn
-if (ARCH && OS && !fs.existsSync(path.join(__dirname, `mach-${OS}-${ARCH}`))) {
-  let bin_pkg_path = path.dirname(require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.json`))
-  fs.cpSync(bin_pkg_path, path.join(__dirname, `mach-${OS}-${ARCH}`), { recursive: true })
+if (process.env.MACH_EXEC_PATH_OVERRIDE) {
+  fs.rmSync(path.join(__dirname, 'bin.exe'))
+  fs.linkSync(
+    process.env.MACH_EXEC_PATH_OVERRIDE,
+    path.join(__dirname, 'bin.exe'), 
+  )
+  process.exit(0)
 }
 
-if (OS === 'windows') {
-  fs.appendFileSync(
-    path.join(__dirname, 'bin.cmd'),
-    fs.readFileSync(path.join(__dirname, 'bin', 'windows.cmd')),
-    'utf8',
+let bin_pkg_json_path = require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.json`)
+let bin_pkg_dir = path.dirname(bin_pkg_json_path)
+
+let bin_pkg_json = JSON.parse(fs.readFileSync(bin_pkg_json_path, 'utf8'))
+
+if (OS === 'windows' && fs.existsSync(path.join(__dirname, `mach-${OS}-${ARCH}`))) {
+  fs.rmSync(path.join(__dirname, 'bin.exe'))
+  fs.linkSync(
+    path.join(bin_pkg_dir, bin_pkg_json.bin),
+    path.join(__dirname, 'bin.exe'), 
   )
 } else {
-  fs.appendFileSync(
-    path.join(__dirname, 'bin.cmd'),
-    fs.readFileSync(path.join(__dirname, 'bin', 'unix.bash')),
-    'utf8',
+  fs.rmSync(path.join(__dirname, 'bin.exe'))
+  fs.linkSync(
+    path.join(bin_pkg_dir, bin_pkg_json.bin),
+    path.join(__dirname, 'bin.exe'), 
   )
 }

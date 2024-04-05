@@ -3,7 +3,7 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "bin": {
-    "mach": "bin.cmd"
+    "mach": "bin.exe"
   },
   "repository": {
     "type": "git",
