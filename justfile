@@ -147,7 +147,7 @@ build-publish:
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
     "./npm/mach-os-arch/package.json" \
-    "bin.mach_bin" \
+    "bin" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "bin" {{os}})
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
