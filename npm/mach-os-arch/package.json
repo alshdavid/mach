@@ -2,9 +2,7 @@
   "name": "@alshdavid/mach-os-arch",
   "version": "0.0.0-local",
   "license": "MIT",
-  "bin": {
-    "mach_bin": "bin/mach"
-  },
+  "bin": "bin/mach",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"
