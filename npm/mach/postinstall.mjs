@@ -11,10 +11,10 @@ if (JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).ve
 }
 
 // If you BYO Mach binary, this install script will use that
-if (process.env.MACH_EXEC_PATH_OVERRIDE) {
+if (process.env.MACH_BIN_OVERRIDE) {
   fs.rmSync(path.join(__dirname, 'bin.exe'))
   fs.linkSync(
-    process.env.MACH_EXEC_PATH_OVERRIDE,
+    process.env.MACH_BIN_OVERRIDE,
     path.join(__dirname, 'bin.exe'), 
   )
   process.exit(0)
