@@ -169,6 +169,13 @@ build-publish:
       { "cp -r " + out_dir + "/* npm/mach-os-arch" } \
   }}
 
+  {{ \
+    if os == "windows" \
+      { "Copy-Item " + join(justfile_directory(), "README.md") + " -Destination npm/mach | Out-Null" } \
+    else \
+      { "cp " + join(justfile_directory(), "README.md") + " npm/mach" } \
+  }}
+
 benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
   just benchmark-generate {{project}} {{count}}

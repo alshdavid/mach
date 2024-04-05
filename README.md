@@ -31,7 +31,7 @@ You can install Mach from npm or directly as a [binary](.docs/install.md)
 
 ```bash
 npm install @alshdavid/mach
-npx mach --version
+npx mach version
 ```
 
 ## Usage
@@ -56,7 +56,7 @@ Mach has built-in support for the most common source files.
 
 ## Custom Plugins
 
-Mach supports user-added plugins written in TypeScript, JavaScript, Rust and WASM.
+Mach supports user-added plugins written in TypeScript or JavaScript, using the [Parcel Plugin API](https://parceljs.org/features/plugins).
 
 ### TypeScript & JavaScript Plugins
 
@@ -72,25 +72,6 @@ Mach uses the existing Parcel plugin APIs:
 - [Transformer](https://parceljs.org/features/plugins/#transformers) (todo)
 - [Reporter](https://parceljs.org/features/plugins/#reporters) (todo)
 - [Namer](https://parceljs.org/features/plugins/#namers) (todo)
-
-### Rust Plugins
-
-_Preliminary Support, lacking a resolution mechanism - will probably devise a manifest file format in conjunction with distribution via npm_
-
-Dynamically loaded Rust plugins are supported using the [abi_stable](https://crates.io/crates/abi_stable) crate and are loaded by their platform respective `.so`, `.dylib`, `.dll` files.
-
-The plugin API is largely a port of Parcel's to Rust
-
-- [Resolver](mach/src/public/resolver.rs)
-- [Transformer](mach/src/public/transformer.rs)
-
-_This isn't yet published to crates.io, but first-class Rust plugin support is coming._
-
-### WASM Plugins
-
-To extend support to other languages, like Go, Python, Dart, etc - plugin developers can build their Plugin to WASM binaries.
-
-This is something I want to do but is low priority.
 
 ## Benchmarks
 
@@ -124,9 +105,9 @@ There are still a lot of optimizations left here so the numbers are likely to ge
 
 The next big push will be completing the Deno integration and completing support for Parcel's JS plugin API.
 
-There is already support for dynamically loaded Rust plugins (incomplete but it's there) but JS plugins are all the rage these days so supporting them is vital.
-
 The cool thing about using Deno is that it supports the Node.js standard library, comes with TypeScript support out of the box and can be embedded. This means plugins can be written in TypeScript, target either the Node.js or Deno runtimes and have minimal overhead when calling into.
+
+There are some quirks with Deno - like if a plugin uses another dependency from the same workspace, it will be resolved as a Deno plugin and exclude Node.js support (Deno have an issue open for this)
 
 Of course, JS plugins will be slower than Rust plugins - but embedding Deno into Mach minimizes the overhead associated with the "bridge" between JS land and Rust land, also allowing me to leverage v8 APIs to share the memory and avoid costly copying.
 
