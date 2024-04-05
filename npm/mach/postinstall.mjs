@@ -41,7 +41,6 @@ if (!OS && !ARCH) {
 
 let bin_pkg_json_path = require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.json`)
 let bin_pkg_dir = path.dirname(bin_pkg_json_path)
-
 let bin_pkg_json = JSON.parse(fs.readFileSync(bin_pkg_json_path, 'utf8'))
 
 if (OS === 'windows' && fs.existsSync(path.join(__dirname, `mach-${OS}-${ARCH}`))) {
