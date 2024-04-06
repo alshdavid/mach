@@ -59,12 +59,8 @@ fi
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
 export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
-echo NPM_CONFIG_PREFIX_CLI=$(npm config get prefix)
-
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
-
-echo $URL
 
 mkdir -p $HOME/.local/nodejs
 mkdir -p $HOME/.local/nodejs/prefix
@@ -77,16 +73,16 @@ ls -l -a $HOME/.local/nodejs/bin
 ls -l -a $HOME/.local/nodejs/prefix
 ls -l -a $HOME/.local/nodejs/cache
 
-which node
-which npm
+# which node
+# which npm
 
-npm config set prefix $HOME/.local/nodejs/prefix
-npm config set cache $HOME/.local/nodejs/cache
-npm install -g pnpm npm
+# npm config set prefix $HOME/.local/nodejs/prefix
+# npm config set cache $HOME/.local/nodejs/cache
+# npm install -g pnpm npm
 
-npm -v
-node -v
-pnpm -v
+# npm -v
+# node -v
+# pnpm -v
 
 
-pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
+# pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
