@@ -4,34 +4,75 @@ This project welcomes contributions, feel free to raise a PR.
 
 ## Dependencies
 
-- Node.js 18+
-- PNPM
-- Rust
+- Node.js 
+  - [Recommend installing with fnm](https://github.com/Schniz/fnm)
+- [PNPM](https://pnpm.io/installation)
+- [Rust](https://rustup.rs/)
 
 ## Building
 
 ```bash
+pnpm i
 just build
 ```
 
 ## Running Locally
 
+To run `mach {{...args}}` using the local repo you can use
 ```bash
-# Will build /testing/fixtures/simple
-just run build ./testing/fixtures/simple
+just run {{...args}}
+```
 
-# Alternatively
-# Will build /testing/fixtures/simple
+For example:
+
+```bash
+just run build ./testing/fixtures/simple
+```
+
+## Building fixtures
+
+This will build the fixture under `./testing/fixtures/simple`
+
+```bash
 just fixture build simple
+# just run build ./testing/fixtures/simple
 ```
 
 ## Testing
+
+TODO no tests yet, will implement automated integration tests under `./testing` eventually
 
 ```bash
 just test
 ```
 
 ## Testing Locally
+
+### Use the helper scripts
+
+```bash
+# From root of repo
+mkdir ~/.local
+cp ./docs/scripts/mach-dev ~/.local
+export PATH=~/.local/mach-dev:$PATH
+export MACH_REPO_PATH="${PWD}"
+```
+
+Then add them to your `PATH`
+```bash
+# From root of repo
+echo "" >> .zshrc
+echo "# Mach Dev Variables" >> .zshrc
+echo "export PATH=\"~/.local/mach-dev:\$PATH\"" >> .zshrc
+echo "export MACH_REPO_PATH=\"${PWD}\"" >> .zshrc
+```
+
+Then use
+```bash
+# From anywhere on your computer
+machd version # Local debug build
+machr version # Local release build
+```
 
 ### Use an alias
 
@@ -40,13 +81,4 @@ just test
 alias machd="${PWD}/target/debug/bin/mach"
 
 machd version
-```
-
-### Add locally built binary to PATH
-
-```bash
-# From root of repo
-export PATH="${PWD}/target/debug/bin:$PATH"
-
-mach version
 ```

@@ -1,0 +1,2 @@
+#!/bin/sh
+$MACH_REPO_PATH/target/release/bin/mach $@
