@@ -1,4 +1,4 @@
-$RootPath = @(Split-Path @(Split-Path @(Split-Path $pwd.Path)))
+$RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot.Path)))
 $Job = "windows-amd64"
 
 & "$PSScriptRoot\..\platform\windows\setup.ps1"
@@ -9,15 +9,7 @@ npm install -g npm pnpm
 pnpm install
 rustup target add x86_64-pc-windows-msvc
 
-pwd
-ls
-echo $RootPath
-
 just build-publish
-
-pwd
-ls
-echo $RootPath
 
 cd "${RootPath}/target/${Job}"
 mv release mach

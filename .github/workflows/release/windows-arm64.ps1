@@ -1,4 +1,4 @@
-echo hi$RootPath = @(Split-Path @(Split-Path @(Split-Path $pwd.Path)))
+echo hi$RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot.Path)))
 $Job = "windows-arm64"
 
 "../../../"
