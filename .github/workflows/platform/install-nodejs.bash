@@ -56,6 +56,8 @@ if [ "$URL" == "" ]; then
   exit 1
 fi
 
+echo "${HOME}/.local/nodejs/bin:$PATH"
+
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
 
