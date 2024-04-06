@@ -21,6 +21,7 @@ npm install -g pnpm npm
 
 Get-Command node
 
+ls "${HOME}\.local\nodejs"
 ls "${HOME}\.local\nodejs\bin"
 ls "${HOME}\.local\nodejs\prefix"
 ls "${HOME}\.local\nodejs\prefix\bin"
