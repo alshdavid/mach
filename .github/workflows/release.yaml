@@ -21,6 +21,7 @@ jobs:
         ls -l $HOME
         ls -l $HOME/.local
         node -v
+        which node
 
   macos:
     runs-on: macos-14
