@@ -28,6 +28,7 @@ runs:
         node -v 
         which node
         echo "export PATH=\"\$HOME/.local/nodejs:\$PATH\"" >> $GITHUB_ENV
+        echo $GITHUB_ENV
 
     # - name: "🐥Install Node.js"
     #   if: ${{ (runner.os != 'Linux') && (runner.arch != 'ARM64' }}

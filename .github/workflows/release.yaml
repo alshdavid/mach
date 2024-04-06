@@ -18,6 +18,8 @@ jobs:
     - uses: "./.github/actions/setup-node"
       with: { node_version: 20 }
     - run: |
+        echo $GITHUB_ENV
+
         ls -l $HOME
         ls -l $HOME/.local
         node -v
