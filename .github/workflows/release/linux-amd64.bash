@@ -14,5 +14,5 @@ source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
 cargo -version
 
 # Install Just
-source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
-just --version
+# source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
+# just --version
