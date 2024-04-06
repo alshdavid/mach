@@ -61,9 +61,6 @@ export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
 echo NPM_CONFIG_PREFIX_CLI=$(npm config get prefix)
 
-cat ~/.bashrc
-ls -l -a ~
-
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
 
@@ -75,7 +72,9 @@ mkdir -p $HOME/.local/nodejs/cache
 mkdir -p $HOME/.local/nodejs/pnpm-store
 
 curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
-ls -l $HOME/.local/nodejs/bin
+ls -l -a $HOME/.local/nodejs/bin
+ls -l -a $HOME/.local/nodejs/prefix
+ls -l -a $HOME/.local/nodejs/cache
 
 which node
 which npm
