@@ -76,6 +76,7 @@ build:
   just {{ if os == "windows" { "_build_windows" } else { "_build_default" } }}
 
 _build_default:
+  test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
   @rm -rf {{out_dir}}
   @rm -rf {{out_dir_link}}
@@ -85,6 +86,7 @@ _build_default:
   @ln -s {{out_dir}} {{out_dir_link}}
 
 _build_windows:
+  if (!(Test-Path 'node_modules')) { pnpm install }
   cargo build {{profile_cargo}} {{target_cargo}}
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }

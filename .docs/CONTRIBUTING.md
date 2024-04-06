@@ -12,7 +12,6 @@ This project welcomes contributions, feel free to raise a PR.
 ## Building
 
 ```bash
-pnpm i
 just build
 ```
 
@@ -46,7 +45,7 @@ TODO no tests yet, will implement automated integration tests under `./testing` 
 just test
 ```
 
-## Testing Locally
+## Using Locally Built Mach
 
 ### Use the helper scripts
 
