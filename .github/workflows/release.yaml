@@ -15,14 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: "./.github/actions/setup-node"
-      with: { node_version: 20 }
     - run: |
-        ls -l $HOME
-        ls -l $HOME/.local
-        ls -l $HOME/.local/nodejs
-        node -v
-        which node
+        bash ./github/workflows/release/linux-amd64.bash
 
   macos:
     runs-on: macos-14
@@ -30,7 +24,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: "./.github/actions/setup-node"
     - run: |
-        ls -l
+        bash ./github/workflows/release/macos-arm64.bash
 
   windows:
     runs-on: windows-latest
@@ -38,7 +32,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: "./.github/actions/setup-node"
     - run: |
-        dir
+        & ./github/workflows/release/windows-arm64.ps1
 
 # jobs:
 #   vars:
