@@ -2,7 +2,6 @@
 set -ev
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 # Install Node.js
 NODE_VERSION=$(cat $ROOT_DIR/.nvmrc | sed -E '$ s/\n//g')

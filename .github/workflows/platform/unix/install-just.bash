@@ -50,13 +50,14 @@ case "$OS-$ARCH" in
 esac
 
 if [ "$URL" == "" ]; then
-  echo "Cannot find installer for Nodejs"
+  echo "Cannot find installer for Just"
   exit 1
 fi
 
 echo $URL
 
 test -d $OUT_DIR && rm -rf $OUT_DIR
+mkdir $OUT_DIR
 curl -s -L --url $URL | tar -xzf - -C $OUT_DIR
 
 export PATH="${OUT_DIR}:$PATH"
