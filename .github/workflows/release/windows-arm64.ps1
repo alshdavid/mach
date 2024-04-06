@@ -1,8 +1,9 @@
 $RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot)))
 $Job = "windows-arm64"
 
-"../../../"
 & "$PSScriptRoot\..\platform\windows\setup.ps1"
+
+New-Item -ItemType "directory" -Force -Path "$RootPath\artifacts" | Out-Null
 
 pnpm install
 rustup target add aarch64-pc-windows-msvc

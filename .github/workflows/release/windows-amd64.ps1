@@ -5,7 +5,6 @@ $Job = "windows-amd64"
 
 New-Item -ItemType "directory" -Force -Path "$RootPath\artifacts" | Out-Null
 
-npm install -g npm pnpm
 pnpm install
 rustup target add x86_64-pc-windows-msvc
 
