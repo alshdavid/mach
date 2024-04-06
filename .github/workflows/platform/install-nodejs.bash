@@ -61,6 +61,9 @@ echo "${HOME}/.local/nodejs/bin:$PATH"
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
 export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
+echo $NPM_CONFIG_PREFIX
+ls -l ~
+
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
 
