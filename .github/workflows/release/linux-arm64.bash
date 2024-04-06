@@ -12,6 +12,7 @@ sudo apt-get install gcc-aarch64-linux-gnu build-essential
 rustup target add aarch64-unknown-linux-gnu
 aarch64-linux-gnu-gcc --version
 export CC=aarch64-linux-gnu-gcc
+pnpm install
 
 profile=release os=linux arch=arm64 just build-publish
 

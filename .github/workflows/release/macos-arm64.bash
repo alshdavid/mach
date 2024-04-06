@@ -8,6 +8,8 @@ ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 
 rustup target add aarch64-apple-darwin
+pnpm install
+
 profile=release os=macos arch=arm64 just build-publish
 
 mkdir $ROOT_DIR/artifacts
