@@ -9,6 +9,10 @@ npm install -g npm pnpm
 pnpm install
 rustup target add x86_64-pc-windows-msvc
 
+pwd
+ls
+echo $RootPath
+
 just build-publish
 
 pwd
