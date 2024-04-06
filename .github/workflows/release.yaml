@@ -165,7 +165,7 @@ jobs:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
           set -ev
-          source .github/workflows/release/platform/unix/setup.bash
+          source .github/workflows/platform/unix/setup.bash
 
           mkdir ${{ github.workspace }}/artifacts
           sudo apt-get update
