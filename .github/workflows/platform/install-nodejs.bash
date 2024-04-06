@@ -61,6 +61,7 @@ export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
 echo NPM_CONFIG_PREFIX_CLI=$(npm config get prefix)
 
+cat ~/.bashrc
 ls -l -a ~
 
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
