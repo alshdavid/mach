@@ -57,9 +57,11 @@ if [ "$URL" == "" ]; then
 fi
 
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
+export PATH="${HOME}/.local/nodejs/prefix:$PATH"
 export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
+echo "${HOME}/.local/nodejs/prefix" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
 
 mkdir -p $HOME/.local/nodejs
@@ -68,12 +70,11 @@ mkdir -p $HOME/.local/nodejs/cache
 mkdir -p $HOME/.local/nodejs/pnpm-store
 
 curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
-npm install -g pnpm npm
 
 # ls -l -a $HOME/.local/nodejs
 # ls -l -a $HOME/.local/nodejs/bin
-ls -l -a $HOME/.local/nodejs/prefix
-ls -l -a $HOME/.local/nodejs/prefix/bin
+# ls -l -a $HOME/.local/nodejs/prefix
+# ls -l -a $HOME/.local/nodejs/prefix/bin
 # ls -l -a $HOME/.local/nodejs/cache
 
 # which node
@@ -81,11 +82,10 @@ ls -l -a $HOME/.local/nodejs/prefix/bin
 
 # npm config set prefix $HOME/.local/nodejs/prefix
 # npm config set cache $HOME/.local/nodejs/cache
-# npm install -g pnpm npm
+npm install -g pnpm npm
 
-# npm -v
-# node -v
-# pnpm -v
+npm -v
+node -v
+pnpm -v
 
-
-# pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
+pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
