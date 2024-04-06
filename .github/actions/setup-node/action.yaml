@@ -14,7 +14,7 @@ runs:
       shell: bash
       run: |
         export SELECTED_NODE_VERSION=$(curl -sSL https://nodejs.org/download/release/ |  sed -E 's/<a.*>(v.*\..*\.[0-9]+\/)<\/a>.*/\1/g' |  grep "^v" | sed -E "s/v(.*)\//\1/g" | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | grep "^${NODE_VERSION}" | tail -n1)
-        echo $SELECTED_NODE_VERSION
+        echo "SELECTED_NODE_VERSION=$SELECTED_NODE_VERSION" >> $GITHUB_ENV
 
     - name: "🐥 Install Node.js"
       shell: bash
