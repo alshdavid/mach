@@ -38,7 +38,7 @@ pub enum CommandType {
 
 fn main() {
   let start_time = SystemTime::now();
-  
+
   {
     let command = Commands::parse();
 
@@ -60,5 +60,8 @@ fn main() {
     }
   }
 
-  println!("Total Time:    {:.3}s", start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
+  println!(
+    "Total Time:    {:.3}s",
+    start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
+  );
 }

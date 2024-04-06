@@ -7,11 +7,11 @@ use swc_core::common::SourceMap;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
+use crate::public::BundleManifest;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
 use crate::public::OutputsSync;
-use crate::public::BundleManifest;
 
 use super::css::package_css;
 use super::html::package_html;
@@ -58,11 +58,7 @@ pub fn package(
         bundle_manifest,
       );
     } else if bundle.kind == "css" {
-      package_css(
-        asset_map.clone(),
-        outputs.clone(),
-        bundle.clone(),
-      )
+      package_css(asset_map.clone(), outputs.clone(), bundle.clone())
     } else if bundle.kind == "html" {
       package_html(
         asset_map.clone(),

@@ -36,7 +36,10 @@ pub fn load_plugins(
         continue;
       }
 
-      return Err(format!("Unable to find plugin: {}:{}", engine, plugin_string));
+      return Err(format!(
+        "Unable to find plugin: {}:{}",
+        engine, plugin_string
+      ));
     }
   }
 
@@ -74,7 +77,10 @@ pub fn load_plugins(
           continue;
         }
 
-        return Err(format!("Unable to find plugin: {}:{}", engine, plugin_string));
+        return Err(format!(
+          "Unable to find plugin: {}:{}",
+          engine, plugin_string
+        ));
       }
 
       plugins

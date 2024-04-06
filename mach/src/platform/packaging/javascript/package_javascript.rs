@@ -5,13 +5,13 @@ use std::sync::Arc;
 use std::sync::RwLock;
 use std::thread::JoinHandle;
 
-use std::sync::Mutex;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
+use std::sync::Mutex;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
@@ -46,7 +46,7 @@ pub fn package_javascript<'a>(
   let bundle_map = bundle_map.read().unwrap();
   let bundle_graph = bundle_graph.read().unwrap();
   let source_map = Arc::new(SourceMap::default());
-  
+
   let mut assets_to_package = divide_assets_by_threads(&bundle, config.threads);
   let bundle_id = bundle.id.clone();
   let mut handles = Vec::<JoinHandle<Result<(), String>>>::new();

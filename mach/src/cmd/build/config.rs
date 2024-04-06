@@ -5,8 +5,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use clap::Parser;
 use crate::public::MachConfigSync;
+use clap::Parser;
 use normalize_path::NormalizePath;
 
 use crate::public::MachConfig;
