@@ -57,11 +57,11 @@ if [ "$URL" == "" ]; then
 fi
 
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
-export PATH="${HOME}/.local/nodejs/prefix:$PATH"
+export PATH="${HOME}/.local/nodejs/prefix/bin:$PATH"
 export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
-echo "${HOME}/.local/nodejs/prefix" >> $GITHUB_PATH
+echo "${HOME}/.local/nodejs/prefix/bin" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
 
 mkdir -p $HOME/.local/nodejs
@@ -80,11 +80,11 @@ curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
 # npm config set cache $HOME/.local/nodejs/cache
 npm install -g pnpm npm
 
-ls -l -a $HOME/.local/nodejs
-ls -l -a $HOME/.local/nodejs/bin
-ls -l -a $HOME/.local/nodejs/prefix
-ls -l -a $HOME/.local/nodejs/prefix/bin
-ls -l -a $HOME/.local/nodejs/cache
+# ls -l -a $HOME/.local/nodejs
+# ls -l -a $HOME/.local/nodejs/bin
+# ls -l -a $HOME/.local/nodejs/prefix
+# ls -l -a $HOME/.local/nodejs/prefix/bin
+# ls -l -a $HOME/.local/nodejs/cache
 
 npm -v
 node -v
