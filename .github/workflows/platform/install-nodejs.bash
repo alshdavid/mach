@@ -58,7 +58,7 @@ fi
 
 echo $URL
 mkdir -p $HOME/.local/nodejs
-curl -L --url $URL | tar -xvzf - -C $HOME/.local/nodejs --strip-components=1
+curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
 
 export PATH=$HOME/.local/nodejs/bin:$PATH
 
