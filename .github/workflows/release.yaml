@@ -72,28 +72,7 @@ jobs:
       - env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
-          set -ev
-          source .github/workflows/release/linux-amd64.bash
-          
-          mkdir ${{ github.workspace }}/artifacts
-          sudo apt-get update
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add x86_64-unknown-linux-gnu
-
-          profile=release os=linux arch=amd64 just build-publish
-
-          cd ${{ github.workspace }}/target/${{ github.job }}
-          mv release mach
-          tar -czvf mach-${{ github.job }}.tar.gz mach
-          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-          cd ${{ github.workspace }}/npm/mach-os-arch
-          npm pack
-          mv *.tgz npm-mach-${{ github.job }}.tgz
-          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-          ls -l ${{ github.workspace }}/artifacts
+          bash .github/workflows/release/linux-amd64.bash
 
       - uses: actions/upload-artifact@v4
         with:
@@ -111,31 +90,7 @@ jobs:
       - env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
-          set -ev
-          source .github/workflows/release/linux-amd64.bash
-
-          mkdir ${{ github.workspace }}/artifacts
-          sudo apt-get update
-          npm install -g npm pnpm
-          pnpm install
-          sudo apt-get install gcc-aarch64-linux-gnu build-essential
-          rustup target add aarch64-unknown-linux-gnu
-          aarch64-linux-gnu-gcc --version
-          export CC=aarch64-linux-gnu-gcc
-
-          profile=release os=linux arch=arm64 just build-publish
-
-          cd ${{ github.workspace }}/target/${{ github.job }}
-          mv release mach
-          tar -czvf mach-${{ github.job }}.tar.gz mach
-          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-          cd ${{ github.workspace }}/npm/mach-os-arch
-          npm pack
-          mv *.tgz npm-mach-${{ github.job }}.tgz
-          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-          ls -l ${{ github.workspace }}/artifacts
+          bash .github/workflows/release/linux-amd64.bash
       
       - uses: actions/upload-artifact@v4
         with:
@@ -153,27 +108,7 @@ jobs:
       - env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
-          set -ev
-          source .github/workflows/release/macos-amd64.bash
-
-          mkdir ${{ github.workspace }}/artifacts
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add x86_64-apple-darwin
-
-          profile=release os=macos arch=amd64 just build-publish
-
-          cd ${{ github.workspace }}/target/${{ github.job }}
-          mv release mach
-          tar -czvf mach-${{ github.job }}.tar.gz mach
-          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-          cd ${{ github.workspace }}/npm/mach-os-arch
-          npm pack
-          mv *.tgz npm-mach-${{ github.job }}.tgz
-          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-          ls -l ${{ github.workspace }}/artifacts
+          bash .github/workflows/release/macos-amd64.bash
 
       - uses: actions/upload-artifact@v4
         with:
@@ -191,27 +126,7 @@ jobs:
       - env:
           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
         run: |
-          set -ev
-          source .github/workflows/release/macos-arm64.bash
-
-          mkdir ${{ github.workspace }}/artifacts
-          npm install -g npm pnpm
-          pnpm install
-          rustup target add aarch64-apple-darwin
-
-          profile=release os=macos arch=arm64 just build-publish
-
-          cd ${{ github.workspace }}/target/${{ github.job }}
-          mv release mach
-          tar -czvf mach-${{ github.job }}.tar.gz mach
-          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-          cd ${{ github.workspace }}/npm/mach-os-arch
-          npm pack
-          mv *.tgz npm-mach-${{ github.job }}.tgz
-          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-          ls -l ${{ github.workspace }}/artifacts
+          bash .github/workflows/release/macos-arm64.bash
       
       - uses: actions/upload-artifact@v4
         with:
