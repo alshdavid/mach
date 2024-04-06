@@ -11,8 +11,8 @@ node -v
 
 # Install Rust
 source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
-cargo -version
+cargo --version
 
 # Install Just
-# source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
-# just --version
+source $ROOT_DIR/.github/workflows/platform/unix/install-rust.bash
+just --version
