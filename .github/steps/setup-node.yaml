@@ -1,0 +1,49 @@
+name: 'alshdavid/setup-node'
+description: 'Setup Node.js'
+inputs:
+  node_version:
+    description: 'Version of Node.js to use'
+    required: true
+
+env:
+  NODE_VERSION: ${{ inputs.node_version }}
+
+runs:
+  using: 'ubuntu-latest'
+  steps:
+    - name: Get Latest
+      run: |
+        export SELECTED_NODE_VERSION=$(curl -sSL https://nodejs.org/download/release/ |  sed -E 's/<a.*>(v.*\..*\.[0-9]+\/)<\/a>.*/\1/g' |  grep "^v" | sed -E "s/v(.*)\//\1/g" | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | grep "^${NODE_VERSION}" | tail -n1)
+
+    - name: "🐥 Install Node.js"
+      if: ${{ (runner.os != 'Linux') && (runner.arch != 'X64' }}
+      run: |
+        echo $SELECTED_NODE_VERSION
+        # mkdir $HOME/.local/nodejs
+        # curl -L --url https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz | tar -xvzf - -C $HOME/.local/nodejs --strip-components=1
+
+    - name: "🐥Install Node.js"
+      if: ${{ (runner.os != 'Linux') && (runner.arch != 'ARM64' }}
+      run: |
+        echo $SELECTED_NODE_VERSION
+    
+    - name: "🍎 Install Node.js"
+      if: ${{ (runner.os != 'macOS') && (runner.arch != 'X64' }}
+      run: |
+        echo $SELECTED_NODE_VERSION
+
+    - name: "🍎 Install Node.js"
+      if: ${{ (runner.os != 'macOS') && (runner.arch != 'ARM64' }}
+      run: |
+        echo $SELECTED_NODE_VERSION
+
+    - name: "🟦 Install Node.js"
+      if: ${{ (runner.os != 'Windows') && (runner.arch != 'X64' }}
+      run: |
+        echo $env:SELECTED_NODE_VERSION
+
+    - name: "🟦 Install Node.js"
+      if: ${{ (runner.os != 'Windows') && (runner.arch != 'ARM64' }}
+      run: |
+        echo $env:SELECTED_NODE_VERSION
+
