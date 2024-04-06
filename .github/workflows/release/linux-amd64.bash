@@ -10,7 +10,7 @@ source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 sudo apt-get update
 rustup target add x86_64-unknown-linux-gnu
 
-profile=release os=linux arch=arm64 just build-publish
+profile=release os=linux arch=amd64 just build-publish
 
 mkdir $ROOT_DIR/artifacts
 cd $ROOT_DIR/target/$JOB_NAME
