@@ -66,8 +66,8 @@ mkdir -p $HOME/.local/nodejs/pnpm-store
 curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
 ls -l $HOME/.local/nodejs/bin
 
-export PATH=$HOME/.local/nodejs/bin:$PATH
-echo "$HOME/.local/nodejs/bin" >> $GITHUB_PATH
+export PATH="${HOME}/.local/nodejs/bin":$PATH
+echo "\$HOME/.local/nodejs/bin" >> $GITHUB_PATH
 
 which node
 
