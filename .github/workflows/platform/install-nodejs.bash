@@ -64,15 +64,20 @@ mkdir -p $HOME/.local/nodejs/cache
 mkdir -p $HOME/.local/nodejs/pnpm-store
 
 curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
+ls -l $HOME/.local/nodejs/bin
 
 export PATH=$HOME/.local/nodejs/bin:$PATH
 echo "$HOME/.local/nodejs/bin" >> $GITHUB_PATH
 
 which node
+
 npm config set prefix $HOME/.local/nodejs/prefix
 npm config set cache $HOME/.local/nodejs/cache
 npm install -g pnpm npm
 
-ls -l $HOME/.local/nodejs/bin
+npm -v
+node -v
+pnpm -v
+
 
 pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
