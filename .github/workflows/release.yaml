@@ -20,6 +20,7 @@ jobs:
     - run: |
         ls -l $HOME
         ls -l $HOME/.local
+        ls -l $HOME/.local/nodejs
         node -v
         which node
 
