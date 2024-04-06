@@ -61,6 +61,7 @@ echo $URL
 mkdir -p $HOME/.local/nodejs
 mkdir -p $HOME/.local/nodejs/prefix
 mkdir -p $HOME/.local/nodejs/cache
+mkdir -p $HOME/.local/nodejs/pnpm-store
 
 curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
 
@@ -69,3 +70,5 @@ export PATH=$HOME/.local/nodejs/bin:$PATH
 npm config set prefix $HOME/.local/nodejs/prefix
 npm config set cache $HOME/.local/nodejs/cache
 npm install -g pnpm npm
+
+pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
