@@ -56,17 +56,12 @@ if [ "$URL" == "" ]; then
   exit 1
 fi
 
-echo "${HOME}/.local/nodejs/bin:$PATH"
-
-echo NPM_CONFIG_PREFIX=$NPM_CONFIG_PREFIX
-
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
 export NPM_CONFIG_PREFIX=$HOME/.local/nodejs/prefix
 
 echo NPM_CONFIG_PREFIX_CLI=$(npm config get prefix)
 
-echo NPM_CONFIG_PREFIX=$NPM_CONFIG_PREFIX
-ls -l ~
+ls -l -a ~
 
 echo "${HOME}/.local/nodejs/bin" >> $GITHUB_PATH
 echo "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $GITHUB_PATH
