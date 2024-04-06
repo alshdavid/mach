@@ -7,3 +7,5 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --no-modify
 
 export PATH="$HOME/.local/rust/cargo/bin:$PATH"
 echo "${HOME}/.local/rust/cargo/bin" >> $GITHUB_PATH
+
+which cargo
