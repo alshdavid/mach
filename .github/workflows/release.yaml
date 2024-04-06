@@ -14,7 +14,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: "alshdavid/setup-node"
+    - uses: "./.github/actions/setup-node"
     - run: |
         ls -l
 
