@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: |
-        bash ./github/workflows/release/linux-amd64.bash
+        bash .github/workflows/release/linux-amd64.bash
 
   macos:
     runs-on: macos-14
@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: "./.github/actions/setup-node"
     - run: |
-        bash ./github/workflows/release/macos-arm64.bash
+        bash .github/workflows/release/macos-arm64.bash
 
   windows:
     runs-on: windows-latest
@@ -32,7 +32,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: "./.github/actions/setup-node"
     - run: |
-        & ./github/workflows/release/windows-arm64.ps1
+        & .github\workflows\release\windows-amd64.ps1
 
 # jobs:
 #   vars:
