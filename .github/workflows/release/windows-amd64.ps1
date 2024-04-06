@@ -1,1 +1,1 @@
-echo hi
+& "$PSScriptRoot\..\platform\windows\setup.ps1"
