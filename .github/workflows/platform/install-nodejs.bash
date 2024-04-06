@@ -67,6 +67,7 @@ curl -s -L --url $URL | tar -xzf - -C $HOME/.local/nodejs --strip-components=1
 
 export PATH=$HOME/.local/nodejs/bin:$PATH
 
+which node
 npm config set prefix $HOME/.local/nodejs/prefix
 npm config set cache $HOME/.local/nodejs/cache
 npm install -g pnpm npm
