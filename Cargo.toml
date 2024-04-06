@@ -2,12 +2,7 @@
 resolver = "2"
 
 members = [
-  "crates/mach",
-]
-
-exclude = [
-  "adapters/deno",
-  "adapters/noop",
+  "mach",
 ]
 
 [profile.release]

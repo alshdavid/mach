@@ -126,7 +126,7 @@ fmt:
 
 build-publish:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./crates/mach/Cargo.toml" \
+    "./mach/Cargo.toml" \
     "0.0.0-local" \
     {{MACH_VERSION}}
 
