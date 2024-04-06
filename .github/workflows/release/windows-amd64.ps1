@@ -11,12 +11,12 @@ rustup target add x86_64-pc-windows-msvc
 
 just build-publish
 
-cd $RootPath/target/$Job
+cd "${RootPath}/target/${Job}"
 mv release mach
-tar -czvf mach-$Job.tar.gz mach
-mv mach-$Job.tar.gz $RootPath/artifacts
+tar -czvf "mach-${Job}.tar.gz" mach
+Move-Item "mach-${Job}.tar.gz" -Destination "${RootPath}/artifacts" | Out-Null
 
-cd $RootPath/npm/mach-os-arch
+cd "${RootPath}/npm/mach-os-arch"
 npm pack
-mv *.tgz npm-mach-$Job.tgz
-mv *.tgz $RootPath/artifacts/npm-mach-$Job.tgz
+Move-Item *.tgz -Destination "npm-mach-${Job}.tgz"
+Move-Item *.tgz -Destination "${RootPath}/artifacts/npm-mach-${Job}.tgz"
