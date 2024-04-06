@@ -11,6 +11,10 @@ rustup target add x86_64-pc-windows-msvc
 
 just build-publish
 
+pwd
+ls
+echo $RootPath
+
 cd "${RootPath}/target/${Job}"
 mv release mach
 tar -czvf "mach-${Job}.tar.gz" mach

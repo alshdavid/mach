@@ -238,8 +238,8 @@ jobs:
           BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: |
           set -ev
+          source .github/workflows/platform/unix/install-nodejs.bash
 
-          npm install -g npm pnpm
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
           PACKAGES=(
