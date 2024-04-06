@@ -10,231 +10,215 @@ on:
       - "main"
       - "develop"
 
-jobs:
-  linux:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - run: |
-        bash .github/workflows/release/linux-amd64.bash
-
-  macos:
-    runs-on: macos-14
-    steps:
-    - uses: actions/checkout@v4
-    - run: |
-        bash .github/workflows/release/macos-arm64.bash
-
-  windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    - run: |
-        & .github\workflows\release\windows-amd64.ps1
-
 # jobs:
-#   vars:
-#     name: "🧠 Generate Variables"
+#   linux:
 #     runs-on: ubuntu-latest
-#     outputs:
-#       BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
-#       NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
-#       NEXT_MACH_VERSION: ${{ steps.step1.outputs.NEXT_MACH_VERSION }}
 #     steps:
-#       - uses: actions/checkout@v4
-#       - id: step1
-#         run: |
-#           npm install -g pnpm && pnpm i
-          
-#           export BRANCH_NAME=${GITHUB_REF##*/}
+#     - uses: actions/checkout@v4
+#     - run: |
+#         bash .github/workflows/release/linux-amd64.bash
 
-#           export NPM_TAG=$BRANCH_NAME
-#           if [ $NPM_TAG = "main" ]; then
-#             export NPM_TAG="latest"
-#           fi
-
-#           NEXT_MACH_VERSION="$(node .github/scripts/ci/next-npm-version.mjs)"
-
-#           echo "NEXT_MACH_VERSION=$NEXT_MACH_VERSION" >> $GITHUB_OUTPUT
-#           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
-#           echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
-
-#           echo NEXT_MACH_VERSION = $NEXT_MACH_VERSION
-#           echo NPM_TAG = $NPM_TAG
-#           echo BRANCH_NAME = $BRANCH_NAME
-
-#   linux-amd64:
-#     name: "🐥 Linux AMD64"
-#     runs-on: ubuntu-latest
-#     needs: [vars]
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: extractions/setup-just@v2
-#       - uses: actions/setup-node@v4
-#         with: { node-version: 20 }
-
-#       - name: Build
-#         env:
-#           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-#         run: |
-#           set -ev
-
-#           mkdir ${{ github.workspace }}/artifacts
-#           sudo apt-get update
-#           npm install -g npm pnpm
-#           pnpm install
-#           rustup target add x86_64-unknown-linux-gnu
-
-#           profile=release os=linux arch=amd64 just build-publish
-
-#           cd ${{ github.workspace }}/target/${{ github.job }}
-#           mv release mach
-#           tar -czvf mach-${{ github.job }}.tar.gz mach
-#           mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-#           cd ${{ github.workspace }}/npm/mach-os-arch
-#           npm pack
-#           mv *.tgz npm-mach-${{ github.job }}.tgz
-#           mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-#           ls -l ${{ github.workspace }}/artifacts
-
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: ${{ github.job }}.tar.gz
-#           path: ${{ github.workspace }}/artifacts/**/*
-#           if-no-files-found: error
-#           retention-days: 1
-
-#   linux-arm64:
-#     name: "🐥 Linux ARM64"
-#     runs-on: ubuntu-latest
-#     needs: [vars]
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: extractions/setup-just@v2
-#       - uses: actions/setup-node@v4
-#         with: { node-version: 20 }
-
-#       - name: Build
-#         env:
-#           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-#         run: |
-#           set -ev
-
-#           mkdir ${{ github.workspace }}/artifacts
-#           sudo apt-get update
-#           npm install -g npm pnpm
-#           pnpm install
-#           sudo apt-get install gcc-aarch64-linux-gnu build-essential
-#           rustup target add aarch64-unknown-linux-gnu
-#           aarch64-linux-gnu-gcc --version
-#           export CC=aarch64-linux-gnu-gcc
-
-#           profile=release os=linux arch=arm64 just build-publish
-
-#           cd ${{ github.workspace }}/target/${{ github.job }}
-#           mv release mach
-#           tar -czvf mach-${{ github.job }}.tar.gz mach
-#           mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-#           cd ${{ github.workspace }}/npm/mach-os-arch
-#           npm pack
-#           mv *.tgz npm-mach-${{ github.job }}.tgz
-#           mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-#           ls -l ${{ github.workspace }}/artifacts
-      
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: ${{ github.job }}.tar.gz
-#           path: ${{ github.workspace }}/artifacts/**/*
-#           if-no-files-found: error
-#           retention-days: 1
-
-#   macos-amd64:
-#     name: "🍎 MacOS AMD64"
-#     runs-on: macos-13
-#     needs: [vars]
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: extractions/setup-just@v2
-#       - uses: actions/setup-node@v4
-#         with: { node-version: 20 }
-
-#       - name: Build
-#         env:
-#           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-#         run: |
-#           set -ev
-
-#           mkdir ${{ github.workspace }}/artifacts
-#           npm install -g npm pnpm
-#           pnpm install
-#           rustup target add x86_64-apple-darwin
-
-#           profile=release os=macos arch=amd64 just build-publish
-
-#           cd ${{ github.workspace }}/target/${{ github.job }}
-#           mv release mach
-#           tar -czvf mach-${{ github.job }}.tar.gz mach
-#           mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
-
-#           cd ${{ github.workspace }}/npm/mach-os-arch
-#           npm pack
-#           mv *.tgz npm-mach-${{ github.job }}.tgz
-#           mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
-
-#           ls -l ${{ github.workspace }}/artifacts
-
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: ${{ github.job }}.tar.gz
-#           path: ${{ github.workspace }}/artifacts/**/*
-#           if-no-files-found: error
-#           retention-days: 1
-      
-#   macos-arm64:
-#     name: "🍎 MacOS ARM64"
+#   macos:
 #     runs-on: macos-14
-#     needs: [vars]
 #     steps:
-#       - uses: actions/checkout@v4
-#       - uses: extractions/setup-just@v2
-#       - uses: actions/setup-node@v4
-#         with: { node-version: 20 }
+#     - uses: actions/checkout@v4
+#     - run: |
+#         bash .github/workflows/release/macos-arm64.bash
 
-#       - name: Build
-#         env:
-#           MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-#         run: |
-#           set -ev
+#   windows:
+#     runs-on: windows-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#     - run: |
+#         & .github\workflows\release\windows-amd64.ps1
 
-#           mkdir ${{ github.workspace }}/artifacts
-#           npm install -g npm pnpm
-#           pnpm install
-#           rustup target add aarch64-apple-darwin
+jobs:
+  vars:
+    name: "🧠 Generate Variables"
+    runs-on: ubuntu-latest
+    outputs:
+      BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
+      NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
+      NEXT_MACH_VERSION: ${{ steps.step1.outputs.NEXT_MACH_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: step1
+        run: |
+          npm install -g pnpm && pnpm i
+          
+          export BRANCH_NAME=${GITHUB_REF##*/}
 
-#           profile=release os=macos arch=arm64 just build-publish
+          export NPM_TAG=$BRANCH_NAME
+          if [ $NPM_TAG = "main" ]; then
+            export NPM_TAG="latest"
+          fi
 
-#           cd ${{ github.workspace }}/target/${{ github.job }}
-#           mv release mach
-#           tar -czvf mach-${{ github.job }}.tar.gz mach
-#           mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
+          NEXT_MACH_VERSION="$(node .github/scripts/ci/next-npm-version.mjs)"
 
-#           cd ${{ github.workspace }}/npm/mach-os-arch
-#           npm pack
-#           mv *.tgz npm-mach-${{ github.job }}.tgz
-#           mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
+          echo "NEXT_MACH_VERSION=$NEXT_MACH_VERSION" >> $GITHUB_OUTPUT
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "NPM_TAG=$NPM_TAG" >> $GITHUB_OUTPUT
 
-#           ls -l ${{ github.workspace }}/artifacts
+          echo NEXT_MACH_VERSION = $NEXT_MACH_VERSION
+          echo NPM_TAG = $NPM_TAG
+          echo BRANCH_NAME = $BRANCH_NAME
+
+  linux-amd64:
+    name: "🐥 Linux AMD64"
+    runs-on: ubuntu-latest
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+        run: |
+          set -ev
+          source .github/workflows/release/linux-amd64.bash
+          
+          mkdir ${{ github.workspace }}/artifacts
+          sudo apt-get update
+          npm install -g npm pnpm
+          pnpm install
+          rustup target add x86_64-unknown-linux-gnu
+
+          profile=release os=linux arch=amd64 just build-publish
+
+          cd ${{ github.workspace }}/target/${{ github.job }}
+          mv release mach
+          tar -czvf mach-${{ github.job }}.tar.gz mach
+          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
+
+          cd ${{ github.workspace }}/npm/mach-os-arch
+          npm pack
+          mv *.tgz npm-mach-${{ github.job }}.tgz
+          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
+
+          ls -l ${{ github.workspace }}/artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
+
+  linux-arm64:
+    name: "🐥 Linux ARM64"
+    runs-on: ubuntu-latest
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+        run: |
+          set -ev
+          source .github/workflows/release/linux-amd64.bash
+
+          mkdir ${{ github.workspace }}/artifacts
+          sudo apt-get update
+          npm install -g npm pnpm
+          pnpm install
+          sudo apt-get install gcc-aarch64-linux-gnu build-essential
+          rustup target add aarch64-unknown-linux-gnu
+          aarch64-linux-gnu-gcc --version
+          export CC=aarch64-linux-gnu-gcc
+
+          profile=release os=linux arch=arm64 just build-publish
+
+          cd ${{ github.workspace }}/target/${{ github.job }}
+          mv release mach
+          tar -czvf mach-${{ github.job }}.tar.gz mach
+          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
+
+          cd ${{ github.workspace }}/npm/mach-os-arch
+          npm pack
+          mv *.tgz npm-mach-${{ github.job }}.tgz
+          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
+
+          ls -l ${{ github.workspace }}/artifacts
       
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: ${{ github.job }}.tar.gz
-#           path: ${{ github.workspace }}/artifacts/**/*
-#           if-no-files-found: error
-#           retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
+
+  macos-amd64:
+    name: "🍎 MacOS AMD64"
+    runs-on: macos-13
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+        run: |
+          set -ev
+          source .github/workflows/release/macos-amd64.bash
+
+          mkdir ${{ github.workspace }}/artifacts
+          npm install -g npm pnpm
+          pnpm install
+          rustup target add x86_64-apple-darwin
+
+          profile=release os=macos arch=amd64 just build-publish
+
+          cd ${{ github.workspace }}/target/${{ github.job }}
+          mv release mach
+          tar -czvf mach-${{ github.job }}.tar.gz mach
+          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
+
+          cd ${{ github.workspace }}/npm/mach-os-arch
+          npm pack
+          mv *.tgz npm-mach-${{ github.job }}.tgz
+          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
+
+          ls -l ${{ github.workspace }}/artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
+      
+  macos-arm64:
+    name: "🍎 MacOS ARM64"
+    runs-on: macos-14
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+        run: |
+          set -ev
+          source .github/workflows/release/macos-arm64.bash
+
+          mkdir ${{ github.workspace }}/artifacts
+          npm install -g npm pnpm
+          pnpm install
+          rustup target add aarch64-apple-darwin
+
+          profile=release os=macos arch=arm64 just build-publish
+
+          cd ${{ github.workspace }}/target/${{ github.job }}
+          mv release mach
+          tar -czvf mach-${{ github.job }}.tar.gz mach
+          mv mach-${{ github.job }}.tar.gz ${{ github.workspace }}/artifacts
+
+          cd ${{ github.workspace }}/npm/mach-os-arch
+          npm pack
+          mv *.tgz npm-mach-${{ github.job }}.tgz
+          mv *.tgz ${{ github.workspace }}/artifacts/npm-mach-${{ github.job }}.tgz
+
+          ls -l ${{ github.workspace }}/artifacts
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}.tar.gz
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
 
 #   windows-amd64:
 #     name: "🟦 Windows AMD64"
