@@ -1,17 +1,17 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use libmach::Output;
+use crate::public::Output;
 use swc_core::common::SourceMap;
 
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::BundleGraphSync;
-use libmach::BundleMapSync;
-use libmach::DependencyMapSync;
-use libmach::MachConfigSync;
-use libmach::OutputsSync;
-use libmach::BundleManifest;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::BundleGraphSync;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
+use crate::public::OutputsSync;
+use crate::public::BundleManifest;
 
 use super::css::package_css;
 use super::html::package_html;

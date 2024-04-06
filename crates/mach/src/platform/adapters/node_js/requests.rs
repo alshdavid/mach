@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use serde::Serialize;
 
-use libmach::Config;
-use libmach::Dependency;
-use libmach::DependencyOptions;
+use crate::public::Config;
+use crate::public::Dependency;
+use crate::public::DependencyOptions;
 
 #[derive(Serialize, Clone, Debug)]
 pub struct LoadPluginRequest {

@@ -1,6 +1,6 @@
-use libmach::MachConfig;
-use libmach::MutableAsset;
-use libmach::Transformer;
+use crate::public::MachConfig;
+use crate::public::MutableAsset;
+use crate::public::Transformer;
 
 #[derive(Debug)]
 pub struct TransformerDrop {}

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use libmach::AssetMapSync;
-use libmach::BundleMapSync;
-use libmach::MachConfig;
+use crate::public::AssetMapSync;
+use crate::public::BundleMapSync;
+use crate::public::MachConfig;
 
 pub struct AppReporter<'a> {
   config: &'a MachConfig,

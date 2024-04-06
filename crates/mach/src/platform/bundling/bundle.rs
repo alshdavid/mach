@@ -1,9 +1,9 @@
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::BundleGraphSync;
-use libmach::BundleMapSync;
-use libmach::DependencyMapSync;
-use libmach::MachConfigSync;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::BundleGraphSync;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
 
 use super::bundle_single::bundle_single;
 

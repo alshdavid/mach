@@ -2,10 +2,10 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::RwLock;
 
-use libmach::AssetMapSync;
-use libmach::Bundle;
-use libmach::Output;
-use libmach::Outputs;
+use crate::public::AssetMapSync;
+use crate::public::Bundle;
+use crate::public::Output;
+use crate::public::Outputs;
 
 pub fn package_css(
   asset_map: AssetMapSync,

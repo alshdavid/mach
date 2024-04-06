@@ -6,11 +6,11 @@ use std::sync::Arc;
 use std::time::SystemTime;
 
 use clap::Parser;
-use libmach::MachConfigSync;
+use crate::public::MachConfigSync;
 use normalize_path::NormalizePath;
 
-use libmach::MachConfig;
-use libmach::Machrc;
+use crate::public::MachConfig;
+use crate::public::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 

@@ -1,12 +1,7 @@
-use libmach::AdapterGetPluginOptions;
-use libmach::AdapterMap;
-use libmach::AdapterMeta;
+use crate::public::MachConfig;
+use crate::public::Machrc;
+use crate::public::Transformer;
 
-use libmach::MachConfig;
-use libmach::Machrc;
-use libmach::Transformer;
-
-use crate::platform::config::load_dynamic_adapter;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
@@ -17,12 +12,10 @@ use super::PluginContainer;
 use super::PluginContainerSync;
 
 pub fn load_plugins(
-  config: &MachConfig,
+  _config: &MachConfig,
   machrc: &Machrc,
-  adapter_map: &mut AdapterMap,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
-  let base_path = machrc.file_path.parent().unwrap();
 
   println!("  Plugins:");
   println!("    Resolvers:");
@@ -43,26 +36,7 @@ pub fn load_plugins(
         continue;
       }
 
-      if engine == "mach" {
-        return Err(format!("Unable to find plugin: {}", plugin_string));
-      }
-
-      if !adapter_map.contains_key(engine) {
-        adapter_map.insert(engine.to_string(), load_dynamic_adapter(&config, &engine)?);
-      }
-
-      let Some(adapter) = adapter_map.get(engine) else {
-        return Err(format!("Unable to find adapter for: \"{}\"", engine));
-      };
-
-      let adapter_plugin_options = AdapterGetPluginOptions {
-        specifier: specifier.to_string().clone(),
-        cwd: base_path.to_path_buf().clone(),
-        meta: AdapterMeta::new(),
-      };
-      plugins
-        .resolvers
-        .push(adapter.get_resolver(adapter_plugin_options)?);
+      return Err(format!("Unable to find plugin: {}:{}", engine, plugin_string));
     }
   }
 
@@ -100,24 +74,7 @@ pub fn load_plugins(
           continue;
         }
 
-        if engine == "mach" {
-          return Err(format!("Unable to find plugin: \"{}\"", plugin_string));
-        }
-
-        if !adapter_map.contains_key(engine) {
-          adapter_map.insert(engine.to_string(), load_dynamic_adapter(&config, &engine)?);
-        }
-
-        let Some(adapter) = adapter_map.get(engine) else {
-          return Err(format!("Unable to find adapter for: {}", engine));
-        };
-
-        let adapter_plugin_options = AdapterGetPluginOptions {
-          specifier: specifier.to_string().clone(),
-          cwd: base_path.to_path_buf().clone(),
-          meta: AdapterMeta::new(),
-        };
-        transformers.push(adapter.get_transformer(adapter_plugin_options)?);
+        return Err(format!("Unable to find plugin: {}:{}", engine, plugin_string));
       }
 
       plugins

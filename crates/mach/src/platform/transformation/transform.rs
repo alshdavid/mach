@@ -8,14 +8,14 @@ use std::sync::Arc;
 use std::sync::RwLock;
 use std::thread::JoinHandle;
 
-use libmach::Asset;
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::Dependency;
-use libmach::DependencyMapSync;
-use libmach::DependencyOptions;
-use libmach::MachConfigSync;
-use libmach::MutableAsset;
+use crate::public::Asset;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::Dependency;
+use crate::public::DependencyMapSync;
+use crate::public::DependencyOptions;
+use crate::public::MachConfigSync;
+use crate::public::MutableAsset;
 
 use crate::platform::config::PluginContainerSync;
 use crate::platform::config::TransformerTarget;

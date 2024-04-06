@@ -3,6 +3,7 @@
 mod cmd;
 mod kit;
 mod platform;
+mod public;
 
 use std::time::SystemTime;
 

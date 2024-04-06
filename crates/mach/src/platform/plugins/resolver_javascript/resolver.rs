@@ -1,6 +1,6 @@
-use libmach::Dependency;
-use libmach::ResolveResult;
-use libmach::Resolver;
+use crate::public::Dependency;
+use crate::public::ResolveResult;
+use crate::public::Resolver;
 
 use super::resolve;
 

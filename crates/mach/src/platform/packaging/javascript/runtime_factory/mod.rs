@@ -6,7 +6,7 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 
 use crate::kit::swc::parse_script;
-use libmach::BundleManifest;
+use crate::public::BundleManifest;
 
 const JS_DEFINE_EXPORT: &str = include_str!("./js/define_export.js");
 const JS_IMPORT_SCRIPT_CLASSIC: &str = include_str!("./js/import_script_classic.js");

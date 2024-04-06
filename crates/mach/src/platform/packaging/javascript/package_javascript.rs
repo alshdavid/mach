@@ -6,23 +6,23 @@ use std::sync::RwLock;
 use std::thread::JoinHandle;
 
 use std::sync::Mutex;
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::BundleGraphSync;
-use libmach::BundleMapSync;
-use libmach::DependencyMapSync;
-use libmach::MachConfigSync;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::BundleGraphSync;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
-use libmach::AssetId;
-use libmach::Bundle;
-use libmach::BundleManifest;
-use libmach::Output;
-use libmach::Outputs;
+use crate::public::AssetId;
+use crate::public::Bundle;
+use crate::public::BundleManifest;
+use crate::public::Output;
+use crate::public::Outputs;
 
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;

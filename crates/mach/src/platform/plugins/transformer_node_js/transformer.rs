@@ -5,9 +5,9 @@ use crate::platform::adapters::node_js::requests::LoadPluginRequest;
 use crate::platform::adapters::node_js::requests::RunTransformerRequest;
 use crate::platform::adapters::node_js::requests::RunTransformerResponse;
 use crate::platform::adapters::node_js::NodeAdapter;
-use libmach::Config;
-use libmach::MutableAsset;
-use libmach::Transformer;
+use crate::public::Config;
+use crate::public::MutableAsset;
+use crate::public::Transformer;
 
 pub struct TransformerNodeJs {
   specifier: String,

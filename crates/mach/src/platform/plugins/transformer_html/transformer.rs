@@ -1,11 +1,11 @@
-use libmach::BundleBehavior;
-use libmach::DependencyOptions;
-use libmach::DependencyPriority;
-use libmach::ImportSymbol;
-use libmach::MachConfig;
-use libmach::MutableAsset;
-use libmach::SpecifierType;
-use libmach::Transformer;
+use crate::public::BundleBehavior;
+use crate::public::DependencyOptions;
+use crate::public::DependencyPriority;
+use crate::public::ImportSymbol;
+use crate::public::MachConfig;
+use crate::public::MutableAsset;
+use crate::public::SpecifierType;
+use crate::public::Transformer;
 
 use html5ever::parse_document;
 use html5ever::tendril::TendrilSink;

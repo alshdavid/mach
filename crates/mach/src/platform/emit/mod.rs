@@ -1,8 +1,7 @@
 use std::fs;
 
-use libmach::MachConfigSync;
-use libmach::OutputsSync;
-use libmach::{self};
+use crate::public::MachConfigSync;
+use crate::public::OutputsSync;
 
 pub fn emit(
   config: MachConfigSync,

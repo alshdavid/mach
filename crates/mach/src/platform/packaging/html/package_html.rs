@@ -6,19 +6,19 @@ use html5ever::parse_document;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;
 use html5ever::tendril::TendrilSink;
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::BundleGraphSync;
-use libmach::BundleMapSync;
-use libmach::DependencyMapSync;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::BundleGraphSync;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
 use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
-use libmach::Bundle;
-use libmach::BundleManifest;
-use libmach::Output;
-use libmach::Outputs;
+use crate::public::Bundle;
+use crate::public::BundleManifest;
+use crate::public::Output;
+use crate::public::Outputs;
 
 use crate::kit::html;
 use crate::kit::swc;

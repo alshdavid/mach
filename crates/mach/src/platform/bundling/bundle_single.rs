@@ -1,10 +1,10 @@
-use libmach::AssetGraphSync;
-use libmach::AssetMapSync;
-use libmach::Bundle;
-use libmach::BundleGraphSync;
-use libmach::BundleMapSync;
-use libmach::DependencyMapSync;
-use libmach::MachConfigSync;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::Bundle;
+use crate::public::BundleGraphSync;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"
