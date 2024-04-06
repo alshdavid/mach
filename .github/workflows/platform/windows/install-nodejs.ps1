@@ -10,20 +10,14 @@ Expand-Archive $HOME\.local\nodejs\node.zip -DestinationPath $HOME\.local\nodejs
 Move-Item $HOME\.local\nodejs\node-v20.12.1-win-x64\* $HOME\.local\nodejs
 
 $env:Path = $HOME + '\.local\nodejs;' + $env:Path
-$env:Path = $HOME + '\.local\nodejs\prefix\bin;' + $env:Path
+$env:Path = $HOME + '\.local\nodejs\prefix;' + $env:Path
 $env:NPM_CONFIG_PREFIX = $HOME + '\.local\nodejs\prefix'
 
 Write-Output "${HOME}\.local\nodejs" >> $env:GITHUB_PATH
-Write-Output "${HOME}\.local\nodejs\prefix\bin" >> $env:GITHUB_PATH
+Write-Output "${HOME}\.local\nodejs\prefix" >> $env:GITHUB_PATH
 Write-Output "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $env:GITHUB_ENV
 
 npm install -g pnpm npm
-
-Get-Command node
-
-ls "${HOME}\.local\nodejs"
-ls "${HOME}\.local\nodejs\prefix"
-ls "${HOME}\.local\nodejs\prefix\bin"
 
 npm -v
 node -v
