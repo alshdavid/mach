@@ -12,7 +12,7 @@ if [ "$OUT_DIR" = "" ]; then
   OUT_DIR="$HOME/.local/nodejs"
 fi 
 
-NODE_VERSION=$(curl -sSL https://nodejs.org/download/release/ |  sed -E 's/<a.*>(v.*\..*\.[0-9]+\/)<\/a>.*/\1/g' |  grep "^v" | sed -E "s/v(.*)\//\1/g" | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | grep "^${NODE_VERSION}" | tail -n1)
+NODE_VERSION=$(curl -sSL https://nodejs.org/download/release/ |  sed 's/<a.*>\(v.*\..*\.[0-9]+\/\)<\/a>.*/\1/g' |  grep "^v" | sed "s/v\(.*\)\//\1/g" | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | grep "^${NODE_VERSION}" | tail -n1)
 
 URL=""
 ARCH=""
