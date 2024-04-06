@@ -71,4 +71,6 @@ npm config set prefix $HOME/.local/nodejs/prefix
 npm config set cache $HOME/.local/nodejs/cache
 npm install -g pnpm npm
 
+ls -l $HOME/.local/nodejs/bin
+
 pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
