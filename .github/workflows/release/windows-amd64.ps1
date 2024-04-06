@@ -1,4 +1,4 @@
-$RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot.Path)))
+$RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot)))
 $Job = "windows-amd64"
 
 & "$PSScriptRoot\..\platform\windows\setup.ps1"
