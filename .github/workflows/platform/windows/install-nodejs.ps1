@@ -18,8 +18,11 @@ Write-Output "${HOME}\.local\nodejs\prefix\bin" >> $env:GITHUB_PATH
 Write-Output "NPM_CONFIG_PREFIX=${NPM_CONFIG_PREFIX}" >> $env:GITHUB_ENV
 
 npm install -g pnpm npm
-pnpm config set store-dir $HOME\.local\nodejs\pnpm-store
+
+Get-Command node
 
 npm -v
 node -v
 pnpm -v
+
+pnpm config set store-dir $HOME\.local\nodejs\pnpm-store
