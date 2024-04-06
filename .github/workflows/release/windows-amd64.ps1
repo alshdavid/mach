@@ -16,7 +16,7 @@ mv release mach
 tar -czvf mach-$Job.tar.gz mach
 mv mach-$Job.tar.gz $RootPath/artifacts
 
-cd ${{ github.workspace }}/npm/mach-os-arch
+cd $RootPath/npm/mach-os-arch
 npm pack
 mv *.tgz npm-mach-$Job.tgz
 mv *.tgz $RootPath/artifacts/npm-mach-$Job.tgz
