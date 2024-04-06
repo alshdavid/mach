@@ -19,6 +19,22 @@ jobs:
     - run: |
         ls -l
 
+  macos:
+    runs-on: macos-14
+    steps:
+    - uses: actions/checkout@v4
+    - uses: "./.github/actions/setup-node"
+    - run: |
+        ls -l
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: "./.github/actions/setup-node"
+    - run: |
+        ls -l
+
 # jobs:
 #   vars:
 #     name: "🧠 Generate Variables"
