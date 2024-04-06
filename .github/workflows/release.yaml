@@ -54,7 +54,7 @@ jobs:
           profile: release
           os: linux
           arch: arm64
-        run: bash .github/workflows/release/linux-amd64.bash
+        run: bash .github/workflows/release/linux-arm64.bash
       
       - uses: actions/upload-artifact@v4
         with:
