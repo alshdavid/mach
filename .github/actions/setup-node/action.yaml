@@ -24,11 +24,10 @@ runs:
       run: |
         mkdir -p $HOME/.local/nodejs
         curl -L --url https://nodejs.org/download/release/v${SELECTED_NODE_VERSION}/node-v${SELECTED_NODE_VERSION}-linux-x64.tar.gz | tar -xvzf - -C $HOME/.local/nodejs --strip-components=1
-        export PATH="$HOME/.local/nodejs:$PATH"
+        export PATH="$HOME/.local/nodejs/bin:$PATH"
         node -v 
         which node
-        echo "export PATH=\"\$HOME/.local/nodejs:\$PATH\"" >> $GITHUB_ENV
-        echo $GITHUB_ENV
+        echo "export PATH=\"\$HOME/.local/nodejs/bin:\$PATH\"" >> $GITHUB_ENV
 
     # - name: "🐥Install Node.js"
     #   if: ${{ (runner.os != 'Linux') && (runner.arch != 'ARM64' }}
