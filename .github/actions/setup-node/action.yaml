@@ -12,6 +12,8 @@ runs:
   steps:
     - name: Get Latest
       shell: bash
+      env:
+        NODE_VERSION: ${{ inputs.node_version }}
       run: |
         export SELECTED_NODE_VERSION=$(curl -sSL https://nodejs.org/download/release/ |  sed -E 's/<a.*>(v.*\..*\.[0-9]+\/)<\/a>.*/\1/g' |  grep "^v" | sed -E "s/v(.*)\//\1/g" | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | grep "^${NODE_VERSION}" | tail -n1)
         echo "SELECTED_NODE_VERSION=$SELECTED_NODE_VERSION" >> $GITHUB_ENV
@@ -20,9 +22,9 @@ runs:
       shell: bash
       if: ${{ (runner.os == 'Linux') && (runner.arch == 'X64') }}
       run: |
-        echo $SELECTED_NODE_VERSION
-        # mkdir $HOME/.local/nodejs
-        # curl -L --url https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz | tar -xvzf - -C $HOME/.local/nodejs --strip-components=1
+        mkdir -p $HOME/.local/nodejs
+        curl -L --url https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz | tar -xvzf - -C $HOME/.local/nodejs --strip-components=1
+        echo "export PATH=\"\$HOME/.local/nodejs\$PATH\"" >> $GITHUB_ENV
 
     # - name: "🐥Install Node.js"
     #   if: ${{ (runner.os != 'Linux') && (runner.arch != 'ARM64' }}

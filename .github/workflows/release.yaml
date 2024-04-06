@@ -16,8 +16,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: "./.github/actions/setup-node"
+      with: { node_version: 20 }
     - run: |
-        ls -l
+        ls -l $HOME
+        ls -l $HOME/.local
+        node -v
 
   macos:
     runs-on: macos-14
