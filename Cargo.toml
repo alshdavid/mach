@@ -3,6 +3,11 @@ resolver = "2"
 
 members = [
   "mach",
+  "deno/libdeno",
+]
+
+exclude = [
+  "deno/adapter"
 ]
 
 [profile.release]

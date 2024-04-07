@@ -78,7 +78,7 @@ build:
 _build_default:
   test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
-  @rm -rf {{out_dir}}
+  @rm -rf {{out_dir}}/bin/mach
   @rm -rf {{out_dir_link}}
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
