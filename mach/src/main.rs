@@ -1,33 +1,7 @@
 use mach_libdeno::DenoConfig;
 use mach_libdeno::DenoWrapper;
 use std::path::Path;
-use std::sync::Arc;
-
-struct DenoLib {
-  lib: libloading::Library,
-}
-
-impl DenoLib {
-  pub fn new(lib_path: &Path) -> Self {
-    let lib = unsafe {
-      let Ok(lib) = libloading::Library::new(lib_path) else {
-        panic!();
-      };
-      lib
-    };
-
-    Self { lib }
-  }
-
-  pub fn deno_init(&self) {
-    println!("Calling");
-    let wrapper = unsafe {
-      let init_deno: libloading::Symbol<extern "C" fn() -> Box<DenoWrapper>> =
-        self.lib.get(b"init_deno").unwrap();
-      init_deno()
-    };
-  }
-}
+use std::rc::Rc;
 
 fn main() {
   let exe_path = std::env::current_exe().unwrap();
@@ -38,13 +12,16 @@ fn main() {
     let Ok(lib) = libloading::Library::new(lib_path) else {
       panic!();
     };
-    let init_deno: libloading::Symbol<extern "C" fn(Box<DenoConfig>) -> Box<DenoWrapper>> =
+    let init_deno: libloading::Symbol<extern fn(Box<DenoConfig>) -> Box<DenoWrapper>> =
       lib.get(b"init_deno").unwrap();
 
     init_deno(Box::new(DenoConfig { threads: 1 }))
   };
 
   deno.ping_all();
+
+  let f = Rc::new(());
+  f.
 }
 
 // #![deny(unused_crate_dependencies)]
