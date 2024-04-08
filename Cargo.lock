@@ -560,6 +560,7 @@ dependencies = [
  "glob-match",
  "html5ever",
  "libloading",
+ "mach_libdeno",
  "markup5ever_rcdom",
  "normalize-path",
  "num_cpus",

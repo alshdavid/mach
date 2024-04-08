@@ -8,6 +8,6 @@ pub fn op_mach_hello_world() {
 deno_core::extension!(
   mach_hello_world,
   ops = [op_mach_hello_world],
-  esm_entry_point = "ext:mach_hello_world/extensions/hello_world.js",
-  esm = ["extensions/hello_world.js"],
+  esm_entry_point = "ext:mach_hello_world/src/mach_extensions/hello_world/hello_world.js",
+  esm = ["src/mach_extensions/hello_world/hello_world.js"],
 );

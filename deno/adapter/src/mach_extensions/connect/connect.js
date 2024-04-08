@@ -1,8 +1,8 @@
 import { core } from "ext:core/mod.js";
 
 const {
-  op_mach_load_resolver,
+  op_mach_connect,
 } = core.ops
 
 globalThis['Mach'] = globalThis['Mach'] || { ops: {} }
-globalThis['Mach'].ops.load_resolver = op_mach_load_resolver
+globalThis['Mach'].ops.connect = op_mach_connect

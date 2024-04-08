@@ -9,6 +9,7 @@ edition = "2021"
 crate-type = ["dylib"]
 
 [dependencies]
+mach_libdeno = { path = "../libdeno" }
 oxc_resolver = "^1.6.2"
 normalize-path = "^0.2.1"
 

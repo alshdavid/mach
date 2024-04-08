@@ -580,7 +580,10 @@ impl CliMainWorkerFactory {
         verbose_deprecated_api_warning: shared.verbose_deprecated_api_warning,
         future: shared.enable_future_features,
       },
-      extensions: custom_extensions,
+      extensions: vec![
+        crate::mach_extensions::mach_hello_world::init_ops_and_esm(),
+        crate::mach_extensions::mach_connect::init_ops_and_esm(),
+      ],
       startup_snapshot: crate::deno_cli::js::deno_isolate_init(),
       create_params: None,
       unsafely_ignore_certificate_errors: shared.options.unsafely_ignore_certificate_errors.clone(),
@@ -769,7 +772,10 @@ fn create_web_worker_callback(
         verbose_deprecated_api_warning: shared.verbose_deprecated_api_warning,
         future: false,
       },
-      extensions: vec![],//custom_extensions,
+      extensions: vec![
+        crate::mach_extensions::mach_hello_world::init_ops_and_esm(),
+        crate::mach_extensions::mach_connect::init_ops_and_esm(),
+      ],
       startup_snapshot: crate::deno_cli::js::deno_isolate_init(),
       unsafely_ignore_certificate_errors: shared.options.unsafely_ignore_certificate_errors.clone(),
       root_cert_store_provider: Some(shared.root_cert_store_provider.clone()),

@@ -12,6 +12,7 @@ name = "mach"
 path = "src/main.rs"
 
 [dependencies]
+mach_libdeno = { path = "../deno/libdeno" }
 swc_core = { version = "=0.90.23", features = ["ecma_ast", "ecma_parser", "common", "ecma_visit", "ecma_transforms", "common_concurrent", "ecma_codegen", "ecma_transforms_typescript", "ecma_transforms_react", "ecma_transforms_optimization", "ecma_minifier"] }
 glob-match = "0.2.1"
 normalize-path = "0.2.1"

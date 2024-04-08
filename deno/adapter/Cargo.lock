@@ -3834,6 +3834,7 @@ dependencies = [
  "libz-sys",
  "log",
  "lsp-types",
+ "mach_libdeno",
  "memmem",
  "monch",
  "nix 0.26.2",
@@ -3911,6 +3912,10 @@ dependencies = [
  "zeromq",
  "zstd",
 ]
+
+[[package]]
+name = "mach_libdeno"
+version = "0.1.0"
 
 [[package]]
 name = "malloc_buf"

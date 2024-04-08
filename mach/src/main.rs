@@ -1,4 +1,7 @@
-use std::{path::Path, sync::Arc};
+use mach_libdeno::DenoConfig;
+use mach_libdeno::DenoWrapper;
+use std::path::Path;
+use std::sync::Arc;
 
 struct DenoLib {
   lib: libloading::Library,
@@ -13,16 +16,15 @@ impl DenoLib {
       lib
     };
 
-    Self {
-      lib, 
-    }
+    Self { lib }
   }
 
   pub fn deno_init(&self) {
     println!("Calling");
-    unsafe {
-      let init_deno: libloading::Symbol<extern fn()> = self.lib.get(b"init_deno").unwrap();
-      init_deno();
+    let wrapper = unsafe {
+      let init_deno: libloading::Symbol<extern "C" fn() -> Box<DenoWrapper>> =
+        self.lib.get(b"init_deno").unwrap();
+      init_deno()
     };
   }
 }
@@ -32,15 +34,18 @@ fn main() {
   let bin_path = exe_path.parent().unwrap();
   let lib_path = bin_path.join("libdeno.so");
 
-  // std::fs::hard_link(&lib_path, lib_dir.join("lib_1.so")).unwrap();
-  // std::fs::hard_link(&lib_path, lib_dir.join("lib_2.so")).unwrap();
+  let mut deno = unsafe {
+    let Ok(lib) = libloading::Library::new(lib_path) else {
+      panic!();
+    };
+    let init_deno: libloading::Symbol<extern "C" fn(Box<DenoConfig>) -> Box<DenoWrapper>> =
+      lib.get(b"init_deno").unwrap();
 
-  println!("{:?}", lib_path);
-  let deno1 = DenoLib::new(&lib_path);
-  deno1.deno_init();
+    init_deno(Box::new(DenoConfig { threads: 1 }))
+  };
+
+  deno.ping_all();
 }
-
-  // println!("{:?}", lib_path);
 
 // #![deny(unused_crate_dependencies)]
 
@@ -61,7 +66,6 @@ fn main() {
 // /*
 //   Main just acts as a router to run CLI commands
 // */
-
 // #[derive(Parser, Debug)]
 // struct Commands {
 //   #[clap(subcommand)]

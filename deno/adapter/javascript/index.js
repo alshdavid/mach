@@ -1,14 +1,14 @@
+const THREADS = Deno.args[0] ? parseInt(Deno.args[0], 10): 1
 
+const workers = []
 
+// the main thread is 1 thread
+for (let i = 1; i < THREADS; i++) {
+  workers.push(new Worker(import.meta.resolve(`./index.worker.js?i=${i+1}`), { type: "module" }));
+}
 
-console.log('hi')
+await (await import('./engine.js')).main({ thread_id: 1 })
 
-// // const THREADS = 3//Deno.args[0] || 3
-
-// // // Skip the main thread
-// // for (let i = 2; i <= THREADS; i++) {
-// //   new Worker(import.meta.resolve(`./index.worker.js?i=${i}`), { type: "module" });
-// // }
-
-// // Main thread
-// import('./index.worker.js')
+for (const worker of workers) {
+  worker.terminate()
+}
