@@ -6,6 +6,7 @@ use crate::DenoResolverLoadResponse;
 use crate::DenoResolverRunResponse;
 use crate::DenoWorkerFarm;
 
+#[derive(Debug, Default)]
 pub struct DenoWrapper {
   worker_farm: DenoWorkerFarm,
 }

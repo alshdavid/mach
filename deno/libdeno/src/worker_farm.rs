@@ -3,6 +3,7 @@ use std::sync::mpsc::Sender;
 
 use super::DenoMachRequest;
 
+#[derive(Debug, Default)]
 pub struct DenoWorkerFarm {
   senders: Vec<Sender<DenoMachRequest>>,
   c: usize,

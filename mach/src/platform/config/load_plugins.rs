@@ -1,3 +1,4 @@
+use crate::platform::adapters::adapters::AdaptersSync;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -14,6 +15,7 @@ use super::PluginContainerSync;
 pub fn load_plugins(
   _config: &MachConfig,
   machrc: &Machrc,
+  adapters: AdaptersSync,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
 

@@ -1,3 +1,4 @@
+use crate::platform::adapters::adapters::AdaptersSync;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
@@ -28,6 +29,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
+  let adapters = AdaptersSync::default();
   let mut reporter = AppReporter::new(&config);
 
   reporter.print_config();
@@ -36,7 +38,11 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let plugins = load_plugins(&config, &config.machrc)?;
+  let plugins = load_plugins(
+    &config,
+    &config.machrc,
+    adapters.clone(),
+  )?;
 
   /*
     link_and_transform() will read source files, identify import statements

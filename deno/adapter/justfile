@@ -66,4 +66,4 @@ build:
   cargo build {{profile_cargo}} {{target_cargo}}
   cp \
     {{root_dir}}/target/.cargo/{{target}}/{{profile}}/libmach_adapter_{{adapter_name}}.{{lib_extension}} \
-    {{out_dir}}/bin/lib{{adapter_name}}.{{lib_extension}}
+    {{out_dir}}/bin/{{adapter_name}}.{{lib_extension}}
