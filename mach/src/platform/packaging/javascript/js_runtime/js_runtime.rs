@@ -401,15 +401,18 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           .mach_require(&asset_id, &bundle_ids, None);
 
         let Stmt::Expr(import_stmt) = import_stmt else {
-          panic!("");
+          // TODO fix dynamic imports
+          return call_expr;
         };
 
         let Expr::Await(import_stmt) = *import_stmt.expr else {
-          panic!()
+          // TODO fix dynamic imports
+          return call_expr;
         };
 
         let Expr::Call(result) = *import_stmt.arg else {
-          panic!()
+          // TODO fix dynamic imports
+          return call_expr;
         };
 
         return result;
