@@ -1,16 +1,21 @@
 // TODO not a plugin yet
 
-use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
+use std::path::MAIN_SEPARATOR_STR;
 
 use oxc_resolver::ResolveOptions;
 use oxc_resolver::Resolver;
+use normalize_path::NormalizePath;
 
 pub fn resolve(
   from_raw: &PathBuf,
   specifier: &str,
 ) -> Result<PathBuf, String> {
+  if specifier.starts_with(MAIN_SEPARATOR_STR) {
+    return Ok(PathBuf::from(specifier).normalize());
+  }
+
   let from = {
     if from_raw.is_file() {
       from_raw.parent().unwrap()
@@ -18,6 +23,10 @@ pub fn resolve(
       from_raw
     }
   };
+
+  if specifier.starts_with(".") {
+    return Ok(from.join(specifier).normalize());
+  }
 
   let result = resolve_oxc(&specifier, &from);
 
@@ -69,33 +78,6 @@ fn resolve_oxc(
 
   match resolver.resolve(from, specifier) {
     Err(error) => return Err(format!("{error}")),
-    Ok(resolution) => return Ok(normalize_path(&resolution.full_path())),
+    Ok(resolution) => return Ok(resolution.full_path().normalize()),
   };
-}
-
-pub fn normalize_path(path: &Path) -> PathBuf {
-  let mut components = path.components().peekable();
-  let mut ret = if let Some(c @ Component::Prefix(..)) = components.peek().cloned() {
-    components.next();
-    PathBuf::from(c.as_os_str())
-  } else {
-    PathBuf::new()
-  };
-
-  for component in components {
-    match component {
-      Component::Prefix(..) => unreachable!(),
-      Component::RootDir => {
-        ret.push(component.as_os_str());
-      }
-      Component::CurDir => {}
-      Component::ParentDir => {
-        ret.pop();
-      }
-      Component::Normal(c) => {
-        ret.push(c);
-      }
-    }
-  }
-  return ret;
 }
