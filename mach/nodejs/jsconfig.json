@@ -7,7 +7,6 @@
     "checkJs": true
   },
   "include": [
-    "./*.mjs",
-    "./*.js"
+    "src/*.mjs"
   ]
 }

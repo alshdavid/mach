@@ -2,6 +2,9 @@
   "name": "@alshdavid/mach",
   "version": "0.0.0-local",
   "license": "MIT",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./types/index.d.ts",
   "bin": {
     "mach": "bin.exe"
   },

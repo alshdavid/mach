@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "types": "index.d.js",
-  "devDependencies": {
-    "@alshdavid/mach": "workspace:*"
+  "type": "module",
+  "dependencies": {
+    "@types/node": "20.x.x"
   }
 }

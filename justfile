@@ -79,6 +79,7 @@ build:
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
+  @cp -r ./mach/nodejs {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
 [windows]
