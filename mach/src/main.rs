@@ -22,8 +22,8 @@ fn main() {
   thread::spawn(move || {
     let f = Foo(42, "hello".to_string());
 
-    let mut b = Vec::<u8>::from(&[1]);
-    b.extend(serde_json::to_vec("Hello\n").unwrap());
+    let mut b = Vec::<u8>::from(&[1, 0]);
+    b.extend(serde_json::to_vec("Hello").unwrap());
     b.push(10);
     
     stdin.write(&b).unwrap();
