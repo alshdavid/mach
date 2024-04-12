@@ -18,11 +18,11 @@ import * as process from 'node:process'
 const type = avsc.Type.forSchema('string')
 
 const bytes = type.toBuffer("o w")
-console.log(new Uint8Array(bytes))
-console.log(new TextDecoder().decode(new Uint8Array(bytes)))
+console.log(new Uint8Array(bytes)) // [ 6, 111, 32, 119 ]
+console.log(new TextDecoder().decode(new Uint8Array(bytes))) // "o w"
 
-const val = type.fromBuffer(Buffer.from([ 6, 111, 32, 119 ]))
-console.log(val)
+const val = type.fromBuffer(Buffer.from([ 6, 111, 32, 119 ])) 
+console.log(val) // "o w"
 
 function start(bytes) {
   console.log(bytes)
