@@ -22,7 +22,7 @@ impl NodejsInstance {
       .unwrap()
       .join("nodejs")
       .join("src")
-      .join("main.mjs");
+      .join("main.js");
 
     let mut command = Command::new("node");
     command.arg("--title");

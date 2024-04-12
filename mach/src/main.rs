@@ -5,41 +5,33 @@ mod kit;
 mod platform;
 mod public;
 
-use std::io::Read;
 use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
-use arrow::array::Array;
 use platform::ipc::nodejs::NodejsInstance;
-use arrow::datatypes::StringViewType;
-use arrow::datatypes::Schema;
-use arrow::array::StringArray;
-use arrow::array::StringBuilder;
-use arrow::array::ArrayData;
-use arrow::datatypes::Field;
-use serde::se
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct Foo(usize, String);
 
 fn main() {
-  // let s = Schema::new(vec![
-  //   Field::new("")
-  // ]);
+  let mut nodejs = NodejsInstance::spawn();
+  let mut stdin = nodejs.stdin.take().unwrap();
 
-  let mut s = StringArray::from_iter_values(&["o w"]);
-  // let mut s = StringBuilder::new();
-  // s.append_value("h o");
-  // let d = ArrayData::builder(s);
-  let s = cast(s);
-  println!("{:?}", s.);
-  // let mut nodejs = NodejsInstance::spawn();
-  // let mut stdin = nodejs.stdin.take().unwrap();
+  thread::spawn(move || {
+    let f = Foo(42, "hello".to_string());
 
-  // thread::spawn(move || {
-  //   stdin.write("hi\n".as_bytes())
-  // });
+    let mut b = Vec::<u8>::from(&[1]);
+    b.extend(serde_json::to_vec("Hello\n").unwrap());
+    b.push(10);
+    
+    stdin.write(&b).unwrap();
+    thread::sleep(Duration::from_secs(2));
+  });
   
-  // thread::sleep(Duration::from_secs(2));
-  // nodejs.wait().unwrap();
+  thread::sleep(Duration::from_secs(2));
+  nodejs.wait().unwrap();
 }
 
 // use std::time::SystemTime;

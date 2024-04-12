@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Note: These typings are incomplete (https://github.com/mtth/avsc/pull/134).
 // In particular, they do not contain entries for functions available in the
 // browser (functions/methods in etc/browser).
