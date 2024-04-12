@@ -59,7 +59,6 @@ _default:
   @echo "    profile"
   @echo "        debug [default]"
   @echo "        release"
-  @echo "        release-lto"
   @echo "    os"
   @echo "        auto [default]"
   @echo "        linux"
@@ -71,11 +70,8 @@ _default:
   @echo "        amd64"
   @just --list --unsorted
 
+[unix]
 build:
-  @echo "Building: {{os}}-{{arch}}"
-  just {{ if os == "windows" { "_build_windows" } else { "_build_default" } }}
-
-_build_default:
   test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
   @rm -rf {{out_dir}}
@@ -85,7 +81,8 @@ _build_default:
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
   @ln -s {{out_dir}} {{out_dir_link}}
 
-_build_windows:
+[windows]
+build:
   if (!(Test-Path 'node_modules')) { pnpm install }
   cargo build {{profile_cargo}} {{target_cargo}}
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -95,25 +92,23 @@ _build_windows:
   @Copy-Item "./target/.cargo/{{target}}/{{profile}}/mach.exe" -Destination "{{out_dir}}/bin" | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
+[unix]
 run *ARGS:
-  @just {{ if os == "windows" { "_run_windows" } else { "_run_default" } }} {{ARGS}}
-
-_run_default *ARGS:
   just build
   {{out_dir}}/bin/mach {{ARGS}}
 
-_run_windows *ARGS:
+[windows]
+run *ARGS:
   just build
   {{out_dir}}/bin/mach.exe {{ARGS}}
 
+[unix]
 fixture cmd fixture *ARGS:
-  @just {{ if os == "windows" { "_fixture_windows" } else { "_fixture_default" } }} {{cmd}} {{fixture}} {{ARGS}}
-
-_fixture_default cmd fixture *ARGS:
   @just build
   {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
-_fixture_windows cmd fixture *ARGS:
+[windows]
+fixture cmd fixture *ARGS:
   @just build
   {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
 
@@ -126,7 +121,20 @@ test:
 fmt:
   cargo +nightly fmt
 
-build-publish:
+[unix]
+build-publish: build-publish-common
+  just build
+  cp -r {{out_dir}}/* npm/mach-os-arch
+  cp {{join(justfile_directory(), "README.md")}} npm/mach
+
+[windows]
+build-publish: build-publish-common
+  just build
+  Copy-Item {{out_dir}}\* -Destination "npm/mach-os-arch" -Recurse | Out-Null
+  Copy-Item {{join(justfile_directory(), "README.md")}} -Destination npm/mach | Out-Null
+
+[private]
+build-publish-common:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
     "./mach/Cargo.toml" \
     "0.0.0-local" \
@@ -161,22 +169,6 @@ build-publish:
     "./npm/mach-os-arch/package.json" \
     "cpu.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "arch" {{arch}})
-
-  just build
-
-  {{ \
-    if os == "windows" \
-      { "Copy-Item " + out_dir + "\\* -Destination npm/mach-os-arch -Recurse | Out-Null" } \
-    else \
-      { "cp -r " + out_dir + "/* npm/mach-os-arch" } \
-  }}
-
-  {{ \
-    if os == "windows" \
-      { "Copy-Item " + join(justfile_directory(), "README.md") + " -Destination npm/mach | Out-Null" } \
-    else \
-      { "cp " + join(justfile_directory(), "README.md") + " npm/mach" } \
-  }}
 
 benchmark project="mach" count="50" script="build" *ARGS="":
   @just {{ if project == "mach" { "build" } else { "_skip" } }}
