@@ -23,8 +23,11 @@ process.stdin.on('data', bytes => {
       buf_body = []
 
       setTimeout(() => {
-        const str = new TextDecoder().decode(new Uint8Array(body))
-        const json = JSON.parse(str)
+        let json = undefined
+        if (body.length !== 0) {
+          const str = new TextDecoder().decode(new Uint8Array(body))
+          json = JSON.parse(str)
+        }
         
         const res = (/** @type {any} */ data) => {
           process.stdout.write(new Uint8Array([id]))

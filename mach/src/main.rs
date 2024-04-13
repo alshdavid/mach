@@ -9,69 +9,88 @@ use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
-use platform::ipc::nodejs::NodejsInstance;
-use platform::ipc::nodejs::NodejsWorkerFarm;
+use platform::adapters::nodejs::{NodejsInstance, NodejsWorkerFarm};
+// use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
-
 
 fn main() {
   let nodejs_workers = NodejsWorkerFarm::new(2);
 
+  let nodejs_workers1 = nodejs_workers.clone();
+  thread::spawn(move || {
+    let rx = nodejs_workers1.subscribe();
+    while let Ok(bytes) = rx.recv() {
+      println!("{:?}", bytes);
+    }
+    thread::sleep(Duration::from_secs(2));
+  });
+
   let nodejs_workers2 = nodejs_workers.clone();
   thread::spawn(move || {
-    let mut b = Vec::<u8>::from(&[1, 0]);
-    b.extend(serde_json::to_vec("ping").unwrap());
-    b.push(10);
-
-    for _ in 0..10 {
-      // println!("[1]");
+    for _ in 0..6 {
       thread::sleep(Duration::from_millis(5));
-      let i = nodejs_workers2.send(&b);
-      println!("[1] {}", i);
+      nodejs_workers2.send(vec![0, 0, 10]);
     }
+    thread::sleep(Duration::from_secs(2));
   });
 
-  let nodejs_workers3 = nodejs_workers.clone();
-  thread::spawn(move || {
-    let mut b = Vec::<u8>::from(&[1, 0]);
-    b.extend(serde_json::to_vec("ping").unwrap());
-    b.push(10);
+  thread::sleep(Duration::from_secs(2));
 
-    for _ in 0..10 {
-      // println!("[2]");
-      thread::sleep(Duration::from_millis(5));
-      let i = nodejs_workers3.send(&b);
-      println!("[2] {}", i);
-    }
-  });
-
-  let nodejs_workers4 = nodejs_workers.clone();
-  thread::spawn(move || {
-    let mut b = Vec::<u8>::from(&[1, 0]);
-    b.extend(serde_json::to_vec("ping").unwrap());
-    b.push(10);
-
-    for _ in 0..10 {
-      // println!("[3]");
-      thread::sleep(Duration::from_millis(5));
-
-      let i = nodejs_workers4.send(&b);
-      println!("[3] {}", i);
-    }
-  });
-
-  // let mut nodejs = NodejsInstance::spawn();
-  // let mut stdin = nodejs.stdin.take().unwrap();
-
+  // let nodejs_workers3 = nodejs_workers.clone();
   // thread::spawn(move || {
   //   let mut b = Vec::<u8>::from(&[1, 0]);
-  //   b.extend(serde_json::to_vec("Hello").unwrap());
+  //   b.extend(serde_json::to_vec("ping").unwrap());
   //   b.push(10);
-    
-  //   stdin.write(&b).unwrap();
+
+  //   for _ in 0..10 {
+  //     // println!("[2]");
+  //     thread::sleep(Duration::from_millis(5));
+  //     let i = nodejs_workers3.send(&b);
+  //     println!("[2] {}", i);
+  //   }
+  // });
+
+  // let nodejs_workers4 = nodejs_workers.clone();
+  // thread::spawn(move || {
+  //   let mut b = Vec::<u8>::from(&[1, 0]);
+  //   b.extend(serde_json::to_vec("ping").unwrap());
+  //   b.push(10);
+
+  //   for _ in 0..10 {
+  //     // println!("[3]");
+  //     thread::sleep(Duration::from_millis(5));
+
+  //     let i = nodejs_workers4.send(&b);
+  //     println!("[3] {}", i);
+  //   }
+  // });
+
+  // let nodejs = NodejsInstance::spawn();
+  // // let mut stdin = nodejs.stdin.take().unwrap();
+
+  // let nodejs1 = nodejs.clone();
+  // thread::spawn(move || {
+  //   let rx = nodejs1.subscribe();
+  //   while let Ok(bytes) = rx.recv() {
+  //     println!("{:?}", bytes)
+  //   }
+
   //   thread::sleep(Duration::from_secs(2));
   // });
-  
+
+  // let nodejs2 = nodejs.clone();
+  // thread::spawn(move || {
+  //   for _ in 0..1 {
+  //     let mut b = Vec::<u8>::from(&[1, 0]);
+  //     b.extend(serde_json::to_vec("Hello").unwrap());
+  //     b.push(10);
+
+  //     nodejs2.send(b);
+  //   }
+
+  //   thread::sleep(Duration::from_secs(2));
+  // });
+
   thread::sleep(Duration::from_secs(2));
   // nodejs.wait().unwrap();
 }
