@@ -1,3 +1,4 @@
+export * as ACTION_TYPE from './action_type.js'
 export * from './ping.js'
 export * from './resolver_load_config.js'
 export * from './resolver_register.js'

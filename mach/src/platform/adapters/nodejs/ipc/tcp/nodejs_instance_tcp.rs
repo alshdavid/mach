@@ -1,18 +1,18 @@
-use std::io::BufRead;
-use std::io::BufReader;
-use std::io::Read;
 use std::io::Write;
 use std::net::TcpListener;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
 
-use super::NodejsWorker;
+use super::NodejsWorkerTcp;
+use super::super::NodejsWorker;
+use super::super::NodejsWorkerFactory;
 
 // TODO https://crates.io/crates/arrow
 // TODO https://github.com/mtth/avsc
@@ -20,12 +20,12 @@ use super::NodejsWorker;
 
 #[derive(Clone)]
 pub struct NodejsInstanceTcp {
-  worker: NodejsWorker,
+  tx_write: Sender<Vec<u8>>,
   child: Arc<Child>,
 }
 
 impl NodejsInstanceTcp {
-  pub fn spawn() -> Self {
+  pub fn new() -> Self {
     let entry = std::env::current_exe()
       .unwrap()
       .parent()
@@ -34,7 +34,9 @@ impl NodejsInstanceTcp {
       .unwrap()
       .join("nodejs")
       .join("src")
-      .join("main_tcp.js");
+      .join("cmd")
+      .join("tcp")
+      .join("main.js");
 
     let mut command = Command::new("node");
     command.arg("--title");
@@ -45,101 +47,39 @@ impl NodejsInstanceTcp {
     command.stdout(Stdio::inherit());
     command.stdin(Stdio::piped());
 
+    let mut child = command.spawn().unwrap();
+
+    let (tx_write, rx_write) = channel::<Vec<u8>>();
+    let mut stdin = child.stdin.take().unwrap();
+    thread::spawn(move || {
+      while let Ok(bytes) = rx_write.recv() {
+        if stdin.write(&bytes).is_err() {
+          break;
+        }
+      }
+    });
+
+    return Self {
+      tx_write,
+      child: Arc::new(child),
+    };
+  }
+}
+
+impl NodejsWorkerFactory for NodejsInstanceTcp {
+  fn spawn(&self) -> Arc<dyn NodejsWorker> {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = listener.local_addr().unwrap().port();
-    command.env("MACH_NODEJS_PORT", format!("{}", port));
 
-    let child = command.spawn().unwrap();
+    let mut bytes = serde_json::to_vec(&port).unwrap();
+    bytes.push(10);
+    self.tx_write.send(bytes).unwrap();
 
     let Ok((stream, _)) = listener.accept() else {
       panic!("Unable to connect");
     };
 
-    let worker = NodejsWorker::new(stream);
-
-    return Self {
-      child: Arc::new(child),
-      worker,
-    };
-    // let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-    // let port = listener.local_addr().unwrap().port();
-
-    // command.env("MACH_NODEJS_PORT", format!("{}", port));
-
-    // let mut child = command.spawn().unwrap();
-
-    // let Ok((stream, _)) = listener.accept() else {
-    //   panic!("Unable to connect");
-    // };
-
-    // let stream = Arc::new(stream);
-    // let stream_write = stream.clone();
-    // let stream_read = stream.clone();
-
-    // let (tx_stdin, rx_stdin) = channel::<Vec<u8>>();
-
-    // thread::spawn(move || {
-    //   while let Ok(bytes) = rx_stdin.recv() {
-    //     if stream_write.as_ref().write(&bytes).is_err() {
-    //       break;
-    //     };
-    //   }      
-    // });
-
-    // let messages1 = messages.clone();
-    // thread::spawn(move || {
-    //   let reader = BufReader::new(stream_read.as_ref());
-    //   let mut buf_id = None::<u8>;
-    //   let mut buf_body = Vec::<u8>::new();
-
-    //   for byte in reader.bytes() {
-    //     let Ok(byte) = byte else {
-    //       break;
-    //     };
-    //     if buf_id.is_none() {
-    //       buf_id.replace(byte);
-    //     } else if byte != 10 {
-    //       buf_body.push(byte);
-    //     } else {
-    //       let id = buf_id.take().unwrap();
-    //       let body = std::mem::take(&mut buf_body);
-    //       let mut messages = messages1.lock().unwrap();
-    //       let Some(sender) = messages[id as usize].take() else {
-    //         panic!("Sender not there");
-    //       };
-    //       sender.send(body).unwrap();
-    //     }
-    //   }
-    // });
-
-    // thread::spawn(move || {
-    //   child.wait().unwrap();
-    // });
-
-    // Self {
-    //   tx_stdin,
-    //   messages,
-    // }
+    Arc::new(NodejsWorkerTcp::new(stream))
   }
-
-  // pub fn create_worker(
-  //   &self,
-  //   bytes: Vec<u8>,
-  // ) -> Vec<u8> {
-  //   let (tx, rx) = channel::<Vec<u8>>();
-  //   let id = 'block: {
-  //     let mut messages = self.messages.lock().unwrap();
-  //     for (id, msg) in messages.iter().enumerate() {
-  //       if msg.is_none() {
-  //         messages[id.clone()] = Some(tx);
-  //         break 'block id.clone() as u8;
-  //       }
-  //     }
-  //     todo!("Does not support more than 255 messages to Nodejs");
-  //   };
-  //   let mut msg = vec![id];
-  //   msg.extend(bytes);
-  //   // self.tx_stdin.send(msg).unwrap();
-  //   rx.recv().unwrap()
-  // }
 }
+

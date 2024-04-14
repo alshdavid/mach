@@ -1,6 +1,6 @@
 import * as process from 'node:process'
-import * as ACTION_TYPE from './action_type.js'
-import * as handlers from './handlers/index.js';
+import { ACTION_TYPE } from '../../handlers/index.js';
+import * as handlers from '../../handlers/index.js';
 
 let buf_id = null
 let buf_header = null

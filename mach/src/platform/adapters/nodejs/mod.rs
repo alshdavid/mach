@@ -1,8 +1,8 @@
-mod action_type;
-mod actions;
-mod ipc;
-mod nodejs_adapter;
+pub mod action_type;
+pub mod actions;
+pub mod ipc;
+mod nodejs_instance;
+mod nodejs;
 
-pub use self::ipc::*;
-pub use self::nodejs_adapter::*;
-
+pub use self::nodejs::*;
+pub use self::nodejs_instance::*;

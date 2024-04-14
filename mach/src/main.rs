@@ -5,14 +5,18 @@ mod kit;
 mod platform;
 mod public;
 
-use std::io::Write;
+use std::io::{BufReader, Write};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
 use kit::profiler::PROFILER;
-use platform::adapters::nodejs::{NodejsInstanceStdio, NodejsInstanceTcp};
+use platform::adapters::nodejs::ipc::{NodejsInstanceTcp};
+use platform::adapters::nodejs::Nodejs;
 // use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
+
+use crate::platform::adapters::nodejs::NodejsOptions;
 
 fn main() {
   // let nodejs_workers = NodejsWorkerFarm::new(2);
@@ -66,31 +70,85 @@ fn main() {
   //   }
   // });
 
-  let n = 10_000;
-  let t = 1;
+  let w = 16;
+  // let n = 1;
+  let n = 1_000_000;
+  let t = 3;
+  let nw = n/w;
 
-  // for t in 0..t {
-  //   let nodejs = NodejsInstanceStdio::spawn();
+  println!("{} / {} = {}", w, n, nw);
 
-  //   PROFILER.start(&format!("stdio {}", t));
-  //   for i in 0..n {
-  //   // for i in 0..1 {
-  //     let nodejs = nodejs.clone();
+  for t in 0..t {
+    let nodejs_instance_tcp = NodejsInstanceTcp::new();
+    let nodejs = Nodejs::new(NodejsOptions {
+      workers: w,
+      nodejs_worker_factory: Arc::new(nodejs_instance_tcp),
+    });
+    
+    PROFILER.start(&format!("stdio {}", t));
+    let mut v = vec![];
 
-  //     thread::sleep(Duration::from_nanos(1));
+    for w in 0..w {
+      let nodejs = nodejs.clone();
+      
+      v.push(thread::spawn(move || {
+        let mut v2 = vec![];
 
-  //     thread::spawn(move || {
-  //       let resp = nodejs.request(vec![0, 10]);
-  //       // println!("{:?}", resp);
-  //     });
-  //   }
-  //   PROFILER.lap(&format!("stdio {}", t));
-  //   PROFILER.log_millis_total(&format!("stdio {}", t));
-  // }
+        for i in 0..nw {
+          // thread::sleep(Duration::from_nanos(1));
+          // let mut v = serde_json::to_vec(&(0, None::<()>)).unwrap();
+          let resp = nodejs.request(vec![]);
+          v2.push(resp);
+        }
+
+        for v in v2 {
+          v.recv().unwrap();
+        }
+      }));
+    }
+
+    for v in v {
+      v.join().unwrap()
+    }
+
+    PROFILER.lap(&format!("stdio {}", t));
+    PROFILER.log_millis_total(&format!("stdio {}", t));
+  }
 
   // println!("");
 
-  let nodejs = NodejsInstanceTcp::spawn();
+  // let nodejs_instance_tcp = NodejsInstanceTcp::new();
+  // let nodejs = Nodejs::new(NodejsOptions {
+  //   workers: 2,
+  //   nodejs_worker_factory: Arc::new(nodejs_instance_tcp),
+  // });
+
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // let resp = nodejs.request(vec![0,10]);
+  // println!("{:?}", resp);
+
+
+  // let rx = nodejs.subscribe();
+
+  // thread::spawn(move || {
+  //   while let Ok(byte) = rx.recv() {
+  //     println!("{}", byte);
+  //   }
+  // });
+
+  // nodejs.send(vec![0,0,10]);
+  // nodejs.send(vec![1,0,10]);
+  // nodejs.send(vec![2,0,10]);
+
+
 
   // for t in 0..t {
   //   let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {
@@ -145,7 +203,7 @@ fn main() {
   //   thread::sleep(Duration::from_secs(2));
   // });
 
-  thread::sleep(Duration::from_secs(6));
+  thread::sleep(Duration::from_secs(2));
   // nodejs.wait().unwrap();
 }
 

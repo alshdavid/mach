@@ -1,4 +1,3 @@
-use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
@@ -41,7 +40,8 @@ impl NodejsInstanceStdio {
     command.stdout(Stdio::piped());
     command.stdin(Stdio::piped());
 
-    let messages: Arc<Mutex<[Option<Sender<Vec<u8>>>; 255]>> = Arc::new(Mutex::new(core::array::from_fn(|_| None)));
+    let messages: Arc<Mutex<[Option<Sender<Vec<u8>>>; 255]>> =
+      Arc::new(Mutex::new(core::array::from_fn(|_| None)));
     let mut child = command.spawn().unwrap();
     let mut stdin = child.stdin.take().unwrap();
     let (tx_stdin, rx_stdin) = channel::<Vec<u8>>();
@@ -49,7 +49,7 @@ impl NodejsInstanceStdio {
     thread::spawn(move || {
       while let Ok(bytes) = rx_stdin.recv() {
         stdin.write(&bytes).unwrap();
-      }      
+      }
     });
 
     let stdout = child.stdout.take().unwrap();
@@ -83,10 +83,7 @@ impl NodejsInstanceStdio {
       child.wait().unwrap();
     });
 
-    Self {
-      tx_stdin,
-      messages,
-    }
+    Self { tx_stdin, messages }
   }
 
   pub fn request(
