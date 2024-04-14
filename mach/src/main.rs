@@ -10,9 +10,11 @@ use std::thread;
 use std::time::Duration;
 
 use kit::profiler::PROFILER;
-use platform::adapters::nodejs::NodejsInstance;
+use platform::adapters::nodejs::{NodejsInstanceStdio, NodejsInstanceTcp};
 // use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
+
+use crate::platform::adapters::nodejs::NodejsInstanceTcpOptions;
 
 fn main() {
   // let nodejs_workers = NodejsWorkerFarm::new(2);
@@ -66,22 +68,55 @@ fn main() {
   //   }
   // });
 
-  let nodejs = NodejsInstance::spawn();
+  let n = 10_000;
+  let t = 1;
 
-  PROFILER.start("msg");
-  for i in 0..100_000 {
-    let nodejs = nodejs.clone();
+  // for t in 0..t {
+  //   let nodejs = NodejsInstanceStdio::spawn();
 
-    thread::sleep(Duration::from_nanos(1));
+  //   PROFILER.start(&format!("stdio {}", t));
+  //   for i in 0..n {
+  //   // for i in 0..1 {
+  //     let nodejs = nodejs.clone();
 
-    thread::spawn(move || {
-      let resp = nodejs.request(vec![0, 10]);
-    });
-  }
-  PROFILER.lap("msg");
+  //     thread::sleep(Duration::from_nanos(1));
 
-  PROFILER.log_millis_total("msg");
+  //     thread::spawn(move || {
+  //       let resp = nodejs.request(vec![0, 10]);
+  //       // println!("{:?}", resp);
+  //     });
+  //   }
+  //   PROFILER.lap(&format!("stdio {}", t));
+  //   PROFILER.log_millis_total(&format!("stdio {}", t));
+  // }
 
+  // println!("");
+
+  let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {
+    workers: 2
+  });
+
+  // for t in 0..t {
+  //   let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {
+  //     workers: 2
+  //   });
+
+  //   PROFILER.start(&format!("tcp {}", t));
+  //   for i in 0..n {
+  //   // for i in 0..1 {
+  //     let nodejs = nodejs.clone();
+
+  //     thread::sleep(Duration::from_nanos(1));
+
+  //     thread::spawn(move || {
+  //       let resp = nodejs.request(vec![0, 10]);
+  //       // println!("{:?}", resp);
+  //     });
+  //   }
+  //   PROFILER.lap(&format!("tcp {}", t));
+
+  //   PROFILER.log_millis_total(&format!("tcp {}", t));
+  // }
   // for _ in 0..5 {
   //   let nodejs = nodejs.clone();
   //   thread::spawn(move || {

@@ -12,14 +12,15 @@ use std::thread;
 
 // TODO https://crates.io/crates/arrow
 // TODO https://github.com/mtth/avsc
+// TODO Use TCP for windows and UNIX Domain (or named) sockets for MacOS and Linux
 
 #[derive(Clone)]
-pub struct NodejsInstance {
+pub struct NodejsInstanceStdio {
   tx_stdin: Sender<Vec<u8>>,
   messages: Arc<Mutex<[Option<Sender<Vec<u8>>>; 255]>>,
 }
 
-impl NodejsInstance {
+impl NodejsInstanceStdio {
   pub fn spawn() -> Self {
     let entry = std::env::current_exe()
       .unwrap()
@@ -29,7 +30,7 @@ impl NodejsInstance {
       .unwrap()
       .join("nodejs")
       .join("src")
-      .join("main.js");
+      .join("main_stdio.js");
 
     let mut command = Command::new("node");
     command.arg("--title");
@@ -76,23 +77,6 @@ impl NodejsInstance {
           sender.send(body).unwrap();
         }
       }
-      // while let Ok(value) = reader.read(&mut buffer) {
-      //   if value == 0 {
-      //     break;
-      //   }
-      //   println!("{:?}", buffer);
-        // buffer.pop();
-        // let id = buffer.remove(0);
-        // println!("[{}] <-", id);
-        // let data = std::mem::take(&mut buffer);
-        // {
-        //   let mut messages = messages1.lock().unwrap();
-        //   let Some(sender) = messages[id as usize].take() else {
-        //     panic!("Sender not there");
-        //   };
-        //   sender.send(data).unwrap();
-        // };
-      // }
     });
 
     thread::spawn(move || {
