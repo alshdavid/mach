@@ -1,8 +1,6 @@
 {
   "name": "@alshdavid/mach-nodejs",
   "version": "1.0.0",
-  "main": "index.js",
-  "types": "index.d.js",
   "type": "module",
   "scripts": {
     "build:debug": "npx cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
