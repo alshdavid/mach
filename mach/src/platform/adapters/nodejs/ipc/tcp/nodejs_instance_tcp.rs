@@ -14,6 +14,7 @@ use super::NodejsWorkerTcp;
 use super::super::NodejsWorker;
 use super::super::NodejsWorkerFactory;
 
+// TODO https://github.com/servo/ipc-channel
 // TODO https://crates.io/crates/arrow
 // TODO https://github.com/mtth/avsc
 // TODO Use TCP for windows and UNIX Domain (or named) sockets for MacOS and Linux

@@ -34,29 +34,36 @@ impl NodejsInstance {
     let messages_read = messages.clone();
     thread::spawn(move || {
       let mut stage = 0;
+      let mut mode: u8 = 0;
       let mut id: [u8; 4] = [0; 4];
       let mut buf = Vec::<u8>::new();
 
       while let Ok(byte) = rx_read.recv() {
         if stage == 0 {
-          id[0] = byte;
+          mode = byte;
           stage += 1;
           continue;
         }
 
         if stage == 1 {
-          id[1] = byte;
+          id[0] = byte;
           stage += 1;
           continue;
         }
 
         if stage == 2 {
-          id[2] = byte;
+          id[1] = byte;
           stage += 1;
           continue;
         }
 
         if stage == 3 {
+          id[2] = byte;
+          stage += 1;
+          continue;
+        }
+
+        if stage == 4 {
           id[3] = byte;
           stage += 1;
           continue;
@@ -69,6 +76,7 @@ impl NodejsInstance {
 
         
         stage = 0;
+        let mode = std::mem::take(&mut mode);
         let id = u32::from_ne_bytes(std::mem::take(&mut id));
         let body = std::mem::take(&mut buf);
         
@@ -99,11 +107,12 @@ impl NodejsInstance {
       messages.insert(next.clone(), tx);
     };
     
-    let mut id = next.to_ne_bytes().to_vec();
-    id.extend(bytes);
-    id.push(10);
+    let mut msg = vec![0];
+    msg.extend(next.to_ne_bytes());
+    msg.extend(bytes);
+    msg.push(10);
 
-    self.tx_write.send(id).unwrap();
+    self.tx_write.send(msg).unwrap();
     rx
   }
 }

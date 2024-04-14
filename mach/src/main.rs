@@ -71,8 +71,8 @@ fn main() {
   // });
 
   let w = 16;
-  // let n = 1;
-  let n = 1_000_000;
+  let n = 80000;
+  // let n = 1_000_000;
   let t = 3;
   let nw = n/w;
 

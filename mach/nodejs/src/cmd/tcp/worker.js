@@ -6,11 +6,20 @@ import * as handlers from '../../handlers/index.js';
 const PORT = globalThis.MACH_PORT || workerData.port
 const client = new net.Socket()
 
+globalThis.Mach = globalThis.Mach || {}
+globalThis.Mach.ops = globalThis.Mach.ops || {}
+
+let buf_mode = null
 let buf_id = [null, null, null, null]
 let buf_body = []
 
 client.on('data', bytes => {
   for (const byte of bytes) {
+    if (buf_mode === null) {
+      buf_mode = byte
+      continue
+    }
+
     if (buf_id[0] === null) {
       buf_id[0] = byte
       continue
@@ -36,19 +45,24 @@ client.on('data', bytes => {
       continue
     }
 
+    const mode_local = buf_mode
     const id_local = buf_id
     const buf_body_local = buf_body
+
+    buf_mode = null
     buf_id = [null, null, null, null]
     buf_body = []
   
     setTimeout(() => {
       if (!buf_body_local.length) {
+        client.write(new Uint8Array([mode_local]))
         client.write(new Uint8Array(id_local))
         client.write(new Uint8Array([10]))
         return
       }
 
       const res = (/** @type {any} */ data) => {
+        client.write(new Uint8Array([mode_local]))
         client.write(new Uint8Array(id_local))
         if (data) {
           client.write(JSON.stringify(data))
@@ -78,5 +92,9 @@ client.on('data', bytes => {
     })
   }
 });
+
+globalThis.Mach.ops.ping = () => {
+
+}
 
 client.connect(PORT, '127.0.0.1')
