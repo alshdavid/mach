@@ -14,8 +14,6 @@ use platform::adapters::nodejs::{NodejsInstanceStdio, NodejsInstanceTcp};
 // use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
 
-use crate::platform::adapters::nodejs::NodejsInstanceTcpOptions;
-
 fn main() {
   // let nodejs_workers = NodejsWorkerFarm::new(2);
 
@@ -92,9 +90,7 @@ fn main() {
 
   // println!("");
 
-  let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {
-    workers: 2
-  });
+  let nodejs = NodejsInstanceTcp::spawn();
 
   // for t in 0..t {
   //   let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {

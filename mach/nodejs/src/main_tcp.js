@@ -1,24 +1,14 @@
+import * as process from 'node:process'
 import * as net from 'node:net'
-import * as url from 'node:url';
-import { Worker, workerData, isMainThread } from 'node:worker_threads';
 import * as ACTION_TYPE from './action_type.js'
 import * as handlers from './handlers/index.js';
-import { getPortsFromStdin } from './ipc/get_port_from_stdin.js';
 
-const __filename = url.fileURLToPath(import.meta.url);
-let port = /** @type {number | undefined} */ (workerData)
 
-if (isMainThread) {
-  const ports = await getPortsFromStdin()
 
-  for (let i = 1; i < ports.length; i++) {
-    new Worker(__filename, { workerData: ports.pop() })
-  }
+process.stdin.on('end', () => process.exit())
+process.stdin.on('close', () => process.exit());
 
-  port = ports.pop()
-}
-
-const client = new net.Socket();
+const client = new net.Socket()
 
 let buf_id = null
 let buf_header = null
@@ -72,7 +62,4 @@ client.on('data', bytes => {
   }
 });
 
-client.connect(port, '127.0.0.1');
-
-process.stdin.on('end', () => process.exit())
-process.stdin.on('close', () => process.exit());
+client.connect(parseInt(process.env.MACH_NODEJS_PORT, 10), '127.0.0.1')
