@@ -9,32 +9,33 @@ use std::io::Write;
 use std::thread;
 use std::time::Duration;
 
-use platform::adapters::nodejs::{NodejsInstance, NodejsWorkerFarm};
+use kit::profiler::PROFILER;
+use platform::adapters::nodejs::NodejsInstance;
 // use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
 
 fn main() {
-  let nodejs_workers = NodejsWorkerFarm::new(2);
+  // let nodejs_workers = NodejsWorkerFarm::new(2);
 
-  let nodejs_workers1 = nodejs_workers.clone();
-  thread::spawn(move || {
-    let rx = nodejs_workers1.subscribe();
-    while let Ok(bytes) = rx.recv() {
-      println!("{:?}", bytes);
-    }
-    thread::sleep(Duration::from_secs(2));
-  });
+  // let nodejs_workers1 = nodejs_workers.clone();
+  // thread::spawn(move || {
+  //   let rx = nodejs_workers1.subscribe();
+  //   while let Ok(bytes) = rx.recv() {
+  //     println!("{:?}", bytes);
+  //   }
+  //   thread::sleep(Duration::from_secs(2));
+  // });
 
-  let nodejs_workers2 = nodejs_workers.clone();
-  thread::spawn(move || {
-    for _ in 0..6 {
-      thread::sleep(Duration::from_millis(5));
-      nodejs_workers2.send(vec![0, 0, 10]);
-    }
-    thread::sleep(Duration::from_secs(2));
-  });
+  // let nodejs_workers2 = nodejs_workers.clone();
+  // thread::spawn(move || {
+  //   for _ in 0..6 {
+  //     thread::sleep(Duration::from_millis(5));
+  //     nodejs_workers2.send(vec![0, 0, 10]);
+  //   }
+  //   thread::sleep(Duration::from_secs(2));
+  // });
 
-  thread::sleep(Duration::from_secs(2));
+  // thread::sleep(Duration::from_secs(2));
 
   // let nodejs_workers3 = nodejs_workers.clone();
   // thread::spawn(move || {
@@ -65,8 +66,30 @@ fn main() {
   //   }
   // });
 
-  // let nodejs = NodejsInstance::spawn();
-  // // let mut stdin = nodejs.stdin.take().unwrap();
+  let nodejs = NodejsInstance::spawn();
+
+  PROFILER.start("msg");
+  for i in 0..100_000 {
+    let nodejs = nodejs.clone();
+
+    thread::sleep(Duration::from_nanos(1));
+
+    thread::spawn(move || {
+      let resp = nodejs.request(vec![0, 10]);
+    });
+  }
+  PROFILER.lap("msg");
+
+  PROFILER.log_millis_total("msg");
+
+  // for _ in 0..5 {
+  //   let nodejs = nodejs.clone();
+  //   thread::spawn(move || {
+  //     let resp = nodejs.request(vec![0, 10]);
+  //     thread::sleep(Duration::from_millis(500));
+  //     println!("{:?}", resp);
+  //   });
+  // }
 
   // let nodejs1 = nodejs.clone();
   // thread::spawn(move || {
@@ -91,7 +114,7 @@ fn main() {
   //   thread::sleep(Duration::from_secs(2));
   // });
 
-  thread::sleep(Duration::from_secs(2));
+  thread::sleep(Duration::from_secs(6));
   // nodejs.wait().unwrap();
 }
 
