@@ -20,12 +20,7 @@ use ipc_channel::ipc::{self};
 use kit::ipc::sync::IpcHost;
 use kit::profiler::PROFILER;
 use platform::adapters::nodejs::NodejsWorker;
-// use platform::adapters::nodejs::ipc::NodejsWorker;
-// use platform::adapters::nodejs::ipc::NodejsInstanceIpc;
-// use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
-
-// use crate::platform::adapters::nodejs::{Nodejs, NodejsOptions};
 
 fn main() {
   let nodejs_worker = NodejsWorker::new();
