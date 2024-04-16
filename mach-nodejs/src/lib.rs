@@ -1,22 +1,40 @@
+mod ipc;
+
+use ipc::HostSender;
 use mach::kit::ipc::sync::IpcChild;
-use mach::public::nodejs::NodejsClientRequest;
-use mach::public::nodejs::NodejsClientResponse;
-use mach::public::nodejs::NodejsRequestContext;
-use mach::public::nodejs::NodejsResponseContext;
+use mach::public::nodejs::NodejsClientRequestContext;
+use mach::public::nodejs::NodejsClientResponseContext;
+use mach::public::nodejs::NodejsHostRequest;
 use napi_derive::napi;
 
 #[napi]
 pub fn start() {
-  let mach_ipc_channel = std::env::var("MACH_IPC_CHANNEL").unwrap().to_string();
+  let host_sender = HostSender::new();
 
-  let ipc_child = IpcChild::<NodejsResponseContext, NodejsRequestContext>::new(&mach_ipc_channel);
 
-  let rx = ipc_child.subscribe();
-  while let Ok(data) = rx.recv() {
-    match data.1 {
-      NodejsClientRequest::Ping => {
-        ipc_child.send(NodejsResponseContext(data.0, NodejsClientResponse::Ping));
-      }
+  // let rx = ipc_child.subscribe();
+  // while let Ok(data) = rx.recv() {
+  //   match data.1 {
+  //     NodejsClientRequest::Ping => {
+  //       ipc_child.send(NodejsClientResponseContext(data.0, NodejsClientResponse::Ping));
+  //     }
+  //   }
+  // }
+
+  host_sender.send_blocking(NodejsHostRequest::Ping);
+}
+
+struct HostReceiver {
+  ipc_child_client: IpcChild<NodejsClientResponseContext, NodejsClientRequestContext>
+}
+
+impl HostReceiver {
+  pub fn new() -> Self {
+    let ipc_child_client = std::env::var("MACH_IPC_CHANNEL_1").unwrap().to_string();
+    let ipc_child_client = IpcChild::<NodejsClientResponseContext, NodejsClientRequestContext>::new(&ipc_child_client);
+  
+    Self {
+      ipc_child_client
     }
   }
 }

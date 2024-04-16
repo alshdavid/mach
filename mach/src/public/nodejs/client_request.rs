@@ -1,4 +1,3 @@
-use ipc_channel::ipc::IpcSender;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -13,7 +12,7 @@ pub enum NodejsClientResponse {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct NodejsRequestContext(pub usize, pub NodejsClientRequest);
+pub struct NodejsClientRequestContext(pub usize, pub NodejsClientRequest);
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct NodejsResponseContext(pub usize, pub NodejsClientResponse);
+pub struct NodejsClientResponseContext(pub usize, pub NodejsClientResponse);

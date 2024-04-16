@@ -25,7 +25,7 @@ use serde::Serialize;
 fn main() {
   let nodejs_worker = NodejsWorker::new();
 
-  let n = 1_000_000;
+  let n = 10;
   let mut v = vec![];
 
   PROFILER.start(&format!("ping"));
@@ -43,7 +43,77 @@ fn main() {
   thread::sleep(Duration::from_secs(2));
 }
 
+
 /*
+  let nodejs_worker = NodejsManager::new(NodejsManagerOptions {
+    workers: std::env::var("NODEJS_WORKERS").unwrap_or("1".to_string()).parse().unwrap_or(1),
+  });
+
+  let n = 6;
+  let mut v = vec![];
+
+  PROFILER.start(&format!("ping"));
+  for t in 0..n {
+    let rx = nodejs_worker.send_ping();
+    v.push(rx);
+  }
+
+  for rx in v {
+    rx.recv().unwrap();
+  }
+  PROFILER.lap(&format!("ping"));
+  PROFILER.log_millis_total(&format!("ping"));
+
+  thread::sleep(Duration::from_secs(2));
+
+
+
+ // let w = 1;
+  // // let n = 1;
+  // let n = 100_000;
+  // let t = 3;
+  // let nw = n/w;
+
+  // println!("{} / {} = {}", w, n, nw);
+
+  // for t in 0..t {
+  //   let nodejs = Nodejs::new(NodejsOptions {
+  //     workers: w,
+  //     nodejs_worker_factory: Arc::new(NodejsInstanceIpc::new()),
+  //   });
+
+  //   PROFILER.start(&format!("stdio {}", t));
+  //   let mut v = vec![];
+
+  //   for w in 0..w {
+  //     let nodejs = nodejs.clone();
+
+  //     v.push(thread::spawn(move || {
+  //       let mut v2 = vec![];
+
+  //       for i in 0..nw {
+  //         // thread::sleep(Duration::from_nanos(1));
+  //         // let mut v = serde_json::to_vec(&(0, None::<()>)).unwrap();
+  //         let resp = nodejs.request(vec![]);
+  //         v2.push(resp);
+  //       }
+
+  //       for v in v2 {
+  //         let v = v.recv().unwrap();
+  //         // println!("{:?}", v)
+  //       }
+  //     }));
+  //   }
+
+  //   for v in v {
+  //     v.join().unwrap()
+  //   }
+
+  //   PROFILER.lap(&format!("stdio {}", t));
+  //   PROFILER.log_millis_total(&format!("stdio {}", t));
+  // }
+
+*/
  // let w = 1;
   // // let n = 1;
   // let n = 100_000;

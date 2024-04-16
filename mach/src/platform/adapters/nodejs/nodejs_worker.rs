@@ -17,19 +17,26 @@ use ipc_channel::ipc::IpcReceiver;
 use crate::kit::ipc::sync::IpcHost;
 use crate::public::nodejs::NodejsClientRequest;
 use crate::public::nodejs::NodejsClientResponse;
-use crate::public::nodejs::NodejsRequestContext;
-use crate::public::nodejs::NodejsResponseContext;
+use crate::public::nodejs::NodejsClientRequestContext;
+use crate::public::nodejs::NodejsClientResponseContext;
+use crate::public::nodejs::NodejsHostRequest;
+use crate::public::nodejs::NodejsHostResponse;
+use crate::public::nodejs::NodejsHostRequestContext;
+use crate::public::nodejs::NodejsHostResponseContext;
 
 #[derive(Clone)]
 pub struct NodejsWorker {
   counter: Arc<AtomicUsize>,
   messages: Arc<Mutex<HashMap<usize, Sender<NodejsClientResponse>>>>,
-  ipc_host: IpcHost<NodejsRequestContext, NodejsResponseContext>,
+  ipc_host: IpcHost<NodejsClientRequestContext, NodejsClientResponseContext>,
+  
 }
 
+// Todo improve performance
 impl NodejsWorker {
   pub fn new() -> Self {
-    let ipc_host = IpcHost::<NodejsRequestContext, NodejsResponseContext>::new();
+    let ipc_host_client = IpcHost::<NodejsClientRequestContext, NodejsClientResponseContext>::new();
+    let ipc_host_host = IpcHost::<NodejsHostResponseContext, NodejsHostRequestContext>::new();
 
     let entry = std::env::current_exe()
       .unwrap()
@@ -43,9 +50,10 @@ impl NodejsWorker {
 
     let mut command = Command::new("node");
     command.arg("--title");
-    command.arg("nodejs_mach");
+    command.arg("mach_nodejs_worker");
     command.arg(entry);
-    command.env("MACH_IPC_CHANNEL", &ipc_host.server_name);
+    command.env("MACH_IPC_CHANNEL_1", &ipc_host_client.server_name);
+    command.env("MACH_IPC_CHANNEL_2", &ipc_host_host.server_name);
 
     command.stderr(Stdio::inherit());
     command.stdout(Stdio::inherit());
@@ -79,7 +87,7 @@ impl NodejsWorker {
     let count = self.counter.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = channel::<NodejsClientResponse>();
     self.messages.lock().unwrap().insert(count.clone(), tx);
-    self.ipc_host.send(NodejsRequestContext(
+    self.ipc_host.send(NodejsClientRequestContext(
       count.clone(),
       NodejsClientRequest::Ping,
     ));
