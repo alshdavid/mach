@@ -1,8 +1,5 @@
-pub mod action_type;
-pub mod actions;
-pub mod ipc;
-mod nodejs_instance;
-mod nodejs;
+mod nodejs_manager;
+mod nodejs_worker;
 
-pub use self::nodejs::*;
-pub use self::nodejs_instance::*;
+pub use nodejs_manager::*;
+pub use nodejs_worker::*;

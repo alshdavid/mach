@@ -5,133 +5,70 @@ mod kit;
 mod platform;
 mod public;
 
-use std::io::{BufReader, Write};
-use std::process::{Command, Stdio};
+use std::io::BufReader;
+use std::io::Write;
+use std::process::Command;
+use std::process::Stdio;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use ipc_channel::ipc::{self, IpcOneShotServer, IpcReceiver, IpcSender};
+use ipc_channel::ipc::IpcOneShotServer;
+use ipc_channel::ipc::IpcReceiver;
+use ipc_channel::ipc::IpcSender;
+use ipc_channel::ipc::{self};
+use kit::ipc::sync::IpcHost;
 use kit::profiler::PROFILER;
-use platform::adapters::nodejs::ipc::{NodejsInstanceTcp};
-use platform::adapters::nodejs::Nodejs;
+use platform::adapters::nodejs::NodejsWorker;
+// use platform::adapters::nodejs::ipc::NodejsWorker;
+// use platform::adapters::nodejs::ipc::NodejsInstanceIpc;
 // use platform::ipc::nodejs::NodejsWorkerFarm;
 use serde::Serialize;
 
-use crate::platform::adapters::nodejs::NodejsOptions;
+// use crate::platform::adapters::nodejs::{Nodejs, NodejsOptions};
 
 fn main() {
-  let (ipcout, server_name) = IpcOneShotServer::<(IpcReceiver<String>, String)>::new().unwrap();
+  let nodejs_worker = NodejsWorker::new();
 
-  let entry = std::env::current_exe()
-      .unwrap()
-      .parent()
-      .unwrap()
-      .parent()
-      .unwrap()
-      .join("nodejs")
-      .join("lib")
-      .join("main.js");
+  let n = 1_000_000;
+  let mut v = vec![];
 
-    let mut command = Command::new("node");
-    command.arg("--title");
-    command.arg("nodejs_mach");
-    command.arg(entry);
-    command.env("MACH_IPC_CHANNEL", server_name);
+  PROFILER.start(&format!("ping"));
+  for t in 0..n {
+    let rx = nodejs_worker.send_ping();
+    v.push(rx);
+  }
 
-    command.stderr(Stdio::inherit());
-    command.stdout(Stdio::inherit());
-    command.stdin(Stdio::piped());
+  for rx in v {
+    rx.recv().unwrap();
+  }
+  PROFILER.lap(&format!("ping"));
+  PROFILER.log_millis_total(&format!("ping"));
 
-    let mut child = command.spawn().unwrap();
-    let (_, (rx, ipcin_server_name)) = ipcout.accept().unwrap();
-    let (ipcin, ipcin_rx) = ipc::channel::<String>().unwrap();
-    let ipcin_init = IpcSender::<IpcReceiver<String>>::connect(ipcin_server_name).unwrap();
-    ipcin_init.send(ipcin_rx).unwrap();
+  thread::sleep(Duration::from_secs(2));
+}
 
-    thread::spawn(move || {
-      while let Ok(bytes) = rx.recv() {
-        println!("{:?}", bytes);
-      } 
-    });
-
-    thread::spawn(move || {
-      ipcin.send("Hi from parent".to_string()).unwrap();
-    });
-
-    thread::sleep(Duration::from_secs(2));
-  // let nodejs_workers = NodejsWorkerFarm::new(2);
-
-  // let nodejs_workers1 = nodejs_workers.clone();
-  // thread::spawn(move || {
-  //   let rx = nodejs_workers1.subscribe();
-  //   while let Ok(bytes) = rx.recv() {
-  //     println!("{:?}", bytes);
-  //   }
-  //   thread::sleep(Duration::from_secs(2));
-  // });
-
-  // let nodejs_workers2 = nodejs_workers.clone();
-  // thread::spawn(move || {
-  //   for _ in 0..6 {
-  //     thread::sleep(Duration::from_millis(5));
-  //     nodejs_workers2.send(vec![0, 0, 10]);
-  //   }
-  //   thread::sleep(Duration::from_secs(2));
-  // });
-
-  // thread::sleep(Duration::from_secs(2));
-
-  // let nodejs_workers3 = nodejs_workers.clone();
-  // thread::spawn(move || {
-  //   let mut b = Vec::<u8>::from(&[1, 0]);
-  //   b.extend(serde_json::to_vec("ping").unwrap());
-  //   b.push(10);
-
-  //   for _ in 0..10 {
-  //     // println!("[2]");
-  //     thread::sleep(Duration::from_millis(5));
-  //     let i = nodejs_workers3.send(&b);
-  //     println!("[2] {}", i);
-  //   }
-  // });
-
-  // let nodejs_workers4 = nodejs_workers.clone();
-  // thread::spawn(move || {
-  //   let mut b = Vec::<u8>::from(&[1, 0]);
-  //   b.extend(serde_json::to_vec("ping").unwrap());
-  //   b.push(10);
-
-  //   for _ in 0..10 {
-  //     // println!("[3]");
-  //     thread::sleep(Duration::from_millis(5));
-
-  //     let i = nodejs_workers4.send(&b);
-  //     println!("[3] {}", i);
-  //   }
-  // });
-
-  // let w = 16;
-  // let n = 80000;
-  // // let n = 1_000_000;
+/*
+ // let w = 1;
+  // // let n = 1;
+  // let n = 100_000;
   // let t = 3;
   // let nw = n/w;
 
   // println!("{} / {} = {}", w, n, nw);
 
   // for t in 0..t {
-  //   let nodejs_instance_tcp = NodejsInstanceTcp::new();
   //   let nodejs = Nodejs::new(NodejsOptions {
   //     workers: w,
-  //     nodejs_worker_factory: Arc::new(nodejs_instance_tcp),
+  //     nodejs_worker_factory: Arc::new(NodejsInstanceIpc::new()),
   //   });
-    
+
   //   PROFILER.start(&format!("stdio {}", t));
   //   let mut v = vec![];
 
   //   for w in 0..w {
   //     let nodejs = nodejs.clone();
-      
+
   //     v.push(thread::spawn(move || {
   //       let mut v2 = vec![];
 
@@ -143,7 +80,8 @@ fn main() {
   //       }
 
   //       for v in v2 {
-  //         v.recv().unwrap();
+  //         let v = v.recv().unwrap();
+  //         // println!("{:?}", v)
   //       }
   //     }));
   //   }
@@ -156,97 +94,7 @@ fn main() {
   //   PROFILER.log_millis_total(&format!("stdio {}", t));
   // }
 
-  // println!("");
-
-  // let nodejs_instance_tcp = NodejsInstanceTcp::new();
-  // let nodejs = Nodejs::new(NodejsOptions {
-  //   workers: 2,
-  //   nodejs_worker_factory: Arc::new(nodejs_instance_tcp),
-  // });
-
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // let resp = nodejs.request(vec![0,10]);
-  // println!("{:?}", resp);
-
-
-  // let rx = nodejs.subscribe();
-
-  // thread::spawn(move || {
-  //   while let Ok(byte) = rx.recv() {
-  //     println!("{}", byte);
-  //   }
-  // });
-
-  // nodejs.send(vec![0,0,10]);
-  // nodejs.send(vec![1,0,10]);
-  // nodejs.send(vec![2,0,10]);
-
-
-
-  // for t in 0..t {
-  //   let nodejs = NodejsInstanceTcp::spawn(NodejsInstanceTcpOptions {
-  //     workers: 2
-  //   });
-
-  //   PROFILER.start(&format!("tcp {}", t));
-  //   for i in 0..n {
-  //   // for i in 0..1 {
-  //     let nodejs = nodejs.clone();
-
-  //     thread::sleep(Duration::from_nanos(1));
-
-  //     thread::spawn(move || {
-  //       let resp = nodejs.request(vec![0, 10]);
-  //       // println!("{:?}", resp);
-  //     });
-  //   }
-  //   PROFILER.lap(&format!("tcp {}", t));
-
-  //   PROFILER.log_millis_total(&format!("tcp {}", t));
-  // }
-  // for _ in 0..5 {
-  //   let nodejs = nodejs.clone();
-  //   thread::spawn(move || {
-  //     let resp = nodejs.request(vec![0, 10]);
-  //     thread::sleep(Duration::from_millis(500));
-  //     println!("{:?}", resp);
-  //   });
-  // }
-
-  // let nodejs1 = nodejs.clone();
-  // thread::spawn(move || {
-  //   let rx = nodejs1.subscribe();
-  //   while let Ok(bytes) = rx.recv() {
-  //     println!("{:?}", bytes)
-  //   }
-
-  //   thread::sleep(Duration::from_secs(2));
-  // });
-
-  // let nodejs2 = nodejs.clone();
-  // thread::spawn(move || {
-  //   for _ in 0..1 {
-  //     let mut b = Vec::<u8>::from(&[1, 0]);
-  //     b.extend(serde_json::to_vec("Hello").unwrap());
-  //     b.push(10);
-
-  //     nodejs2.send(b);
-  //   }
-
-  //   thread::sleep(Duration::from_secs(2));
-  // });
-
-  thread::sleep(Duration::from_secs(2));
-  // nodejs.wait().unwrap();
-}
+*/
 
 // use std::time::SystemTime;
 

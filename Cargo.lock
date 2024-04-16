@@ -667,9 +667,11 @@ name = "mach-nodejs"
 version = "0.1.0"
 dependencies = [
  "ipc-channel",
+ "mach",
  "napi",
  "napi-build",
  "napi-derive",
+ "serde",
 ]
 
 [[package]]

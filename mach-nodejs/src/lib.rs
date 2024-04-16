@@ -1,23 +1,22 @@
-use ipc_channel::ipc::IpcOneShotServer;
+use mach::kit::ipc::sync::IpcChild;
+use mach::public::nodejs::NodejsClientRequest;
+use mach::public::nodejs::NodejsClientResponse;
+use mach::public::nodejs::NodejsRequestContext;
+use mach::public::nodejs::NodejsResponseContext;
 use napi_derive::napi;
-use ipc_channel::ipc::IpcSender;
-use ipc_channel::ipc::IpcReceiver;
-use ipc_channel::ipc::channel;
 
 #[napi]
 pub fn start() {
-  let ipcout_server_name = std::env::var("MACH_IPC_CHANNEL").unwrap();
-  let (ipcin_init, ipcin_server_name) = IpcOneShotServer::<IpcReceiver<String>>::new().unwrap();
+  let mach_ipc_channel = std::env::var("MACH_IPC_CHANNEL").unwrap().to_string();
 
-  let ipcout_init = IpcSender::<(IpcReceiver<String>, String)>::connect(ipcout_server_name).unwrap();
-  let (ipcout, ipcout_rx) = channel::<String>().unwrap();
-  
-  ipcout_init.send((ipcout_rx, ipcin_server_name)).unwrap();
-  ipcout.send("hi from child!".to_string()).unwrap();
+  let ipc_child = IpcChild::<NodejsResponseContext, NodejsRequestContext>::new(&mach_ipc_channel);
 
-  let (_, ipcin) = ipcin_init.accept().unwrap();
-
-  while let Ok(bytes) = ipcin.recv() {
-    println!("{:?}", bytes);
-  } 
+  let rx = ipc_child.subscribe();
+  while let Ok(data) = rx.recv() {
+    match data.1 {
+      NodejsClientRequest::Ping => {
+        ipc_child.send(NodejsResponseContext(data.0, NodejsClientResponse::Ping));
+      }
+    }
+  }
 }
