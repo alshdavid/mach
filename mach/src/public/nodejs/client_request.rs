@@ -4,6 +4,7 @@ use serde::Serialize;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum NodejsClientRequest {
   Ping,
+  ResolverRegister(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

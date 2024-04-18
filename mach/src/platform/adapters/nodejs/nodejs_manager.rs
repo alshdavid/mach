@@ -22,7 +22,6 @@ impl NodejsManager {
   pub fn new(options: NodejsManagerOptions) -> Self {
     let mut workers = vec![];
     let trx = BroadcastChannel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>::new();
-    let (tx, rx) = channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
 
     for _ in 0..options.workers {
       let worker = NodejsWorker::new();
@@ -35,6 +34,18 @@ impl NodejsManager {
       counter: Arc::new(Mutex::new(0)),
       workers: Arc::new(workers),
       worker_count: Arc::new(options.workers),
+    }
+  }
+
+  pub fn send_all(&self, req: NodejsClientRequest) {
+    let mut requests = vec![];
+
+    for worker in self.workers.iter() {
+      requests.push(worker.child_sender.send(req.clone()));
+    }
+
+    for request in requests {
+      request.recv().unwrap();
     }
   }
 

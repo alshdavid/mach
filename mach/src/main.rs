@@ -23,6 +23,8 @@ use ipc_channel::ipc::{self};
 use kit::broadcast_channel::channel_broadcast;
 use kit::ipc::sync::IpcHost;
 use kit::profiler::PROFILER;
+use platform::adapters::nodejs::NodejsAdapter;
+use platform::adapters::nodejs::NodejsAdapterOptions;
 use platform::adapters::nodejs::NodejsManager;
 use platform::adapters::nodejs::NodejsManagerOptions;
 use platform::adapters::nodejs::NodejsWorker;
@@ -33,19 +35,11 @@ use serde::Serialize;
 use crate::public::nodejs::NodejsHostResponse;
 
 fn main() {
-  let nodejs_worker = NodejsManager::new(NodejsManagerOptions {
-    workers: 3,
+  let nodejs_worker = NodejsAdapter::new(NodejsAdapterOptions {
+    workers: 1,
   });
 
-  let rx1 = nodejs_worker.send(NodejsClientRequest::Ping);
-
-  let rx2 = nodejs_worker.on.subscribe();
-  while let Ok((req, res)) = rx2.recv() {
-    println!("From child {:?}", req);
-    res.send(NodejsHostResponse::Ping).unwrap();
-  }
-
-  rx1.recv().unwrap();
+  nodejs_worker.resolver_register("test");
 }
 
 

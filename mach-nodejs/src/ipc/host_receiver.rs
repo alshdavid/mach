@@ -3,6 +3,7 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::thread;
 
+use mach::kit::broadcast_channel::BroadcastChannel;
 use mach::kit::ipc::sync::IpcChild;
 use mach::public::nodejs::NodejsClientRequest;
 use mach::public::nodejs::NodejsClientRequestContext;
@@ -10,14 +11,15 @@ use mach::public::nodejs::NodejsClientResponse;
 use mach::public::nodejs::NodejsClientResponseContext;
 
 pub struct HostReceiver {
-  pub on: Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)>,
+  pub on: BroadcastChannel<(NodejsClientRequest, Sender<NodejsClientResponse>)>,
 }
 
 impl HostReceiver {
   pub fn new() -> Self {
     let ipc_child_client = std::env::var("MACH_IPC_CHANNEL_1").unwrap().to_string();
-    let (tx, rx) = channel::<(NodejsClientRequest, Sender<NodejsClientResponse>)>();
+    let trx = BroadcastChannel::<(NodejsClientRequest, Sender<NodejsClientResponse>)>::new();
     
+    let tx = trx.clone();
     thread::spawn(move || {
       let ipc_child_client = IpcChild::<NodejsClientResponseContext, NodejsClientRequestContext>::new(&ipc_child_client);
       let irx = ipc_child_client.subscribe();
@@ -35,7 +37,11 @@ impl HostReceiver {
     });
 
     Self {
-      on: rx,
+      on: trx,
     }
+  }
+
+  pub fn subscribe(&self) -> Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)> {
+    self.on.subscribe()
   }
 }
