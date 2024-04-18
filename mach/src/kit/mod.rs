@@ -7,3 +7,4 @@ pub mod ipc;
 pub mod json;
 pub mod profiler;
 pub mod swc;
+pub mod broadcast_channel;

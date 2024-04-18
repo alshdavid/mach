@@ -11,8 +11,8 @@ use std::thread;
 
 pub struct IpcHost<TWrite, TRead>
 where
-  TWrite: Clone + Send + Sync + Serialize + DeserializeOwned + Display + 'static,
-  TRead: Clone + Send + Sync + Serialize + DeserializeOwned + Display + 'static,
+  TWrite: Clone + Send + Serialize + DeserializeOwned + 'static,
+  TRead: Clone + Send + Serialize + DeserializeOwned + 'static,
 {
   server_name: String,
   outgoing: Sender<TWrite>,
@@ -21,8 +21,8 @@ where
 
 impl<TWrite, TRead> IpcHost<TWrite, TRead>
 where
-  TWrite: Clone + Send + Sync + Serialize + DeserializeOwned + Display + 'static,
-  TRead: Clone + Send + Sync + Serialize + DeserializeOwned + Display + 'static,
+  TWrite: Clone + Send + Serialize + DeserializeOwned + 'static,
+  TRead: Clone + Send + Serialize + DeserializeOwned + 'static,
 {
   pub fn new() -> Self {
     // Proxies

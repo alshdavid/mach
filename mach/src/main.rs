@@ -9,6 +9,9 @@ use std::io::BufReader;
 use std::io::Write;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -17,30 +20,32 @@ use ipc_channel::ipc::IpcOneShotServer;
 use ipc_channel::ipc::IpcReceiver;
 use ipc_channel::ipc::IpcSender;
 use ipc_channel::ipc::{self};
+use kit::broadcast_channel::channel_broadcast;
 use kit::ipc::sync::IpcHost;
 use kit::profiler::PROFILER;
+use platform::adapters::nodejs::NodejsManager;
+use platform::adapters::nodejs::NodejsManagerOptions;
 use platform::adapters::nodejs::NodejsWorker;
+use public::nodejs::NodejsClientRequest;
+use public::nodejs::NodejsHostRequest;
 use serde::Serialize;
 
+use crate::public::nodejs::NodejsHostResponse;
+
 fn main() {
-  let nodejs_worker = NodejsWorker::new();
+  let nodejs_worker = NodejsManager::new(NodejsManagerOptions {
+    workers: 3,
+  });
 
-  let n = 10;
-  let mut v = vec![];
+  let rx1 = nodejs_worker.send(NodejsClientRequest::Ping);
 
-  PROFILER.start(&format!("ping"));
-  for t in 0..n {
-    let rx = nodejs_worker.send_ping();
-    v.push(rx);
+  let rx2 = nodejs_worker.on.subscribe();
+  while let Ok((req, res)) = rx2.recv() {
+    println!("From child {:?}", req);
+    res.send(NodejsHostResponse::Ping).unwrap();
   }
 
-  for rx in v {
-    rx.recv().unwrap();
-  }
-  PROFILER.lap(&format!("ping"));
-  PROFILER.log_millis_total(&format!("ping"));
-
-  thread::sleep(Duration::from_secs(2));
+  rx1.recv().unwrap();
 }
 
 
@@ -159,7 +164,6 @@ fn main() {
   //   PROFILER.log_millis_total(&format!("stdio {}", t));
   // }
 
-*/
 
 // use std::time::SystemTime;
 
