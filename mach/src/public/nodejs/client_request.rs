@@ -10,6 +10,7 @@ pub enum NodejsClientRequest {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum NodejsClientResponse {
   Ping,
+  ResolverRegister,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

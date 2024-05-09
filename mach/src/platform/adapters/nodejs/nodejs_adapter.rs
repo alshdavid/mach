@@ -30,6 +30,10 @@ impl NodejsAdapter {
     }
   }
 
+  pub fn ping(&self) {
+    self.nodejs_manager.send_all(NodejsClientRequest::Ping);
+  }
+
   pub fn resolver_register(&self, specifier: &str) {
     self.nodejs_manager.send_all(NodejsClientRequest::ResolverRegister(specifier.to_string()));
   }

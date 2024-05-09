@@ -39,7 +39,9 @@ fn main() {
     workers: 1,
   });
 
-  nodejs_worker.resolver_register("test");
+  nodejs_worker.resolver_register("/Users/dalsh/Development/alshdavid/mach/testing/fixtures/plugins-nodejs/plugins/resolver-1.mjs");
+
+  thread::sleep(Duration::from_secs(2));
 }
 
 
