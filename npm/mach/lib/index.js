@@ -5,5 +5,5 @@ class MachInitError extends Error {
   }
 }
 
-export const Resolver = globalThis.Mach?.Resolver || new MachInitError()
-export const Transformer = globalThis.Mach?.Transformer || new MachInitError()
+export const Resolver = globalThis.Mach?.Resolver || MachInitError
+export const Transformer = globalThis.Mach?.Transformer || MachInitError

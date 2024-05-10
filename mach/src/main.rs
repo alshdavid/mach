@@ -39,8 +39,15 @@ fn main() {
     workers: 1,
   });
 
-  nodejs_worker.resolver_register("/Users/dalsh/Development/alshdavid/mach/testing/fixtures/plugins-nodejs/plugins/resolver-1.mjs");
+  PROFILER.start("lol");
+  for _ in 0..100_000  {
+    nodejs_worker.ping();
+  }
+  PROFILER.lap("lol");
 
+  // nodejs_worker.resolver_register("/Users/dalsh/Development/alshdavid/mach/testing/fixtures/plugins-nodejs/plugins/resolver-1.mjs");
+
+  PROFILER.log_millis_total("lol");
   thread::sleep(Duration::from_secs(2));
 }
 
