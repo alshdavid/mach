@@ -1,8 +1,12 @@
-use std::{sync::mpsc::{channel, Receiver, SendError, Sender}, thread};
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::SendError;
+use std::sync::mpsc::Sender;
+use std::thread;
 
 #[derive(Clone)]
 pub struct Subscribable<T: Clone + Send> {
-  tx_subscribe: Sender<Sender<T>>
+  tx_subscribe: Sender<Sender<T>>,
 }
 
 impl<T: Clone + Send> Subscribable<T> {
@@ -13,7 +17,7 @@ impl<T: Clone + Send> Subscribable<T> {
   }
 }
 
-pub fn channel_broadcast<T: Clone + Send + 'static>() -> (Sender<T>, Subscribable<T>){
+pub fn channel_broadcast<T: Clone + Send + 'static>() -> (Sender<T>, Subscribable<T>) {
   let (tx_t, rx_t) = channel::<T>();
   let (tx_subscribe, rx_subscribe) = channel::<Sender<T>>();
 
@@ -36,5 +40,5 @@ pub fn channel_broadcast<T: Clone + Send + 'static>() -> (Sender<T>, Subscribabl
     }
   });
 
-  return (tx_t, Subscribable{ tx_subscribe });
+  return (tx_t, Subscribable { tx_subscribe });
 }

@@ -1,22 +1,26 @@
-use tokio::sync::mpsc::UnboundedSender;
-use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::mpsc::error::SendError;
+use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::mpsc::UnboundedSender;
 
-use super::{channel_broadcast, Subscribable};
+use super::channel_broadcast;
+use super::Subscribable;
 
 #[derive(Clone)]
 pub struct BroadcastChannel<T: Clone + Send + 'static> {
   tx: UnboundedSender<T>,
-  rrx: Subscribable<T>
+  rrx: Subscribable<T>,
 }
 
 impl<T: Clone + Send + 'static> BroadcastChannel<T> {
   pub fn new() -> Self {
     let (tx, rrx) = channel_broadcast();
-    Self {tx, rrx}
+    Self { tx, rrx }
   }
 
-  pub fn send(&self, value: T) -> Result<(), SendError<T>> {
+  pub fn send(
+    &self,
+    value: T,
+  ) -> Result<(), SendError<T>> {
     self.tx.send(value)
   }
 
@@ -24,7 +28,10 @@ impl<T: Clone + Send + 'static> BroadcastChannel<T> {
     self.rrx.subscribe()
   }
 
-  pub fn merge(&self, mut receiver: UnboundedReceiver<T>) {
+  pub fn merge(
+    &self,
+    mut receiver: UnboundedReceiver<T>,
+  ) {
     let tx = self.tx.clone();
     tokio::spawn(async move {
       while let Some(data) = receiver.recv().await {

@@ -6,11 +6,14 @@ pub fn await_promise<T>(
   env: Env,
   result: JsUnknown,
   tx: UnboundedSender<T>,
-) -> napi::Result<()> where T: DeserializeOwned + Send + 'static {
+) -> napi::Result<()>
+where
+  T: DeserializeOwned + Send + 'static,
+{
   if !result.is_promise()? {
     let res = env.from_js_value(result)?;
     tx.send(res).expect("send failure");
-    return Ok(())
+    return Ok(());
   }
 
   let result: JsObject = result.try_into()?;
@@ -28,7 +31,7 @@ pub fn await_promise<T>(
     println!("Failed {:?}", err);
     ctx.env.get_undefined()
   })?;
-  
+
   then.call(Some(&result), &[cb, eb])?;
   Ok(())
 }

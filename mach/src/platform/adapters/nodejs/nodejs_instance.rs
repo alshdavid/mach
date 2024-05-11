@@ -7,16 +7,15 @@ use tokio::process::Command;
 use tokio::sync::mpsc::unbounded_channel;
 use tokio::sync::mpsc::UnboundedSender;
 
+use super::NodejsWorker;
 use crate::public::nodejs::NodejsClientRequest;
 use crate::public::nodejs::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 
-use super::NodejsWorker;
-
 #[derive(Clone)]
 pub struct NodejsInstance {
-  tx_stdin: UnboundedSender<Vec<u8>>
+  tx_stdin: UnboundedSender<Vec<u8>>,
 }
 
 /// NodejsInstance wraps the Node.js Process
@@ -54,16 +53,18 @@ impl NodejsInstance {
       }
     });
 
-    Self {
-      tx_stdin
-    }
+    Self { tx_stdin }
   }
 
   pub async fn spawn_worker(&self) -> NodejsWorker {
     let child_sender = ChildSender::<NodejsClientRequest, NodejsClientResponse>::new();
-    let (child_receiver, rx_child_receiver) = ChildReceiver::<NodejsHostRequest, NodejsHostResponse>::new().unwrap();
+    let (child_receiver, rx_child_receiver) =
+      ChildReceiver::<NodejsHostRequest, NodejsHostResponse>::new().unwrap();
 
-    let msg = format!("{}&{}", child_sender.server_name, child_receiver.server_name);
+    let msg = format!(
+      "{}&{}",
+      child_sender.server_name, child_receiver.server_name
+    );
     self.tx_stdin.send(msg.as_bytes().to_vec()).unwrap();
 
     NodejsWorker {

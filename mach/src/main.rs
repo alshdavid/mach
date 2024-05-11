@@ -34,19 +34,15 @@ use tokio::task::JoinSet;
 use crate::public::nodejs::NodejsHostResponse;
 
 async fn main_async() {
-  let nodejs_worker = NodejsAdapter::new(NodejsAdapterOptions {
-    workers: 6,
-  }).await;
+  let nodejs_worker = NodejsAdapter::new(NodejsAdapterOptions { workers: 6 }).await;
 
   PROFILER.start("bench");
   let mut reqs = JoinSet::new();
 
-  for _ in 0..100_000  {
+  for _ in 0..100_000 {
     let nodejs_worker = nodejs_worker.clone();
 
-    reqs.spawn(tokio::spawn(async move {
-      nodejs_worker.ping_one().await
-    }));
+    reqs.spawn(tokio::spawn(async move { nodejs_worker.ping_one().await }));
   }
 
   while let Some(result) = reqs.join_next().await {
@@ -54,7 +50,7 @@ async fn main_async() {
   }
   PROFILER.lap("bench");
 
-  // 
+  //
 
   PROFILER.log_millis_total("bench");
   thread::sleep(Duration::from_secs(2));
@@ -68,7 +64,6 @@ fn main() {
     .unwrap()
     .block_on(main_async())
 }
-
 
 // use std::time::SystemTime;
 

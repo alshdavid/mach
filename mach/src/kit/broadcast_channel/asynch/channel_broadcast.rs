@@ -1,10 +1,10 @@
-use tokio::sync::mpsc::UnboundedSender;
-use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::mpsc::unbounded_channel;
+use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::mpsc::UnboundedSender;
 
 #[derive(Clone)]
 pub struct Subscribable<T: Clone + Send> {
-  tx_subscribe: UnboundedSender<UnboundedSender<T>>
+  tx_subscribe: UnboundedSender<UnboundedSender<T>>,
 }
 
 impl<T: Clone + Send> Subscribable<T> {
@@ -15,7 +15,7 @@ impl<T: Clone + Send> Subscribable<T> {
   }
 }
 
-pub fn channel_broadcast<T: Clone + Send + 'static>() -> (UnboundedSender<T>, Subscribable<T>){
+pub fn channel_broadcast<T: Clone + Send + 'static>() -> (UnboundedSender<T>, Subscribable<T>) {
   let (tx_t, mut rx_t) = unbounded_channel::<T>();
   let (tx_subscribe, mut rx_subscribe) = unbounded_channel::<UnboundedSender<T>>();
 
@@ -38,5 +38,5 @@ pub fn channel_broadcast<T: Clone + Send + 'static>() -> (UnboundedSender<T>, Su
     }
   });
 
-  return (tx_t, Subscribable{ tx_subscribe });
+  return (tx_t, Subscribable { tx_subscribe });
 }
