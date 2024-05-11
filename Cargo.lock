@@ -1403,6 +1403,7 @@ dependencies = [
 
 [[package]]
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 name = "snowflake"
 version = "1.3.0"
@@ -1414,6 +1415,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> 0802df4 (removed snowflake)
 name = "socket2"
 version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
