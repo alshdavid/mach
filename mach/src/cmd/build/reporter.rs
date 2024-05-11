@@ -43,7 +43,7 @@ impl<'a> AppReporter<'a> {
     println!("Splitting:     {}", self.config.bundle_splitting);
   }
 
-  pub fn print_transform_stats(
+  pub async fn print_transform_stats(
     &mut self,
     asset_map: &AssetMapSync,
   ) {
@@ -51,16 +51,16 @@ impl<'a> AppReporter<'a> {
     println!(
       "  Transform:     {:.3}s  (Assets {})",
       time_transform,
-      asset_map.read().unwrap().len()
+      asset_map.read().await.len()
     );
     self.time_transform = time_transform;
   }
 
-  pub fn print_bundle_stats(
+  pub async fn print_bundle_stats(
     &mut self,
     bundles: &BundleMapSync,
   ) {
-    let bundles = bundles.read().unwrap();
+    let bundles = bundles.read().await;
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
     for bundle in bundles.iter() {

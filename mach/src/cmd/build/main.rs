@@ -6,7 +6,7 @@ use crate::platform::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
-use crate::platform::packaging::package;
+// use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
@@ -91,15 +91,15 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     It also injects the runtime and rewrites import
     statements to point to the new paths
   */
-  package(
-    config.clone(),
-    asset_map.clone(),
-    asset_graph.clone(),
-    dependency_map.clone(),
-    bundles.clone(),
-    bundle_graph.clone(),
-    outputs.clone(),
-  ).await?;
+  // package(
+  //   config.clone(),
+  //   asset_map.clone(),
+  //   asset_graph.clone(),
+  //   dependency_map.clone(),
+  //   bundles.clone(),
+  //   bundle_graph.clone(),
+  //   outputs.clone(),
+  // ).await?;
 
   // reporter.print_package_stats();
 
@@ -110,7 +110,7 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
   /*
     emit() writes the contents of the bundles to disk
   */
-  // emit(config.clone(), outputs)?;
+  emit(config.clone(), outputs).await?;
 
   // reporter.print_emit_stats();
   // reporter.print_finished_stats();

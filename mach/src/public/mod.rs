@@ -9,6 +9,7 @@ mod bundle_id;
 mod bundle_manifest;
 mod bundle_map;
 mod config;
+mod content_map;
 mod constants;
 mod dependency;
 mod dependency_id;
