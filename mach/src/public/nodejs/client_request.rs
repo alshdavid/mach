@@ -12,9 +12,3 @@ pub enum NodejsClientResponse {
   Ping,
   ResolverRegister,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientRequestContext(pub usize, pub NodejsClientRequest);
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientResponseContext(pub usize, pub NodejsClientResponse);

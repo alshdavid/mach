@@ -10,9 +10,3 @@ pub enum NodejsHostRequest {
 pub enum NodejsHostResponse {
   Ping,
 }
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsHostRequestContext(pub usize, pub NodejsHostRequest);
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsHostResponseContext(pub usize, pub NodejsHostResponse);

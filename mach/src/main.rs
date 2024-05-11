@@ -20,8 +20,6 @@ use ipc_channel::ipc::IpcOneShotServer;
 use ipc_channel::ipc::IpcReceiver;
 use ipc_channel::ipc::IpcSender;
 use ipc_channel::ipc::{self};
-use kit::broadcast_channel::channel_broadcast;
-use kit::ipc::sync::IpcHost;
 use kit::profiler::PROFILER;
 use platform::adapters::nodejs::NodejsAdapter;
 use platform::adapters::nodejs::NodejsAdapterOptions;
@@ -31,141 +29,45 @@ use platform::adapters::nodejs::NodejsWorker;
 use public::nodejs::NodejsClientRequest;
 use public::nodejs::NodejsHostRequest;
 use serde::Serialize;
+use tokio::task::JoinSet;
 
 use crate::public::nodejs::NodejsHostResponse;
 
-fn main() {
+async fn main_async() {
   let nodejs_worker = NodejsAdapter::new(NodejsAdapterOptions {
-    workers: 1,
+    workers: 10,
   });
 
-  PROFILER.start("lol");
+  PROFILER.start("bench");
+  let mut reqs = JoinSet::new();
+
   for _ in 0..100_000  {
-    nodejs_worker.ping();
+    let nodejs_worker = nodejs_worker.clone();
+
+    reqs.spawn(tokio::spawn(async move {
+      nodejs_worker.ping_one().await
+    }));
   }
-  PROFILER.lap("lol");
 
-  // nodejs_worker.resolver_register("/Users/dalsh/Development/alshdavid/mach/testing/fixtures/plugins-nodejs/plugins/resolver-1.mjs");
+  while let Some(result) = reqs.join_next().await {
+    result.unwrap().unwrap();
+  }
+  PROFILER.lap("bench");
 
-  PROFILER.log_millis_total("lol");
+  // 
+
+  PROFILER.log_millis_total("bench");
   thread::sleep(Duration::from_secs(2));
 }
 
-
-/*
-  let nodejs_worker = NodejsManager::new(NodejsManagerOptions {
-    workers: std::env::var("NODEJS_WORKERS").unwrap_or("1".to_string()).parse().unwrap_or(1),
-  });
-
-  let n = 6;
-  let mut v = vec![];
-
-  PROFILER.start(&format!("ping"));
-  for t in 0..n {
-    let rx = nodejs_worker.send_ping();
-    v.push(rx);
-  }
-
-  for rx in v {
-    rx.recv().unwrap();
-  }
-  PROFILER.lap(&format!("ping"));
-  PROFILER.log_millis_total(&format!("ping"));
-
-  thread::sleep(Duration::from_secs(2));
-
-
-
- // let w = 1;
-  // // let n = 1;
-  // let n = 100_000;
-  // let t = 3;
-  // let nw = n/w;
-
-  // println!("{} / {} = {}", w, n, nw);
-
-  // for t in 0..t {
-  //   let nodejs = Nodejs::new(NodejsOptions {
-  //     workers: w,
-  //     nodejs_worker_factory: Arc::new(NodejsInstanceIpc::new()),
-  //   });
-
-  //   PROFILER.start(&format!("stdio {}", t));
-  //   let mut v = vec![];
-
-  //   for w in 0..w {
-  //     let nodejs = nodejs.clone();
-
-  //     v.push(thread::spawn(move || {
-  //       let mut v2 = vec![];
-
-  //       for i in 0..nw {
-  //         // thread::sleep(Duration::from_nanos(1));
-  //         // let mut v = serde_json::to_vec(&(0, None::<()>)).unwrap();
-  //         let resp = nodejs.request(vec![]);
-  //         v2.push(resp);
-  //       }
-
-  //       for v in v2 {
-  //         let v = v.recv().unwrap();
-  //         // println!("{:?}", v)
-  //       }
-  //     }));
-  //   }
-
-  //   for v in v {
-  //     v.join().unwrap()
-  //   }
-
-  //   PROFILER.lap(&format!("stdio {}", t));
-  //   PROFILER.log_millis_total(&format!("stdio {}", t));
-  // }
-
-*/
- // let w = 1;
-  // // let n = 1;
-  // let n = 100_000;
-  // let t = 3;
-  // let nw = n/w;
-
-  // println!("{} / {} = {}", w, n, nw);
-
-  // for t in 0..t {
-  //   let nodejs = Nodejs::new(NodejsOptions {
-  //     workers: w,
-  //     nodejs_worker_factory: Arc::new(NodejsInstanceIpc::new()),
-  //   });
-
-  //   PROFILER.start(&format!("stdio {}", t));
-  //   let mut v = vec![];
-
-  //   for w in 0..w {
-  //     let nodejs = nodejs.clone();
-
-  //     v.push(thread::spawn(move || {
-  //       let mut v2 = vec![];
-
-  //       for i in 0..nw {
-  //         // thread::sleep(Duration::from_nanos(1));
-  //         // let mut v = serde_json::to_vec(&(0, None::<()>)).unwrap();
-  //         let resp = nodejs.request(vec![]);
-  //         v2.push(resp);
-  //       }
-
-  //       for v in v2 {
-  //         let v = v.recv().unwrap();
-  //         // println!("{:?}", v)
-  //       }
-  //     }));
-  //   }
-
-  //   for v in v {
-  //     v.join().unwrap()
-  //   }
-
-  //   PROFILER.lap(&format!("stdio {}", t));
-  //   PROFILER.log_millis_total(&format!("stdio {}", t));
-  // }
+fn main() {
+  tokio::runtime::Builder::new_multi_thread()
+    .worker_threads(num_cpus::get_physical())
+    .enable_all()
+    .build()
+    .unwrap()
+    .block_on(main_async())
+}
 
 
 // use std::time::SystemTime;

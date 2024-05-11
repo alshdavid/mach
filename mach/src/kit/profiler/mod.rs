@@ -1,15 +1,14 @@
-use std::collections::HashMap;
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use dashmap::mapref::one::Ref;
 use dashmap::DashMap;
@@ -60,6 +59,9 @@ impl Profiler {
     &self,
     name: &str,
   ) {
+    if !self.start_times.contains_key(name) {
+      self.start(name);
+    }
     let end_time = self
       .start_times
       .get(name)

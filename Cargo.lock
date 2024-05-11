@@ -603,10 +603,22 @@ dependencies = [
  "libc",
  "mio",
  "rand",
+ "sc",
  "serde",
  "tempfile",
  "uuid",
  "windows",
+]
+
+[[package]]
+name = "ipc_channel_adapter"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3537dae617f0b6e1d24daa2faf85edc99e5bd3d0be01207f3f9a0694b9944d48"
+dependencies = [
+ "ipc-channel",
+ "serde",
+ "tokio",
 ]
 
 [[package]]
@@ -692,6 +704,7 @@ dependencies = [
  "glob-match",
  "html5ever",
  "ipc-channel",
+ "ipc_channel_adapter",
  "markup5ever_rcdom",
  "normalize-path",
  "num_cpus",
@@ -702,13 +715,14 @@ dependencies = [
  "serde_json",
  "sha2",
  "swc_core",
+ "tokio",
 ]
 
 [[package]]
 name = "mach-nodejs"
 version = "0.1.0"
 dependencies = [
- "ipc-channel",
+ "ipc_channel_adapter",
  "mach",
  "napi",
  "napi-build",
@@ -1238,6 +1252,12 @@ name = "ryu-js"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ad97d4ce1560a5e27cec89519dc8300d1aa6035b099821261c651486a19e44d5"
+
+[[package]]
+name = "sc"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "010e18bd3bfd1d45a7e666b236c78720df0d9a7698ebaa9c1c559961eb60a38b"
 
 [[package]]
 name = "scoped-tls"

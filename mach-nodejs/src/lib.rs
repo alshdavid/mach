@@ -1,34 +1,31 @@
-mod ipc;
 mod napi_utils;
 
-use std::rc::Rc;
-use std::sync::Arc;
-use std::thread;
-
-use ipc::HostReceiver;
-use ipc::HostSender;
-use mach::public::nodejs::NodejsClientRequest;
-use mach::public::nodejs::NodejsClientResponse;
+use ipc_channel_adapter::child::asynch::HostReceiver;
+use ipc_channel_adapter::child::asynch::HostSender;
 use napi::Env;
 use napi::JsFunction;
-use napi::JsObject;
 use napi::JsUndefined;
 use napi::JsUnknown;
 use napi_derive::napi;
 use napi_utils::await_promise;
-use once_cell::sync::Lazy;
-use tokio::sync::mpsc::unbounded_channel;
-use tokio::sync::mpsc::UnboundedSender;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::threadsafe_function::ThreadSafeCallContext;
+use mach::public::nodejs::NodejsClientRequest;
+use mach::public::nodejs::NodejsClientResponse;
 
-use crate::napi_utils::create_async_callback;
+use tokio::sync::mpsc::unbounded_channel;
 
-static HOST_SENDER: Lazy<HostSender> = Lazy::new(|| HostSender::new());
-static HOST_RECEIVER: Lazy<HostReceiver> = Lazy::new(|| HostReceiver::new());
+use mach::public::nodejs::NodejsHostRequest;
+use mach::public::nodejs::NodejsHostResponse;
 
 #[napi]
 pub fn run(env: Env, callback: JsFunction) -> napi::Result<JsUndefined> {
+  let server_name = std::env::var("MACH_IPC_CHANNEL_1").unwrap().to_string();
+  let (_, mut rx_ipc) = HostReceiver::<NodejsClientRequest, NodejsClientResponse>::new(&server_name).unwrap();
+
+  let server_name = std::env::var("MACH_IPC_CHANNEL_2").unwrap().to_string();
+  let _tx_ipc = HostSender::<NodejsHostRequest, NodejsHostResponse>::new(&server_name).unwrap();
+
   let tsfn = env.create_threadsafe_function(
     &callback, 
     0,
@@ -42,9 +39,9 @@ pub fn run(env: Env, callback: JsFunction) -> napi::Result<JsUndefined> {
   let unsafe_env = env.raw() as usize;
 
   env.spawn_future(async move {
-    let rx = HOST_RECEIVER.subscribe();
+    // let rx = HOST_RECEIVER.subscribe();
   
-    while let Ok((action, response)) = rx.recv() {
+    while let Some((action, response)) = rx_ipc.recv().await {
       let (tx, mut rx) = unbounded_channel::<NodejsClientResponse>();
 
       tsfn.call_with_return_value(

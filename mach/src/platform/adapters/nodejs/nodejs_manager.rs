@@ -1,64 +1,81 @@
-use std::{sync::{mpsc::{channel, Receiver, Sender}, Arc, Mutex}, thread};
+use std::sync::Arc;
+use std::sync::Mutex;
 
-use crate::{kit::broadcast_channel::BroadcastChannel, public::nodejs::{NodejsClientRequest, NodejsClientResponse, NodejsHostRequest, NodejsHostResponse}};
+use ipc_channel_adapter::host::asynch::ChildSender;
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::sync::oneshot::Sender as OneshotSender;
+use tokio::sync::oneshot::Receiver as OneshotReceiver;
+
+use crate::public::nodejs::NodejsHostResponse;
+use crate::public::nodejs::NodejsHostRequest;
+use crate::public::nodejs::NodejsClientResponse;
+use crate::public::nodejs::NodejsClientRequest;
 
 use super::NodejsWorker;
-
 
 #[derive(Clone)]
 pub struct NodejsManagerOptions {
   pub workers: u8
 }
 
-// Todo improve performance
+#[derive(Clone)]
 pub struct NodejsManager {
-  pub on: BroadcastChannel<(NodejsHostRequest, Sender<NodejsHostResponse>)>,
   counter: Arc<Mutex<u8>>,
-  workers: Arc<Vec<NodejsWorker>>,
+  workers_sender: Arc<Vec<ChildSender<NodejsClientRequest, NodejsClientResponse>>>,
   worker_count: Arc<u8>,
 }
 
 impl NodejsManager {
   pub fn new(options: NodejsManagerOptions) -> Self {
-    let mut workers = vec![];
-    let trx = BroadcastChannel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>::new();
+    let (tx, mut rx) = unbounded_channel::<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>();
+    let mut workers_sender = vec![];
 
     for _ in 0..options.workers {
-      let worker = NodejsWorker::new();
-      trx.merge(worker.child_receiver.on.subscribe());
-      workers.push(worker);
+      let mut worker = NodejsWorker::new();
+
+      tokio::spawn({
+        let tx = tx.clone();
+
+        async move {
+          while let Some(msg) = worker.child_receiver.recv().await {
+            tx.send(msg).unwrap();
+          }
+        }
+      });
+
+      workers_sender.push(worker.child_sender);
     }
 
     Self {
-      on: trx,
       counter: Arc::new(Mutex::new(0)),
-      workers: Arc::new(workers),
+      workers_sender: Arc::new(workers_sender),
       worker_count: Arc::new(options.workers),
     }
   }
 
-  pub fn send_all(&self, req: NodejsClientRequest) {
+  pub async fn send_all(&self, req: NodejsClientRequest) {
     let mut requests = vec![];
 
-    for worker in self.workers.iter() {
-      requests.push(worker.child_sender.send(req.clone()));
+    for sender in self.workers_sender.iter() {
+      requests.push(sender.send(req.clone()));
     }
 
     for request in requests {
-      request.recv().unwrap();
+      request.await.await.unwrap();
     }
   }
 
-  pub fn send(&self, req: NodejsClientRequest) -> Receiver<NodejsClientResponse> {
+  pub async fn send(&self, req: NodejsClientRequest) -> OneshotReceiver<NodejsClientResponse> {
     let next = self.get_next();
-    self.workers[next].child_sender.send(req)
+    self.workers_sender[next].send(req).await
   }
 
-  pub fn send_blocking(&self, req: NodejsClientRequest) -> NodejsClientResponse {
+  pub async fn send_and_wait(&self, req: NodejsClientRequest) -> NodejsClientResponse {
     let next = self.get_next();
-    self.workers[next].child_sender.send_blocking(req)
+    self.workers_sender[next].send_and_wait(req).await
   }
 
+  // TODO use an atomicu8
   fn get_next(&self) -> usize {
     let mut i = self.counter.lock().unwrap();
     let next = i.clone();

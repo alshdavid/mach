@@ -1,19 +1,26 @@
 use std::process::Command;
 use std::process::Stdio;
 
-use super::ChildReceiver;
-use super::ChildSender;
+use ipc_channel_adapter::host::asynch::ChildReceiver;
+use ipc_channel_adapter::host::asynch::ChildSender;
+use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::oneshot::Sender as OneshotSender;
+
+use crate::public::nodejs::NodejsHostRequest;
+use crate::public::nodejs::NodejsHostResponse;
+use crate::public::nodejs::NodejsClientRequest;
+use crate::public::nodejs::NodejsClientResponse;
 
 pub struct NodejsWorker {
-  pub child_sender: ChildSender,
-  pub child_receiver: ChildReceiver,
+  pub child_sender: ChildSender<NodejsClientRequest, NodejsClientResponse>,
+  pub child_receiver: UnboundedReceiver<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>,
 }
 
 // Todo improve performance
 impl NodejsWorker {
   pub fn new() -> Self {
     let child_sender = ChildSender::new();
-    let child_receiver = ChildReceiver::new();
+    let (child_receiver, rx_child_receiver) = ChildReceiver::<NodejsHostRequest, NodejsHostResponse>::new().unwrap();
 
     let entry = std::env::current_exe()
       .unwrap()
@@ -40,7 +47,7 @@ impl NodejsWorker {
 
     Self {
       child_sender,
-      child_receiver,
+      child_receiver: rx_child_receiver,
     }
   }
 }
