@@ -19,7 +19,7 @@ napi.run(
   workerData.child_sender,
   workerData.child_receiver,
   async (_, action) => {
-  console.log('[JS] Action:', Object.keys(action)[0])
+  // console.log('[JS] Action:', Object.keys(action)[0])
 
   if ('Ping' in action) {
     return 'Ping'

@@ -1,12 +1,10 @@
 {
   "resolvers": [
-    "deno:./plugins/resolver-1.mjs",
-    "deno:./plugins/resolver-2.mjs",
+    "node:./plugins/resolver-1.mjs",
     "mach:resolver"
   ],
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
-      "deno:./plugins/transformer.mjs",
       "mach:transformer/javascript"
     ],
     "*.css": [

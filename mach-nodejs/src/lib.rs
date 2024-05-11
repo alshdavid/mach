@@ -44,7 +44,6 @@ pub fn run(
   env.spawn_future(async move {
     while let Some((action, response)) = rx_ipc.recv().await {
       let (tx, mut rx) = unbounded_channel::<NodejsClientResponse>();
-
       tsfn.call_with_return_value(
         Ok(action),
         ThreadsafeFunctionCallMode::Blocking,

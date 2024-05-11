@@ -40,6 +40,7 @@ pub use self::bundle_manifest::*;
 pub use self::bundle_map::*;
 pub use self::config::*;
 pub use self::constants::*;
+pub use self::content_map::*;
 pub use self::dependency::*;
 pub use self::dependency_id::*;
 pub use self::dependency_map::*;

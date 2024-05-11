@@ -1,5 +1,7 @@
+use crate::public::ContentMapSync;
+
 use super::parse_config;
-// use super::reporter::AppReporter;
+use super::reporter::AppReporter;
 use super::BuildCommand;
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::adapters::nodejs::NodejsAdapterOptions;
@@ -23,18 +25,19 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     depending on how that phase uses them
   */
   let asset_map = AssetMapSync::default();
+  let content_map = ContentMapSync::default();
   let dependency_map = DependencyMapSync::default();
   let asset_graph = AssetGraphSync::default();
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
-  // let mut reporter = AppReporter::new(&config);
+  let mut reporter = AppReporter::new(&config);
   let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
     workers: config.node_workers.clone() as u8,
   })
   .await;
 
-  // reporter.print_config();
+  reporter.print_config();
 
   /*
     load_plugins() will read source the .machrc and will
@@ -56,7 +59,7 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     dependency_map.clone(),
   ).await?;
 
-  // reporter.print_transform_stats(&asset_map);
+  reporter.print_transform_stats(&asset_map).await;
 
   // if config.debug {
   //   dbg!(&asset_map.read().unwrap());
