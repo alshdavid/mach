@@ -72,28 +72,28 @@ _default:
 
 [unix]
 build:
+  @rm -rf {{out_dir}}
+  @rm -rf {{out_dir_link}}
   test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
   cd ./mach-nodejs && npm run build:{{profile}}
-  @rm -rf {{out_dir}}
-  @rm -rf {{out_dir_link}}
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./mach-nodejs {{out_dir}}/nodejs
+  @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
 [windows]
 build:
+  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
+  @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   if (!(Test-Path 'node_modules')) { pnpm install }
   cargo build {{profile_cargo}} {{target_cargo}}
   cd .\mach-nodejs && npm run build:{{profile}}
-  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
-  @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null| Out-Null
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}/bin" | Out-Null
+  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  Copy-Item ".\mach-nodejs" -Destination ".\npm\mach-os-arch" -Recurse | Out-Null
+  Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
 [unix]

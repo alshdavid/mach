@@ -28,7 +28,6 @@ impl NodejsInstance {
       .parent()
       .unwrap()
       .join("nodejs")
-      .join("lib")
       .join("main.js");
 
     let mut command = Command::new("node");
