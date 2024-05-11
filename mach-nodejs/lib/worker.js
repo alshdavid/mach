@@ -3,7 +3,7 @@
   an IPC channel provided from the Rust napi module
 */
 import { workerData } from 'node:worker_threads'
-import napi from './napi/napi.cjs'
+import napi from './napi/index.cjs'
 import { Resolver } from './plugins/resolver.js'
 
 globalThis.Mach = {}
