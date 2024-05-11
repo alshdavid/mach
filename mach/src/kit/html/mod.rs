@@ -109,7 +109,7 @@ pub fn get_attribute(
   return None;
 }
 
-pub fn get_tag_name(source_node: &Handle) -> Result<String, String> {
+pub fn _get_tag_name(source_node: &Handle) -> Result<String, String> {
   match source_node.data {
     NodeData::Element { ref name, .. } => {
       return Ok(name.local.to_string());

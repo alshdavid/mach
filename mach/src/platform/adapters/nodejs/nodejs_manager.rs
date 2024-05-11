@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use ipc_channel_adapter::host::asynch::ChildSender;
 use tokio::sync::mpsc::unbounded_channel;
+use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::oneshot::Receiver as OneshotReceiver;
 use tokio::sync::oneshot::Sender as OneshotSender;
 use tokio::sync::Mutex;
@@ -25,9 +26,9 @@ pub struct NodejsManager {
 }
 
 impl NodejsManager {
-  pub async fn new(options: NodejsManagerOptions) -> Self {
-    let (tx, mut rx) =
-      unbounded_channel::<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>();
+  pub async fn new(options: NodejsManagerOptions) -> (Self, UnboundedReceiver<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>) {
+    let (tx, rx) = unbounded_channel::<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>();
+
     let mut workers_sender = vec![];
 
     let node_instance = NodejsInstance::new();
@@ -48,11 +49,13 @@ impl NodejsManager {
       workers_sender.push(worker.child_sender);
     }
 
-    Self {
+    (Self {
       counter: Arc::new(Mutex::new(0)),
       workers_sender: Arc::new(workers_sender),
       worker_count: Arc::new(options.workers),
-    }
+    },
+    rx
+  )
   }
 
   pub async fn send_all(

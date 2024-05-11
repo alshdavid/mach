@@ -1,3 +1,7 @@
+// TODO temporary
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 /*
   To interact with Nodejs, Mach spawns a child Nodejs process.
   That process spawns Nodejs worker threads, each connect to the host

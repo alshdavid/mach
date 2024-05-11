@@ -1,7 +1,6 @@
 use super::NodejsManager;
 use super::NodejsManagerOptions;
 use crate::public::nodejs::NodejsClientRequest;
-use crate::public::nodejs::NodejsHostResponse;
 
 pub struct NodejsAdapterOptions {
   pub workers: u8,
@@ -13,7 +12,7 @@ pub struct NodejsAdapter {
 
 impl NodejsAdapter {
   pub async fn new(options: NodejsAdapterOptions) -> Self {
-    let nodejs_manager = NodejsManager::new(NodejsManagerOptions {
+    let (nodejs_manager, _rx_node_manager) = NodejsManager::new(NodejsManagerOptions {
       workers: options.workers,
     })
     .await;
