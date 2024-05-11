@@ -1,5 +1,3 @@
-use std::thread;
-
 use crate::public::nodejs::{NodejsClientRequest, NodejsHostResponse};
 
 use super::{NodejsManager, NodejsManagerOptions};
@@ -13,10 +11,10 @@ pub struct NodejsAdapter {
 }
 
 impl NodejsAdapter {
-  pub fn new(options: NodejsAdapterOptions) -> Self {
+  pub async fn new(options: NodejsAdapterOptions) -> Self {
     let nodejs_manager = NodejsManager::new(NodejsManagerOptions{
       workers: options.workers,
-    });
+    }).await;
 
     Self {
       nodejs_manager

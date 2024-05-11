@@ -1,3 +1,3 @@
-mod create_async_callback;
+mod await_promise;
 
-pub use self::create_async_callback::*;
+pub use self::await_promise::*;

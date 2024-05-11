@@ -35,8 +35,8 @@ use crate::public::nodejs::NodejsHostResponse;
 
 async fn main_async() {
   let nodejs_worker = NodejsAdapter::new(NodejsAdapterOptions {
-    workers: 10,
-  });
+    workers: 6,
+  }).await;
 
   PROFILER.start("bench");
   let mut reqs = JoinSet::new();
