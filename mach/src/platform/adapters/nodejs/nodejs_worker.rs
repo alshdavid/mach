@@ -6,8 +6,8 @@ use ipc_channel_adapter::host::asynch::ChildSender;
 use tokio::sync::mpsc::UnboundedReceiver;
 use tokio::sync::oneshot::Sender as OneshotSender;
 
-use crate::public::nodejs::NodejsClientRequest;
-use crate::public::nodejs::NodejsClientResponse;
+use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 

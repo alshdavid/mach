@@ -8,8 +8,8 @@ use tokio::sync::oneshot::Sender as OneshotSender;
 use tokio::sync::Mutex;
 
 use super::NodejsInstance;
-use crate::public::nodejs::NodejsClientRequest;
-use crate::public::nodejs::NodejsClientResponse;
+use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 
@@ -26,7 +26,12 @@ pub struct NodejsManager {
 }
 
 impl NodejsManager {
-  pub async fn new(options: NodejsManagerOptions) -> (Self, UnboundedReceiver<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>) {
+  pub async fn new(
+    options: NodejsManagerOptions
+  ) -> (
+    Self,
+    UnboundedReceiver<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>,
+  ) {
     let (tx, rx) = unbounded_channel::<(NodejsHostRequest, OneshotSender<NodejsHostResponse>)>();
 
     let mut workers_sender = vec![];
@@ -49,13 +54,14 @@ impl NodejsManager {
       workers_sender.push(worker.child_sender);
     }
 
-    (Self {
-      counter: Arc::new(Mutex::new(0)),
-      workers_sender: Arc::new(workers_sender),
-      worker_count: Arc::new(options.workers),
-    },
-    rx
-  )
+    (
+      Self {
+        counter: Arc::new(Mutex::new(0)),
+        workers_sender: Arc::new(workers_sender),
+        worker_count: Arc::new(options.workers),
+      },
+      rx,
+    )
   }
 
   pub async fn send_all(

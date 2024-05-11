@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use napi::*;
 use serde::de::DeserializeOwned;
 use tokio::sync::mpsc::UnboundedSender;
@@ -8,7 +10,7 @@ pub fn await_promise<T>(
   tx: UnboundedSender<T>,
 ) -> napi::Result<()>
 where
-  T: DeserializeOwned + Send + 'static,
+  T: DeserializeOwned + Send + Debug + 'static,
 {
   if !result.is_promise()? {
     let res = env.from_js_value(result)?;

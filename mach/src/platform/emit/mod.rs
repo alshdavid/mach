@@ -3,11 +3,11 @@ use std::fs;
 use crate::public::MachConfigSync;
 use crate::public::OutputsSync;
 
-pub fn emit(
+pub async fn emit(
   config: MachConfigSync,
   outputs: OutputsSync,
 ) -> Result<(), String> {
-  let outputs = outputs.read().unwrap();
+  let outputs = outputs.read().await;
 
   if config.dist_dir.exists() && config.clean_dist_dir {
     fs::remove_dir_all(&config.dist_dir).unwrap();

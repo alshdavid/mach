@@ -19,21 +19,21 @@ napi.run(
   workerData.child_sender,
   workerData.child_receiver,
   async (_, action) => {
-  // console.log(action)
-  if (action.id === 0) {
+  console.log('[JS] Action:', Object.keys(action)[0])
+
+  if ('Ping' in action) {
     return 'Ping'
   }
-  if (action.id === 1) {
-    const specifier = action.data
-    try {
-      resolvers[specifier] = await import(specifier)
-    } catch (error) {
-      console.log(error)
-    }
-    return 'ResolverRegister'
+
+  if ('ResolverRegister' in action) {
+    const { specifier } = action.ResolverRegister
+    resolvers[specifier] = await import(specifier)
+    return { 'ResolverRegister': {} }
   }
-  if (action === EVENT_RESOLVER_RUN) {
-    return
+
+  if ('ResolverRun' in action) {
+    return { 'ResolverRun': { resolve_result: { file_path: "/test" }} }
   }
+
   throw new Error("No action")
 })

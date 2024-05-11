@@ -8,8 +8,8 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio::sync::mpsc::UnboundedSender;
 
 use super::NodejsWorker;
-use crate::public::nodejs::NodejsClientRequest;
-use crate::public::nodejs::NodejsClientResponse;
+use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 

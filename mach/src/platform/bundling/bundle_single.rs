@@ -8,7 +8,7 @@ use crate::public::MachConfigSync;
 
 /// This will create a single JavaScript and CSS bundle.
 /// It will create many HTML "bundles"
-pub fn bundle_single(
+pub async fn bundle_single(
   _config: MachConfigSync,
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
@@ -16,11 +16,11 @@ pub fn bundle_single(
   bundle_map: BundleMapSync,
   bundle_graph: BundleGraphSync,
 ) -> Result<(), String> {
-  let asset_map = asset_map.read().unwrap();
-  let asset_graph = asset_graph.read().unwrap();
-  let dependency_map = dependency_map.read().unwrap();
-  let mut bundle_map = bundle_map.write().unwrap();
-  let mut bundle_graph = bundle_graph.write().unwrap();
+  let asset_map = asset_map.read().await;
+  let asset_graph = asset_graph.read().await;
+  let dependency_map = dependency_map.read().await;
+  let mut bundle_map = bundle_map.write().await;
+  let mut bundle_graph = bundle_graph.write().await;
 
   let mut css_bundle = Bundle {
     kind: "css".to_string(),

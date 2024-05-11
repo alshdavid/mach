@@ -1,6 +1,13 @@
 use super::NodejsManager;
 use super::NodejsManagerOptions;
-use crate::public::nodejs::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientRequestPing;
+use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
+use crate::public::nodejs::client::NodejsClientRequestResolverRun;
+use crate::public::nodejs::client::NodejsClientResolverRegister;
+use crate::public::nodejs::client::NodejsClientResponse;
+use crate::public::Dependency;
+use crate::public::ResolveResult;
 
 pub struct NodejsAdapterOptions {
   pub workers: u8,
@@ -23,14 +30,14 @@ impl NodejsAdapter {
   pub async fn ping(&self) {
     self
       .nodejs_manager
-      .send_all(NodejsClientRequest::Ping { id: 0 })
+      .send_all(NodejsClientRequest::Ping(NodejsClientRequestPing{}))
       .await;
   }
 
   pub async fn ping_one(&self) {
     self
       .nodejs_manager
-      .send_and_wait(NodejsClientRequest::Ping { id: 0 })
+      .send_and_wait(NodejsClientRequest::Ping(NodejsClientRequestPing{}))
       .await;
   }
 
@@ -40,10 +47,33 @@ impl NodejsAdapter {
   ) {
     self
       .nodejs_manager
-      .send_all(NodejsClientRequest::ResolverRegister {
-        id: 1,
-        data: specifier.to_string(),
-      })
+      .send_all(NodejsClientRequest::ResolverRegister(NodejsClientRequestResolverRegister{
+        specifier: specifier.to_string()
+      }))
       .await;
+  }
+
+  pub async fn resolver_run(
+    &self,
+    dependency: Dependency,
+  ) -> Option<ResolveResult> {
+    let response = self
+      .nodejs_manager
+      .send_and_wait(NodejsClientRequest::ResolverRun(NodejsClientRequestResolverRun {
+        dependency
+      }))
+      .await;
+
+    let NodejsClientResponse::ResolverRun(result) = response else {
+      panic!();
+    };
+
+    result.resolve_result
+  }
+}
+
+impl std::fmt::Debug for NodejsAdapter {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      f.debug_struct("NodejsAdapter").finish()
   }
 }

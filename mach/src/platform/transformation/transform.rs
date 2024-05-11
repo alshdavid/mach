@@ -1,12 +1,13 @@
-use std::fs;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
-use std::sync::mpsc::channel;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::Sender;
 use std::sync::Arc;
-use std::sync::RwLock;
-use std::thread::JoinHandle;
+
+use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::mpsc::UnboundedSender;
+use tokio::task::JoinHandle;
+use tokio::sync::RwLock;
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::fs;
 
 use crate::platform::config::PluginContainerSync;
 use crate::platform::config::TransformerTarget;
@@ -20,23 +21,21 @@ use crate::public::DependencyOptions;
 use crate::public::MachConfigSync;
 use crate::public::MutableAsset;
 
-pub fn link_and_transform(
+pub async fn link_and_transform(
   config: MachConfigSync,
   plugins: PluginContainerSync,
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
 ) -> Result<(), String> {
-  // Take ownership of the bundling state while we transform the files.
-  // We know they cannot be used elsewhere so this is safe to
   let active_threads = Arc::new(AtomicUsize::new(0));
   let queue = Arc::new(RwLock::new(vec![]));
 
   let mut handles = Vec::<JoinHandle<Result<(), String>>>::new();
-  let mut senders = Vec::<Sender<bool>>::new();
-  let mut receivers = Vec::<Option<Receiver<bool>>>::new();
+  let mut senders = Vec::<UnboundedSender<bool>>::new();
+  let mut receivers = Vec::<Option<UnboundedReceiver<bool>>>::new();
 
-  queue.write().unwrap().push(Dependency {
+  queue.write().await.push(Dependency {
     specifier: config.entry_point.to_str().unwrap().to_string(),
     is_entry: true,
     source_path: ENTRY_ASSET.clone(),
@@ -44,13 +43,15 @@ pub fn link_and_transform(
     ..Dependency::default()
   });
 
-  for _ in 0..config.threads {
-    let (tx, rx) = channel::<bool>();
+  let task_count = config.threads * 10;
+
+  for _ in 0..task_count {
+    let (tx, rx) = unbounded_channel::<bool>();
     senders.push(tx.clone());
     receivers.push(Some(rx));
   }
 
-  for t in 0..config.threads {
+  for t in 0..task_count {
     let config = config.clone();
     let plugins = plugins.clone();
     let asset_map = asset_map.clone();
@@ -59,15 +60,15 @@ pub fn link_and_transform(
     let active_threads = active_threads.clone();
     let queue = queue.clone();
     let senders = senders.clone();
-    let rx = receivers.get_mut(t).unwrap().take().unwrap();
+    let mut rx = receivers.get_mut(t).unwrap().take().unwrap();
 
-    handles.push(std::thread::spawn(move || -> Result<(), String> {
+    handles.push(tokio::spawn(async move {
       loop {
-        let Some(dependency) = queue.write().unwrap().pop() else {
-          let Ok(kill) = rx.recv() else {
+        let Some(dependency) = queue.write().await.pop() else {
+          let Some(kill) = rx.recv().await else {
             break;
           };
-          if (queue.read().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0)
+          if (queue.read().await.len() == 0 && active_threads.load(Ordering::Relaxed) == 0)
             || kill
           {
             break;
@@ -97,7 +98,7 @@ pub fn link_and_transform(
         // Resolve Start
         let resolve_result = 'block: {
           for resolver in &plugins.resolvers {
-            if let Some(resolve_result) = resolver.resolve(&dependency)? {
+            if let Some(resolve_result) = resolver.resolve(&dependency).await? {
               break 'block resolve_result;
             }
           }
@@ -112,14 +113,14 @@ pub fn link_and_transform(
         let dependency_id = dependency.id.clone();
         let source_asset = dependency.source_asset.clone();
 
-        dependency_map.write().unwrap().insert(dependency);
+        dependency_map.write().await.insert(dependency);
 
-        let (asset_id, inserted) = asset_map.write().unwrap().get_or_insert(Asset {
+        let (asset_id, inserted) = asset_map.write().await.get_or_insert(Asset {
           file_path_absolute: resolve_result.file_path.clone(),
           ..Default::default()
         });
 
-        asset_graph.write().unwrap().add_edge(
+        asset_graph.write().await.add_edge(
           source_asset.clone(),
           asset_id.clone(),
           dependency_id.clone(),
@@ -136,7 +137,7 @@ pub fn link_and_transform(
         let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
         let mut content =
-          fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+          fs::read(&resolve_result.file_path).await.map_err(|_| "Unable to read file".to_string())?;
         let mut asset_dependencies = Vec::<DependencyOptions>::new();
         let mut asset_kind = file_target.file_extension.clone();
 
@@ -175,7 +176,7 @@ pub fn link_and_transform(
         }
 
         {
-          let mut asset_map = asset_map.write().unwrap();
+          let mut asset_map = asset_map.write().await;
           let asset = asset_map.get_mut(&asset_id).unwrap();
           asset.name = file_target.file_stem.clone();
           asset.content = content;
@@ -207,7 +208,7 @@ pub fn link_and_transform(
           new_dependencies.push(new_dependency);
         }
 
-        queue.write().unwrap().extend(new_dependencies);
+        queue.write().await.extend(new_dependencies);
         wake_threads();
       }
       return Ok(());
@@ -215,7 +216,7 @@ pub fn link_and_transform(
   }
 
   for handle in handles.drain(0..) {
-    handle.join().unwrap().unwrap();
+    handle.await.unwrap().unwrap();
   }
 
   Ok(())

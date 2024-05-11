@@ -2,8 +2,8 @@ mod napi_utils;
 
 use ipc_channel_adapter::child::asynch::HostReceiver;
 use ipc_channel_adapter::child::asynch::HostSender;
-use mach::public::nodejs::NodejsClientRequest;
-use mach::public::nodejs::NodejsClientResponse;
+use mach::public::nodejs::client::NodejsClientRequest;
+use mach::public::nodejs::client::NodejsClientResponse;
 use mach::public::nodejs::NodejsHostRequest;
 use mach::public::nodejs::NodejsHostResponse;
 use napi::threadsafe_function::ThreadSafeCallContext;

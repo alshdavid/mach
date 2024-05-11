@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
-use std::sync::RwLock;
+
+use tokio::sync::RwLock;
 
 use super::AssetId;
 use super::Dependency;

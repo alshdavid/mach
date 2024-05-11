@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::sync::RwLock;
+
+use tokio::sync::RwLock;
 
 use super::BundleId;
 use super::DependencyId;
