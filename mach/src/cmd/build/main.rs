@@ -12,10 +12,9 @@ use crate::public::BundleGraphSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::OutputsSync;
+use crate::public::MachConfigSync;
 
-pub fn main(command: BuildCommand) -> Result<(), String> {
-  let config = parse_config(command)?;
-
+async fn main_async(config: MachConfigSync) -> Result<(), String> {
   /*
     This is the bundler state. It is passed into
     the bundling phases with read or write permissions
@@ -110,4 +109,19 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   reporter.print_emit_stats();
   reporter.print_finished_stats();
   Ok(())
+}
+
+/*
+  main() initializes the config and starts the async runtime
+  then main_async() takes over.
+*/
+pub fn main(command: BuildCommand) -> Result<(), String> {
+  let config = parse_config(command)?;
+  
+  tokio::runtime::Builder::new_multi_thread()
+    .worker_threads(config.threads)
+    .enable_all()
+    .build()
+    .unwrap()
+    .block_on(main_async(config))
 }
