@@ -7,7 +7,9 @@
     "build:release": "npx cargo-cp-artifact -nc ./lib/napi/index.node -- cargo build --message-format=json-render-diagnostics --release"
   },
   "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
     "@types/node": "20.x.x",
-    "cargo-cp-artifact": "^0.1"
+    "cargo-cp-artifact": "^0.1",
+    "typescript": "^5.4.5"
   }
 }

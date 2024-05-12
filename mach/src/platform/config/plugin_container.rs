@@ -38,6 +38,8 @@ impl TransformerMap {
   }
 }
 
+/// This is a funny abstraction that replicates the filename parsing
+/// logic of Parcel in Nodejs
 pub struct TransformerTarget<'a> {
   pub file_name: String,
   pub file_stem: String,

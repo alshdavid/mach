@@ -607,13 +607,12 @@ dependencies = [
 
 [[package]]
 name = "ipc_channel_adapter"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3537dae617f0b6e1d24daa2faf85edc99e5bd3d0be01207f3f9a0694b9944d48"
+checksum = "0098b52a3922b68b3837fdfd91e21275debf3b0faeaf7a451b8bfb75c2b2461e"
 dependencies = [
  "ipc-channel",
  "serde",
- "tokio",
 ]
 
 [[package]]
@@ -703,6 +702,7 @@ dependencies = [
  "clap",
  "glob-match",
  "html5ever",
+ "ipc_channel_adapter",
  "markup5ever_rcdom",
  "normalize-path",
  "num_cpus",

@@ -1,13 +1,13 @@
 use std::fmt::Debug;
+use std::sync::mpsc::Sender;
 
 use napi::*;
 use serde::de::DeserializeOwned;
-use tokio::sync::mpsc::UnboundedSender;
 
 pub fn await_promise<T>(
   env: Env,
   result: JsUnknown,
-  tx: UnboundedSender<T>,
+  tx: Sender<T>,
 ) -> napi::Result<()>
 where
   T: DeserializeOwned + Send + Debug + 'static,

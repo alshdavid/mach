@@ -6,20 +6,8 @@ use serde::Serialize;
 
 use super::InternalId;
 
-#[derive(Clone, Default, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DependencyId(pub InternalId);
-
-impl Serialize for DependencyId {
-  fn serialize<S>(
-    &self,
-    serializer: S,
-  ) -> Result<S::Ok, S::Error>
-  where
-    S: serde::Serializer,
-  {
-    serializer.serialize_str(&self.0.to_string())
-  }
-}
 
 impl Debug for DependencyId {
   fn fmt(

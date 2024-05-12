@@ -1,11 +1,3 @@
-export type ResolverOpts = {}
-
-export class Resolver {
-  constructor(opts: ResolverOpts)
-}
-
-export type TransformerOpts = {}
-
-export class Transformer {
-  constructor(opts: TransformerOpts)
-}
+export type * from './resolver/index.d.ts'
+export type * from './transformer/index.d.ts'
+export type * from './types/index.d.ts'

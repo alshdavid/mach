@@ -1,11 +1,14 @@
+use std::io::Write;
+use std::process::Child;
+use std::process::Command;
 use std::process::Stdio;
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Sender;
+use std::sync::Arc;
+use std::thread;
 
-use ipc_channel_adapter::host::asynch::ChildReceiver;
-use ipc_channel_adapter::host::asynch::ChildSender;
-use tokio::io::AsyncWriteExt;
-use tokio::process::Command;
-use tokio::sync::mpsc::unbounded_channel;
-use tokio::sync::mpsc::UnboundedSender;
+use ipc_channel_adapter::host::sync::ChildReceiver;
+use ipc_channel_adapter::host::sync::ChildSender;
 
 use super::NodejsWorker;
 use crate::public::nodejs::client::NodejsClientRequest;
@@ -15,10 +18,20 @@ use crate::public::nodejs::NodejsHostResponse;
 
 #[derive(Clone)]
 pub struct NodejsInstance {
-  tx_stdin: UnboundedSender<Vec<u8>>,
+  tx_stdin: Sender<Vec<u8>>,
+  _child: Arc<Child>,
 }
 
-/// NodejsInstance wraps the Node.js Process
+/// NodejsInstance wraps the Node.js Process.
+///
+/// This wrapper uses stdin to instruct the child process to spawn
+/// additional Nodejs worker threads.
+///
+/// Worker threads each individually have their own IPC channel pair
+///
+/// On the other end, the Nodejs workers import a napi module with the
+/// IPC client channels, where types are sent into JavaScript using
+/// the built-in napi-rs serialization
 impl NodejsInstance {
   pub fn new() -> Self {
     let entry = std::env::current_exe()
@@ -41,22 +54,25 @@ impl NodejsInstance {
 
     let mut child = command.spawn().unwrap();
 
-    let (tx_stdin, mut rx_stdin) = unbounded_channel::<Vec<u8>>();
+    let (tx_stdin, rx_stdin) = channel::<Vec<u8>>();
 
     let mut stdin = child.stdin.take().unwrap();
 
-    tokio::spawn(async move {
-      while let Some(mut bytes) = rx_stdin.recv().await {
+    thread::spawn(move || {
+      while let Ok(mut bytes) = rx_stdin.recv() {
         bytes.push(10);
-        stdin.write(&bytes).await.unwrap();
+        stdin.write(&bytes).unwrap();
       }
     });
 
-    Self { tx_stdin }
+    Self {
+      tx_stdin,
+      _child: Arc::new(child),
+    }
   }
 
-  pub async fn spawn_worker(&self) -> NodejsWorker {
-    let child_sender = ChildSender::<NodejsClientRequest, NodejsClientResponse>::new();
+  pub fn spawn_worker(&self) -> NodejsWorker {
+    let child_sender = ChildSender::<NodejsClientRequest, NodejsClientResponse>::new().unwrap();
     let (child_receiver, rx_child_receiver) =
       ChildReceiver::<NodejsHostRequest, NodejsHostResponse>::new().unwrap();
 

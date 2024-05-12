@@ -20,5 +20,6 @@ pub struct NodejsClientRequestResolverRegister {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientRequestResolverRun {
+  pub specifier: String,
   pub dependency: Dependency,
 }

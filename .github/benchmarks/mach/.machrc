@@ -1,0 +1,19 @@
+{
+  "resolvers": [
+    "mach:resolver"
+  ],
+  "transformers": {
+    "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
+      "mach:transformer/javascript"
+    ],
+    "*.css": [
+      "mach:transformer/css"
+    ],
+    "*.html": [
+      "mach:transformer/html"
+    ],
+    "*.{svg,png,json,gif,woff2,woff,txt}": [
+      "mach:transformer/drop"
+    ]
+  }
+}

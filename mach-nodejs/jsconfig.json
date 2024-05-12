@@ -3,10 +3,10 @@
     "target": "ESNext",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "strict": false,
+    "strict": true,
     "checkJs": true
   },
   "include": [
-    "lib/**/*.js"
+    "lib"
   ]
 }

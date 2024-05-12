@@ -48,42 +48,53 @@ impl AppReporter {
       time_package: 0.0,
     };
   }
+
+  pub fn log(
+    &self,
+    v: &str,
+  ) {
+    println!("{}", v);
+  }
+
   pub fn print_config(&self) {
-    println!(
+    self.log(&format!(
       "Entry:         {}",
       self.config.entry_point.to_str().unwrap()
-    );
-    println!(
+    ));
+    self.log(&format!(
       "Root:          {}",
       self.config.project_root.to_str().unwrap()
-    );
+    ));
     if !&self.config.machrc.is_default {
-      println!(
+      self.log(&format!(
         "Mach Config:   {}",
         self.config.machrc.file_path.to_str().unwrap()
-      );
+      ));
     } else {
-      println!("Mach Config:   Default");
+      self.log(&format!("Mach Config:   Default"));
     }
-    println!("Out Dir:       {}", self.config.dist_dir.to_str().unwrap());
-    println!("Optimize:      {}", self.config.optimize);
-    println!("Threads:       {}", self.config.threads);
-    println!("Splitting:     {}", self.config.bundle_splitting);
+    self.log(&format!(
+      "Out Dir:       {}",
+      self.config.dist_dir.to_str().unwrap()
+    ));
+    self.log(&format!("Optimize:      {}", self.config.optimize));
+    self.log(&format!("Threads:       {}", self.config.threads));
+    self.log(&format!("Splitting:     {}", self.config.bundle_splitting));
   }
 
   pub fn print_init_stats(&mut self) {
     let time_init = self.config.time_elapsed();
-    println!("  Init:          {:.3}s", time_init,);
+    self.log(&format!("  Init:          {:.3}s", time_init));
     self.time_init = time_init;
   }
 
   pub fn print_transform_stats(&mut self) {
     let time_transform = self.config.time_elapsed();
-    println!(
+    self.log(&format!(
       "  Transform:     {:.3}s  (Assets {})",
       time_transform - self.time_init,
       self.asset_map.read().unwrap().len()
-    );
+    ));
     self.time_transform = time_transform;
 
     if self.config.debug {
@@ -111,7 +122,7 @@ impl AppReporter {
     for (bundle_kind, count) in bundle_kinds.iter() {
       print!(", {} {}", bundle_kind, count);
     }
-    println!(")");
+    self.log(&format!(")"));
     self.time_bundle = time_bundle;
 
     if self.config.debug {
@@ -122,7 +133,10 @@ impl AppReporter {
 
   pub fn print_package_stats(&mut self) {
     let time_package = self.config.time_elapsed();
-    println!("  Package:       {:.3}s", time_package - self.time_bundle);
+    self.log(&format!(
+      "  Package:       {:.3}s",
+      time_package - self.time_bundle
+    ));
     self.time_package = time_package;
 
     if self.config.debug {
@@ -132,10 +146,16 @@ impl AppReporter {
 
   pub fn print_emit_stats(&mut self) {
     let time_emit = self.config.time_elapsed();
-    println!("  Emit:          {:.3}s", time_emit - self.time_package);
+    self.log(&format!(
+      "  Emit:          {:.3}s",
+      time_emit - self.time_package
+    ));
   }
 
   pub fn print_finished_stats(&mut self) {
-    println!("Finished in:   {:.3}s", self.config.time_elapsed());
+    self.log(&format!(
+      "Finished in:   {:.3}s",
+      self.config.time_elapsed()
+    ));
   }
 }

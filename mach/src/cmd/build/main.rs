@@ -1,11 +1,13 @@
 use super::parse_config;
 use super::reporter::AppReporter;
 use super::BuildCommand;
+use crate::platform::adapters::nodejs::NodejsAdapter;
+use crate::platform::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
-use crate::platform::transformation::link_and_transform;
+use crate::platform::transformation::resolve_and_transform;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
@@ -38,9 +40,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     outputs.clone(),
   );
 
-  // let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
-  //   workers: config.node_workers.clone() as u8,
-  // });
+  let (nodejs_adapter, _) = NodejsAdapter::new(NodejsAdapterOptions {
+    workers: config.node_workers.clone() as u8,
+  });
 
   reporter.print_config();
 
@@ -48,17 +50,17 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let plugins = load_plugins(&config, &config.machrc)?;
+  let plugins = load_plugins(&config, &config.machrc, nodejs_adapter.clone())?;
 
   reporter.print_init_stats();
 
   /*
-    link_and_transform() will read source files, identify import statements
+    resolve_and_transform() will read source files, identify import statements
     before modifying their contents (like removing TypeScript types).
 
     This will loop until there are no more import statements to resolve
   */
-  link_and_transform(
+  resolve_and_transform(
     config.clone(),
     plugins.clone(),
     asset_map.clone(),
@@ -80,7 +82,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     bundles.clone(),
     bundle_graph.clone(),
   )?;
-  
+
   reporter.print_bundle_stats();
 
   /*
