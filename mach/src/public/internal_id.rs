@@ -1,11 +1,14 @@
 use std::fmt;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use serde::Deserialize;
 use serde::Serialize;
-use snowflake::ProcessUniqueId;
+
+static COUNT: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct InternalId(ProcessUniqueId);
+pub struct InternalId(u64);
 
 impl InternalId {
   #[allow(dead_code)]
@@ -21,7 +24,7 @@ impl InternalId {
 
 impl Default for InternalId {
   fn default() -> Self {
-    Self(ProcessUniqueId::new())
+    Self(COUNT.fetch_add(1, Ordering::Relaxed))
   }
 }
 

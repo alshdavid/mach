@@ -558,7 +558,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "snowflake",
  "swc_core",
 ]
 
@@ -1094,16 +1093,6 @@ dependencies = [
  "autocfg",
  "static_assertions",
  "version_check",
-]
-
-[[package]]
-name = "snowflake"
-version = "1.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27207bb65232eda1f588cf46db2fee75c0808d557f6b3cf19a75f5d6d7c94df1"
-dependencies = [
- "serde",
- "serde_derive",
 ]
 
 [[package]]
