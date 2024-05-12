@@ -44,7 +44,7 @@ let bin_pkg_dir = path.dirname(bin_pkg_json_path)
 
 fs.rmSync(path.join(__dirname, 'cmd'), {recursive : true, force: true })
 fs.symlinkSync(
-  bin_pkg_dir,
+  path.relative(__dirname, bin_pkg_dir),
   path.join(__dirname, 'cmd'),
   'dir'
 )

@@ -9,7 +9,7 @@ use oxc_resolver::ResolveOptions;
 use oxc_resolver::Resolver;
 
 pub fn resolve(
-  from_raw: &PathBuf,
+  from_raw: &Path,
   specifier: &str,
 ) -> Result<PathBuf, String> {
   if specifier.starts_with(MAIN_SEPARATOR_STR) {
@@ -28,7 +28,17 @@ pub fn resolve(
     return Ok(from.join(specifier).normalize());
   }
 
-  let result = resolve_oxc(&specifier, &from);
+  let oxc_options = ResolveOptions {
+    alias_fields: vec![],
+    alias: vec![],
+    ..ResolveOptions::default()
+  };
+
+  let result = resolve_oxc(
+    &from,
+    &specifier,
+    oxc_options.clone(),
+  );
 
   if let Ok(result) = result {
     return Ok(result);
@@ -51,7 +61,7 @@ pub fn resolve(
     "/src/index.tsx",
   ] {
     let spec = format!("{}{}", specifier, try_this);
-    let result = resolve_oxc(&spec, &from);
+    let result = resolve_oxc(&from, &spec, oxc_options.clone());
     if let Ok(result) = result {
       return Ok(result);
     }
@@ -64,16 +74,11 @@ pub fn resolve(
   ));
 }
 
-fn resolve_oxc(
-  specifier: &str,
+pub fn resolve_oxc(
   from: &Path,
+  specifier: &str,
+  options: ResolveOptions,
 ) -> Result<PathBuf, String> {
-  let options = ResolveOptions {
-    alias_fields: vec![],
-    alias: vec![],
-    ..ResolveOptions::default()
-  };
-
   let resolver = Resolver::new(options);
 
   match resolver.resolve(from, specifier) {

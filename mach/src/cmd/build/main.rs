@@ -42,7 +42,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   let (nodejs_adapter, _) = NodejsAdapter::new(NodejsAdapterOptions {
     workers: config.node_workers.clone() as u8,
-  });
+  })?;
 
   reporter.print_config();
 

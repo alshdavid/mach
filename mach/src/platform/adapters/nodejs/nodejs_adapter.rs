@@ -34,15 +34,15 @@ pub struct NodejsAdapter {
 impl NodejsAdapter {
   pub fn new(
     options: NodejsAdapterOptions
-  ) -> (
+  ) -> Result<(
     Self,
     Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>,
-  ) {
+  ), String> {
     let (tx, rx) = channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
 
     let mut workers_sender = vec![];
 
-    let nodejs_instance = NodejsInstance::new();
+    let nodejs_instance = NodejsInstance::new()?;
 
     for _ in 0..options.workers {
       let worker = nodejs_instance.spawn_worker();
@@ -60,7 +60,7 @@ impl NodejsAdapter {
       workers_sender.push(worker.child_sender);
     }
 
-    (
+    Ok((
       Self {
         counter: Arc::new(Mutex::new(0)),
         workers_sender: Arc::new(workers_sender),
@@ -68,7 +68,7 @@ impl NodejsAdapter {
         _nodejs_instance: nodejs_instance,
       },
       rx,
-    )
+    ))
   }
 
   pub fn send_all(

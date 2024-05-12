@@ -9,12 +9,14 @@ use std::thread;
 
 use ipc_channel_adapter::host::sync::ChildReceiver;
 use ipc_channel_adapter::host::sync::ChildSender;
+use oxc_resolver::ResolveOptions;
 
 use super::NodejsWorker;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
+use crate::platform::plugins::resolver_javascript::resolve_oxc;
 
 #[derive(Clone)]
 pub struct NodejsInstance {
@@ -33,15 +35,37 @@ pub struct NodejsInstance {
 /// IPC client channels, where types are sent into JavaScript using
 /// the built-in napi-rs serialization
 impl NodejsInstance {
-  pub fn new() -> Self {
-    let entry = std::env::current_exe()
-      .unwrap()
-      .parent()
-      .unwrap()
-      .parent()
-      .unwrap()
-      .join("nodejs")
-      .join("main.js");
+  pub fn new() -> Result<Self, String> {
+    let exe_path = std::env::current_exe().unwrap();
+    let exe_dir = exe_path.parent().unwrap();
+    
+    let entry = 'block: {
+      let local_path = exe_dir
+        .parent()
+        .unwrap()
+        .join("nodejs")
+        .join("main.js");
+
+      if local_path.exists() {
+        break 'block local_path;
+      }
+
+      if let Ok(resolved) = resolve_oxc(
+        exe_dir,
+        "@alshdavid/mach/cmd/nodejs/main.js",
+        ResolveOptions {
+          symlinks: false,
+          ..Default::default()
+        }
+      ) {
+        break 'block resolved;
+      };
+
+      return Err("Nodejs entry not found".to_string());
+    };
+
+    println!("{:?}", std::env::current_exe()
+    .unwrap());
 
     let mut command = Command::new("node");
     command.arg("--title");
@@ -65,10 +89,10 @@ impl NodejsInstance {
       }
     });
 
-    Self {
+    Ok(Self {
       tx_stdin,
       _child: Arc::new(child),
-    }
+    })
   }
 
   pub fn spawn_worker(&self) -> NodejsWorker {
