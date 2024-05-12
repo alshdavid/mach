@@ -5,23 +5,25 @@ use std::process::Stdio;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 
 use ipc_channel_adapter::host::sync::ChildReceiver;
 use ipc_channel_adapter::host::sync::ChildSender;
 use oxc_resolver::ResolveOptions;
 
-use super::NodejsWorker;
 use crate::platform::plugins::resolver_javascript::resolve_oxc;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 
+use super::NodejsWorker;
+
 #[derive(Clone)]
 pub struct NodejsInstance {
-  tx_stdin: Sender<Vec<u8>>,
-  _child: Arc<Child>,
+  tx_stdin: Sender<Option<Vec<u8>>>,
+  child: Arc<Mutex<Child>>,
 }
 
 /// NodejsInstance wraps the Node.js Process.
@@ -60,8 +62,6 @@ impl NodejsInstance {
       return Err("Nodejs entry not found".to_string());
     };
 
-    println!("{:?}", std::env::current_exe().unwrap());
-
     let mut command = Command::new("node");
     command.arg("--title");
     command.arg("mach_nodejs_worker");
@@ -73,20 +73,24 @@ impl NodejsInstance {
 
     let mut child = command.spawn().unwrap();
 
-    let (tx_stdin, rx_stdin) = channel::<Vec<u8>>();
+    let (tx_stdin, rx_stdin) = channel::<Option<Vec<u8>>>();
 
     let mut stdin = child.stdin.take().unwrap();
 
     thread::spawn(move || {
-      while let Ok(mut bytes) = rx_stdin.recv() {
-        bytes.push(10);
-        stdin.write(&bytes).unwrap();
+      while let Ok(bytes) = rx_stdin.recv() {
+        if let Some(mut bytes) = bytes {
+          bytes.push(10);
+          stdin.write(&bytes).unwrap();
+        } else {
+          return;
+        }
       }
     });
 
     Ok(Self {
       tx_stdin,
-      _child: Arc::new(child),
+      child: Arc::new(Mutex::new(child)),
     })
   }
 
@@ -99,11 +103,21 @@ impl NodejsInstance {
       "{}&{}",
       child_sender.server_name, child_receiver.server_name
     );
-    self.tx_stdin.send(msg.as_bytes().to_vec()).unwrap();
+    self.tx_stdin.send(Some(msg.as_bytes().to_vec())).unwrap();
 
     NodejsWorker {
       child_sender,
       child_receiver: rx_child_receiver,
     }
+  }
+}
+
+impl Drop for NodejsInstance {
+  fn drop(&mut self) {
+    println!("dropped");
+    let mut child = self.child.lock().unwrap();
+    if self.tx_stdin.send(None).is_err() || child.kill().is_err() || child.wait().is_err() {
+      return;
+    };
   }
 }

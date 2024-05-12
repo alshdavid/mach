@@ -28,7 +28,7 @@ pub struct NodejsAdapter {
   counter: Arc<Mutex<u8>>,
   workers_sender: Arc<Vec<ChildSender<NodejsClientRequest, NodejsClientResponse>>>,
   worker_count: Arc<u8>,
-  _nodejs_instance: NodejsInstance,
+  _nodejs_instance: Arc<NodejsInstance>,
 }
 
 impl NodejsAdapter {
@@ -68,7 +68,7 @@ impl NodejsAdapter {
         counter: Arc::new(Mutex::new(0)),
         workers_sender: Arc::new(workers_sender),
         worker_count: Arc::new(options.workers),
-        _nodejs_instance: nodejs_instance,
+        _nodejs_instance: Arc::new(nodejs_instance),
       },
       rx,
     ))
