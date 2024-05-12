@@ -19,10 +19,12 @@ impl Resolver for ResolverNodejs {
   ) -> Result<Option<ResolveResult>, String> {
     let response = self
       .nodejs_adapter
-      .send_and_wait(NodejsClientRequest::ResolverRun(NodejsClientRequestResolverRun {
-        specifier: self.resolver_specifier.clone(),
-        dependency: dependency.clone()
-      }));
+      .send_and_wait(NodejsClientRequest::ResolverRun(
+        NodejsClientRequestResolverRun {
+          specifier: self.resolver_specifier.clone(),
+          dependency: dependency.clone(),
+        },
+      ));
 
     let NodejsClientResponse::ResolverRun(result) = response else {
       panic!();

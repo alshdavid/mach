@@ -18,12 +18,17 @@ pub struct NodejsAdapterOptions {
   pub workers: u8,
 }
 
+/// NodejsAdapter holds the Nodejs child process and the IPC channels
+/// for each worker.
+/// 
+/// The send() method uses a "round-robin" strategy to decide which
+/// Nodejs child to send a request to.
 #[derive(Clone)]
 pub struct NodejsAdapter {
   counter: Arc<Mutex<u8>>,
   workers_sender: Arc<Vec<ChildSender<NodejsClientRequest, NodejsClientResponse>>>,
   worker_count: Arc<u8>,
-  nodejs_instance: NodejsInstance,
+  _nodejs_instance: NodejsInstance,
 }
 
 impl NodejsAdapter {
@@ -60,7 +65,7 @@ impl NodejsAdapter {
         counter: Arc::new(Mutex::new(0)),
         workers_sender: Arc::new(workers_sender),
         worker_count: Arc::new(options.workers),
-        nodejs_instance,
+        _nodejs_instance: nodejs_instance,
       },
       rx,
     )
@@ -81,6 +86,7 @@ impl NodejsAdapter {
     }
   }
 
+  #[allow(unused)]
   pub fn send(
     &self,
     req: NodejsClientRequest,
@@ -110,7 +116,12 @@ impl NodejsAdapter {
 }
 
 impl std::fmt::Debug for NodejsAdapter {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      f.debug_struct("NodejsAdapter").field("worker_count", &self.worker_count).finish()
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("NodejsAdapter")
+      .field("worker_count", &self.worker_count)
+      .finish()
   }
 }

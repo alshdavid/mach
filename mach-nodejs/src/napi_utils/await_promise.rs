@@ -1,4 +1,5 @@
-use std::{fmt::Debug, sync::mpsc::Sender};
+use std::fmt::Debug;
+use std::sync::mpsc::Sender;
 
 use napi::*;
 use serde::de::DeserializeOwned;

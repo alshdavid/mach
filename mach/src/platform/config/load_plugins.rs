@@ -8,8 +8,8 @@ use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
-use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
 use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -41,13 +41,18 @@ pub fn load_plugins(
       }
 
       if engine == "node" {
-        let specifier = resolve(&config.project_root, specifier)?.to_str().unwrap().to_string();
-        nodejs_adapter.send_all(NodejsClientRequest::ResolverRegister(NodejsClientRequestResolverRegister{
-          specifier: specifier.clone(),
-        }));
+        let specifier = resolve(&config.project_root, specifier)?
+          .to_str()
+          .unwrap()
+          .to_string();
+        nodejs_adapter.send_all(NodejsClientRequest::ResolverRegister(
+          NodejsClientRequestResolverRegister {
+            specifier: specifier.clone(),
+          },
+        ));
         plugins.resolvers.push(Box::new(ResolverNodejs {
           resolver_specifier: specifier.clone(),
-          nodejs_adapter: nodejs_adapter.clone()
+          nodejs_adapter: nodejs_adapter.clone(),
         }));
         continue;
       }

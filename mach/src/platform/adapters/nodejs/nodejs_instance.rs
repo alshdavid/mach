@@ -19,10 +19,19 @@ use crate::public::nodejs::NodejsHostResponse;
 #[derive(Clone)]
 pub struct NodejsInstance {
   tx_stdin: Sender<Vec<u8>>,
-  child: Arc<Child>,
+  _child: Arc<Child>,
 }
 
-/// NodejsInstance wraps the Node.js Process
+/// NodejsInstance wraps the Node.js Process. 
+/// 
+/// This wrapper uses stdin to instruct the child process to spawn 
+/// additional Nodejs worker threads. 
+/// 
+/// Worker threads each individually have their own IPC channel pair
+/// 
+/// On the other end, the Nodejs workers import a napi module with the
+/// IPC client channels, where types are sent into JavaScript using
+/// the built-in napi-rs serialization
 impl NodejsInstance {
   pub fn new() -> Self {
     let entry = std::env::current_exe()
@@ -56,9 +65,9 @@ impl NodejsInstance {
       }
     });
 
-    Self { 
+    Self {
       tx_stdin,
-      child: Arc::new(child),
+      _child: Arc::new(child),
     }
   }
 

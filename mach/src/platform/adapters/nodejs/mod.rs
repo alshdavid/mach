@@ -1,13 +1,14 @@
-// TODO temporary
-#![allow(unused_imports)]
-#![allow(dead_code)]
-
 /*
   To interact with Nodejs, Mach spawns a child Nodejs process.
-  That process spawns Nodejs worker threads, each connect to the host
-  via an IPC channel.
 
-  The IPC channel uses native pipes/sockets, the specific type depends
+  The child process spawns Nodejs worker threads, each worker imports a
+  napi module that contains the client implementation to connect to 
+  their corresponding host IPC channel.
+
+  The messages the workers receive via IPC are then passed into JavaScript
+  using the built-in serialization system offered by napi.
+
+  The IPC channels uses native pipes/sockets, the specific type depends
   on the platform APIs.
 
   There is very little communication overhead with this approach, though

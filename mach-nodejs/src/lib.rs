@@ -25,7 +25,8 @@ pub fn run(
   child_receiver: String,
   callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
-  let (_, rx_ipc) = HostReceiver::<NodejsClientRequest, NodejsClientResponse>::new(&child_sender).unwrap();
+  let (_, rx_ipc) =
+    HostReceiver::<NodejsClientRequest, NodejsClientResponse>::new(&child_sender).unwrap();
 
   let _tx_ipc = HostSender::<NodejsHostRequest, NodejsHostResponse>::new(&child_receiver).unwrap();
 

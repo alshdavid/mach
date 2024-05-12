@@ -49,7 +49,10 @@ impl AppReporter {
     };
   }
 
-  pub fn log(&self, v: &str) {
+  pub fn log(
+    &self,
+    v: &str,
+  ) {
     println!("{}", v);
   }
 
@@ -70,7 +73,10 @@ impl AppReporter {
     } else {
       self.log(&format!("Mach Config:   Default"));
     }
-    self.log(&format!("Out Dir:       {}", self.config.dist_dir.to_str().unwrap()));
+    self.log(&format!(
+      "Out Dir:       {}",
+      self.config.dist_dir.to_str().unwrap()
+    ));
     self.log(&format!("Optimize:      {}", self.config.optimize));
     self.log(&format!("Threads:       {}", self.config.threads));
     self.log(&format!("Splitting:     {}", self.config.bundle_splitting));
@@ -127,7 +133,10 @@ impl AppReporter {
 
   pub fn print_package_stats(&mut self) {
     let time_package = self.config.time_elapsed();
-    self.log(&format!("  Package:       {:.3}s", time_package - self.time_bundle));
+    self.log(&format!(
+      "  Package:       {:.3}s",
+      time_package - self.time_bundle
+    ));
     self.time_package = time_package;
 
     if self.config.debug {
@@ -137,10 +146,16 @@ impl AppReporter {
 
   pub fn print_emit_stats(&mut self) {
     let time_emit = self.config.time_elapsed();
-    self.log(&format!("  Emit:          {:.3}s", time_emit - self.time_package));
+    self.log(&format!(
+      "  Emit:          {:.3}s",
+      time_emit - self.time_package
+    ));
   }
 
   pub fn print_finished_stats(&mut self) {
-    self.log(&format!("Finished in:   {:.3}s", self.config.time_elapsed()));
+    self.log(&format!(
+      "Finished in:   {:.3}s",
+      self.config.time_elapsed()
+    ));
   }
 }

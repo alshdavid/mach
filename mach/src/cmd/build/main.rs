@@ -82,7 +82,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     bundles.clone(),
     bundle_graph.clone(),
   )?;
-  
+
   reporter.print_bundle_stats();
 
   /*
