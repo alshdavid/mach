@@ -11,8 +11,8 @@ target/
 /benchmarks
 *.node
 
-./npm/mach-os-arch/*
-!./npm/mach-os-arch/package.json
+npm/mach-os-arch/*
+!npm/mach-os-arch/package.json
 
 # dependencies
 node_modules/

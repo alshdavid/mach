@@ -162,11 +162,6 @@ build-publish-common:
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
     "./npm/mach-os-arch/package.json" \
-    "bin" \
-    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "bin" {{os}})
-
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./npm/mach-os-arch/package.json" \
     "os.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "os" {{os}})
 
