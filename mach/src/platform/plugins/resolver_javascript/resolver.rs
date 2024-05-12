@@ -6,9 +6,8 @@ use crate::public::Resolver;
 #[derive(Debug)]
 pub struct ResolverJavaScript {}
 
-#[async_trait::async_trait]
 impl Resolver for ResolverJavaScript {
-  async fn resolve(
+  fn resolve(
     &self,
     dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {

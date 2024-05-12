@@ -12,7 +12,7 @@ use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
 
-pub async fn load_plugins(
+pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
   nodejs_adapter: &NodejsAdapter,
@@ -39,11 +39,11 @@ pub async fn load_plugins(
       }
 
       if engine == "node" {
-        let specifier = resolve(&config.project_root, specifier)?;
-        nodejs_adapter.resolver_register(specifier.to_str().unwrap()).await;
-        plugins.resolvers.push(Box::new(ResolverNodejs { 
-          nodejs_adapter: nodejs_adapter.clone()
-        }));
+        // let specifier = resolve(&config.project_root, specifier)?;
+        // nodejs_adapter.resolver_register(specifier.to_str().unwrap()).await;
+        // plugins.resolvers.push(Box::new(ResolverNodejs { 
+        //   nodejs_adapter: nodejs_adapter.clone()
+        // }));
         continue;
       }
 

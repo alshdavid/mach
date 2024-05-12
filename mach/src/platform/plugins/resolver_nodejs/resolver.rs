@@ -10,11 +10,11 @@ pub struct ResolverNodejs {
 
 #[async_trait::async_trait]
 impl Resolver for ResolverNodejs {
-  async fn resolve(
+  fn resolve(
     &self,
     dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {
-    println!("{:?}", self.nodejs_adapter.resolver_run(dependency.clone()).await);
+    // println!("{:?}", self.nodejs_adapter.resolver_run(dependency.clone()).await);
     Ok(None)
   }
 }

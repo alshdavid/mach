@@ -8,7 +8,7 @@ use crate::platform::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
-// use crate::platform::packaging::package;
+use crate::platform::packaging::package;
 use crate::platform::transformation::link_and_transform;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
@@ -18,24 +18,25 @@ use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
 use crate::public::OutputsSync;
 
-async fn main_async(config: MachConfigSync) -> Result<(), String> {
+pub fn main(command: BuildCommand) -> Result<(), String> {
+  let config = parse_config(command)?;
+  
   /*
     This is the bundler state. It is passed into
     the bundling phases with read or write permissions
     depending on how that phase uses them
   */
   let asset_map = AssetMapSync::default();
-  let content_map = ContentMapSync::default();
   let dependency_map = DependencyMapSync::default();
   let asset_graph = AssetGraphSync::default();
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
   let mut reporter = AppReporter::new(&config);
+
   let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
     workers: config.node_workers.clone() as u8,
-  })
-  .await;
+  });
 
   reporter.print_config();
 
@@ -43,7 +44,7 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let plugins = load_plugins(&config, &config.machrc, &nodejs_adapter).await?;
+  let plugins = load_plugins(&config, &config.machrc, &nodejs_adapter)?;
 
   reporter.print_init_stats();
 
@@ -59,9 +60,9 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     asset_map.clone(),
     asset_graph.clone(),
     dependency_map.clone(),
-  ).await?;
+  )?;
 
-  reporter.print_transform_stats(&asset_map).await;
+  reporter.print_transform_stats(&asset_map);
 
   // if config.debug {
   //   dbg!(&asset_map.read().unwrap());
@@ -79,14 +80,14 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     dependency_map.clone(),
     bundles.clone(),
     bundle_graph.clone(),
-  ).await?;
+  )?;
 
-  // reporter.print_bundle_stats(&bundles);
+  reporter.print_bundle_stats(&bundles);
 
-  // if config.debug {
-  //   dbg!(&bundles.read().unwrap());
-  //   dbg!(&bundle_graph.read().unwrap());
-  // }
+  if config.debug {
+    dbg!(&bundles.read().unwrap());
+    dbg!(&bundle_graph.read().unwrap());
+  }
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -96,43 +97,28 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
     It also injects the runtime and rewrites import
     statements to point to the new paths
   */
-  // package(
-  //   config.clone(),
-  //   asset_map.clone(),
-  //   asset_graph.clone(),
-  //   dependency_map.clone(),
-  //   bundles.clone(),
-  //   bundle_graph.clone(),
-  //   outputs.clone(),
-  // ).await?;
+  package(
+    config.clone(),
+    asset_map.clone(),
+    asset_graph.clone(),
+    dependency_map.clone(),
+    bundles.clone(),
+    bundle_graph.clone(),
+    outputs.clone(),
+  )?;
 
-  // reporter.print_package_stats();
+  reporter.print_package_stats();
 
-  // if config.debug {
-  //   dbg!(&outputs.read().unwrap());
-  // }
+  if config.debug {
+    dbg!(&outputs.read().unwrap());
+  }
 
   /*
     emit() writes the contents of the bundles to disk
   */
-  emit(config.clone(), outputs).await?;
+  emit(config.clone(), outputs)?;
 
-  // reporter.print_emit_stats();
-  // reporter.print_finished_stats();
+  reporter.print_emit_stats();
+  reporter.print_finished_stats();
   Ok(())
-}
-
-/*
-  main() initializes the config and starts the async runtime
-  then main_async() takes over.
-*/
-pub fn main(command: BuildCommand) -> Result<(), String> {
-  let config = parse_config(command)?;
-
-  tokio::runtime::Builder::new_multi_thread()
-    .worker_threads(config.threads)
-    .enable_all()
-    .build()
-    .unwrap()
-    .block_on(main_async(config))
 }

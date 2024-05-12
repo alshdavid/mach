@@ -4,8 +4,7 @@ use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
-
-use tokio::sync::RwLock;
+use std::sync::RwLock;
 
 use super::Asset;
 use super::AssetId;

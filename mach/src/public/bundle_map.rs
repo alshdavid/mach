@@ -1,8 +1,7 @@
 use std::collections::hash_map::Values;
 use std::collections::HashMap;
 use std::sync::Arc;
-
-use tokio::sync::RwLock;
+use std::sync::RwLock;
 
 use super::Bundle;
 use super::BundleId;

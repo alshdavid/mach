@@ -6,9 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use super::dependency;
 
-#[async_trait::async_trait]
 pub trait Resolver: Debug + Send + Sync {
-  async fn resolve(
+  fn resolve(
     &self,
     dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String>;

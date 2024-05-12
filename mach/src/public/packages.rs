@@ -1,7 +1,6 @@
 use std::path::PathBuf;
 use std::sync::Arc;
-
-use tokio::sync::RwLock;
+use std::sync::RwLock;
 
 pub type OutputsSync = Arc<RwLock<Vec<Output>>>;
 pub type Outputs = Vec<Output>;

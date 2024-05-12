@@ -56,7 +56,7 @@ impl<'a> AppReporter<'a> {
     self.time_init = time_init;
   }
 
-  pub async fn print_transform_stats(
+  pub fn print_transform_stats(
     &mut self,
     asset_map: &AssetMapSync,
   ) {
@@ -64,16 +64,16 @@ impl<'a> AppReporter<'a> {
     println!(
       "  Transform:     {:.3}s  (Assets {})",
       time_transform - self.time_init,
-      asset_map.read().await.len()
+      asset_map.read().unwrap().len()
     );
     self.time_transform = time_transform;
   }
 
-  pub async fn print_bundle_stats(
+  pub fn print_bundle_stats(
     &mut self,
     bundles: &BundleMapSync,
   ) {
-    let bundles = bundles.read().await;
+    let bundles = bundles.read().unwrap();
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
     for bundle in bundles.iter() {

@@ -6,7 +6,7 @@ use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
 
-pub async fn bundle(
+pub fn bundle(
   config: MachConfigSync,
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
@@ -32,6 +32,6 @@ pub async fn bundle(
       dependency_map,
       bundles,
       bundle_graph,
-    ).await;
+    );
   }
 }

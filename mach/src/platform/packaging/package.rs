@@ -17,7 +17,7 @@ use crate::public::MachConfigSync;
 use crate::public::Output;
 use crate::public::OutputsSync;
 
-pub async fn package(
+pub fn package(
   config: MachConfigSync,
   asset_map: AssetMapSync,
   asset_graph: AssetGraphSync,
