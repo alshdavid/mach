@@ -22,13 +22,13 @@ pub struct NodejsInstance {
   _child: Arc<Child>,
 }
 
-/// NodejsInstance wraps the Node.js Process. 
-/// 
-/// This wrapper uses stdin to instruct the child process to spawn 
-/// additional Nodejs worker threads. 
-/// 
+/// NodejsInstance wraps the Node.js Process.
+///
+/// This wrapper uses stdin to instruct the child process to spawn
+/// additional Nodejs worker threads.
+///
 /// Worker threads each individually have their own IPC channel pair
-/// 
+///
 /// On the other end, the Nodejs workers import a napi module with the
 /// IPC client channels, where types are sent into JavaScript using
 /// the built-in napi-rs serialization

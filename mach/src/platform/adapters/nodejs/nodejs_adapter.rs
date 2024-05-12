@@ -20,7 +20,7 @@ pub struct NodejsAdapterOptions {
 
 /// NodejsAdapter holds the Nodejs child process and the IPC channels
 /// for each worker.
-/// 
+///
 /// The send() method uses a "round-robin" strategy to decide which
 /// Nodejs child to send a request to.
 #[derive(Clone)]

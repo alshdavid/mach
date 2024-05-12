@@ -39,6 +39,5 @@ process.stdin.on('data', bytes => {
 })
 
 process.stdin.on('close', () => {
-  console.log("Nodejs Exiting...")
   process.exit()
 })

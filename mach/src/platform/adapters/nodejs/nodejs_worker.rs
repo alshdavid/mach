@@ -8,7 +8,7 @@ use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
 
-/// NodejsWorker holds the channels used to talk to the 
+/// NodejsWorker holds the channels used to talk to the
 /// worker thread spawned by the Nodejs child process
 pub struct NodejsWorker {
   pub child_sender: ChildSender<NodejsClientRequest, NodejsClientResponse>,

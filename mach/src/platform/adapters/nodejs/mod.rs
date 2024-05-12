@@ -2,7 +2,7 @@
   To interact with Nodejs, Mach spawns a child Nodejs process.
 
   The child process spawns Nodejs worker threads, each worker imports a
-  napi module that contains the client implementation to connect to 
+  napi module that contains the client implementation to connect to
   their corresponding host IPC channel.
 
   The messages the workers receive via IPC are then passed into JavaScript
