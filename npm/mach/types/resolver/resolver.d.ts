@@ -3,7 +3,7 @@ import type { ResolveResult } from './resolve_result.d.ts'
 
 export type ResolverInitOpts<ConfigType> = {
   loadConfig?(options: ResolverResolveOptions): ConfigType | Promise<ConfigType>
-  resolve: (options: ResolverLoadConfigOptions<ConfigType>) => ResolveResult | Promise<ResolveResult>
+  resolve: (options: ResolverLoadConfigOptions<ConfigType>) => undefined | null | ResolveResult | Promise<ResolveResult>
 }
 
 export interface IResolver<ConfigType> extends Omit<Resolver<ConfigType>, 'new'> {}

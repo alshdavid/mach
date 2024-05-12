@@ -34,10 +34,13 @@ pub struct NodejsAdapter {
 impl NodejsAdapter {
   pub fn new(
     options: NodejsAdapterOptions
-  ) -> Result<(
-    Self,
-    Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>,
-  ), String> {
+  ) -> Result<
+    (
+      Self,
+      Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>,
+    ),
+    String,
+  > {
     let (tx, rx) = channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
 
     let mut workers_sender = vec![];

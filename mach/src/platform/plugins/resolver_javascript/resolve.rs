@@ -34,11 +34,7 @@ pub fn resolve(
     ..ResolveOptions::default()
   };
 
-  let result = resolve_oxc(
-    &from,
-    &specifier,
-    oxc_options.clone(),
-  );
+  let result = resolve_oxc(&from, &specifier, oxc_options.clone());
 
   if let Ok(result) = result {
     return Ok(result);

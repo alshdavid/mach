@@ -42,7 +42,7 @@ pub fn resolve_and_transform(
   // This schedules work on the configured number of worker threads.
   // Currently this is using a thread parking approach, but this is quite
   // messy so I will probably revisit this eventually
-  // 
+  //
   // It's hard to believe, but this is the fastest method I have tested
   // despite the aggressive use of locks
   for _ in 0..config.threads {
@@ -76,7 +76,7 @@ pub fn resolve_and_transform(
           }
           // Exit if there are no more items in the queue or no threads are active
           if queue.read().unwrap().len() == 0 && active_threads.load(Ordering::Relaxed) == 0 {
-            break
+            break;
           }
           // Otherwise park thread again
           continue;
@@ -105,7 +105,7 @@ pub fn resolve_and_transform(
 
         // Mark thread as inactive
         active_threads.fetch_sub(1, Ordering::Relaxed);
-        
+
         // Send wake signal to parked threads
         for sender in &senders {
           let Ok(_) = sender.send(false) else {

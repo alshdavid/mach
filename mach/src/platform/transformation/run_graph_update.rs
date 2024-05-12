@@ -15,7 +15,7 @@ pub fn run_update_graph(
 ) -> Result<(AssetId, bool), String> {
   let dependency_id = dependency.id.clone();
   let source_asset = dependency.source_asset.clone();
-  
+
   // Add placeholder Asset to prevent future transformations
   let (asset_id, inserted) = if let Ok(mut asset_map) = asset_map.write() {
     asset_map.get_or_insert(Asset {
