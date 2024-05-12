@@ -2,4 +2,5 @@ packages:
   - '.github/scripts'
   - 'testing/fixtures/*'
   - 'npm/*'
+  - 'mach-nodejs'
   - 'benchmarks/*'

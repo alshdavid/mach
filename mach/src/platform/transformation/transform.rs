@@ -6,6 +6,7 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::RwLock;
+use std::thread;
 use std::thread::JoinHandle;
 
 use crate::platform::config::PluginContainerSync;
@@ -27,8 +28,6 @@ pub fn link_and_transform(
   asset_graph: AssetGraphSync,
   dependency_map: DependencyMapSync,
 ) -> Result<(), String> {
-  // Take ownership of the bundling state while we transform the files.
-  // We know they cannot be used elsewhere so this is safe to
   let active_threads = Arc::new(AtomicUsize::new(0));
   let queue = Arc::new(RwLock::new(vec![]));
 
@@ -61,7 +60,7 @@ pub fn link_and_transform(
     let senders = senders.clone();
     let rx = receivers.get_mut(t).unwrap().take().unwrap();
 
-    handles.push(std::thread::spawn(move || -> Result<(), String> {
+    handles.push(thread::spawn(move || {
       loop {
         let Some(dependency) = queue.write().unwrap().pop() else {
           let Ok(kill) = rx.recv() else {

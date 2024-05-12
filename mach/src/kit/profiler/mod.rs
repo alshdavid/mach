@@ -1,18 +1,17 @@
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::RwLock;
 use std::time::Duration;
 use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
-use dashmap::mapref::one::Ref;
-use dashmap::DashMap;
 use normalize_path::NormalizePath;
 use once_cell::sync::Lazy;
 use serde::Serialize;
@@ -21,8 +20,8 @@ pub static PROFILER: Lazy<Profiler> = Lazy::new(|| Profiler::new());
 
 #[derive(Default, Clone)]
 pub struct Profiler {
-  start_times: Arc<DashMap<String, SystemTime>>,
-  end_times: Arc<DashMap<String, Vec<Duration>>>,
+  start_times: Arc<RwLock<HashMap<String, SystemTime>>>,
+  end_times: Arc<RwLock<HashMap<String, Vec<Duration>>>>,
   log_file: Arc<Mutex<Option<File>>>,
   logs: Vec<String>,
 }
@@ -53,23 +52,36 @@ impl Profiler {
     name: &str,
   ) {
     let start_time = SystemTime::now();
-    self.start_times.insert(name.to_string(), start_time);
+    self
+      .start_times
+      .write()
+      .unwrap()
+      .insert(name.to_string(), start_time);
   }
 
   pub fn lap(
     &self,
     name: &str,
   ) {
+    if !self.start_times.read().unwrap().contains_key(name) {
+      self.start(name);
+    }
     let end_time = self
       .start_times
+      .read()
+      .unwrap()
       .get(name)
       .unwrap()
       .elapsed()
       .expect(&format!("could not find performance mark \"{}\"", name));
-    if let Some(mut end_times) = self.end_times.get_mut(name) {
+    if let Some(end_times) = self.end_times.write().unwrap().get_mut(name) {
       end_times.push(end_time);
     } else {
-      self.end_times.insert(name.to_string(), vec![end_time]);
+      self
+        .end_times
+        .write()
+        .unwrap()
+        .insert(name.to_string(), vec![end_time]);
     }
   }
 
@@ -89,7 +101,7 @@ impl Profiler {
     &self,
     name: &str,
   ) -> u128 {
-    if !self.end_times.contains_key(name) {
+    if !self.end_times.read().unwrap().contains_key(name) {
       self.lap(name);
     }
     let end_times = self.get_end_times(name).clone();
@@ -106,7 +118,7 @@ impl Profiler {
     &self,
     name: &str,
   ) -> u128 {
-    if !self.end_times.contains_key(name) {
+    if !self.end_times.read().unwrap().contains_key(name) {
       self.lap(name);
     }
     let end_times = self.get_end_times(name);
@@ -121,7 +133,7 @@ impl Profiler {
     &self,
     name: &str,
   ) -> u128 {
-    if !self.end_times.contains_key(name) {
+    if !self.end_times.read().unwrap().contains_key(name) {
       self.lap(name);
     }
     let end_times = self.get_end_times(name);
@@ -139,7 +151,7 @@ impl Profiler {
     &self,
     name: &str,
   ) -> u128 {
-    if !self.end_times.contains_key(name) {
+    if !self.end_times.read().unwrap().contains_key(name) {
       self.lap(name);
     }
     let end_times = self.get_end_times(name);
@@ -397,15 +409,18 @@ impl Profiler {
   fn get_end_times(
     &self,
     name: &str,
-  ) -> Ref<'_, String, Vec<Duration>> {
-    if !self.end_times.contains_key(name) {
+  ) -> Vec<Duration> {
+    if !self.end_times.read().unwrap().contains_key(name) {
       self.lap(name);
     }
-    let times = self
-      .end_times
+
+    let end_times = self.end_times.read().unwrap();
+
+    let times = end_times
       .get(name)
       .expect(&format!("could not find end performance mark \"{}\"", name));
-    return times;
+
+    return times.clone();
   }
 }
 

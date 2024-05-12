@@ -1,26 +1,54 @@
+#![allow(unused_must_use)]
+
 use std::collections::HashMap;
 
+use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
+use crate::public::BundleGraphSync;
 use crate::public::BundleMapSync;
-use crate::public::MachConfig;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
+use crate::public::OutputsSync;
 
-pub struct AppReporter<'a> {
-  config: &'a MachConfig,
+pub struct AppReporter {
+  config: MachConfigSync,
+  dependency_map: DependencyMapSync,
+  asset_map: AssetMapSync,
+  asset_graph: AssetGraphSync,
+  bundles: BundleMapSync,
+  bundle_graph: BundleGraphSync,
+  outputs: OutputsSync,
+  time_init: f64,
   time_transform: f64,
   time_bundle: f64,
   time_package: f64,
 }
 
-impl<'a> AppReporter<'a> {
-  pub fn new(config: &'a MachConfig) -> Self {
+impl AppReporter {
+  pub fn new(
+    config: MachConfigSync,
+    dependency_map: DependencyMapSync,
+    asset_map: AssetMapSync,
+    asset_graph: AssetGraphSync,
+    bundles: BundleMapSync,
+    bundle_graph: BundleGraphSync,
+    outputs: OutputsSync,
+  ) -> Self {
     return Self {
       config,
+      dependency_map,
+      asset_map,
+      asset_graph,
+      bundles,
+      bundle_graph,
+      outputs,
+      time_init: 0.0,
       time_transform: 0.0,
       time_bundle: 0.0,
       time_package: 0.0,
     };
   }
-  pub fn print_config(&'a self) {
+  pub fn print_config(&self) {
     println!(
       "Entry:         {}",
       self.config.entry_point.to_str().unwrap()
@@ -43,24 +71,30 @@ impl<'a> AppReporter<'a> {
     println!("Splitting:     {}", self.config.bundle_splitting);
   }
 
-  pub fn print_transform_stats(
-    &mut self,
-    asset_map: &AssetMapSync,
-  ) {
+  pub fn print_init_stats(&mut self) {
+    let time_init = self.config.time_elapsed();
+    println!("  Init:          {:.3}s", time_init,);
+    self.time_init = time_init;
+  }
+
+  pub fn print_transform_stats(&mut self) {
     let time_transform = self.config.time_elapsed();
     println!(
       "  Transform:     {:.3}s  (Assets {})",
-      time_transform,
-      asset_map.read().unwrap().len()
+      time_transform - self.time_init,
+      self.asset_map.read().unwrap().len()
     );
     self.time_transform = time_transform;
+
+    if self.config.debug {
+      dbg!(self.asset_map.read().unwrap());
+      dbg!(self.dependency_map.read().unwrap());
+      dbg!(self.asset_graph.read().unwrap());
+    }
   }
 
-  pub fn print_bundle_stats(
-    &mut self,
-    bundles: &BundleMapSync,
-  ) {
-    let bundles = bundles.read().unwrap();
+  pub fn print_bundle_stats(&mut self) {
+    let bundles = self.bundles.read().unwrap();
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
     for bundle in bundles.iter() {
@@ -79,12 +113,21 @@ impl<'a> AppReporter<'a> {
     }
     println!(")");
     self.time_bundle = time_bundle;
+
+    if self.config.debug {
+      dbg!(self.bundles.read().unwrap());
+      dbg!(self.bundle_graph.read().unwrap());
+    }
   }
 
   pub fn print_package_stats(&mut self) {
     let time_package = self.config.time_elapsed();
     println!("  Package:       {:.3}s", time_package - self.time_bundle);
     self.time_package = time_package;
+
+    if self.config.debug {
+      dbg!(self.outputs.read().unwrap());
+    }
   }
 
   pub fn print_emit_stats(&mut self) {

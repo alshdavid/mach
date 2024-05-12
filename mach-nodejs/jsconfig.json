@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "strict": false,
     "checkJs": true
   },
   "include": [
-    "./*.mjs",
-    "./*.js"
+    "lib/**/*.js"
   ]
 }

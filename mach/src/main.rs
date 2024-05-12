@@ -1,4 +1,4 @@
-#![deny(unused_crate_dependencies)]
+// #![deny(unused_crate_dependencies)]
 
 mod cmd;
 mod kit;
@@ -17,7 +17,6 @@ use cmd::watch::WatchCommand;
 /*
   Main just acts as a router to run CLI commands
 */
-
 #[derive(Parser, Debug)]
 struct Commands {
   #[clap(subcommand)]

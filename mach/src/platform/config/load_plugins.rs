@@ -1,6 +1,8 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
+use crate::platform::plugins::resolver_javascript::resolve;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
+use crate::platform::plugins::resolver_nodejs::ResolverNodejs;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
@@ -10,13 +12,14 @@ use crate::public::Machrc;
 use crate::public::Transformer;
 
 pub fn load_plugins(
-  _config: &MachConfig,
+  config: &MachConfig,
   machrc: &Machrc,
+  // nodejs_adapter: &NodejsAdapter,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
 
-  println!("  Plugins:");
-  println!("    Resolvers:");
+  // println!("  Plugins:");
+  // println!("    Resolvers:");
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
@@ -27,10 +30,16 @@ pub fn load_plugins(
         ));
       };
 
-      println!("      {}:{}", engine, specifier);
+      // println!("      {}:{}", engine, specifier);
 
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(ResolverJavaScript {}));
+        continue;
+      }
+
+      if engine == "node" {
+        let _specifier = resolve(&config.project_root, specifier)?;
+        plugins.resolvers.push(Box::new(ResolverNodejs {}));
         continue;
       }
 
@@ -41,7 +50,7 @@ pub fn load_plugins(
     }
   }
 
-  println!("    Transformers:");
+  // println!("    Transformers:");
 
   if let Some(transformers) = &machrc.transformers {
     for (pattern, specifiers) in transformers {
@@ -54,7 +63,7 @@ pub fn load_plugins(
             plugin_string
           ));
         };
-        println!("      {}:{:<25} {}", engine, specifier, pattern);
+        // println!("      {}:{:<25} {}", engine, specifier, pattern);
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
           continue;
