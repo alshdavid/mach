@@ -1,6 +1,5 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
-use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::resolver_javascript::resolve;
 use crate::platform::plugins::resolver_nodejs::ResolverNodejs;
@@ -15,7 +14,7 @@ use crate::public::Transformer;
 pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
-  nodejs_adapter: &NodejsAdapter,
+  // nodejs_adapter: &NodejsAdapter,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
 
@@ -39,11 +38,8 @@ pub fn load_plugins(
       }
 
       if engine == "node" {
-        // let specifier = resolve(&config.project_root, specifier)?;
-        // nodejs_adapter.resolver_register(specifier.to_str().unwrap()).await;
-        // plugins.resolvers.push(Box::new(ResolverNodejs { 
-        //   nodejs_adapter: nodejs_adapter.clone()
-        // }));
+        let _specifier = resolve(&config.project_root, specifier)?;
+        plugins.resolvers.push(Box::new(ResolverNodejs { }));
         continue;
       }
 
