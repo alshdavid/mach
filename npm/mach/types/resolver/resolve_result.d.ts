@@ -1,6 +1,4 @@
-import { DependencyPriority } from "./dependency_priority.js"
-import type{ FilePath } from "./file_path.d.ts"
-import { JSONObject } from "./json_object.js"
+import type { DependencyPriority, FilePath, JSONObject } from '../types/index.d.ts'
 
 export type ResolveResult = {
   /** An absolute path to the resolved file. */
@@ -28,13 +26,13 @@ export type ResolveResult = {
   readonly canDefer?: boolean
 
   /** A resolver might return diagnostics to also run subsequent resolvers while still providing a reason why it failed. */
-  readonly diagnostics?: Diagnostic | Array<Diagnostic>
+  // readonly diagnostics?: Diagnostic | Array<Diagnostic>
 
   /** Is spread (shallowly merged) onto the request's dependency.meta */
   readonly meta?: JSONObject
 
   /** A list of file paths or patterns that should invalidate the resolution if created. */
-  readonly invalidateOnFileCreate?: Array<FileCreateInvalidation>
+  // readonly invalidateOnFileCreate?: Array<FileCreateInvalidation>
 
   /** A list of files that should invalidate the resolution if modified or deleted. */
   readonly invalidateOnFileChange?: Array<FilePath>

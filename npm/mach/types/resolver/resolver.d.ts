@@ -8,8 +8,8 @@ export type ResolverInitOpts<ConfigType> = {
 
 export interface IResolver<ConfigType> extends Omit<Resolver<ConfigType>, 'new'> {}
 
-export interface Resolver<ConfigType> {
-  new (opts: ResolverInitOpts<ConfigType>): Resolver<ConfigType>
+export declare class Resolver<ConfigType> {
+  constructor(opts: ResolverInitOpts<ConfigType>)
   triggerLoadConfig?(options: ResolverResolveOptions): ConfigType | Promise<ConfigType>
   triggerResolve(options: ResolverLoadConfigOptions<ConfigType>): ResolveResult | Promise<ResolveResult>
 }

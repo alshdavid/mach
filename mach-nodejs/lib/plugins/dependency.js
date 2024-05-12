@@ -1,47 +1,117 @@
-// export class Dependency {
-//   #internal
+import * as types from '../types/index.js'
 
-//   constructor(internal) {
-//     this.#internal = internal
-//   }
+/**
+ * @class
+ * @template T
+ * @implements {types.Dependency}
+ */
+export class Dependency {
+  #internal
 
-//   get id() {
-//     return this.#internal.id
-//   }
+  constructor(
+    /** @type {any} */ internal
+  ) {
+    this.#internal = internal
+  }
 
-//   get specifier() {
-//     return this.#internal.specifier
-//   }
+  get id() {
+    return this.#internal.id
+  }
 
-//   get specifierType() {
-//     return this.#internal.specifier_type
-//   }
+  get specifier() {
+    return this.#internal.specifier
+  }
 
-//   get isEntry() {
-//     return this.#internal.is_entry
-//   }
+  get specifierType() {
+    return this.#internal.specifier_type
+  }
 
-//   get priority() {
-//     return this.#internal.priority
-//   }
+  get isEntry() {
+    return this.#internal.is_entry
+  }
 
-//   get sourcePath() {
-//     return this.#internal.source_path
-//   }
+  get priority() {
+    return this.#internal.priority
+  }
 
-//   get sourceAsset() {
-//     return this.#internal.source_asset
-//   }
+  get sourcePath() {
+    return this.#internal.source_path
+  }
 
-//   get resolveFrom() {
-//     return this.#internal.resolve_from
-//   }
+  get sourceAsset() {
+    return this.#internal.source_asset
+  }
 
-//   get importedSymbols() {
-//     return this.#internal.imported_symbols
-//   }
+  get resolveFrom() {
+    return this.#internal.resolve_from
+  }
 
-//   get bundleBehavior() {
-//     return this.#internal.bundle_behavior
-//   }
-// }
+  get importedSymbols() {
+    return this.#internal.imported_symbols
+  }
+
+  get bundleBehavior() {
+    return this.#internal.bundle_behavior
+  }
+
+  get needsStableName() {
+    throw new Error("Not implemented")
+    return this.#internal.needs_stable_name
+  }
+
+  get isOptional() {
+    throw new Error("Not implemented")
+    return this.#internal.is_optional
+  }
+
+  get loc() {
+    throw new Error("Not implemented")
+    return this.#internal.loc
+  }
+
+  get env() {
+    throw new Error("Not implemented")
+    return this.#internal.env
+  }
+
+  get packageConditions() {
+    throw new Error("Not implemented")
+    return this.#internal.package_conditions
+  }
+
+  get meta() {
+    throw new Error("Not implemented")
+    return this.#internal.meta
+  }
+
+  get target() {
+    throw new Error("Not implemented")
+    return this.#internal.target
+  }
+
+  get sourceAssetId() {
+    throw new Error("Not implemented")
+    return this.#internal.source_asset_id
+  }
+
+  get sourceAssetType() {
+    throw new Error("Not implemented")
+    return this.#internal.source_asset_type
+  }
+
+  get range() {
+    throw new Error("Not implemented")
+    return this.#internal.range
+  }
+
+  get pipeline() {
+    throw new Error("Not implemented")
+    return this.#internal.pipeline
+  }
+
+  get symbols() {
+    throw new Error("Not implemented")
+    return this.#internal.symbols
+  }
+
+}

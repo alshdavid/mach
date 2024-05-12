@@ -1,6 +1,3 @@
-use std::thread;
-use std::time::Duration;
-
 use super::parse_config;
 use super::reporter::AppReporter;
 use super::BuildCommand;
@@ -71,9 +68,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     dependency_map.clone(),
   )?;
 
-  thread::sleep(Duration::from_secs(2));
-  return Ok(());
-  
   reporter.print_transform_stats();
 
   /*

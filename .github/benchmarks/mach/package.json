@@ -5,5 +5,8 @@
     "build": "$(node ./get-bin.mjs) build ./src/index.js --no-optimize",
     "build:optimize": "$(node ./get-bin.mjs) build ./src/index.js"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "enhanced-resolve": "^5.16.1"
+  }
 }

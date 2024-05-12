@@ -1,6 +1,5 @@
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::public::nodejs::client::NodejsClientRequest;
-use crate::public::nodejs::client::NodejsClientRequestPing;
 use crate::public::nodejs::client::NodejsClientRequestResolverRun;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::Dependency;

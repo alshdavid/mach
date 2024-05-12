@@ -607,7 +607,9 @@ dependencies = [
 
 [[package]]
 name = "ipc_channel_adapter"
-version = "0.1.1"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0098b52a3922b68b3837fdfd91e21275debf3b0faeaf7a451b8bfb75c2b2461e"
 dependencies = [
  "ipc-channel",
  "serde",
