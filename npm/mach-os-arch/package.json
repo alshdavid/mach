@@ -3,7 +3,7 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "bin": "bin/mach",
+  "bin": "bin/mach.exe",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"

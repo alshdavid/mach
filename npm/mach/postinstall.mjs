@@ -41,10 +41,9 @@ if (!OS && !ARCH) {
 
 let bin_pkg_json_path = require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.json`)
 let bin_pkg_dir = path.dirname(bin_pkg_json_path)
-let bin_pkg_json = JSON.parse(fs.readFileSync(bin_pkg_json_path, 'utf8'))
 
-fs.rmSync(path.join(__dirname, 'bin.exe'))
+fs.rmSync(path.join(__dirname, 'cmd'))
 fs.linkSync(
-  path.join(bin_pkg_dir, bin_pkg_json.bin),
-  path.join(__dirname, 'bin.exe'), 
+  bin_pkg_dir,
+  path.join(__dirname, 'cmd'), 
 )

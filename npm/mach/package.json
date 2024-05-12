@@ -6,7 +6,7 @@
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "bin": {
-    "mach": "bin.exe"
+    "mach": "cmd/bin/mach.exe"
   },
   "repository": {
     "type": "git",

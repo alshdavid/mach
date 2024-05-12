@@ -129,6 +129,7 @@ fmt:
 build-publish: build-publish-common
   just build
   cp -r {{out_dir}}/* "npm/mach-os-arch"
+  mv "npm/mach-os-arch/bin/mach" "npm/mach-os-arch/bin/mach.exe"
   cp "./README.md" "npm/mach"
 
 [windows]
