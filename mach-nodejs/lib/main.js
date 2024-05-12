@@ -10,6 +10,7 @@ import * as url from 'node:url'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+/** @type {Array<any>} */
 let buf_body = []
 
 // Buffer until newline
@@ -35,4 +36,9 @@ process.stdin.on('data', bytes => {
       buf_body = []
     }
   }
+})
+
+process.stdin.on('close', () => {
+  console.log("Nodejs Exiting...")
+  process.exit()
 })

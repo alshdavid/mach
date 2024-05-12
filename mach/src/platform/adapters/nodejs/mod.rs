@@ -16,10 +16,8 @@
 */
 mod nodejs_adapter;
 mod nodejs_instance;
-mod nodejs_manager;
 mod nodejs_worker;
 
 pub use nodejs_adapter::*;
 pub use nodejs_instance::*;
-pub use nodejs_manager::*;
 pub use nodejs_worker::*;

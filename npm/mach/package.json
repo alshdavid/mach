@@ -22,5 +22,8 @@
     "@alshdavid/mach-macos-arm64": "0.0.0-local",
     "@alshdavid/mach-windows-amd64": "0.0.0-local",
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
   }
 }

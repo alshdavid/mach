@@ -21,7 +21,7 @@ use crate::public::DependencyOptions;
 use crate::public::MachConfigSync;
 use crate::public::MutableAsset;
 
-pub fn link_and_transform(
+pub fn resolve_and_transform(
   config: MachConfigSync,
   plugins: PluginContainerSync,
   asset_map: AssetMapSync,

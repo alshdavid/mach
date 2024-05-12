@@ -1,7 +1,10 @@
 mod napi_utils;
 
-use ipc_channel_adapter::child::asynch::HostReceiver;
-use ipc_channel_adapter::child::asynch::HostSender;
+use std::sync::mpsc::channel;
+use std::thread;
+
+use ipc_channel_adapter::child::sync::HostReceiver;
+use ipc_channel_adapter::child::sync::HostSender;
 use mach::public::nodejs::client::NodejsClientRequest;
 use mach::public::nodejs::client::NodejsClientResponse;
 use mach::public::nodejs::NodejsHostRequest;
@@ -14,7 +17,6 @@ use napi::JsUndefined;
 use napi::JsUnknown;
 use napi_derive::napi;
 use napi_utils::await_promise;
-use tokio::sync::mpsc::unbounded_channel;
 
 #[napi]
 pub fn run(
@@ -23,8 +25,8 @@ pub fn run(
   child_receiver: String,
   callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
-  let (_, mut rx_ipc) =
-    HostReceiver::<NodejsClientRequest, NodejsClientResponse>::new(&child_sender).unwrap();
+  let (_, rx_ipc) = HostReceiver::<NodejsClientRequest, NodejsClientResponse>::new(&child_sender).unwrap();
+
   let _tx_ipc = HostSender::<NodejsHostRequest, NodejsHostResponse>::new(&child_receiver).unwrap();
 
   let tsfn = env
@@ -41,9 +43,10 @@ pub fn run(
 
   let unsafe_env = env.raw() as usize;
 
-  env.spawn_future(async move {
-    while let Some((action, response)) = rx_ipc.recv().await {
-      let (tx, mut rx) = unbounded_channel::<NodejsClientResponse>();
+  thread::spawn(move || {
+    while let Ok((action, response)) = rx_ipc.recv() {
+      let (tx, rx) = channel::<NodejsClientResponse>();
+
       tsfn.call_with_return_value(
         Ok(action),
         ThreadsafeFunctionCallMode::Blocking,
@@ -54,10 +57,10 @@ pub fn run(
         },
       );
 
-      response.send(rx.recv().await.unwrap()).unwrap();
+      let reply = rx.recv().unwrap();
+      response.send(reply).unwrap();
     }
-    Ok(())
-  })?;
+  });
 
   env.get_undefined()
 }
