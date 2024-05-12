@@ -15,10 +15,10 @@ pub struct NodejsClientRequestPing {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientRequestResolverRegister {
-  pub specifier: String
+  pub specifier: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientRequestResolverRun {
-  pub dependency: Dependency
+  pub dependency: Dependency,
 }

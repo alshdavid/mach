@@ -52,7 +52,11 @@ impl Profiler {
     name: &str,
   ) {
     let start_time = SystemTime::now();
-    self.start_times.write().unwrap().insert(name.to_string(), start_time);
+    self
+      .start_times
+      .write()
+      .unwrap()
+      .insert(name.to_string(), start_time);
   }
 
   pub fn lap(
@@ -73,7 +77,11 @@ impl Profiler {
     if let Some(end_times) = self.end_times.write().unwrap().get_mut(name) {
       end_times.push(end_time);
     } else {
-      self.end_times.write().unwrap().insert(name.to_string(), vec![end_time]);
+      self
+        .end_times
+        .write()
+        .unwrap()
+        .insert(name.to_string(), vec![end_time]);
     }
   }
 
@@ -406,10 +414,7 @@ impl Profiler {
       self.lap(name);
     }
 
-    let end_times = self
-      .end_times
-      .read()
-      .unwrap();
+    let end_times = self.end_times.read().unwrap();
 
     let times = end_times
       .get(name)

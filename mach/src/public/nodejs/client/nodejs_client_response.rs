@@ -18,5 +18,5 @@ pub struct NodejsClientResolverRegister {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientResponseResolverRun {
-  pub resolve_result: Option<ResolveResult>
+  pub resolve_result: Option<ResolveResult>,
 }

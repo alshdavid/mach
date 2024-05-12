@@ -2,7 +2,8 @@ use std::fmt::Debug;
 use std::path::PathBuf;
 
 use dependency::Dependency;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use super::dependency;
 

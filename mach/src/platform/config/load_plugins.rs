@@ -1,7 +1,7 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
-use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::resolver_javascript::resolve;
+use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::resolver_nodejs::ResolverNodejs;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
@@ -39,7 +39,7 @@ pub fn load_plugins(
 
       if engine == "node" {
         let _specifier = resolve(&config.project_root, specifier)?;
-        plugins.resolvers.push(Box::new(ResolverNodejs { }));
+        plugins.resolvers.push(Box::new(ResolverNodejs {}));
         continue;
       }
 

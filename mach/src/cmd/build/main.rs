@@ -15,7 +15,7 @@ use crate::public::OutputsSync;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;
-  
+
   /*
     This is the bundler state. It is passed into
     the bundling phases with read or write permissions
@@ -27,7 +27,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
-  
+
   let mut reporter = AppReporter::new(
     config.clone(),
     dependency_map.clone(),
@@ -67,7 +67,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   )?;
 
   reporter.print_transform_stats();
-
 
   /*
     bundle() will take the asset graph and organize related assets

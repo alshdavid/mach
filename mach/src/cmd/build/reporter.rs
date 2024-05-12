@@ -71,20 +71,13 @@ impl AppReporter {
     println!("Splitting:     {}", self.config.bundle_splitting);
   }
 
-  pub fn print_init_stats(
-    &mut self,
-  ) {
+  pub fn print_init_stats(&mut self) {
     let time_init = self.config.time_elapsed();
-    println!(
-      "  Init:          {:.3}s",
-      time_init,
-    );
+    println!("  Init:          {:.3}s", time_init,);
     self.time_init = time_init;
   }
 
-  pub fn print_transform_stats(
-    &mut self,
-  ) {
+  pub fn print_transform_stats(&mut self) {
     let time_transform = self.config.time_elapsed();
     println!(
       "  Transform:     {:.3}s  (Assets {})",
@@ -92,7 +85,7 @@ impl AppReporter {
       self.asset_map.read().unwrap().len()
     );
     self.time_transform = time_transform;
-    
+
     if self.config.debug {
       dbg!(self.asset_map.read().unwrap());
       dbg!(self.dependency_map.read().unwrap());
@@ -100,9 +93,7 @@ impl AppReporter {
     }
   }
 
-  pub fn print_bundle_stats(
-    &mut self,
-  ) {
+  pub fn print_bundle_stats(&mut self) {
     let bundles = self.bundles.read().unwrap();
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
