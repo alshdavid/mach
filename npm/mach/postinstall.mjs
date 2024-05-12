@@ -43,7 +43,8 @@ let bin_pkg_json_path = require.resolve(`@alshdavid/mach-${OS}-${ARCH}/package.j
 let bin_pkg_dir = path.dirname(bin_pkg_json_path)
 
 fs.rmSync(path.join(__dirname, 'cmd'))
-fs.linkSync(
+fs.symlinkSync(
   bin_pkg_dir,
-  path.join(__dirname, 'cmd'), 
+  path.join(__dirname, 'cmd'),
+  'dir'
 )
