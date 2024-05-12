@@ -27,7 +27,16 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
-  let mut reporter = AppReporter::new(&config);
+  
+  let mut reporter = AppReporter::new(
+    config.clone(),
+    dependency_map.clone(),
+    asset_map.clone(),
+    asset_graph.clone(),
+    bundles.clone(),
+    bundle_graph.clone(),
+    outputs.clone(),
+  );
 
   // let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
   //   workers: config.node_workers.clone() as u8,
@@ -57,13 +66,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     dependency_map.clone(),
   )?;
 
-  reporter.print_transform_stats(&asset_map);
+  reporter.print_transform_stats();
 
-  // if config.debug {
-  //   dbg!(&asset_map.read().unwrap());
-  //   dbg!(&dependency_map.read().unwrap());
-  //   dbg!(&asset_graph.read().unwrap());
-  // }
+
   /*
     bundle() will take the asset graph and organize related assets
     into groupings. Each grouping will be emitted as a "bundle"
@@ -76,13 +81,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     bundles.clone(),
     bundle_graph.clone(),
   )?;
-
-  reporter.print_bundle_stats(&bundles);
-
-  if config.debug {
-    dbg!(&bundles.read().unwrap());
-    dbg!(&bundle_graph.read().unwrap());
-  }
+  reporter.print_bundle_stats();
 
   /*
     package() will take the bundles, obtain their referenced Assets
@@ -103,10 +102,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   )?;
 
   reporter.print_package_stats();
-
-  if config.debug {
-    dbg!(&outputs.read().unwrap());
-  }
 
   /*
     emit() writes the contents of the bundles to disk
