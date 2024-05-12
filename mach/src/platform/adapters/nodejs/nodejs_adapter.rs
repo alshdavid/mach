@@ -5,8 +5,6 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
 
-use ipc_channel_adapter::host::sync::ChildSender;
-
 use super::NodejsInstance;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientResponse;
@@ -21,57 +19,89 @@ pub struct NodejsAdapterOptions {
 /// NodejsAdapter holds the Nodejs child process and the IPC channels
 /// for each worker.
 ///
+/// This will initialize Nodejs lazily as needed
+///
 /// The send() method uses a "round-robin" strategy to decide which
 /// Nodejs child to send a request to.
 #[derive(Clone)]
 pub struct NodejsAdapter {
   counter: Arc<Mutex<u8>>,
-  workers_sender: Arc<Vec<ChildSender<NodejsClientRequest, NodejsClientResponse>>>,
   worker_count: Arc<u8>,
-  _nodejs_instance: Arc<NodejsInstance>,
+  nodejs_instance: Arc<Mutex<Option<NodejsInstance>>>,
+  tx_to_host: Arc<Sender<(NodejsHostRequest, Sender<NodejsHostResponse>)>>,
+  pub rx_host_request:
+    Arc<Mutex<Option<Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>>>>,
+  tx_to_workers: Arc<Vec<Sender<(NodejsClientRequest, Sender<NodejsClientResponse>)>>>,
+  rx_to_workers: Arc<Mutex<Vec<Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)>>>>,
 }
 
 impl NodejsAdapter {
-  pub fn new(
-    options: NodejsAdapterOptions
-  ) -> Result<
-    (
-      Self,
-      Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>,
-    ),
-    String,
-  > {
-    let (tx, rx) = channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
+  pub fn new(options: NodejsAdapterOptions) -> Result<Self, String> {
+    let mut tx_to_workers =
+      Vec::<Sender<(NodejsClientRequest, Sender<NodejsClientResponse>)>>::new();
+    let mut rx_from_workers =
+      Vec::<Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)>>::new();
 
-    let mut workers_sender = vec![];
-
-    let nodejs_instance = NodejsInstance::new()?;
+    let (tx_worker_host, rx_worker_host) =
+      channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
 
     for _ in 0..options.workers {
+      let (tx, rx) = channel();
+      tx_to_workers.push(tx);
+      rx_from_workers.push(rx);
+    }
+
+    Ok(Self {
+      counter: Arc::new(Mutex::new(0)),
+      worker_count: Arc::new(options.workers),
+      nodejs_instance: Arc::new(Mutex::new(None)),
+      tx_to_host: Arc::new(tx_worker_host),
+      rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
+      tx_to_workers: Arc::new(tx_to_workers),
+      rx_to_workers: Arc::new(Mutex::new(rx_from_workers)),
+    })
+  }
+
+  pub fn start_nodejs(&self) -> Result<(), String> {
+    let mut nodejs_instance_container = self.nodejs_instance.lock().unwrap();
+    if nodejs_instance_container.is_some() || *self.worker_count == 0 {
+      return Ok(());
+    };
+
+    let nodejs_instance = NodejsInstance::new()?;
+    let mut rx_to_workers = self.rx_to_workers.lock().unwrap();
+
+    for _ in 0..*self.worker_count {
       let worker = nodejs_instance.spawn_worker();
 
+      // Send messages to child
       thread::spawn({
-        let tx = tx.clone();
+        let rx_to_worker = rx_to_workers.pop().unwrap();
+        let worker_sender = worker.child_sender;
 
         move || {
-          while let Ok(msg) = worker.child_receiver.recv() {
-            tx.send(msg).unwrap();
+          while let Ok((msg, reply)) = rx_to_worker.recv() {
+            let rx = worker_sender.send(msg).unwrap();
+            reply.send(rx.recv().unwrap()).unwrap();
           }
         }
       });
 
-      workers_sender.push(worker.child_sender);
+      // Combine messages from child
+      thread::spawn({
+        let tx_to_host = self.tx_to_host.clone();
+        let worker_receiver = worker.child_receiver;
+
+        move || {
+          while let Ok(msg) = worker_receiver.recv() {
+            tx_to_host.send(msg).unwrap();
+          }
+        }
+      });
     }
 
-    Ok((
-      Self {
-        counter: Arc::new(Mutex::new(0)),
-        workers_sender: Arc::new(workers_sender),
-        worker_count: Arc::new(options.workers),
-        _nodejs_instance: Arc::new(nodejs_instance),
-      },
-      rx,
-    ))
+    nodejs_instance_container.replace(nodejs_instance);
+    return Ok(());
   }
 
   pub fn send_all(
@@ -80,8 +110,8 @@ impl NodejsAdapter {
   ) {
     let mut requests = vec![];
 
-    for sender in self.workers_sender.iter() {
-      requests.push(sender.send(req.clone()).unwrap());
+    for i in 0..*self.worker_count {
+      requests.push(self.send_internal(i as usize, req.clone()))
     }
 
     for request in requests {
@@ -89,21 +119,19 @@ impl NodejsAdapter {
     }
   }
 
-  #[allow(unused)]
   pub fn send(
     &self,
     req: NodejsClientRequest,
   ) -> Receiver<NodejsClientResponse> {
     let next = self.get_next();
-    self.workers_sender[next].send(req).unwrap()
+    self.send_internal(next, req)
   }
 
   pub fn send_and_wait(
     &self,
     req: NodejsClientRequest,
   ) -> NodejsClientResponse {
-    let next = self.get_next();
-    self.workers_sender[next].send_blocking(req).unwrap()
+    self.send(req).recv().unwrap()
   }
 
   // TODO use an atomicu8
@@ -115,6 +143,16 @@ impl NodejsAdapter {
       *i = 0;
     }
     next as usize
+  }
+
+  fn send_internal(
+    &self,
+    index: usize,
+    req: NodejsClientRequest,
+  ) -> Receiver<NodejsClientResponse> {
+    let (tx, rx) = channel();
+    self.tx_to_workers[index].send((req, tx)).unwrap();
+    rx
   }
 }
 

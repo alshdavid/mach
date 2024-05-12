@@ -12,13 +12,12 @@ use ipc_channel_adapter::host::sync::ChildReceiver;
 use ipc_channel_adapter::host::sync::ChildSender;
 use oxc_resolver::ResolveOptions;
 
+use super::NodejsWorker;
 use crate::platform::plugins::resolver_javascript::resolve_oxc;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;
 use crate::public::nodejs::NodejsHostResponse;
-
-use super::NodejsWorker;
 
 #[derive(Clone)]
 pub struct NodejsInstance {
@@ -114,7 +113,6 @@ impl NodejsInstance {
 
 impl Drop for NodejsInstance {
   fn drop(&mut self) {
-    println!("dropped");
     let mut child = self.child.lock().unwrap();
     if self.tx_stdin.send(None).is_err() || child.kill().is_err() || child.wait().is_err() {
       return;

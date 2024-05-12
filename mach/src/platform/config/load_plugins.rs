@@ -1,15 +1,12 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
 use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::platform::plugins::resolver_javascript::resolve;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::resolver_nodejs::ResolverNodejs;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
-use crate::public::nodejs::client::NodejsClientRequest;
-use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -20,7 +17,6 @@ pub fn load_plugins(
   nodejs_adapter: NodejsAdapter,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
-
   // println!("  Plugins:");
   // println!("    Resolvers:");
 
@@ -41,19 +37,12 @@ pub fn load_plugins(
       }
 
       if engine == "node" {
-        let specifier = resolve(&config.project_root, specifier)?
-          .to_str()
-          .unwrap()
-          .to_string();
-        nodejs_adapter.send_all(NodejsClientRequest::ResolverRegister(
-          NodejsClientRequestResolverRegister {
-            specifier: specifier.clone(),
-          },
-        ));
-        plugins.resolvers.push(Box::new(ResolverNodejs {
-          resolver_specifier: specifier.clone(),
-          nodejs_adapter: nodejs_adapter.clone(),
-        }));
+        nodejs_adapter.start_nodejs()?;
+        plugins.resolvers.push(Box::new(ResolverNodejs::new(
+          &*config,
+          specifier,
+          nodejs_adapter.clone(),
+        )?));
         continue;
       }
 
@@ -95,6 +84,11 @@ pub fn load_plugins(
 
         if engine == "mach" && specifier == "transformer/drop" {
           transformers.push(Box::new(TransformerDrop {}));
+          continue;
+        }
+
+        if engine == "node" {
+          nodejs_adapter.start_nodejs()?;
           continue;
         }
 
