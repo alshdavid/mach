@@ -43,15 +43,13 @@ pub fn link_and_transform(
     ..Dependency::default()
   });
 
-  let task_count = config.threads * 1;
-
-  for _ in 0..task_count {
+  for _ in 0..config.threads {
     let (tx, rx) = channel::<bool>();
     senders.push(tx.clone());
     receivers.push(Some(rx));
   }
 
-  for t in 0..task_count {
+  for t in 0..config.threads {
     let config = config.clone();
     let plugins = plugins.clone();
     let asset_map = asset_map.clone();
