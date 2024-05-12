@@ -6,6 +6,7 @@ use crate::public::MachConfig;
 
 pub struct AppReporter<'a> {
   config: &'a MachConfig,
+  time_init: f64,
   time_transform: f64,
   time_bundle: f64,
   time_package: f64,
@@ -15,6 +16,7 @@ impl<'a> AppReporter<'a> {
   pub fn new(config: &'a MachConfig) -> Self {
     return Self {
       config,
+      time_init: 0.0,
       time_transform: 0.0,
       time_bundle: 0.0,
       time_package: 0.0,
@@ -43,6 +45,17 @@ impl<'a> AppReporter<'a> {
     println!("Splitting:     {}", self.config.bundle_splitting);
   }
 
+  pub fn print_init_stats(
+    &mut self,
+  ) {
+    let time_init = self.config.time_elapsed();
+    println!(
+      "  Init:          {:.3}s",
+      time_init,
+    );
+    self.time_init = time_init;
+  }
+
   pub async fn print_transform_stats(
     &mut self,
     asset_map: &AssetMapSync,
@@ -50,7 +63,7 @@ impl<'a> AppReporter<'a> {
     let time_transform = self.config.time_elapsed();
     println!(
       "  Transform:     {:.3}s  (Assets {})",
-      time_transform,
+      time_transform - self.time_init,
       asset_map.read().await.len()
     );
     self.time_transform = time_transform;

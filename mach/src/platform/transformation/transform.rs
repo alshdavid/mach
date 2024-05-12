@@ -43,7 +43,7 @@ pub async fn link_and_transform(
     ..Dependency::default()
   });
 
-  let task_count = config.threads * 1;
+  let task_count = config.threads * 10;
 
   for _ in 0..task_count {
     let (tx, rx) = unbounded_channel::<bool>();

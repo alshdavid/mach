@@ -45,6 +45,8 @@ async fn main_async(config: MachConfigSync) -> Result<(), String> {
   */
   let plugins = load_plugins(&config, &config.machrc, &nodejs_adapter).await?;
 
+  reporter.print_init_stats();
+
   /*
     link_and_transform() will read source files, identify import statements
     before modifying their contents (like removing TypeScript types).
