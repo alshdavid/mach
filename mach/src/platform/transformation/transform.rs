@@ -8,6 +8,9 @@ use std::sync::Arc;
 use std::sync::RwLock;
 use std::thread::JoinHandle;
 
+use crate::platform::config::PluginContainerSync;
+use crate::platform::config::TransformerTarget;
+use crate::platform::config::ENTRY_ASSET;
 use crate::public::Asset;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
@@ -16,10 +19,6 @@ use crate::public::DependencyMapSync;
 use crate::public::DependencyOptions;
 use crate::public::MachConfigSync;
 use crate::public::MutableAsset;
-
-use crate::platform::config::PluginContainerSync;
-use crate::platform::config::TransformerTarget;
-use crate::platform::config::ENTRY_ASSET;
 
 pub fn link_and_transform(
   config: MachConfigSync,

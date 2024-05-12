@@ -4,9 +4,9 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::path::MAIN_SEPARATOR_STR;
 
+use normalize_path::NormalizePath;
 use oxc_resolver::ResolveOptions;
 use oxc_resolver::Resolver;
-use normalize_path::NormalizePath;
 
 pub fn resolve(
   from_raw: &PathBuf,

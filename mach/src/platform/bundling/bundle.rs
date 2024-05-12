@@ -1,11 +1,10 @@
+use super::bundle_single::bundle_single;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
-
-use super::bundle_single::bundle_single;
 
 pub fn bundle(
   config: MachConfigSync,

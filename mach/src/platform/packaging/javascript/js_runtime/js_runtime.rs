@@ -8,6 +8,14 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Fold;
 use swc_core::ecma::visit::FoldWith;
 
+use super::super::runtime_factory::ExportNamed;
+use super::super::runtime_factory::ImportNamed;
+use super::super::runtime_factory::RuntimeFactory;
+use super::read_exports::read_exports;
+use super::read_exports_named::read_exports_named;
+use super::read_exports_named::ExportAssignment;
+use super::read_import_assignments::read_import_assignments;
+use super::read_import_assignments::ImportAssignment;
 use crate::kit::swc::lookup_property_access;
 use crate::kit::swc::stmt_to_module_item;
 use crate::kit::swc::PropAccessType;
@@ -17,16 +25,6 @@ use crate::public::AssetMap;
 use crate::public::BundleGraph;
 use crate::public::BundleId;
 use crate::public::DependencyMap;
-
-use super::super::runtime_factory::ExportNamed;
-use super::super::runtime_factory::ImportNamed;
-use super::super::runtime_factory::RuntimeFactory;
-
-use super::read_exports::read_exports;
-use super::read_exports_named::read_exports_named;
-use super::read_exports_named::ExportAssignment;
-use super::read_import_assignments::read_import_assignments;
-use super::read_import_assignments::ImportAssignment;
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 

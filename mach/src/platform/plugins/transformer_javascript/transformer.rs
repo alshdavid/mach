@@ -8,17 +8,15 @@ use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
+use super::read_imports_exports;
+use super::NodeEnvReplacer;
+use crate::kit::swc::parse_program;
+use crate::kit::swc::render_program;
 use crate::public::BundleBehavior;
 use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
-
-use crate::kit::swc::parse_program;
-use crate::kit::swc::render_program;
-
-use super::read_imports_exports;
-use super::NodeEnvReplacer;
 
 #[derive(Debug)]
 pub struct TransformerJavaScript {}

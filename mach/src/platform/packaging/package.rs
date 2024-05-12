@@ -1,9 +1,12 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::public::Output;
 use swc_core::common::SourceMap;
 
+use super::css::package_css;
+use super::html::package_html;
+use super::javascript::package_javascript;
+use super::javascript::runtime_factory::RuntimeFactory;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
@@ -11,12 +14,8 @@ use crate::public::BundleManifest;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
+use crate::public::Output;
 use crate::public::OutputsSync;
-
-use super::css::package_css;
-use super::html::package_html;
-use super::javascript::package_javascript;
-use super::javascript::runtime_factory::RuntimeFactory;
 
 pub fn package(
   config: MachConfigSync,

@@ -1,15 +1,13 @@
-use crate::public::MachConfig;
-use crate::public::Machrc;
-use crate::public::Transformer;
-
+use super::PluginContainer;
+use super::PluginContainerSync;
 use crate::platform::plugins::resolver_javascript::ResolverJavaScript;
 use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
-
-use super::PluginContainer;
-use super::PluginContainerSync;
+use crate::public::MachConfig;
+use crate::public::Machrc;
+use crate::public::Transformer;
 
 pub fn load_plugins(
   _config: &MachConfig,

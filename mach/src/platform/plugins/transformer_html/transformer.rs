@@ -1,3 +1,9 @@
+use html5ever::parse_document;
+use html5ever::tendril::TendrilSink;
+use markup5ever_rcdom::Handle;
+use markup5ever_rcdom::NodeData;
+use markup5ever_rcdom::RcDom;
+
 use crate::public::BundleBehavior;
 use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
@@ -6,12 +12,6 @@ use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::SpecifierType;
 use crate::public::Transformer;
-
-use html5ever::parse_document;
-use html5ever::tendril::TendrilSink;
-use markup5ever_rcdom::Handle;
-use markup5ever_rcdom::NodeData;
-use markup5ever_rcdom::RcDom;
 
 #[derive(Debug)]
 pub struct TransformerHtml {}

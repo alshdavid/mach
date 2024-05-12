@@ -2,11 +2,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::RwLock;
 
-use crate::public::AssetGraphSync;
-use crate::public::AssetMapSync;
-use crate::public::BundleGraphSync;
-use crate::public::BundleMapSync;
-use crate::public::DependencyMapSync;
 use html5ever::parse_document;
 use html5ever::serialize::serialize;
 use html5ever::serialize::SerializeOpts;
@@ -15,15 +10,18 @@ use markup5ever_rcdom::RcDom;
 use markup5ever_rcdom::SerializableHandle;
 use swc_core::common::SourceMap;
 
-use crate::public::Bundle;
-use crate::public::BundleManifest;
-use crate::public::Output;
-use crate::public::Outputs;
-
+use super::super::javascript::runtime_factory::RuntimeFactory;
 use crate::kit::html;
 use crate::kit::swc;
-
-use super::super::javascript::runtime_factory::RuntimeFactory;
+use crate::public::AssetGraphSync;
+use crate::public::AssetMapSync;
+use crate::public::Bundle;
+use crate::public::BundleGraphSync;
+use crate::public::BundleManifest;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::Output;
+use crate::public::Outputs;
 
 pub fn package_html(
   asset_map: AssetMapSync,

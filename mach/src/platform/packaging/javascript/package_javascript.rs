@@ -2,34 +2,32 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::RwLock;
 use std::thread::JoinHandle;
 
-use crate::public::AssetGraphSync;
-use crate::public::AssetMapSync;
-use crate::public::BundleGraphSync;
-use crate::public::BundleMapSync;
-use crate::public::DependencyMapSync;
-use crate::public::MachConfigSync;
-use std::sync::Mutex;
 use swc_core::common::Globals;
 use swc_core::common::SourceMap;
 use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::FoldWith;
 
-use crate::public::AssetId;
-use crate::public::Bundle;
-use crate::public::BundleManifest;
-use crate::public::Output;
-use crate::public::Outputs;
-
+use super::js_runtime::js_runtime::JavaScriptRuntime;
+use super::runtime_factory::RuntimeFactory;
 use crate::kit::swc::module_item_to_stmt;
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_module;
-
-use super::js_runtime::js_runtime::JavaScriptRuntime;
-use super::runtime_factory::RuntimeFactory;
+use crate::public::AssetGraphSync;
+use crate::public::AssetId;
+use crate::public::AssetMapSync;
+use crate::public::Bundle;
+use crate::public::BundleGraphSync;
+use crate::public::BundleManifest;
+use crate::public::BundleMapSync;
+use crate::public::DependencyMapSync;
+use crate::public::MachConfigSync;
+use crate::public::Output;
+use crate::public::Outputs;
 
 pub fn package_javascript<'a>(
   config: MachConfigSync,

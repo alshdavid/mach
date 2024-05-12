@@ -1,3 +1,6 @@
+use super::parse_config;
+use super::reporter::AppReporter;
+use super::BuildCommand;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
@@ -9,10 +12,6 @@ use crate::public::BundleGraphSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::OutputsSync;
-
-use super::parse_config;
-use super::reporter::AppReporter;
-use super::BuildCommand;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;

@@ -1,8 +1,7 @@
+use super::resolve;
 use crate::public::Dependency;
 use crate::public::ResolveResult;
 use crate::public::Resolver;
-
-use super::resolve;
 
 #[derive(Debug)]
 pub struct ResolverJavaScript {}
