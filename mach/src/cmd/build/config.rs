@@ -70,11 +70,6 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
 
   let machrc = parse_machrc(&file_index).expect("Cannot parse .machrc");
 
-  let mut node_workers = command.node_workers.unwrap();
-  if !machrc.engines.contains(&"node".to_string()) {
-    node_workers = 0;
-  }
-
   // Project root is the location of the first package.json
   let package_json_path = file_index
     .get("package.json")
@@ -102,6 +97,11 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
       num_cpus::get()
     }
   };
+
+  let mut node_workers = command.node_workers.unwrap();
+  if !machrc.engines.contains(&"node".to_string()) {
+    node_workers = threads.clone();
+  }
 
   let env = {
     let mut vars = HashMap::<String, String>::new();
