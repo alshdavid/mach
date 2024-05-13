@@ -80,19 +80,22 @@ impl AppReporter {
     self.log(&format!("Optimize:        {}", self.config.optimize));
     self.log(&format!("Threads:         {}", self.config.threads));
     self.log(&format!("Nodejs Workers:  {}", self.config.node_workers));
-    self.log(&format!("Splitting:       {}", self.config.bundle_splitting));
+    self.log(&format!(
+      "Splitting:       {}",
+      self.config.bundle_splitting
+    ));
   }
 
   pub fn print_init_stats(&mut self) {
     let time_init = self.config.time_elapsed();
-    self.log(&format!("  Init:            {:.3}s", time_init));
+    self.log(&format!("  Init:          {:.3}s", time_init));
     self.time_init = time_init;
   }
 
   pub fn print_transform_stats(&mut self) {
     let time_transform = self.config.time_elapsed();
     self.log(&format!(
-      "  Transform:       {:.3}s  (Assets {})",
+      "  Transform:     {:.3}s  (Assets {})",
       time_transform - self.time_init,
       self.asset_map.read().unwrap().len()
     ));
@@ -116,7 +119,7 @@ impl AppReporter {
       *bundle_kinds.get_mut(&bundle.kind).unwrap() += 1;
     }
     print!(
-      "  Bundle:         {:.3}s  (Bundles {}",
+      "  Bundle:        {:.3}s  (Bundles {}",
       time_bundle - self.time_transform,
       bundles.len()
     );
@@ -135,7 +138,7 @@ impl AppReporter {
   pub fn print_package_stats(&mut self) {
     let time_package = self.config.time_elapsed();
     self.log(&format!(
-      "  Package:         {:.3}s",
+      "  Package:       {:.3}s",
       time_package - self.time_bundle
     ));
     self.time_package = time_package;
@@ -148,7 +151,7 @@ impl AppReporter {
   pub fn print_emit_stats(&mut self) {
     let time_emit = self.config.time_elapsed();
     self.log(&format!(
-      "  Emit:            {:.3}s",
+      "  Emit:          {:.3}s",
       time_emit - self.time_package
     ));
   }

@@ -2,7 +2,7 @@ use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::plugins::resolver_javascript::resolve_str;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
-use crate::public::nodejs::client::NodejsClientRequestResolverRun;
+use crate::public::nodejs::client::NodejsClientRequestResolverResolve;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::Dependency;
 use crate::public::MachConfig;
@@ -43,14 +43,14 @@ impl Resolver for ResolverNodejs {
   ) -> Result<Option<ResolveResult>, String> {
     let response = self
       .nodejs_adapter
-      .send_and_wait(NodejsClientRequest::ResolverRun(
-        NodejsClientRequestResolverRun {
+      .send_and_wait(NodejsClientRequest::ResolverResolve(
+        NodejsClientRequestResolverResolve {
           specifier: self.resolver_specifier.clone(),
           dependency: dependency.clone(),
         },
       ));
 
-    let NodejsClientResponse::ResolverRun(result) = response else {
+    let NodejsClientResponse::ResolverResolve(result) = response else {
       panic!();
     };
 
