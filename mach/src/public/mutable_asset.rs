@@ -1,10 +1,10 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use super::DependencyOptions;
 
 #[derive(Debug)]
 pub struct MutableAsset<'a> {
-  pub file_path: PathBuf,
+  pub file_path: &'a Path,
   pub kind: &'a mut String,
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
@@ -12,7 +12,7 @@ pub struct MutableAsset<'a> {
 
 impl<'a> MutableAsset<'a> {
   pub fn new(
-    file_path: PathBuf,
+    file_path: &'a Path,
     kind: &'a mut String,
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,

@@ -32,7 +32,7 @@ impl Transformer for TransformerHtml {
         specifier: script_specifier,
         specifier_type: SpecifierType::ESM,
         priority: DependencyPriority::Lazy,
-        resolve_from: asset.file_path.clone(),
+        resolve_from: asset.file_path.to_path_buf(),
         imported_symbols: vec![ImportSymbol::Namespace("".to_string())],
         bundle_behavior: BundleBehavior::Default,
       });

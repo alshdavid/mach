@@ -31,7 +31,7 @@ impl Transformer for TransformerJavaScript {
       let source_map_og = Arc::new(SourceMap::default());
       let code = asset.get_code();
 
-      let Ok(result) = parse_program(&asset.file_path, &code, source_map_og.clone()) else {
+      let Ok(result) = parse_program(asset.file_path, &code, source_map_og.clone()) else {
         return Err(format!("SWC Parse Error"));
       };
 
@@ -93,7 +93,7 @@ impl Transformer for TransformerJavaScript {
           specifier: dependency.specifier,
           specifier_type: dependency.specifier_type,
           priority: dependency.priority,
-          resolve_from: asset.file_path.clone(),
+          resolve_from: asset.file_path.to_path_buf(),
           imported_symbols: dependency.imported_symbols,
           bundle_behavior: BundleBehavior::Default,
         });

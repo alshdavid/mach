@@ -18,14 +18,17 @@ pub fn run_transformers(
 ) -> Result<Vec<DependencyOptions>, String> {
   let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
-  let mut content =
-    fs::read(&resolve_result.file_path).map_err(|_| format!("Unable to read file: {:?}", resolve_result.file_path))?;
+  let Ok(mut content) = fs::read(&resolve_result.file_path) else {
+    return Err(format!("Unable to read file: {:?}", resolve_result.file_path));
+  };
 
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
+  let file_path = resolve_result.file_path.clone();
   let mut asset_kind = file_target.file_extension.clone();
+  let mut asset_dependencies = Vec::<DependencyOptions>::new();
 
   let mut mutable_asset = MutableAsset::new(
-    resolve_result.file_path.clone(),
+    &file_path,
     &mut asset_kind,
     &mut content,
     &mut asset_dependencies,
