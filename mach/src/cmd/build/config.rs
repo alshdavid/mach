@@ -40,7 +40,7 @@ pub struct BuildCommand {
   pub threads: Option<usize>,
 
   /// How many Node.js workers to spawn for plugins
-  #[arg(long = "node-workers", env = "MACH_NODE_WORKERS", default_value = "1")]
+  #[arg(long = "node-workers", env = "MACH_NODE_WORKERS")]
   pub node_workers: Option<usize>,
 
   /// Enable logging debug info
@@ -98,10 +98,7 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
     }
   };
 
-  let mut node_workers = command.node_workers.unwrap();
-  if !machrc.engines.contains(&"node".to_string()) {
-    node_workers = threads.clone();
-  }
+  let node_workers = command.node_workers.unwrap_or(threads.clone());
 
   let env = {
     let mut vars = HashMap::<String, String>::new();
