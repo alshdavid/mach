@@ -7,7 +7,11 @@ use crate::public::ResolveResult;
 pub enum NodejsClientResponse {
   Ping(NodejsClientResponsePing),
   ResolverRegister(NodejsClientResolverRegister),
-  ResolverRun(NodejsClientResponseResolverRun),
+  ResolverLoadConfig(()),
+  ResolverResolve(NodejsClientResponseResolverResolve),
+  TransformerRegister(()),
+  TransformerLoadConfig(()),
+  TransformerTransform(()),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -17,6 +21,6 @@ pub struct NodejsClientResponsePing {}
 pub struct NodejsClientResolverRegister {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientResponseResolverRun {
+pub struct NodejsClientResponseResolverResolve {
   pub resolve_result: Option<ResolveResult>,
 }

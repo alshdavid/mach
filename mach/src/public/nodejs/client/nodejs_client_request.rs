@@ -7,7 +7,11 @@ use crate::public::Dependency;
 pub enum NodejsClientRequest {
   Ping(NodejsClientRequestPing),
   ResolverRegister(NodejsClientRequestResolverRegister),
-  ResolverRun(NodejsClientRequestResolverRun),
+  ResolverLoadConfig(()),
+  ResolverResolve(NodejsClientRequestResolverResolve),
+  TransformerRegister(()),
+  TransformerLoadConfig(()),
+  TransformerTransform(()),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -19,7 +23,7 @@ pub struct NodejsClientRequestResolverRegister {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientRequestResolverRun {
+pub struct NodejsClientRequestResolverResolve {
   pub specifier: String,
   pub dependency: Dependency,
 }

@@ -1,8 +1,8 @@
 use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::platform::plugins::resolver_javascript::resolve_str;
+use crate::platform::plugins::resolver_javascript::resolve;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
-use crate::public::nodejs::client::NodejsClientRequestResolverRun;
+use crate::public::nodejs::client::NodejsClientRequestResolverResolve;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::Dependency;
 use crate::public::MachConfig;
@@ -18,10 +18,17 @@ pub struct ResolverNodejs {
 impl ResolverNodejs {
   pub fn new(
     config: &MachConfig,
-    specifier: &str,
+    initial_specifier: &str,
     nodejs_adapter: NodejsAdapter,
   ) -> Result<Self, String> {
-    let specifier = resolve_str(&config.project_root, specifier)?;
+    let specifier = resolve(&config.project_root, initial_specifier)?;
+    if !specifier.exists() {
+      return Err(format!(
+        "Plugin not found for specifier: {:?}",
+        initial_specifier
+      ));
+    }
+    let specifier = specifier.to_str().unwrap().to_string();
 
     nodejs_adapter.send_all(NodejsClientRequest::ResolverRegister(
       NodejsClientRequestResolverRegister {
@@ -30,7 +37,7 @@ impl ResolverNodejs {
     ));
 
     Ok(Self {
-      resolver_specifier: specifier.to_string(),
+      resolver_specifier: specifier,
       nodejs_adapter,
     })
   }
@@ -43,14 +50,14 @@ impl Resolver for ResolverNodejs {
   ) -> Result<Option<ResolveResult>, String> {
     let response = self
       .nodejs_adapter
-      .send_and_wait(NodejsClientRequest::ResolverRun(
-        NodejsClientRequestResolverRun {
+      .send_and_wait(NodejsClientRequest::ResolverResolve(
+        NodejsClientRequestResolverResolve {
           specifier: self.resolver_specifier.clone(),
           dependency: dependency.clone(),
         },
       ));
 
-    let NodejsClientResponse::ResolverRun(result) = response else {
+    let NodejsClientResponse::ResolverResolve(result) = response else {
       panic!();
     };
 

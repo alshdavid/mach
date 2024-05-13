@@ -15,6 +15,14 @@
   "scripts": {
     "postinstall": "node postinstall.mjs"
   },
+  "files": [
+    "cmd",
+    "lib",
+    "types",
+    "package.json",
+    "postinstall.mjs",
+    "tsconfig.json"
+  ],
   "optionalDependencies": {
     "@alshdavid/mach-linux-amd64": "0.0.0-local",
     "@alshdavid/mach-linux-arm64": "0.0.0-local",
@@ -25,5 +33,8 @@
   },
   "devDependencies": {
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@types/node": "20.x.x"
   }
 }

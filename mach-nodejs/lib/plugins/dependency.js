@@ -2,7 +2,6 @@ import * as types from '../types/index.js'
 
 /**
  * @class
- * @template T
  * @implements {types.Dependency}
  */
 export class Dependency {

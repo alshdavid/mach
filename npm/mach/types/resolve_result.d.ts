@@ -1,4 +1,6 @@
-import type { DependencyPriority, FilePath, JSONObject } from '../types/index.d.ts'
+import type { DependencyPriority } from './dependency_priority.d.ts'
+import type { FilePath } from './file_path.d.ts'
+import type { JSONObject } from './json_object.d.ts'
 
 export type ResolveResult = {
   /** An absolute path to the resolved file. */

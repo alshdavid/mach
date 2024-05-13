@@ -1,7 +1,11 @@
 export type Action = (
   PingAction |
   ResolverRegisterAction |
-  ResolverRunAction
+  ResolverLoadConfigAction |
+  ResolverResolveAction |
+  TransformerRegisterAction |
+  TransformerLoadConfigAction |
+  TransformerTransformAction
 )
 
 export type PingAction = {
@@ -14,9 +18,34 @@ export type ResolverRegisterAction = {
   }
 }
 
-export type ResolverRunAction = {
-  ResolverRun: {
+export type ResolverLoadConfigAction = {
+  ResolverLoadConfig: {
+    specifier: string
+  }
+}
+
+export type ResolverResolveAction = {
+  ResolverResolve: {
     specifier: string
     dependency: any
+  }
+}
+
+export type TransformerRegisterAction = {
+  TransformerRegister: {
+    specifier: string
+  }
+}
+
+export type TransformerLoadConfigAction = {
+  TransformerLoadConfig: {
+    specifier: string
+  }
+}
+
+export type TransformerTransformAction = {
+  TransformerTransform: {
+    specifier: string
+    mutable_asset: any
   }
 }

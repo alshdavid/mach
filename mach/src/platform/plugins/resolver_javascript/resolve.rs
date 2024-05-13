@@ -70,13 +70,6 @@ pub fn resolve(
   ));
 }
 
-pub fn resolve_str(
-  from_raw: &Path,
-  specifier: &str,
-) -> Result<String, String> {
-  Ok(resolve(from_raw, specifier)?.to_str().unwrap().to_string())
-}
-
 pub fn resolve_oxc(
   from: &Path,
   specifier: &str,
