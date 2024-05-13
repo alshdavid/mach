@@ -1,5 +1,15 @@
 {
   "compilerOptions": {
-    "lib": ["DOM", "ESNext"]
-  }
+    "lib": ["DOM", "ESNext"],
+    "target": "ESNext",
+    "module": "Node16",
+    "moduleResolution": "Node16"
+  },
+  "include": [
+    "types"
+  ],
+  "exclude": [
+    "node_modules",
+    "_parcel"
+  ]
 }

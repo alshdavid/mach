@@ -3,7 +3,7 @@ import type { EnvironmentContext } from "./environment_context.d.ts"
 import type { OutputFormat } from "./output_format.d.ts"
 import type { PackageName } from "./package_name.d.ts"
 import type { SourceLocation } from "./source_location.d.ts"
-import type { SourceType } from "./source_type.js"
+import type { SourceType } from "./source_type.d.ts"
 import type { TargetSourceMapOptions } from "./target_source_map_options.d.ts"
 
 export type EnvironmentOptions = {
