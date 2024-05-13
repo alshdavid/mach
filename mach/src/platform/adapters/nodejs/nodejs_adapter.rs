@@ -111,16 +111,23 @@ impl NodejsAdapter {
   pub fn send_all(
     &self,
     req: NodejsClientRequest,
-  ) {
+  ) -> Result<Vec<NodejsClientResponse>, String> {
     let mut requests = vec![];
+    let mut responses = vec![];
 
     for i in 0..*self.worker_count {
       requests.push(self.send_internal(i as usize, req.clone()))
     }
 
     for request in requests {
-      request.recv().unwrap();
+      let response = request.recv().unwrap();
+      if let NodejsClientResponse::Err(msg) = response {
+        return Err(msg);
+      }
+      responses.push(response);
     }
+
+    Ok(responses)
   }
 
   pub fn send(

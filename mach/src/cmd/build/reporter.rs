@@ -36,7 +36,7 @@ impl AppReporter {
     bundle_graph: BundleGraphSync,
     outputs: OutputsSync,
     nodejs_adapter: NodejsAdapter,
-) -> Self {
+  ) -> Self {
     return Self {
       config,
       dependency_map,
@@ -91,9 +91,15 @@ impl AppReporter {
 
   pub fn print_init_stats(&mut self) {
     if self.nodejs_adapter.nodejs_is_running() {
-      self.log(&format!("Nodejs Workers:  {} (running)", self.config.node_workers));
+      self.log(&format!(
+        "Nodejs Workers:  {} (running)",
+        self.config.node_workers
+      ));
     } else {
-      self.log(&format!("Nodejs Workers:  {} (not running)", self.config.node_workers));
+      self.log(&format!(
+        "Nodejs Workers:  {} (not running)",
+        self.config.node_workers
+      ));
     }
     let time_init = self.config.time_elapsed();
     self.log(&format!("  Init:          {:.3}s", time_init));

@@ -35,79 +35,89 @@ napi.run(
     /** @type {any} */ err,
     /** @type {types.Action} */ action,
   ) => {
-  if (err) {
-    console.log('JS ------------ has error')
-    console.error(err)
-    process.exit(1)
-  }
+    try {
+      if (err) {
+        console.log('JS ------------ has error')
+        console.error(err)
+        process.exit(1)
+      }
 
-  if ('Ping' in action) {
-    return { 'Ping': {} }
-  }
+      if ('Ping' in action) {
+        return { 'Ping': {} }
+      }
 
-  if ('ResolverRegister' in action) {
-    const { specifier } = action.ResolverRegister
-    resolvers[specifier] = (await import(specifier)).default
-    return { 'ResolverRegister': {} }
-  }
+      if ('ResolverRegister' in action) {
+        const { specifier } = action.ResolverRegister
+        resolvers[specifier] = (await import(specifier)).default
+        return { 'ResolverRegister': {} }
+      }
 
-  if ('ResolverLoadConfig' in action) {
-    const { specifier } = action.ResolverLoadConfig
-    const result = await resolvers[specifier].triggerLoadConfig?.({
-      get config() { throw new Error('Not implemented') },
-      get options() { throw new Error('Not implemented') },
-      get logger() { throw new Error('Not implemented') },
-    })
-    resolver_config[specifier] = result
-    return { ResolverLoadConfig: {} }
-  }
+      if ('ResolverLoadConfig' in action) {
+        const { specifier } = action.ResolverLoadConfig
+        const result = await resolvers[specifier].triggerLoadConfig?.({
+          get config() { throw new Error('Not implemented') },
+          get options() { throw new Error('Not implemented') },
+          get logger() { throw new Error('Not implemented') },
+        })
+        resolver_config[specifier] = result
+        return { ResolverLoadConfig: {} }
+      }
 
-  if ('ResolverResolve' in action) {
-    const { specifier, dependency: internalDependency } = action.ResolverResolve
-    const dependency = new Dependency(internalDependency)
-    const result = await resolvers[specifier].triggerResolve({ 
-      dependency,
-      specifier: dependency.specifier,
-      config: resolver_config[specifier],
-      get options() { throw new Error('Not implemented') },
-      get logger() { throw new Error('Not implemented') },
-      // @ts-expect-error
-      get pipeline() { throw new Error('Not implemented') },
-    })
-    return { ResolverResolve: { resolve_result: result } }
-  }
+      if ('ResolverResolve' in action) {
+        const { specifier, dependency: internalDependency } = action.ResolverResolve
+        const dependency = new Dependency(internalDependency)
+        const result = await resolvers[specifier].triggerResolve({ 
+          dependency,
+          specifier: dependency.specifier,
+          config: resolver_config[specifier],
+          get options() { throw new Error('Not implemented') },
+          get logger() { throw new Error('Not implemented') },
+          // @ts-expect-error
+          get pipeline() { throw new Error('Not implemented') },
+        })
+        return { ResolverResolve: { resolve_result: result } }
+      }
 
-  if ('TransformerRegister' in action) {
-    const { specifier } = action.TransformerRegister
-    transformers[specifier] = (await import(specifier)).default
-    return { TransformerRegister: {} }
-  }
+      if ('TransformerRegister' in action) {
+        const { specifier } = action.TransformerRegister
+        transformers[specifier] = (await import(specifier)).default
+        return { TransformerRegister: {} }
+      }
 
-  if ('TransformerLoadConfig' in action) {
-    const { specifier } = action.TransformerLoadConfig
-    const result = await transformers[specifier].triggerLoadConfig?.({
-      get config() { throw new Error('Not implemented') },
-      get options() { throw new Error('Not implemented') },
-      get logger() { throw new Error('Not implemented') },
-      get tracer() { throw new Error('Not implemented') },
-    })
-    transformers_config[specifier] = result
-    return { TransformerLoadConfig: {} }
-  }
+      if ('TransformerLoadConfig' in action) {
+        const { specifier } = action.TransformerLoadConfig
+        const result = await transformers[specifier].triggerLoadConfig?.({
+          get config() { throw new Error('Not implemented') },
+          get options() { throw new Error('Not implemented') },
+          get logger() { throw new Error('Not implemented') },
+          get tracer() { throw new Error('Not implemented') },
+        })
+        transformers_config[specifier] = result
+        return { TransformerLoadConfig: {} }
+      }
 
-  if ('TransformerTransform' in action) {
-    const { specifier, mutable_asset: internalMutableAsset } = action.TransformerTransform
-    const mutable_asset = new MutableAsset(internalMutableAsset)
-    const result = await transformers[specifier].triggerTransform({ 
-      asset: mutable_asset,
-      config: transformers_config[specifier], 
-      get resolve() { throw new Error('Not implemented') }, 
-      get options() { throw new Error('Not implemented') }, 
-      get logger() { throw new Error('Not implemented') }, 
-      get tracer() { throw new Error('Not implemented') }, 
-    })
-    return { 'TransformerTransform': { transform_result: result } }
-  }
+      if ('TransformerTransform' in action) {
+        const { specifier, mutable_asset: internalMutableAsset } = action.TransformerTransform
+        const mutable_asset = new MutableAsset(internalMutableAsset)
+        const result = await transformers[specifier].triggerTransform({ 
+          asset: mutable_asset,
+          config: transformers_config[specifier], 
+          get resolve() { throw new Error('Not implemented') }, 
+          get options() { throw new Error('Not implemented') }, 
+          get logger() { throw new Error('Not implemented') }, 
+          get tracer() { throw new Error('Not implemented') }, 
+        })
+        return { 'TransformerTransform': { transform_result: result } }
+      }
 
-  throw new Error("No action")
+      throw new Error("No action")
+    } catch (/** @type {any} */ error) {
+      if (error instanceof Error) {
+        throw `\n${error.stack}\n`
+      }
+      if (typeof error === 'string') {
+        throw error
+      }
+      throw 'An error occurred in JavaScript worker'
+    }
 })
