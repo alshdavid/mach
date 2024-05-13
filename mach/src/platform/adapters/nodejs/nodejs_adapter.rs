@@ -62,6 +62,10 @@ impl NodejsAdapter {
     })
   }
 
+  pub fn nodejs_is_running(&self) -> bool {
+    self.nodejs_instance.lock().unwrap().is_some()
+  }
+
   pub fn start_nodejs(&self) -> Result<(), String> {
     let mut nodejs_instance_container = self.nodejs_instance.lock().unwrap();
     if nodejs_instance_container.is_some() || *self.worker_count == 0 {
