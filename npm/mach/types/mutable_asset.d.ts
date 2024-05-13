@@ -1,5 +1,4 @@
 import type { Readable } from "node:stream"
-import type { SourceMap } from "node:module"
 import type { BaseAsset } from "./base_asset.d.ts"
 import type { BundleBehavior } from "./bundle_behavior.d.ts"
 import type { DependencyOptions } from "./dependency_options.d.ts"
@@ -89,7 +88,8 @@ export interface MutableAsset extends BaseAsset {
   isASTDirty: unknown
 
   /** Sets the asset's source map. */
-  setMap(arg0: SourceMap | null | undefined): void;
+  // setMap(arg0: SourceMap | null | undefined): void;
+  setMap(arg0: any | null | undefined): void;
 
   setEnvironment(opts: EnvironmentOptions): void;
 }

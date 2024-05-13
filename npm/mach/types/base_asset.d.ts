@@ -88,8 +88,8 @@ export interface BaseAsset {
 
   /** Returns the source map for the asset, if available. */
   /** @todo */
-  getMap: unknown
   // getMap(): Promise<SourceMap | null | undefined>;
+  getMap(): Promise<unknown | null | undefined>;
 
   /** Returns a buffer representation of the source map, if available. */
   getMapBuffer(): Promise<Buffer | null | undefined>;

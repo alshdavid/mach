@@ -1,4 +1,5 @@
 import type { MutableAsset } from "./mutable_asset.d.ts"
+import type { TransformerResult } from "./transformer_result.d.ts"
 
 export type TransformerInitOpts<ConfigType> = {
   loadConfig?(options: {
@@ -15,7 +16,7 @@ export type TransformerInitOpts<ConfigType> = {
     options: any // PluginOptions
     logger: any // PluginLogger
     tracer: any // PluginTracer
-  }): void
+  }): Promise<Array<TransformerResult | MutableAsset>> | Array<TransformerResult | MutableAsset>
 
   /** @deprecated Not supported by Mach */
   canReuseAST?: unknown
