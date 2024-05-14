@@ -30,8 +30,7 @@ pub struct NodejsClientResponseResolverResolve {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientResponseTransformerRegister {
-}
+pub struct NodejsClientResponseTransformerRegister {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientResponseTransformerLoadConfig {}

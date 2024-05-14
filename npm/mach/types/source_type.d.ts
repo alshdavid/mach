@@ -1,1 +1,1 @@
-export type SourceType = "script" | "module";
+export type SourceType = 'script' | 'module'

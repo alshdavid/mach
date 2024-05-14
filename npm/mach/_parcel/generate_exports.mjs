@@ -13,4 +13,8 @@ for (const filename of fs.readdirSync(path.join(__dirname, '..', 'types'))) {
 }
 
 fs.rmSync(path.join(__dirname, '..', 'types', 'index.d.ts'), { force: true })
-fs.writeFileSync(path.join(__dirname, '..', 'types', 'index.d.ts'), new_index, 'utf8')
+fs.writeFileSync(
+  path.join(__dirname, '..', 'types', 'index.d.ts'),
+  new_index,
+  'utf8',
+)

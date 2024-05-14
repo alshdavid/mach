@@ -1,12 +1,11 @@
-export type Action = (
-  PingAction |
-  ResolverRegisterAction |
-  ResolverLoadConfigAction |
-  ResolverResolveAction |
-  TransformerRegisterAction |
-  TransformerLoadConfigAction |
-  TransformerTransformAction
-)
+export type Action =
+  | PingAction
+  | ResolverRegisterAction
+  | ResolverLoadConfigAction
+  | ResolverResolveAction
+  | TransformerRegisterAction
+  | TransformerLoadConfigAction
+  | TransformerTransformAction
 
 export type PingAction = {
   Ping: {}

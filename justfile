@@ -124,6 +124,9 @@ test:
 
 fmt:
   cargo +nightly fmt
+  npx prettier ./mach-nodejs --write
+  npx prettier ./npm --write
+  npx prettier ./examples --write
 
 [unix]
 build-publish: build-publish-common

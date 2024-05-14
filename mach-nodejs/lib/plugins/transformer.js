@@ -9,9 +9,7 @@ export class Transformer {
   triggerLoadConfig
   triggerTransform
 
-  constructor(
-    /** @type {types.TransformerInitOpts<T>} */ options
-  ) {
+  constructor(/** @type {types.TransformerInitOpts<T>} */ options) {
     this.triggerLoadConfig = options.loadConfig
     this.triggerTransform = options.transform
     if (options.canReuseAST) throw new Error('Feature not supported')

@@ -1,1 +1,1 @@
-export type BundleBehavior = 'inline' | 'isolated';
+export type BundleBehavior = 'inline' | 'isolated'

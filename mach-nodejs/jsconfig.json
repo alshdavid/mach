@@ -6,7 +6,5 @@
     "strict": true,
     "checkJs": true
   },
-  "include": [
-    "lib"
-  ]
+  "include": ["lib"]
 }

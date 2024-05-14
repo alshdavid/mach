@@ -1,1 +1,1 @@
-export type OutputFormat = "esmodule" | "commonjs" | "global";
+export type OutputFormat = 'esmodule' | 'commonjs' | 'global'
