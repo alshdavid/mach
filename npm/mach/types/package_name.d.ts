@@ -1,1 +1,1 @@
-export type PackageName = string;
+export type PackageName = string

@@ -1,1 +1,1 @@
-export type VersionMap = Record<string, string>;
+export type VersionMap = Record<string, string>

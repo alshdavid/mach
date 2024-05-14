@@ -107,23 +107,26 @@ run *ARGS:
   {{out_dir}}/bin/mach.exe {{ARGS}}
 
 [unix]
-fixture cmd fixture *ARGS:
+example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
+  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./examples/{{fixture}}
 
 [windows]
-fixture cmd fixture *ARGS:
+example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./testing/fixtures/{{fixture}}
+  {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./examples/{{fixture}}
 
 serve:
-  npx http-server -p 3000 ./testing/fixtures
+  npx http-server -p 3000 ./examples
 
 test:
   cargo test
 
 fmt:
   cargo +nightly fmt
+  npx prettier ./mach-nodejs --write
+  npx prettier ./npm --write
+  npx prettier ./examples --write
 
 [unix]
 build-publish: build-publish-common

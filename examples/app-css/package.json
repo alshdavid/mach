@@ -1,0 +1,10 @@
+{
+  "name": "fixture-app-css",
+  "scripts": {
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "http-server": "*",
+    "@alshdavid/mach": "workspace:*"
+  }
+}

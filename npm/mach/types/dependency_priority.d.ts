@@ -1,1 +1,1 @@
-export type DependencyPriority = 'sync' | 'parallel' | 'lazy';
+export type DependencyPriority = 'sync' | 'parallel' | 'lazy'

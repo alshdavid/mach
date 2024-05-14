@@ -4,4 +4,4 @@ export type JSONObject =
   | boolean
   | null
   | JSONObject[]
-  | { [key: string]: JSONObject };
+  | { [key: string]: JSONObject }

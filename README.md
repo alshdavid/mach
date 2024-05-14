@@ -63,7 +63,7 @@ Mach comes preconfigured with sensible defaults and does not need configuration.
 Mach supports plugins that share the ideas and API of [Parcel Plugins](https://parceljs.org/features/plugins) for cases where bundling must be customized.
 
 - [Resolver](https://parceljs.org/plugin-system/resolver/) _partial support_
-- [Transformer](https://parceljs.org/plugin-system/transformer/) _in progress_
+- [Transformer](https://parceljs.org/plugin-system/transformer/) _partial support_
 - [Reporter](https://parceljs.org/plugin-system/reporter/) _todo_
 - [Namer](https://parceljs.org/plugin-system/namer/) _todo_
 

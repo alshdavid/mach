@@ -31,11 +31,9 @@ const transformers_config = {}
 napi.run(
   workerData.child_sender,
   workerData.child_receiver,
-  async (
-    /** @type {any} */ err,
-    /** @type {types.Action} */ action,
-  ) => {
+  async (/** @type {any} */ err, /** @type {types.Action} */ action) => {
     try {
+      // console.log(action)
       if (err) {
         console.log('JS ------------ has error')
         console.error(err)
@@ -43,37 +41,50 @@ napi.run(
       }
 
       if ('Ping' in action) {
-        return { 'Ping': {} }
+        return { Ping: {} }
       }
 
       if ('ResolverRegister' in action) {
         const { specifier } = action.ResolverRegister
         resolvers[specifier] = (await import(specifier)).default
-        return { 'ResolverRegister': {} }
+        return { ResolverRegister: {} }
       }
 
       if ('ResolverLoadConfig' in action) {
         const { specifier } = action.ResolverLoadConfig
         const result = await resolvers[specifier].triggerLoadConfig?.({
-          get config() { throw new Error('Not implemented') },
-          get options() { throw new Error('Not implemented') },
-          get logger() { throw new Error('Not implemented') },
+          get config() {
+            throw new Error('Not implemented')
+          },
+          get options() {
+            throw new Error('Not implemented')
+          },
+          get logger() {
+            throw new Error('Not implemented')
+          },
         })
         resolver_config[specifier] = result
         return { ResolverLoadConfig: {} }
       }
 
       if ('ResolverResolve' in action) {
-        const { specifier, dependency: internalDependency } = action.ResolverResolve
+        const { specifier, dependency: internalDependency } =
+          action.ResolverResolve
         const dependency = new Dependency(internalDependency)
-        const result = await resolvers[specifier].triggerResolve({ 
+        const result = await resolvers[specifier].triggerResolve({
           dependency,
           specifier: dependency.specifier,
           config: resolver_config[specifier],
-          get options() { throw new Error('Not implemented') },
-          get logger() { throw new Error('Not implemented') },
+          get options() {
+            throw new Error('Not implemented')
+          },
+          get logger() {
+            throw new Error('Not implemented')
+          },
           // @ts-expect-error
-          get pipeline() { throw new Error('Not implemented') },
+          get pipeline() {
+            throw new Error('Not implemented')
+          },
         })
         return { ResolverResolve: { resolve_result: result } }
       }
@@ -87,30 +98,63 @@ napi.run(
       if ('TransformerLoadConfig' in action) {
         const { specifier } = action.TransformerLoadConfig
         const result = await transformers[specifier].triggerLoadConfig?.({
-          get config() { throw new Error('Not implemented') },
-          get options() { throw new Error('Not implemented') },
-          get logger() { throw new Error('Not implemented') },
-          get tracer() { throw new Error('Not implemented') },
+          get config() {
+            throw new Error('Not implemented')
+          },
+          get options() {
+            throw new Error('Not implemented')
+          },
+          get logger() {
+            throw new Error('Not implemented')
+          },
+          get tracer() {
+            throw new Error('Not implemented')
+          },
         })
         transformers_config[specifier] = result
         return { TransformerLoadConfig: {} }
       }
 
       if ('TransformerTransform' in action) {
-        const { specifier, mutable_asset: internalMutableAsset } = action.TransformerTransform
-        const mutable_asset = new MutableAsset(internalMutableAsset)
-        const result = await transformers[specifier].triggerTransform({ 
+        const { specifier, ...internalMutableAsset } =
+          action.TransformerTransform
+
+        const dependencies = /** @type {Array<any>} */ ([])
+        const mutable_asset = new MutableAsset(
+          internalMutableAsset,
+          dependencies,
+        )
+        const result = await transformers[specifier].triggerTransform({
           asset: mutable_asset,
-          config: transformers_config[specifier], 
-          get resolve() { throw new Error('Not implemented') }, 
-          get options() { throw new Error('Not implemented') }, 
-          get logger() { throw new Error('Not implemented') }, 
-          get tracer() { throw new Error('Not implemented') }, 
+          config: transformers_config[specifier],
+          get resolve() {
+            throw new Error('Not implemented')
+          },
+          get options() {
+            throw new Error('Not implemented')
+          },
+          get logger() {
+            throw new Error('Not implemented')
+          },
+          get tracer() {
+            throw new Error('Not implemented')
+          },
         })
-        return { 'TransformerTransform': { transform_result: result } }
+
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+          return { TransformerTransform: { transform_result: {} } }
+        }
+
+        return {
+          TransformerTransform: {
+            content: internalMutableAsset.content,
+            kind: internalMutableAsset.kind,
+            dependencies,
+          },
+        }
       }
 
-      throw new Error("No action")
+      throw new Error('No action')
     } catch (/** @type {any} */ error) {
       if (error instanceof Error) {
         throw `\n${error.stack}\n`
@@ -120,4 +164,5 @@ napi.run(
       }
       throw 'An error occurred in JavaScript worker'
     }
-})
+  },
+)

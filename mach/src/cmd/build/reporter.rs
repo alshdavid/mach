@@ -75,7 +75,7 @@ impl AppReporter {
         self.config.machrc.file_path.to_str().unwrap()
       ));
     } else {
-      self.log(&format!("Mach Config:   Default"));
+      self.log(&format!("Mach Config:     Default"));
     }
     self.log(&format!(
       "Out Dir:         {}",

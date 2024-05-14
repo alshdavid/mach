@@ -19,7 +19,8 @@ export type ResolverInitOpts<ConfigType> = {
   }) => undefined | null | ResolveResult | Promise<ResolveResult>
 }
 
-export interface IResolver<ConfigType> extends Omit<Resolver<ConfigType>, 'constructor'> {}
+export interface IResolver<ConfigType>
+  extends Omit<Resolver<ConfigType>, 'constructor'> {}
 
 export declare class Resolver<ConfigType> {
   constructor(opts: ResolverInitOpts<ConfigType>)

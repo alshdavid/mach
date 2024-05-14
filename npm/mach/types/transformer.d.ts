@@ -1,5 +1,5 @@
-import type { MutableAsset } from "./mutable_asset.d.ts"
-import type { TransformerResult } from "./transformer_result.d.ts"
+import type { MutableAsset } from './mutable_asset.d.ts'
+import type { TransformerResult } from './transformer_result.d.ts'
 
 export type TransformerInitOpts<ConfigType> = {
   loadConfig?(options: {
@@ -16,7 +16,10 @@ export type TransformerInitOpts<ConfigType> = {
     options: any // PluginOptions
     logger: any // PluginLogger
     tracer: any // PluginTracer
-  }): Promise<Array<TransformerResult | MutableAsset>> | Array<TransformerResult | MutableAsset>
+  }):
+    | Promise<Array<TransformerResult | MutableAsset>>
+    | Array<TransformerResult | MutableAsset>
+    | undefined
 
   /** @deprecated Not supported by Mach */
   canReuseAST?: unknown
@@ -28,7 +31,8 @@ export type TransformerInitOpts<ConfigType> = {
   generate?: unknown
 }
 
-export interface ITransformer<ConfigType> extends Omit<Transformer<ConfigType>, 'constructor'> {}
+export interface ITransformer<ConfigType>
+  extends Omit<Transformer<ConfigType>, 'constructor'> {}
 export declare class Transformer<ConfigType> {
   constructor(opts: TransformerInitOpts<ConfigType>)
   triggerLoadConfig: TransformerInitOpts<ConfigType>['loadConfig']

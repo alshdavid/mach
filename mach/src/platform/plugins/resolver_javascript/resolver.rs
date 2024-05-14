@@ -23,7 +23,7 @@ impl ResolverJavaScript {
         "module".to_string(),
         "webpack".to_string(),
         "development".to_string(),
-        "browser".to_string(), 
+        "browser".to_string(),
         "default".to_string(),
       ],
       ..OxcResolveOptions::default()
@@ -31,9 +31,7 @@ impl ResolverJavaScript {
 
     let resolver = OxcResolver::new(oxc_options);
 
-    Self { 
-      resolver,
-    }
+    Self { resolver }
   }
 }
 

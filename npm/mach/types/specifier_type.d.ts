@@ -1,1 +1,1 @@
-export type SpecifierType = 'commonjs' | 'esm' | 'url' | 'custom';
+export type SpecifierType = 'commonjs' | 'esm' | 'url' | 'custom'

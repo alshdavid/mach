@@ -1,6 +1,6 @@
 packages:
   - '.github/scripts'
-  - 'testing/fixtures/*'
+  - 'examples/*'
   - 'npm/*'
   - 'mach-nodejs'
   - 'benchmarks/*'

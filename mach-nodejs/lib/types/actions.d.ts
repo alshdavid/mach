@@ -1,12 +1,11 @@
-export type Action = (
-  PingAction |
-  ResolverRegisterAction |
-  ResolverLoadConfigAction |
-  ResolverResolveAction |
-  TransformerRegisterAction |
-  TransformerLoadConfigAction |
-  TransformerTransformAction
-)
+export type Action =
+  | PingAction
+  | ResolverRegisterAction
+  | ResolverLoadConfigAction
+  | ResolverResolveAction
+  | TransformerRegisterAction
+  | TransformerLoadConfigAction
+  | TransformerTransformAction
 
 export type PingAction = {
   Ping: {}
@@ -46,6 +45,8 @@ export type TransformerLoadConfigAction = {
 export type TransformerTransformAction = {
   TransformerTransform: {
     specifier: string
-    mutable_asset: any
+    file_path: string
+    kind: string
+    content: Array<any>
   }
 }

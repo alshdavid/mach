@@ -22,7 +22,10 @@ pub fn run_transformers(
   let file_path = resolve_result.file_path.clone();
   let mut asset_kind = file_target.file_extension.clone();
   let Ok(mut content) = fs::read(&resolve_result.file_path) else {
-    return Err(format!("Unable to read file: {:?}", resolve_result.file_path));
+    return Err(format!(
+      "Unable to read file: {:?}",
+      resolve_result.file_path
+    ));
   };
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
 

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'stream'
 import * as types from '../types/index.js'
 
 /**
@@ -7,61 +7,77 @@ import * as types from '../types/index.js'
  */
 export class MutableAsset {
   #internal
+  #dependencies
 
   constructor(
-    /** @type {any} */ internal
+    /** @type {Omit<types.TransformerTransformAction['TransformerTransform'], 'specifier'>} */ internal,
+    /** @type {Array<any>} */ dependencies,
   ) {
     this.#internal = internal
+    this.#dependencies = dependencies
   }
 
   /** @type {string} */
   get type() {
-    return this.#internal.type
+    return this.#internal.kind
+  }
+
+  set type(/** @type {string} */ value) {
+    this.#internal.kind = value
   }
 
   /** @type {types.BundleBehavior | null | undefined} */
   get bundleBehavior() {
-    return this.#internal.bundle_behavior
+    throw new Error('Method not implemented.')
+    // return this.#internal.bundle_behavior
   }
 
   /** @type {boolean} */
   get isBundleSplittable() {
-    return this.#internal.is_bundle_splittable
+    throw new Error('Method not implemented.')
+    // return this.#internal.is_bundle_splittable
   }
 
   /** @type {boolean} */
   get sideEffects() {
-    return this.#internal.side_effects
+    throw new Error('Method not implemented.')
+    // return this.#internal.side_effects
   }
 
   /** @type {string | null | undefined} */
   get uniqueKey() {
-    return this.#internal.unique_key
+    throw new Error('Method not implemented.')
+    // return this.#internal.unique_key
   }
 
   /** @type {types.MutableAssetSymbols} */
   get symbols() {
-    return this.#internal.symbols
+    throw new Error('Method not implemented.')
+    // return this.#internal.symbols
   }
 
   /** @type {unknown} */
   get setAST() {
-    return this.#internal.set_ast
+    throw new Error('Method not implemented.')
+    // return this.#internal.set_ast
   }
 
   /** @type {unknown} */
   get isASTDirty() {
-    return this.#internal.is_ast_dirty
+    throw new Error('Method not implemented.')
+    // return this.#internal.is_ast_dirty
   }
 
   /** @type {string} */
   get id() {
-    return this.#internal.id
+    throw new Error('Method not implemented.')
+    // return this.#internal.id
   }
 
   /** @type {FileSystem} */
   get fs() {
-    return this.#internal.fs
+    throw new Error('Method not implemented.')
+    // return this.#internal.fs
   }
 
   /** @type {string} */
@@ -71,135 +87,128 @@ export class MutableAsset {
 
   /** @type {URLSearchParams} */
   get query() {
-    return this.#internal.query
+    throw new Error('Method not implemented.')
+    // return this.#internal.query
   }
 
   /** @type {types.Environment} */
   get env() {
-    return this.#internal.env
+    throw new Error('Method not implemented.')
+    // return this.#internal.env
   }
 
   /** @type {boolean} */
   get isSource() {
-    return this.#internal.is_source
+    throw new Error('Method not implemented.')
+    // return this.#internal.is_source
   }
 
   /** @type {types.JSONObject} */
   get meta() {
-    return this.#internal.meta
+    throw new Error('Method not implemented.')
+    // return this.#internal.meta
   }
 
   /** @type {unknown} */
   get astGenerator() {
-    return this.#internal.ast_generator
+    throw new Error('Method not implemented.')
+    // return this.#internal.ast_generator
   }
 
   /** @type {string | null | undefined} */
   get pipeline() {
-    return this.#internal.pipeline
+    throw new Error('Method not implemented.')
+    // return this.#internal.pipeline
   }
 
   /** @type {unknown} */
   get getAST() {
-    return this.#internal.get_ast
+    throw new Error('Method not implemented.')
+    // return this.#internal.get_ast
   }
 
   /** @type {unknown} */
   get invalidateOnFileCreate() {
-    return this.#internal.invalidate_on_file_create
+    throw new Error('Method not implemented.')
+    // return this.#internal.invalidate_on_file_create
   }
 
   /** @return {Promise<unknown | null | undefined>} */
   getMap() {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
   /** @return {string} */
   addDependency(/** @type {types.DependencyOptions} */ arg0) {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
   /** @return {string} */
   addURLDependency(
-    /** @type {string} */url,
+    /** @type {string} */ url,
     /** @type {Partial<types.DependencyOptions>} */ opts,
   ) {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
-  invalidateOnFileChange(
-    /** @type {string} */ arg0,
-  ) {
-    throw new Error('Method not implemented.');
+  invalidateOnFileChange(/** @type {string} */ arg0) {
+    throw new Error('Method not implemented.')
   }
 
-  invalidateOnEnvChange(
-    /** @type {string} */ arg0,
-  ) {
-    throw new Error('Method not implemented.');
+  invalidateOnEnvChange(/** @type {string} */ arg0) {
+    throw new Error('Method not implemented.')
   }
 
   invalidateOnStartup() {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
   invalidateOnBuild() {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
-  setCode(
-    /** @type {string} */ arg0,
-  ) {
-    throw new Error('Method not implemented.');
+  setCode(/** @type {string} */ arg0) {
+    this.#internal.content = Array.from(Buffer.from(arg0, 'utf-8'))
   }
 
-  setBuffer(
-    /** @type {Buffer} */ arg0,
-  ) {
-    throw new Error('Method not implemented.');
+  setBuffer(/** @type {Buffer} */ arg0) {
+    throw new Error('Method not implemented.')
   }
 
-  setStream(
-    /** @type {Readable} */ arg0
-  ) {
-    throw new Error('Method not implemented.');
+  setStream(/** @type {Readable} */ arg0) {
+    throw new Error('Method not implemented.')
   }
 
-  setMap(
-    /** @type {any} */ arg0,
-  ) {
-    throw new Error('Method not implemented.');
+  setMap(/** @type {any} */ arg0) {
+    throw new Error('Method not implemented.')
   }
 
-  setEnvironment(
-    /** @type {types.EnvironmentOptions} */ opts,
-  ) {
-    throw new Error('Method not implemented.');
+  setEnvironment(/** @type {types.EnvironmentOptions} */ opts) {
+    throw new Error('Method not implemented.')
   }
 
   /** @return {Promise<string>} */
-  getCode() {
-    throw new Error('Method not implemented.');
+  async getCode() {
+    return (await this.getBuffer()).toString()
   }
 
   /** @return {Promise<Buffer>} */
-  getBuffer() {
-    throw new Error('Method not implemented.');
+  async getBuffer() {
+    return Buffer.from(this.#internal.content)
   }
-
 
   /** @return {Readable} */
   getStream() {
-    throw new Error('Method not implemented.');
+    return Readable.from(this.#internal.content)
   }
 
   /** @return {Promise<Buffer | null | undefined>} */
   getMapBuffer() {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 
   /** @return {ReadonlyArray<types.Dependency>} */
   getDependencies() {
-    throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.')
   }
 }

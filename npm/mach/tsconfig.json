@@ -5,11 +5,6 @@
     "module": "Node16",
     "moduleResolution": "Node16"
   },
-  "include": [
-    "types"
-  ],
-  "exclude": [
-    "node_modules",
-    "_parcel"
-  ]
+  "include": ["types"],
+  "exclude": ["node_modules", "_parcel"]
 }
