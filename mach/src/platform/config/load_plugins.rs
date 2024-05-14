@@ -7,6 +7,7 @@ use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
+use crate::platform::plugins::transformer_nodejs::TransformerNodeJs;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -17,8 +18,6 @@ pub fn load_plugins(
   nodejs_adapter: NodejsAdapter,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
-  // println!("  Plugins:");
-  // println!("    Resolvers:");
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
@@ -28,8 +27,6 @@ pub fn load_plugins(
           plugin_string
         ));
       };
-
-      // println!("      {}:{}", engine, specifier);
 
       if engine == "mach" && specifier == "resolver" {
         plugins.resolvers.push(Box::new(ResolverJavaScript::new()));
@@ -53,8 +50,6 @@ pub fn load_plugins(
     }
   }
 
-  // println!("    Transformers:");
-
   if let Some(transformers) = &machrc.transformers {
     for (pattern, specifiers) in transformers {
       let mut transformers = Vec::<Box<dyn Transformer>>::new();
@@ -66,7 +61,6 @@ pub fn load_plugins(
             plugin_string
           ));
         };
-        // println!("      {}:{:<25} {}", engine, specifier, pattern);
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
           continue;
@@ -89,6 +83,11 @@ pub fn load_plugins(
 
         if engine == "node" {
           nodejs_adapter.start_nodejs()?;
+          transformers.push(Box::new(TransformerNodeJs::new(
+            &config,
+            specifier,
+            nodejs_adapter.clone(),
+          )?));
           continue;
         }
 

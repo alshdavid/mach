@@ -1,35 +1,53 @@
 use std::fmt::Debug;
-use std::sync::Arc;
 
-use crate::public::Config;
+use crate::platform::adapters::nodejs::NodejsAdapter;
+use crate::platform::plugins::resolver_javascript::resolve;
+use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientRequestTransformerLoadConfig;
+use crate::public::nodejs::client::NodejsClientRequestTransformerRegister;
+use crate::public::nodejs::client::NodejsClientRequestTransformerTransform;
+use crate::public::nodejs::client::NodejsClientResponse;
+use crate::public::DependencyOptions;
+use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
 
 pub struct TransformerNodeJs {
-  specifier: String,
-  plugin_key: String,
-  node_adapter: Arc<NodeAdapter>,
+  transformer_specifier: String,
+  nodejs_adapter: NodejsAdapter,
 }
 
 impl TransformerNodeJs {
-  pub async fn new(
-    node_adapter: Arc<NodeAdapter>,
-    specifier: &str,
-  ) -> Self {
-    let plugin_key = snowflake::ProcessUniqueId::new().to_string();
+  pub fn new(
+    config: &MachConfig,
+    initial_specifier: &str,
+    nodejs_adapter: NodejsAdapter,
+  ) -> Result<Self, String> {
+    let specifier = resolve(&config.project_root, initial_specifier)?;
+    if !specifier.exists() {
+      return Err(format!(
+        "Plugin not found for specifier: {:?}",
+        initial_specifier
+      ));
+    }
+    let specifier = specifier.to_str().unwrap().to_string();
 
-    let req = LoadPluginRequest {
-      plugin_key: plugin_key.clone(),
-      specifier: specifier.to_string(),
-    };
+    nodejs_adapter.send_all(NodejsClientRequest::TransformerRegister(
+      NodejsClientRequestTransformerRegister {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
-    node_adapter.send_all("load_plugin", &req).await.unwrap();
+    nodejs_adapter.send_all(NodejsClientRequest::TransformerLoadConfig(
+      NodejsClientRequestTransformerLoadConfig {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
-    return TransformerNodeJs {
-      specifier: specifier.to_string(),
-      node_adapter,
-      plugin_key,
-    };
+    Ok(Self {
+      transformer_specifier: specifier.to_string(),
+      nodejs_adapter,
+    })
   }
 }
 
@@ -37,33 +55,42 @@ impl Transformer for TransformerNodeJs {
   fn transform(
     &self,
     asset: &mut MutableAsset,
-    config: &Config,
+    _config: &MachConfig,
   ) -> Result<(), String> {
-    let req = RunTransformerRequest {
-      plugin_key: self.plugin_key.clone(),
-      file_path: asset.file_path.clone(),
-      code: asset.get_code().clone(),
-      kind: asset.kind.clone(),
-      config: config.clone(),
+    let response = self
+      .nodejs_adapter
+      .send_and_wait(NodejsClientRequest::TransformerTransform(
+        NodejsClientRequestTransformerTransform {
+          specifier: self.transformer_specifier.clone(),
+          file_path: asset.file_path.to_path_buf(),
+          kind: asset.kind.clone(),
+          content: asset.get_bytes().to_vec(),
+        },
+      ));
+
+    if let NodejsClientResponse::Err(err) = response {
+      return Err(err);
     };
 
-    let response: RunTransformerResponse = self
-      .node_adapter
-      .send("run_transformer", &req)
-      .await
-      .unwrap();
+    let NodejsClientResponse::TransformerTransform(result) = response else {
+      panic!();
+    };
 
-    if !response.updated {
-      return Ok(());
+    asset.set_bytes(result.content);
+    *asset.kind = result.kind;
+
+    for dependency in result.dependencies {
+      asset.add_dependency(DependencyOptions {
+        specifier: dependency.specifier,
+        specifier_type: dependency.specifier_type,
+        priority: dependency.priority,
+        resolve_from: dependency.resolve_from,
+        imported_symbols: dependency.imported_symbols,
+        bundle_behavior: dependency.bundle_behavior,
+      })
     }
 
-    for dependency in response.dependencies {
-      asset.add_dependency(dependency);
-    }
-
-    asset.set_code(&response.code);
-
-    return Ok(());
+    Ok(())
   }
 }
 
@@ -72,6 +99,9 @@ impl Debug for TransformerNodeJs {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    f.write_str(&format!("TransformerNodeJs({})", self.specifier))
+    f.write_str(&format!(
+      "TransformerNodeJs({})",
+      self.transformer_specifier
+    ))
   }
 }

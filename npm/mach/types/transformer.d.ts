@@ -19,6 +19,7 @@ export type TransformerInitOpts<ConfigType> = {
   }):
     | Promise<Array<TransformerResult | MutableAsset>>
     | Array<TransformerResult | MutableAsset>
+    | undefined
 
   /** @deprecated Not supported by Mach */
   canReuseAST?: unknown

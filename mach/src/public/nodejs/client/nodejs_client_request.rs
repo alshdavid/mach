@@ -1,7 +1,11 @@
+use std::path::PathBuf;
+
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::public::Dependency;
+use crate::public::DependencyOptions;
+use crate::public::MutableAsset;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum NodejsClientRequest {
@@ -46,4 +50,7 @@ pub struct NodejsClientRequestTransformerLoadConfig {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodejsClientRequestTransformerTransform {
   pub specifier: String,
+  pub file_path: PathBuf,
+  pub kind: String,
+  pub content: Vec<u8>,
 }

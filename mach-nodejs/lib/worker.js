@@ -33,6 +33,7 @@ napi.run(
   workerData.child_receiver,
   async (/** @type {any} */ err, /** @type {types.Action} */ action) => {
     try {
+      // console.log(action)
       if (err) {
         console.log('JS ------------ has error')
         console.error(err)
@@ -115,9 +116,14 @@ napi.run(
       }
 
       if ('TransformerTransform' in action) {
-        const { specifier, mutable_asset: internalMutableAsset } =
+        const { specifier, ...internalMutableAsset } =
           action.TransformerTransform
-        const mutable_asset = new MutableAsset(internalMutableAsset)
+
+        const dependencies = /** @type {Array<any>} */ ([])
+        const mutable_asset = new MutableAsset(
+          internalMutableAsset,
+          dependencies,
+        )
         const result = await transformers[specifier].triggerTransform({
           asset: mutable_asset,
           config: transformers_config[specifier],
@@ -134,7 +140,18 @@ napi.run(
             throw new Error('Not implemented')
           },
         })
-        return { TransformerTransform: { transform_result: result } }
+
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+          return { TransformerTransform: { transform_result: {} } }
+        }
+
+        return {
+          TransformerTransform: {
+            content: internalMutableAsset.content,
+            kind: internalMutableAsset.kind,
+            dependencies,
+          },
+        }
       }
 
       throw new Error('No action')

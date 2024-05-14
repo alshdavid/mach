@@ -45,6 +45,8 @@ export type TransformerLoadConfigAction = {
 export type TransformerTransformAction = {
   TransformerTransform: {
     specifier: string
-    mutable_asset: any
+    file_path: string
+    kind: string
+    content: Array<any>
   }
 }

@@ -5,7 +5,7 @@ export default new Resolver({
     return 'my plugin config'
   },
   resolve({ dependency, config }) {
-    if (typeof dependency.id === 'undefined') {
+    if (typeof dependency.id !== 'string') {
       throw new Error('No dependency')
     }
     if (typeof config !== 'string' || config !== 'my plugin config') {

@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::public::DependencyOptions;
 use crate::public::ResolveResult;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -36,4 +37,8 @@ pub struct NodejsClientResponseTransformerRegister {}
 pub struct NodejsClientResponseTransformerLoadConfig {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NodejsClientResponseTransformerTransform {}
+pub struct NodejsClientResponseTransformerTransform {
+  pub content: Vec<u8>,
+  pub kind: String,
+  pub dependencies: Vec<DependencyOptions>,
+}

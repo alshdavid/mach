@@ -1,3 +1,5 @@
-import * as fromA from './a.js'
+import content from './content.txt'
 
-console.log(fromA)
+console.log('works')
+console.log(content)
+document.body.innerHTML = content
