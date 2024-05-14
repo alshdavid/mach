@@ -81,7 +81,9 @@ impl AppReporter {
       "Out Dir:         {}",
       self.config.dist_dir.to_str().unwrap()
     ));
-    self.log(&format!("Optimize:        {}", self.config.optimize));
+    // Currently disabled
+    self.log(&format!("Optimize:        false"));
+    // self.log(&format!("Optimize:        {}", self.config.optimize));
     self.log(&format!(
       "Splitting:       {}",
       self.config.bundle_splitting
