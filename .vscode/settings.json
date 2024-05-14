@@ -24,5 +24,8 @@
   },
   "deno.enablePaths": [
     "./scripts"
+  ],
+  "cSpell.words": [
+    "preconfigured"
   ]
 }
