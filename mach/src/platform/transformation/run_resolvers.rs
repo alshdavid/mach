@@ -11,5 +11,5 @@ pub fn run_resolvers(
       return Ok(resolve_result);
     }
   }
-  return Err("Unable to resolve file".to_string());
+  return Err(format!("Unable to resolve file: \n\tSpecifier: {}\n\tFrom: {:?}", dependency.specifier, dependency.resolve_from));
 }

@@ -119,7 +119,7 @@ pub fn resolve_and_transform(
   }
 
   for handle in handles.drain(0..) {
-    handle.join().unwrap().unwrap();
+    handle.join().unwrap()?;
   }
 
   Ok(())

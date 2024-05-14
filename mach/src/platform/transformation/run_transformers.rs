@@ -19,7 +19,7 @@ pub fn run_transformers(
   let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
   let mut content =
-    fs::read(&resolve_result.file_path).map_err(|_| "Unable to read file".to_string())?;
+    fs::read(&resolve_result.file_path).map_err(|_| format!("Unable to read file: {:?}", resolve_result.file_path))?;
 
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
   let mut asset_kind = file_target.file_extension.clone();

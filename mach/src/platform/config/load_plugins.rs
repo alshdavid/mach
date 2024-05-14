@@ -32,7 +32,7 @@ pub fn load_plugins(
       // println!("      {}:{}", engine, specifier);
 
       if engine == "mach" && specifier == "resolver" {
-        plugins.resolvers.push(Box::new(ResolverJavaScript {}));
+        plugins.resolvers.push(Box::new(ResolverJavaScript::new()));
         continue;
       }
 
