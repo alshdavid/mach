@@ -48,10 +48,9 @@ impl<'a> JavaScriptRuntime<'a> {
       .dependency_map
       .get_dependency_for_specifier(&self.current_asset_id, specifier)
     else {
-      panic!(
-        "Could not get dependency for specifier:\n  Asset: {:?}\n  Specifier: {:?}",
-        self.current_asset_id, specifier
-      );
+      // ATLANTIS START
+      return None;
+      // ATLANTIS END
     };
 
     let Some(asset_id) = self.asset_graph.get_asset_id_for_dependency(&dependency) else {
@@ -376,7 +375,9 @@ impl<'a> Fold for JavaScriptRuntime<'a> {
           .expr;
 
         let Expr::Call(result) = *mach_require else {
-          panic!()
+          // ATLANTIS START
+          return call_expr;
+          // ATLANTIS END
         };
         return result;
       }

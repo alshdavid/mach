@@ -84,12 +84,15 @@ pub fn package_javascript<'a>(
           shebang: None,
         };
 
-        let parse_result = parse_program(
+        // ATLANTIS START
+        let Ok(parse_result) = parse_program(
           &asset_file_path_relative,
           std::str::from_utf8(&asset_content).unwrap(),
           source_map.clone(),
-        )
-        .unwrap();
+        ) else {
+          continue;
+        };
+        // ATLANTIS END
 
         match parse_result.program {
           Program::Module(m) => module.body = m.body,

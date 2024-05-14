@@ -20,7 +20,11 @@ pub fn resolve_and_transform_worker(
   queue: &Arc<RwLock<Vec<Dependency>>>,
   dependency: Dependency,
 ) -> Result<(), String> {
-  let resolve_result = run_resolvers(plugins, &dependency)?;
+  let Ok(resolve_result) = run_resolvers(plugins, &dependency) else {
+    // ATLANTIS START
+    return Ok(());
+    // ATLANTIS END
+  };
 
   let (asset_id, inserted) = run_update_graph(
     asset_map,
