@@ -1,6 +1,3 @@
-use std::collections::HashSet;
-use std::path::PathBuf;
-
 use normalize_path::NormalizePath;
 use oxc_resolver::ResolveOptions as OxcResolveOptions;
 use oxc_resolver::Resolver as OxcResolver;
