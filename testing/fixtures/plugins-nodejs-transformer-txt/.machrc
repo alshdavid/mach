@@ -1,11 +1,13 @@
 {
   "resolvers": [
-    "node:./plugins/resolver-1.mjs",
     "mach:resolver"
   ],
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
       "mach:transformer/javascript"
+    ],
+    "*.txt": [
+      "node:./plugins/transformer.mjs"
     ],
     "*.css": [
       "mach:transformer/css"

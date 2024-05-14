@@ -1,0 +1,6 @@
+{
+  "name": "fixture-plugins-nodejs",
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*"
+  }
+}

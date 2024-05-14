@@ -9,9 +9,9 @@ pub enum NodejsClientRequest {
   ResolverRegister(NodejsClientRequestResolverRegister),
   ResolverLoadConfig(NodejsClientRequestResolverLoadConfig),
   ResolverResolve(NodejsClientRequestResolverResolve),
-  TransformerRegister(()),
-  TransformerLoadConfig(()),
-  TransformerTransform(()),
+  TransformerRegister(NodejsClientRequestTransformerRegister),
+  TransformerLoadConfig(NodejsClientRequestTransformerLoadConfig),
+  TransformerTransform(NodejsClientRequestTransformerTransform),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -31,4 +31,19 @@ pub struct NodejsClientRequestResolverLoadConfig {
 pub struct NodejsClientRequestResolverResolve {
   pub specifier: String,
   pub dependency: Dependency,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NodejsClientRequestTransformerRegister {
+  pub specifier: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NodejsClientRequestTransformerLoadConfig {
+  pub specifier: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NodejsClientRequestTransformerTransform {
+  pub specifier: String,
 }
