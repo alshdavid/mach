@@ -12,5 +12,5 @@ export default new Resolver({
       throw new Error('failed to set config')
     }
     return null
-  }
+  },
 })

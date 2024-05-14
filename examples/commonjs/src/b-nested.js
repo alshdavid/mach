@@ -1,9 +1,9 @@
 // Not actually valid CJS, but this is used by React
-(() => {
+;(() => {
   const b2 = 'value_b2'
   const ident_b4 = 'b4_ident'
   function b5() {}
-  
+
   exports.b1 = 'value_b1'
   exports.b2 = b2
   exports.b2 = 'value_b2'
@@ -11,8 +11,8 @@
   exports[ident_b4] = 'value_b4'
   exports.b5 = b5
   exports.b5()
-  
-  exports.b6 = function() {
+
+  exports.b6 = function () {
     const _ = require('./noop')
     require('./noop')
   }

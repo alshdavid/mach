@@ -1,4 +1,4 @@
-import "./a.js";
-import "./b.js";
+import './a.js'
+import './b.js'
 
-console.log('index');
+console.log('index')
