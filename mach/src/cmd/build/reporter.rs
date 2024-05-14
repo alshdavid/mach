@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
@@ -18,6 +19,7 @@ pub struct AppReporter {
   bundles: BundleMapSync,
   bundle_graph: BundleGraphSync,
   outputs: OutputsSync,
+  nodejs_adapter: NodejsAdapter,
   time_init: f64,
   time_transform: f64,
   time_bundle: f64,
@@ -33,6 +35,7 @@ impl AppReporter {
     bundles: BundleMapSync,
     bundle_graph: BundleGraphSync,
     outputs: OutputsSync,
+    nodejs_adapter: NodejsAdapter,
   ) -> Self {
     return Self {
       config,
@@ -42,6 +45,7 @@ impl AppReporter {
       bundles,
       bundle_graph,
       outputs,
+      nodejs_adapter,
       time_init: 0.0,
       time_transform: 0.0,
       time_bundle: 0.0,
@@ -77,16 +81,28 @@ impl AppReporter {
       "Out Dir:         {}",
       self.config.dist_dir.to_str().unwrap()
     ));
-    self.log(&format!("Optimize:        {}", self.config.optimize));
-    self.log(&format!("Threads:         {}", self.config.threads));
-    self.log(&format!("Nodejs Workers:  {}", self.config.node_workers));
+    // Currently disabled
+    self.log(&format!("Optimize:        false"));
+    // self.log(&format!("Optimize:        {}", self.config.optimize));
     self.log(&format!(
       "Splitting:       {}",
       self.config.bundle_splitting
     ));
+    self.log(&format!("Threads:         {}", self.config.threads));
   }
 
   pub fn print_init_stats(&mut self) {
+    if self.nodejs_adapter.nodejs_is_running() {
+      self.log(&format!(
+        "Nodejs Workers:  {} (running)",
+        self.config.node_workers
+      ));
+    } else {
+      self.log(&format!(
+        "Nodejs Workers:  {} (not running)",
+        self.config.node_workers
+      ));
+    }
     let time_init = self.config.time_elapsed();
     self.log(&format!("  Init:          {:.3}s", time_init));
     self.time_init = time_init;

@@ -62,6 +62,10 @@ impl NodejsAdapter {
     })
   }
 
+  pub fn nodejs_is_running(&self) -> bool {
+    self.nodejs_instance.lock().unwrap().is_some()
+  }
+
   pub fn start_nodejs(&self) -> Result<(), String> {
     let mut nodejs_instance_container = self.nodejs_instance.lock().unwrap();
     if nodejs_instance_container.is_some() || *self.worker_count == 0 {
@@ -107,16 +111,23 @@ impl NodejsAdapter {
   pub fn send_all(
     &self,
     req: NodejsClientRequest,
-  ) {
+  ) -> Result<Vec<NodejsClientResponse>, String> {
     let mut requests = vec![];
+    let mut responses = vec![];
 
     for i in 0..*self.worker_count {
       requests.push(self.send_internal(i as usize, req.clone()))
     }
 
     for request in requests {
-      request.recv().unwrap();
+      let response = request.recv().unwrap();
+      if let NodejsClientResponse::Err(msg) = response {
+        return Err(msg);
+      }
+      responses.push(response);
     }
+
+    Ok(responses)
   }
 
   pub fn send(

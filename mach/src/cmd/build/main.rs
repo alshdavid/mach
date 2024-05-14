@@ -29,6 +29,9 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
   let outputs = OutputsSync::default();
+  let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
+    workers: config.node_workers.clone() as u8,
+  })?;
 
   let mut reporter = AppReporter::new(
     config.clone(),
@@ -38,11 +41,8 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     bundles.clone(),
     bundle_graph.clone(),
     outputs.clone(),
+    nodejs_adapter.clone(),
   );
-
-  let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
-    workers: config.node_workers.clone() as u8,
-  })?;
 
   reporter.print_config();
 

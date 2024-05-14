@@ -17,6 +17,7 @@ use napi::JsUndefined;
 use napi::JsUnknown;
 use napi_derive::napi;
 use napi_utils::await_promise;
+use napi_utils::PromiseResult;
 
 #[napi]
 pub fn run(
@@ -46,7 +47,7 @@ pub fn run(
 
   thread::spawn(move || {
     while let Ok((action, response)) = rx_ipc.recv() {
-      let (tx, rx) = channel::<NodejsClientResponse>();
+      let (tx, rx) = channel::<PromiseResult<NodejsClientResponse>>();
 
       tsfn.call_with_return_value(
         Ok(action),
@@ -58,8 +59,10 @@ pub fn run(
         },
       );
 
-      let reply = rx.recv().unwrap();
-      response.send(reply).unwrap();
+      match rx.recv().unwrap() {
+        PromiseResult::Ok(value) => response.send(value).unwrap(),
+        PromiseResult::Err(msg) => response.send(NodejsClientResponse::Err(msg)).unwrap(),
+      };
     }
   });
 

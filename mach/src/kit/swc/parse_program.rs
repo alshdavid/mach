@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 use std::sync::Arc;
 
 use swc_core::common::comments::SingleThreadedComments;
@@ -14,7 +14,7 @@ use swc_core::ecma::parser::Syntax;
 use swc_core::ecma::parser::TsConfig;
 
 pub fn parse_program(
-  file_name: &PathBuf,
+  file_name: &Path,
   code: &str,
   source_map: Arc<SourceMap>,
 ) -> Result<ParseProgramResult, String> {

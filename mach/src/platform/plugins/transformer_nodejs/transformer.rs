@@ -1,10 +1,6 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use crate::platform::adapters::node_js::requests::LoadPluginRequest;
-use crate::platform::adapters::node_js::requests::RunTransformerRequest;
-use crate::platform::adapters::node_js::requests::RunTransformerResponse;
-use crate::platform::adapters::node_js::NodeAdapter;
 use crate::public::Config;
 use crate::public::MutableAsset;
 use crate::public::Transformer;

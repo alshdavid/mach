@@ -1,6 +1,7 @@
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::plugins::resolver_javascript::resolve;
 use crate::public::nodejs::client::NodejsClientRequest;
+use crate::public::nodejs::client::NodejsClientRequestResolverLoadConfig;
 use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
 use crate::public::nodejs::client::NodejsClientRequestResolverResolve;
 use crate::public::nodejs::client::NodejsClientResponse;
@@ -34,7 +35,13 @@ impl ResolverNodejs {
       NodejsClientRequestResolverRegister {
         specifier: specifier.clone(),
       },
-    ));
+    ))?;
+
+    nodejs_adapter.send_all(NodejsClientRequest::ResolverLoadConfig(
+      NodejsClientRequestResolverLoadConfig {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
     Ok(Self {
       resolver_specifier: specifier,
