@@ -16,15 +16,14 @@ pub fn run_transformers(
   resolve_result: ResolveResult,
   asset_id: AssetId,
 ) -> Result<Vec<DependencyOptions>, String> {
+  // Replicating Parcel's filename parse logic. Might just remove this
   let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
+  let file_path = resolve_result.file_path.clone();
+  let mut asset_kind = file_target.file_extension.clone();
   let Ok(mut content) = fs::read(&resolve_result.file_path) else {
     return Err(format!("Unable to read file: {:?}", resolve_result.file_path));
   };
-
-  let mut asset_dependencies = Vec::<DependencyOptions>::new();
-  let file_path = resolve_result.file_path.clone();
-  let mut asset_kind = file_target.file_extension.clone();
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
 
   let mut mutable_asset = MutableAsset::new(
