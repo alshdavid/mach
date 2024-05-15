@@ -2,18 +2,21 @@
   This can be swapped out via configuration
 */
 const import_script = mach_global.import_script = async src => {
-  const existing = document.querySelector(`script[src="${src}"]`)
-  if (existing && existing.loaded) {
-    return
+  if (mach_bundles[src]) {
+    return;
   }
-  const script = existing || document.createElement('script')
-  const onload = new Promise((res, rej) => {
-    script.onload = res
-    script.onerror = rej
-  })
-  if (!existing) {
-    script.src = src
-    document.head.appendChild(script)
+
+  let resolve
+  const onload = new Promise(res => {resolve = res})
+  mach_global.addEventListener('bundle_loaded', event => event.detail === src && resolve())
+
+  let script = document.querySelector(`script[src="${src}"]`)
+  if (!script) {
+    script = document.createElement("script")
+    script.src = src;
+    document.head.appendChild(script);
   }
-  await onload
+
+  await onload;
+  mach_global.removeEventListener('bundle_loaded', event => event.detail === src)
 }

@@ -86,7 +86,7 @@ pub fn package_html(
   );
 
   if script_nodes.len() > 0 {
-    let mut stmts = js_runtime_factory.prelude("PROJECT_HASH");
+    let mut stmts = js_runtime_factory.prelude("PROJECT_HASH", &bundle.name);
     stmts.push(js_runtime_factory.manifest(&bundle_manifest).unwrap());
     stmts.push(js_runtime_factory.import_script());
     stmts.extend(js_runtime_factory.prelude_mach_require().into_iter());
