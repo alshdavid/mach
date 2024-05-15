@@ -1,5 +1,5 @@
 {
-  "name": "commonjs-bundle-require",
+  "name": "@workspace/config-merging",
   "version": "1.2.3",
   "main": "dist/index.js",
   "engines": {
@@ -7,5 +7,13 @@
   },
   "dependencies": {
     "parcel-transformer-string": "*"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

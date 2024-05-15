@@ -1,5 +1,14 @@
 {
-    "@parcel/transformer-js": {
-        "unstable_inlineConstants": true
-    }
+  "@parcel/transformer-js": {
+    "unstable_inlineConstants": true
+  },
+  "name": "@workspace/inline-constants",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

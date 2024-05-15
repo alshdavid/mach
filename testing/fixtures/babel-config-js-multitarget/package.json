@@ -1,5 +1,5 @@
 {
-  "name": "some-project-with-babel",
+  "name": "@workspace/babel-config-js-multitarget",
   "version": "1.0.0",
   "modern": "dist/modern/index.js",
   "legacy": "dist/legacy/index.js",
@@ -14,5 +14,13 @@
         "browsers": "ie 11"
       }
     }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

@@ -1,5 +1,14 @@
 {
   "@parcel/bundler-default": {
     "minBundleSize": 40
+  },
+  "name": "@workspace/shared-bundle-internalization",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

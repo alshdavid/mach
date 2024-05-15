@@ -1,6 +1,12 @@
 {
-  "name": "babel-plugin-autoinstall",
+  "name": "@workspace/babel-plugin-autoinstall",
   "devDependencies": {
-    "@babel/core": "^7.22.11"
+    "@alshdavid/mach": "workspace:*",
+    "@babel/core": "^7.22.11",
+    "http-server": "*"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
   }
 }

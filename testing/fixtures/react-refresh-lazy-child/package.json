@@ -1,6 +1,15 @@
 {
-    "dependencies": {
-        "react": "^16.11.0",
-        "react-dom": "^16.11.0"
-    }
+  "dependencies": {
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  },
+  "name": "@workspace/react-refresh-lazy-child",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

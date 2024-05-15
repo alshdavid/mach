@@ -1,5 +1,5 @@
 {
-  "name": "commonjs-require",
+  "name": "@workspace/commonjs-template-literal-plain",
   "private": true,
   "main": "dist/index.js",
   "targets": {
@@ -9,5 +9,13 @@
   },
   "dependencies": {
     "lodash": "*"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

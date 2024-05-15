@@ -1,5 +1,5 @@
 {
-  "name": "parcel-sourcemap-node-integration-test",
+  "name": "@workspace/sourcemap-generate-inline",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
@@ -13,5 +13,13 @@
         "inline": true
       }
     }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

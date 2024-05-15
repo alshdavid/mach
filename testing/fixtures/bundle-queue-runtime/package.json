@@ -1,8 +1,17 @@
 {
-    "@parcel/bundler-default": {
-        "minBundleSize": 0
-    },
-    "@parcel/packager-js": {
-        "unstable_asyncBundleRuntime": true
-    }
+  "@parcel/bundler-default": {
+    "minBundleSize": 0
+  },
+  "@parcel/packager-js": {
+    "unstable_asyncBundleRuntime": true
+  },
+  "name": "@workspace/bundle-queue-runtime",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

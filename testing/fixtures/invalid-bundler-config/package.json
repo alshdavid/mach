@@ -1,5 +1,15 @@
 {
-	"browserslist": "Chrome 80",
-	"@parcel/bundler-default": {"minBundleSizes": 0
-	}
+  "browserslist": "Chrome 80",
+  "@parcel/bundler-default": {
+    "minBundleSizes": 0
+  },
+  "name": "@workspace/invalid-bundler-config",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

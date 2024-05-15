@@ -1,3 +1,14 @@
 {
-  "browserslist": ["last 1 Chrome version"]
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "name": "@workspace/js-dedup-hoist",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

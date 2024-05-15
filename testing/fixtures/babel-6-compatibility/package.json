@@ -1,6 +1,12 @@
 {
-  "name": "babel-6-compatibility",
+  "name": "@workspace/babel-6-compatibility",
   "devDependencies": {
-    "babel-core": "^6.26.3"
+    "@alshdavid/mach": "workspace:*",
+    "babel-core": "^6.26.3",
+    "http-server": "*"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
   }
 }

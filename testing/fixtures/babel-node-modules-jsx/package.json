@@ -1,5 +1,16 @@
 {
-  "name": "parcel-test-browser-browserslist",
+  "name": "@workspace/babel-node-modules-jsx",
   "private": true,
-  "browserslist": ["last 2 Chrome versions", "IE >= 11"]
+  "browserslist": [
+    "last 2 Chrome versions",
+    "IE >= 11"
+  ],
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

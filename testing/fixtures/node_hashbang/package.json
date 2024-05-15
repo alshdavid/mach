@@ -1,5 +1,5 @@
 {
-  "name": "node_require",
+  "name": "@workspace/node_hashbang",
   "main": "dist/node/main.js",
   "browser": "dist/browser/main.js",
   "engines": {
@@ -16,5 +16,13 @@
         "browsers": "last 1 version"
       }
     }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

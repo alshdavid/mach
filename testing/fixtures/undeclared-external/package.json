@@ -1,6 +1,14 @@
 {
-  "name": "undeclared-external",
+  "name": "@workspace/undeclared-external",
   "main": "dist/out.js",
   "browserslist": ">= 0.25%",
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

@@ -1,4 +1,12 @@
 {
-    "name": "resolver-alternative-module-test",
-    "private": true
+  "name": "@workspace/resolver-alternative-module",
+  "private": true,
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

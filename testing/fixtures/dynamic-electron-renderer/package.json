@@ -1,9 +1,17 @@
 {
-  "name": "dynamic-electron-renderer",
+  "name": "@workspace/dynamic-electron-renderer",
   "private": true,
   "targets": {
     "default": {
       "context": "electron-renderer"
     }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

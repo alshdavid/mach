@@ -1,5 +1,13 @@
 {
-  "name": "parcel-cache-tests",
+  "name": "@workspace/cache",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

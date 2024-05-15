@@ -5,5 +5,14 @@
     "@parcel/transformer-react-refresh-wrap": "*",
     "react": "*",
     "react-dom": "*"
+  },
+  "name": "@workspace/react-refresh-library-target",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

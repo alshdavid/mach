@@ -1,7 +1,15 @@
 {
-  "name": "resolve-node-prefix",
+  "name": "@workspace/resolve-node-prefix",
   "private": true,
   "engines": {
     "node": "12"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

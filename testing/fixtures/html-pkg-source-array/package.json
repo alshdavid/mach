@@ -1,3 +1,15 @@
 {
-    "source": ["a.html", "b.html"]
+  "source": [
+    "a.html",
+    "b.html"
+  ],
+  "name": "@workspace/html-pkg-source-array",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

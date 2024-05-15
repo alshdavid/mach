@@ -1,6 +1,14 @@
 {
   "@parcel/runtime-js": {
     "splitManifestThreshold": 0
+  },
+  "name": "@workspace/split-manifest-bundle",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }
-  

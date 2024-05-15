@@ -2,5 +2,14 @@
   "dependencies": {
     "react": "^18.1.0"
   },
-  "browserslist": "ie 11"
+  "browserslist": "ie 11",
+  "name": "@workspace/transpilation-invalid",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

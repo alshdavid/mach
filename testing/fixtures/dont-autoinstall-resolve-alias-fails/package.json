@@ -1,7 +1,15 @@
 {
-  "name": "alias-install",
+  "name": "@workspace/dont-autoinstall-resolve-alias-fails",
   "private": true,
   "alias": {
     "aliasVue": "vue"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

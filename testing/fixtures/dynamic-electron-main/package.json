@@ -1,9 +1,17 @@
 {
-  "name": "dynamic-electron-main",
+  "name": "@workspace/dynamic-electron-main",
   "private": true,
   "targets": {
     "default": {
       "context": "electron-main"
     }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

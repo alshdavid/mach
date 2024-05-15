@@ -1,4 +1,12 @@
 {
-    "name": "test-invalid-pkg-json",
-    "private": true
+  "name": "@workspace/resolver-invalid-pkgjson",
+  "private": true,
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

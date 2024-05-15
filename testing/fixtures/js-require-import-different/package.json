@@ -1,5 +1,14 @@
 {
   "sideEffects": [
     "index.js"
-  ]
+  ],
+  "name": "@workspace/js-require-import-different",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

@@ -1,3 +1,12 @@
 {
-  "browserslist": ">= 0.25%"
+  "browserslist": ">= 0.25%",
+  "name": "@workspace/worker-shared-page",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }

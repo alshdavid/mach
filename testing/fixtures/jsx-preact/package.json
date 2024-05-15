@@ -2,5 +2,14 @@
   "private": true,
   "dependencies": {
     "preact": "^10.4"
+  },
+  "name": "@workspace/jsx-preact",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

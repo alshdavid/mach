@@ -2,5 +2,14 @@
   "private": true,
   "dependencies": {
     "react": "16.14.0"
+  },
+  "name": "@workspace/jsx-automatic-16",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

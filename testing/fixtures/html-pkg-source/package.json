@@ -1,7 +1,16 @@
 {
-    "source": "index.html",
-    "app": "dist/index.html",
-    "targets": {
-        "app": {}
-    }
+  "source": "index.html",
+  "app": "dist/index.html",
+  "targets": {
+    "app": {}
+  },
+  "name": "@workspace/html-pkg-source",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
+  }
 }
