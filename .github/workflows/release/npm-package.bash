@@ -7,8 +7,6 @@ source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 
 mkdir $ROOT_DIR/artifacts
 sudo apt-get update
-npm install -g npm pnpm
-pnpm install
 rustup target add x86_64-unknown-linux-gnu
 
 profile=release os=linux arch=amd64 just build-publish
