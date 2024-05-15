@@ -74,7 +74,6 @@ _default:
 build:
   @rm -rf {{out_dir}}
   @rm -rf {{out_dir_link}}
-  test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
   cd ./mach-nodejs && \
     npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
@@ -87,12 +86,12 @@ build:
   @rm -rf npm/mach/cmd
   @cp -r {{out_dir}} npm/mach/cmd
   @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
+  test -d node_modules || pnpm install
 
 [windows]
 build:
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
-  if (!(Test-Path 'node_modules')) { pnpm install }
   cargo build {{profile_cargo}} {{target_cargo}}
   cd .\mach-nodejs && \
     npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
@@ -104,6 +103,7 @@ build:
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
   @if (Test-Path "npm\mach\cmd") { Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null }
   @Copy-Item "{{out_dir}}" -Destination "npm\mach\cmd" -Recurse | Out-Null
+  if (!(Test-Path 'node_modules')) { pnpm install }
 
 [unix]
 run *ARGS:
