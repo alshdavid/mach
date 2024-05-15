@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: bash .github/workflows/release/linux-amd64.bash
+      - run: bash .github/workflows/pr/linux-amd64.bash
 
   test-integration:
     name: "🧪 Integration Tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: bash .github/workflows/release/test-integration.bash
+      - run: bash .github/workflows/pr/test-integration.bash
