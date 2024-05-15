@@ -13,7 +13,7 @@
     "watch": "nodemon -w ../../ -i packages/package-a/dist -i packages/package-b/dist -i ../.parcel-cache -d 2 -x yarn demo"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
+    "@alshdavid/mach": "../../../npm/mach",
     "http-server": "*"
   }
 }

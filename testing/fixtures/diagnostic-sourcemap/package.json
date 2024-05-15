@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
+    "@alshdavid/mach": "../../../npm/mach",
     "flow-bin": "*",
     "http-server": "*"
   },
