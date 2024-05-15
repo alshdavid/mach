@@ -1,10 +1,13 @@
 {
   "name": "@workspace/integration-tests",
+  "version": "1.0.0",
   "scripts": {
-    "build": "npx mach build",
-    "serve": "npx http-server -c=-1 -p=3000 ."
+    "start": "node --import tsx ./setup.ts"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*"
+    "@types/node": "20.12.12",
+    "@shigen/polyfill-symbol-dispose": "^1.0.1",
+    "puppeteer-core": "^22.8.2",
+    "tsx": "^4.10.2"
   }
 }

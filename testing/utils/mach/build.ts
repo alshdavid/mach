@@ -2,16 +2,8 @@ import path from 'node:path';
 import child_process from 'node:child_process';
 import fs from 'node:fs';
 import fsAsync from 'node:fs/promises';
-import * as puppeteer from 'puppeteer-core';
 
-export const PATH_BROWSER_SOCKET = path.resolve(__dirname, '..', '.puppeteer_socket')
 export const FIXTURES = (...segments: string[]) => path.resolve(__dirname, '..', '..', 'fixtures', ...segments)
-
-export async function connect_to_browser(): Promise<puppeteer.Browser> {
-  return puppeteer.connect({
-    browserWSEndpoint: fs.readFileSync(PATH_BROWSER_SOCKET, 'utf8')
-  })
-}
 
 export type BuildOptions = {
   cwd: string,

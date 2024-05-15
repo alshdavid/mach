@@ -4,4 +4,4 @@ packages:
   - 'npm/*'
   - 'mach-nodejs'
   - 'benchmarks/*'
-  - 'testing/integration-tests'
+  - 'testing'

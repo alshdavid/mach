@@ -13,5 +13,9 @@
     "tests",
     "utils",
     "setup.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "fixtures"
   ]
 }
