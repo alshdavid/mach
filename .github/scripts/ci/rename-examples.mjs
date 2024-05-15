@@ -38,10 +38,12 @@ for (const example_name of fs.readdirSync(Paths.TestingFixtures)) {
     continue
   }
   // console.log(example_name)
-
+  fs.mkdirSync(path.join(Paths.TestingFixtures, example_name, 'src'), { recursive: true })
   for (const file_name of fs.readdirSync(path.join(Paths.TestingFixtures, example_name))) {
     if (file_name.startsWith('.')) continue
+    if (file_name.startsWith('src')) continue
     if (file_name.startsWith('package.json')) continue
+    if (file_name.startsWith('tsconfig.json')) continue
     fs.renameSync(
       path.join(Paths.TestingFixtures, example_name, file_name),
       path.join(Paths.TestingFixtures, example_name, 'src', file_name),
@@ -61,7 +63,7 @@ for (const example_name of fs.readdirSync(Paths.TestingFixtures)) {
   // json.devDependencies = sort_object(json.devDependencies)
   
   // fs.writeFileSync(json_path, JSON.stringify(json, null, 2))
-// }
+}
 
 function sort_object(obj) {
   const sorted_keys = Object.keys(obj).sort();
