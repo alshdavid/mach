@@ -76,7 +76,9 @@ build:
   @rm -rf {{out_dir_link}}
   test -d node_modules || pnpm install
   cargo build {{profile_cargo}} {{target_cargo}}
-  cd ./mach-nodejs && npm run build:{{profile}}
+  cd ./mach-nodejs && \
+    npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
+    cargo build --message-format=json-render-diagnostics {{profile_cargo}} {{target_cargo}}
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
@@ -92,7 +94,9 @@ build:
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   if (!(Test-Path 'node_modules')) { pnpm install }
   cargo build {{profile_cargo}} {{target_cargo}}
-  cd .\mach-nodejs && npm run build:{{profile}}
+  cd .\mach-nodejs && \
+    npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
+    cargo build --message-format=json-render-diagnostics {{profile_cargo}} {{target_cargo}}
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null| Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null

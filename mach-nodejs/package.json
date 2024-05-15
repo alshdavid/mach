@@ -2,10 +2,6 @@
   "name": "@alshdavid/mach-nodejs",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "build:debug": "npx cargo-cp-artifact -nc ./lib/napi/index.node -- cargo build --message-format=json-render-diagnostics",
-    "build:release": "npx cargo-cp-artifact -nc ./lib/napi/index.node -- cargo build --message-format=json-render-diagnostics --release"
-  },
   "devDependencies": {
     "@alshdavid/mach": "workspace:*",
     "@types/node": "20.x.x",

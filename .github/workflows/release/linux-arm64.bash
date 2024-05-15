@@ -1,9 +1,6 @@
 #!/bin/bash
 set -ev
 
-# Cross compiling broken right now
-exit 0
-
 JOB_NAME="linux-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
