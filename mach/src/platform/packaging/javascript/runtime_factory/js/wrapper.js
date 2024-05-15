@@ -1,6 +1,6 @@
 (async () => {
   // Code goes here
 
-  // adds loaded state to currentScript to avoid races with async bundles
-  if (document.currentScript) document.currentScript.loaded = 1;
+  mach_bundles[mach_bundle_src] = true
+  mach_global.dispatchEvent(new CustomEvent('bundle_loaded', { detail: mach_bundle_src }))
 })()

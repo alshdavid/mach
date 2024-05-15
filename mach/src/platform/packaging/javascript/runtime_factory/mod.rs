@@ -438,36 +438,45 @@ impl RuntimeFactory {
   pub fn prelude(
     &self,
     project_identifier: &str,
+    bundle_src: &str,
   ) -> Vec<Stmt> {
     let mut prelude = self.decl_prelude.clone();
 
-    let Stmt::Decl(decl) = &mut prelude.stmts[0] else { panic!() };
-    let Decl::Var(var) = &mut *decl else { panic!() };
-    let Some(decl) = &mut var.decls[0].init else { panic!(); };
-    let Expr::Assign(assign) = &mut **decl else { panic!(); };
-
+    // Project identifier
     {
-      let AssignTarget::Simple(pat) = &mut assign.left else { panic!() };
-      let SimpleAssignTarget::Member(member) = &mut *pat else { panic!() };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+      let Stmt::Decl(decl) = &mut prelude.stmts[0] else { panic!() };
+      let Decl::Var(var) = &mut *decl else { panic!() };
+      let Some(decl) = &mut var.decls[0].init else { panic!(); };
+      let Expr::Assign(assign) = &mut **decl else { panic!(); };
 
-      prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
-        span: Span::default(),
-        value: Atom::from(format!("{}", project_identifier)),
-        raw: Some(Atom::from(format!("{}", project_identifier))),
-      })));
+      {
+        let AssignTarget::Simple(pat) = &mut assign.left else { panic!() };
+        let SimpleAssignTarget::Member(member) = &mut *pat else { panic!() };
+        let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+
+        prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
+          span: Span::default(),
+          value: Atom::from(format!("{}", project_identifier)),
+          raw: Some(Atom::from(format!("{}", project_identifier))),
+        })));
+      }
+
+      {
+        let Expr::Bin(bin) = &mut *assign.right else { panic!() };
+        let Expr::Member(member) = &mut *bin.left else { panic!() };
+        let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
+
+        prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
+          span: Span::default(),
+          value: Atom::from(format!("{}", project_identifier)),
+          raw: Some(Atom::from(format!("{}", project_identifier))),
+        })));
+      }
     }
-
+    // Bundle src
     {
-      let Expr::Bin(bin) = &mut *assign.right else { panic!() };
-      let Expr::Member(member) = &mut *bin.left else { panic!() };
-      let MemberProp::Computed(prop) = &mut member.prop else { panic!() };
-
-      prop.expr = Box::new(Expr::Lit(Lit::Str(Str {
-        span: Span::default(),
-        value: Atom::from(format!("{}", project_identifier)),
-        raw: Some(Atom::from(format!("{}", project_identifier))),
-      })));
+      let Stmt::Decl(decl) = &mut prelude.stmts[5] else { panic!() };
+      println!("{}", bundle_src);
     }
 
     prelude.stmts

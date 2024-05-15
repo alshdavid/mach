@@ -134,7 +134,7 @@ pub fn package_javascript<'a>(
 
   let mut bundle_module_stmts = Vec::<Stmt>::new();
 
-  for stmt in runtime_factory.prelude("PROJECT_HASH") {
+  for stmt in runtime_factory.prelude("PROJECT_HASH", &bundle.name) {
     bundle_module_stmts.push(stmt);
   }
 
