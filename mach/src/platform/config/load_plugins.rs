@@ -7,6 +7,7 @@ use crate::platform::plugins::transformer_css::TransformerCSS;
 use crate::platform::plugins::transformer_drop::TransformerDrop;
 use crate::platform::plugins::transformer_html::TransformerHtml;
 use crate::platform::plugins::transformer_javascript::TransformerJavaScript;
+use crate::platform::plugins::transformer_json::TransformerJson;
 use crate::platform::plugins::transformer_nodejs::TransformerNodeJs;
 use crate::public::MachConfig;
 use crate::public::Machrc;
@@ -73,6 +74,11 @@ pub fn load_plugins(
 
         if engine == "mach" && specifier == "transformer/html" {
           transformers.push(Box::new(TransformerHtml {}));
+          continue;
+        }
+
+        if engine == "mach" && specifier == "transformer/json" {
+          transformers.push(Box::new(TransformerJson {}));
           continue;
         }
 

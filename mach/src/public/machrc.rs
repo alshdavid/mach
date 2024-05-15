@@ -27,6 +27,10 @@ impl Default for Machrc {
           vec!["mach:transformer/javascript".to_string()],
         ),
         (
+          "*.json".to_string(),
+          vec!["mach:transformer/json".to_string()],
+        ),
+        (
           "*.css".to_string(),
           vec!["mach:transformer/css".to_string()],
         ),
