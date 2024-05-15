@@ -1,9 +1,6 @@
 #!/bin/bash
 set -ev
 
-# Cross compiling broken right now
-exit 0
-
 JOB_NAME="linux-arm64"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
@@ -15,7 +12,7 @@ sudo apt-get install gcc-aarch64-linux-gnu build-essential
 rustup target add aarch64-unknown-linux-gnu
 aarch64-linux-gnu-gcc --version
 export CC=aarch64-linux-gnu-gcc
-pnpm install
+export MACH_SKIP_POST_INSTALL="true"
 
 profile=release os=linux arch=arm64 just build-publish
 

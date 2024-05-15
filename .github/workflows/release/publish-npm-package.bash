@@ -9,7 +9,7 @@ echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
 PACKAGES=(
   "$ROOT_DIR/artifacts/linux-amd64.tar.gz/npm-mach-linux-amd64.tgz"
-  # "$ROOT_DIR/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
+  "$ROOT_DIR/artifacts/linux-arm64.tar.gz/npm-mach-linux-arm64.tgz"
   "$ROOT_DIR/artifacts/macos-amd64.tar.gz/npm-mach-macos-amd64.tgz"
   "$ROOT_DIR/artifacts/macos-arm64.tar.gz/npm-mach-macos-arm64.tgz"
   "$ROOT_DIR/artifacts/windows-amd64.tar.gz/npm-mach-windows-amd64.tgz"

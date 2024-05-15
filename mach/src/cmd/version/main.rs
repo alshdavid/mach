@@ -1,7 +1,4 @@
 use clap::Parser;
-use normalize_path::NormalizePath;
-
-use crate::kit::json::parse_json_file;
 
 #[allow(non_upper_case_globals)]
 const color_red: &str = "\x1B[31m";
@@ -20,19 +17,6 @@ const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 pub struct VersionCommand {}
 
 pub fn main() {
-  let exe_path = std::env::current_exe().expect("Cannot find executable path");
-  let possible_package_json = exe_path.join("../../../package.json").normalize();
-  let mut npm_version = None::<String>;
-  if possible_package_json.exists() {
-    let package_json = parse_json_file(&possible_package_json).expect("package.json malformed");
-    if let Some(version) = package_json.get("version") {
-      let version = version
-        .as_str()
-        .expect("package.json#version is invalid type");
-      npm_version = Some(version.to_string());
-    }
-  }
-
   print!(r#"{color_red}{style_bold}"#);
   println!(r#"___  ___           _     "#);
   println!(r#"|  \/  |          | |    "#);
@@ -44,10 +28,5 @@ pub fn main() {
   println!(r#""#);
   println!(r#"{style_bold}Description{style_reset}   {DESCRIPTION}"#);
   println!(r#"{style_bold}Repository{style_reset}    {REPOSITORY}"#);
-  if let Some(npm_version) = npm_version {
-    println!(r#"{style_bold}NPM Version{style_reset}   {npm_version}"#);
-    println!(r#"{style_bold}Bin Version{style_reset}   {VERSION}"#);
-  } else {
-    println!(r#"{style_bold}Version{style_reset}       {VERSION}"#);
-  }
+  println!(r#"{style_bold}Version{style_reset}       {VERSION}"#);
 }

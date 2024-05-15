@@ -2,8 +2,8 @@
   "name": "@workspace/testing-three-js-mach",
   "version": "1.0.0",
   "scripts": {
-    "build": "$(node ./get-bin.mjs) build ./src/index.js --no-optimize",
-    "build:optimize": "$(node ./get-bin.mjs) build ./src/index.js"
+    "build": "npx mach build ./src/index.js --no-optimize",
+    "build:optimize": "npx mach build ./src/index.js"
   },
   "devDependencies": {
     "@alshdavid/mach": "workspace:*",
