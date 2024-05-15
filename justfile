@@ -21,6 +21,16 @@ else if \
 else \
   { arch() }
 
+dylib := \
+if \
+  os == "windows" { "dll" } \
+else if \
+  os == "macos" { "dylib" } \
+else if \
+  os == "linux" { "so" } \
+else \
+  { os() }
+
 target := \
 if \
   os + arch == "linuxamd64" { "x86_64-unknown-linux-gnu" } \
@@ -72,37 +82,44 @@ _default:
 
 [unix]
 build:
+  # Build mach and napi
+  cargo build {{profile_cargo}} {{target_cargo}}
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./mach-nodejs/lib/napi/index.node
+
+  # Copy output to target
   @rm -rf {{out_dir}}
   @rm -rf {{out_dir_link}}
-  cargo build {{profile_cargo}} {{target_cargo}}
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
+  @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
+
+  # Prepare local npm package to use local binary
   @rm -rf npm/mach/cmd
   @cp -r {{out_dir}} npm/mach/cmd
   @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
   test -d node_modules || pnpm install
-  cd ./mach-nodejs && \
-    npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
-    cargo build --message-format=json-render-diagnostics {{profile_cargo}} {{target_cargo}}
-  @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
 
 [windows]
 build:
+  # Build mach and napi
+  cargo build {{profile_cargo}} {{target_cargo}}
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\mach-nodejs\lib\napi\index.node" | Out-Null  
+
+  # Copy output to target
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
-  cargo build {{profile_cargo}} {{target_cargo}}
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null| Out-Null
+  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null  @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
+  @Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
+
+  # Prepare local npm package to use local binary
   @if (Test-Path "npm\mach\cmd") { Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null }
   @Copy-Item "{{out_dir}}" -Destination "npm\mach\cmd" -Recurse | Out-Null
   if (!(Test-Path 'node_modules')) { pnpm install }
-  cd .\mach-nodejs && \
-    npx cargo-cp-artifact -nc ./lib/napi/index.node -- \
-    cargo build --message-format=json-render-diagnostics {{profile_cargo}} {{target_cargo}}
-  Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
 
 [unix]
 run *ARGS:

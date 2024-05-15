@@ -5,7 +5,6 @@
   "devDependencies": {
     "@alshdavid/mach": "workspace:*",
     "@types/node": "20.x.x",
-    "cargo-cp-artifact": "^0.1",
     "typescript": "^5.4.5"
   }
 }

@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 $RootPath = @(Split-Path @(Split-Path @(Split-Path $PSScriptRoot)))
 $Job = "windows-amd64"
 
