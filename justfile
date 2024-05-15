@@ -82,6 +82,9 @@ build:
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
   @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
+  @rm -rf npm/mach/cmd
+  @cp -r {{out_dir}} npm/mach/cmd
+  @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
 
 [windows]
 build:
@@ -95,6 +98,8 @@ build:
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
   Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
+  @if (Test-Path "npm\mach\cmd" { Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null }
+  @Copy-Item "{{out_dir}}" -Destination "npm\mach\cmd" | Out-Null
 
 [unix]
 run *ARGS:
@@ -133,13 +138,19 @@ build-publish: build-publish-common
   just build
   cp -r {{out_dir}}/* "npm/mach-os-arch"
   mv "npm/mach-os-arch/bin/mach" "npm/mach-os-arch/bin/mach.exe"
+  rm -rf "npm/mach/cmd"
+  mkdir -p "npm/mach/cmd/bin"
+  touch "npm/mach/cmd/bin/mach.exe"
   cp "./README.md" "npm/mach"
 
 [windows]
 build-publish: build-publish-common
   just build
   Copy-Item {{out_dir}}\* -Destination "npm\mach-os-arch" -Recurse | Out-Null
-  Copy-Item ".\README.md" -Destination "npm/mach" | Out-Null
+  Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null
+  New-Item -ItemType "directory" -Force -Path "npm\mach\cmd\bin" | Out-Null
+  New-Item -ItemType "file" "npm\mach\cmd\bin\mach.exe"
+  Copy-Item ".\README.md" -Destination "npm\mach" | Out-Null
 
 [private]
 build-publish-common:

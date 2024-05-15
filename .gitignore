@@ -12,6 +12,7 @@ target/
 *.node
 
 npm/mach-os-arch/*
+npm/mach/cmd
 !npm/mach-os-arch/package.json
 
 # dependencies
