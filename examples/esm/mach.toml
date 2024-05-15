@@ -1,4 +1,0 @@
-extends = "mach:config"
-
-[transformers]
-"*.mjs" = [ "mach:transformer-js" ]

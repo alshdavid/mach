@@ -15,6 +15,5 @@ export const Paths = Object.freeze({
   CargoOutput: path.join(__root, 'target', '.cargo'),
   Output: path.join(__root, 'target'),
   Testing: path.join(__root, 'testing'),
-  Fixtures: path.join(__root, 'testing', 'fixtures'),
+  Examples: path.join(__root, 'examples'),
 })
-

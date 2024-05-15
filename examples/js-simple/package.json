@@ -1,10 +1,11 @@
 {
-  "name": "js-simple",
+  "name": "@workspace/js-simple",
   "scripts": {
+    "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."
   },
   "devDependencies": {
-    "http-server": "*",
-    "@alshdavid/mach": "workspace:*"
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }

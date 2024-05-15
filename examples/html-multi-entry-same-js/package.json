@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/plugins-nodejs-transformer-txt",
+  "name": "@workspace/html-multi-entry-same-js",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

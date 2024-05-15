@@ -1,10 +1,11 @@
 {
-  "name": "fixture-plugins-nodejs",
+  "name": "@workspace/plugins-nodejs-resolver-noop",
   "scripts": {
+    "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."
   },
   "devDependencies": {
-    "http-server": "*",
-    "@alshdavid/mach": "workspace:*"
+    "@alshdavid/mach": "workspace:*",
+    "http-server": "*"
   }
 }
