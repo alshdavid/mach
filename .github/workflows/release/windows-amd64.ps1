@@ -3,9 +3,10 @@ $Job = "windows-amd64"
 
 & "$PSScriptRoot\..\platform\windows\setup.ps1"
 
+$env:MACH_SKIP_POST_INSTALL = 'true'
+
 New-Item -ItemType "directory" -Force -Path "$RootPath\artifacts" | Out-Null
 
-pnpm install
 rustup target add x86_64-pc-windows-msvc
 
 just build-publish

@@ -9,6 +9,7 @@ source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 
 sudo apt-get update
 rustup target add x86_64-unknown-linux-gnu
+export MACH_SKIP_POST_INSTALL="true"
 
 profile=release os=linux arch=amd64 just build-publish
 

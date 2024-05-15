@@ -8,6 +8,7 @@ ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 
 rustup target add x86_64-apple-darwin
+export MACH_SKIP_POST_INSTALL="true"
 
 profile=release os=macos arch=amd64 just build-publish
 
