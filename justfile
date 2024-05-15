@@ -98,8 +98,8 @@ build:
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
   Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
-  @if (Test-Path "npm\mach\cmd" { Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null }
-  @Copy-Item "{{out_dir}}" -Destination "npm\mach\cmd" | Out-Null
+  @if (Test-Path "npm\mach\cmd") { Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null }
+  @Copy-Item "{{out_dir}}" -Destination "npm\mach\cmd" -Recurse | Out-Null
 
 [unix]
 run *ARGS:

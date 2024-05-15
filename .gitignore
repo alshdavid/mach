@@ -11,8 +11,9 @@ target/
 /benchmarks
 *.node
 
-npm/mach-os-arch/*
 npm/mach/cmd
+npm/mach/README.md
+npm/mach-os-arch/*
 !npm/mach-os-arch/package.json
 
 # dependencies
