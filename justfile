@@ -138,8 +138,9 @@ fmt:
   ./.github/scripts/node_modules/.bin/prettier ./examples --write
 
 [unix]
-build-publish: build-publish-common
+build-publish:
   just build
+  just build-publish-common
   cp -r {{out_dir}}/* "npm/mach-os-arch"
   mv "npm/mach-os-arch/bin/mach" "npm/mach-os-arch/bin/mach.exe"
   rm -rf "npm/mach/cmd"
@@ -148,8 +149,9 @@ build-publish: build-publish-common
   cp "./README.md" "npm/mach"
 
 [windows]
-build-publish: build-publish-common
+build-publish:
   just build
+  just build-publish-common
   Copy-Item {{out_dir}}\* -Destination "npm\mach-os-arch" -Recurse | Out-Null
   Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null
   New-Item -ItemType "directory" -Force -Path "npm\mach\cmd\bin" | Out-Null
