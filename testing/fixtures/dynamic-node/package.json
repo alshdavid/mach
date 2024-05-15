@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/dynamic-node",
+  "name": "@workspace/integration-test-dynamic-node",
   "private": true,
   "engines": {
     "node": "8"

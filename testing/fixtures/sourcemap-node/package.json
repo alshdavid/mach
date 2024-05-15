@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-node",
+  "name": "@workspace/integration-test-sourcemap-node",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,

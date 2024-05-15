@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-inline-styles",
+  "name": "@workspace/integration-test-html-inline-styles",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

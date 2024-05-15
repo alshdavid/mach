@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/typescript-types-parcelrc",
+  "name": "@workspace/integration-test-typescript-types-parcelrc",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "private": true,

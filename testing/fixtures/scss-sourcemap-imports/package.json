@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/scss-sourcemap-imports",
+  "name": "@workspace/integration-test-scss-sourcemap-imports",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

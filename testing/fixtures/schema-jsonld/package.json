@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/schema-jsonld",
+  "name": "@workspace/integration-test-schema-jsonld",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

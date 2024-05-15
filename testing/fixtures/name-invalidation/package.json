@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/name-invalidation",
+  "name": "@workspace/integration-test-name-invalidation",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

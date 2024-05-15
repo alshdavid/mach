@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-same-contents-same-dependencies",
+  "name": "@workspace/integration-test-js-same-contents-same-dependencies",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

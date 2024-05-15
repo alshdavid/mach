@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/fs-outside-root",
+  "name": "@workspace/integration-test-fs-outside-root",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

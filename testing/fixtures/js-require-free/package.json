@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-require-free",
+  "name": "@workspace/integration-test-js-require-free",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

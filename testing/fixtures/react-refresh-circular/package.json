@@ -3,7 +3,7 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   },
-  "name": "@workspace/react-refresh-circular",
+  "name": "@workspace/integration-test-react-refresh-circular",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-typescript",
+  "name": "@workspace/integration-test-sourcemap-typescript",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,

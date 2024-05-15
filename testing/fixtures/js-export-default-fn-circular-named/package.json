@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-export-default-fn-circular-named",
+  "name": "@workspace/integration-test-js-export-default-fn-circular-named",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

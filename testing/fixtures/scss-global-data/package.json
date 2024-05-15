@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@workspace/scss-global-data",
+  "name": "@workspace/integration-test-scss-global-data",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-unused-import-specifier-node-modules",
+  "name": "@workspace/integration-test-js-unused-import-specifier-node-modules",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

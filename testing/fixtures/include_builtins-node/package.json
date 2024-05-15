@@ -5,7 +5,7 @@
       "includeNodeModules": true
     }
   },
-  "name": "@workspace/include_builtins-node",
+  "name": "@workspace/integration-test-include_builtins-node",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

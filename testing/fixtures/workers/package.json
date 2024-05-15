@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/workers",
+  "name": "@workspace/integration-test-workers",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

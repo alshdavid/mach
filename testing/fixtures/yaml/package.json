@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/yaml",
+  "name": "@workspace/integration-test-yaml",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -4,7 +4,7 @@
     "minBundleSize": 200,
     "maxParallelRequests": 3
   },
-  "name": "@workspace/min-bundles",
+  "name": "@workspace/integration-test-min-bundles",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

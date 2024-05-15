@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/css-modules-global",
+  "name": "@workspace/integration-test-css-modules-global",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

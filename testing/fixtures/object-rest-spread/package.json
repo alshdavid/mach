@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/object-rest-spread",
+  "name": "@workspace/integration-test-object-rest-spread",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

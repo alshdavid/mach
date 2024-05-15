@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/typescript-import-type-reexport",
+  "name": "@workspace/integration-test-typescript-import-type-reexport",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

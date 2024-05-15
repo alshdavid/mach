@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/css-module-css-siblings",
+  "name": "@workspace/integration-test-css-module-css-siblings",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

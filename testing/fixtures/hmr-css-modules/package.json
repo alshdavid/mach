@@ -2,7 +2,7 @@
   "dependencies": {
     "react": "^16"
   },
-  "name": "@workspace/hmr-css-modules",
+  "name": "@workspace/integration-test-hmr-css-modules",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -4,7 +4,7 @@
   "targets": {
     "app": {}
   },
-  "name": "@workspace/html-pkg-source",
+  "name": "@workspace/integration-test-html-pkg-source",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

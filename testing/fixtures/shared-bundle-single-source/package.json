@@ -3,7 +3,7 @@
     "minBundleSize": 200,
     "maxParallelRequests": 3
   },
-  "name": "@workspace/shared-bundle-single-source",
+  "name": "@workspace/integration-test-shared-bundle-single-source",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

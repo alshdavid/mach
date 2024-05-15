@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-comments",
+  "name": "@workspace/integration-test-sourcemap-comments",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

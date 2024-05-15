@@ -2,7 +2,7 @@
   "browserslist": [
     "last 1 Chrome version"
   ],
-  "name": "@workspace/js-dedup-hoist",
+  "name": "@workspace/integration-test-js-dedup-hoist",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

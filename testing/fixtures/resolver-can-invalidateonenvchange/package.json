@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/resolver-can-invalidateonenvchange",
+  "name": "@workspace/integration-test-resolver-can-invalidateonenvchange",
   "private": true,
   "scripts": {
     "build": "npx mach build",

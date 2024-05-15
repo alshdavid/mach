@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/css-modules-legacy",
+  "name": "@workspace/integration-test-css-modules-legacy",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

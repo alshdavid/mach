@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/svg-inline-sass",
+  "name": "@workspace/integration-test-svg-inline-sass",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

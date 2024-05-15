@@ -1,6 +1,6 @@
 {
   "main": ".output.js",
-  "name": "@workspace/dotfile-bundle",
+  "name": "@workspace/integration-test-dotfile-bundle",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

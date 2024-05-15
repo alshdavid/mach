@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/fs-import-path-join",
+  "name": "@workspace/integration-test-fs-import-path-join",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

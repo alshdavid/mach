@@ -2,7 +2,7 @@
   "@parcel/resolver-default": {
     "packageExports": true
   },
-  "name": "@workspace/css-exports",
+  "name": "@workspace/integration-test-css-exports",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

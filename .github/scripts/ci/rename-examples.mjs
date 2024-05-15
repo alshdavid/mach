@@ -50,7 +50,7 @@ for (const example_name of fs.readdirSync(Paths.TestingFixtures)) {
   //   )
   // }
 
-  json.name = `@workspace/${example_name}`
+  json.name = `@workspace/integration-test-${example_name}`
 
   json.scripts = json.scripts || {}
   json.scripts['serve'] = 'npx http-server -c=-1 -p=3000 .'

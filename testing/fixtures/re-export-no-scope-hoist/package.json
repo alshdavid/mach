@@ -12,7 +12,7 @@
       "optimize": false
     }
   },
-  "name": "@workspace/re-export-no-scope-hoist",
+  "name": "@workspace/integration-test-re-export-no-scope-hoist",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -5,7 +5,7 @@
   "dependencies": {
     "react": "*"
   },
-  "name": "@workspace/svg-react-typescript",
+  "name": "@workspace/integration-test-svg-react-typescript",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

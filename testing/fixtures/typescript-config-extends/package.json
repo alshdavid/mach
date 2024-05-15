@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/typescript-config-extends",
+  "name": "@workspace/integration-test-typescript-config-extends",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-svg-local-symbol",
+  "name": "@workspace/integration-test-html-svg-local-symbol",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

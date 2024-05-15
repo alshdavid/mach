@@ -2,7 +2,7 @@
   "@parcel/bundler-default": {
     "maxParallelRequests": 1
   },
-  "name": "@workspace/sync-async-when-needed",
+  "name": "@workspace/integration-test-sync-async-when-needed",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

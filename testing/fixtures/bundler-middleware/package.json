@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/bundler-middleware",
+  "name": "@workspace/integration-test-bundler-middleware",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

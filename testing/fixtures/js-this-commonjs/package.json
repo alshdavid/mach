@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-this-commonjs",
+  "name": "@workspace/integration-test-js-this-commonjs",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

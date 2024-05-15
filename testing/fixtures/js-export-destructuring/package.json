@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-export-destructuring",
+  "name": "@workspace/integration-test-js-export-destructuring",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

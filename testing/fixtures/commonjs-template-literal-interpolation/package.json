@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/commonjs-template-literal-interpolation",
+  "name": "@workspace/integration-test-commonjs-template-literal-interpolation",
   "private": true,
   "main": "dist/index.js",
   "targets": {

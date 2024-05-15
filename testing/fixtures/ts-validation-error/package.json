@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/ts-validation-error",
+  "name": "@workspace/integration-test-ts-validation-error",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

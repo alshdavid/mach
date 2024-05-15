@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/dynamic-hoist-no-dedupe-ancestry",
+  "name": "@workspace/integration-test-dynamic-hoist-no-dedupe-ancestry",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-import-member",
+  "name": "@workspace/integration-test-js-import-member",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

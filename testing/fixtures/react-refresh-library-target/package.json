@@ -6,7 +6,7 @@
     "react": "*",
     "react-dom": "*"
   },
-  "name": "@workspace/react-refresh-library-target",
+  "name": "@workspace/integration-test-react-refresh-library-target",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

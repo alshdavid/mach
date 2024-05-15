@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@workspace/resolve-tilde-nodemodules",
+  "name": "@workspace/integration-test-resolve-tilde-nodemodules",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

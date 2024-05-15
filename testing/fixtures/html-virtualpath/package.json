@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-virtualpath",
+  "name": "@workspace/integration-test-html-virtualpath",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

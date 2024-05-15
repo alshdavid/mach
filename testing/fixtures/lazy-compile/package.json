@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@workspace/lazy-compile",
+  "name": "@workspace/integration-test-lazy-compile",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

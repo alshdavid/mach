@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/bundler-error-syntax-error",
+  "name": "@workspace/integration-test-bundler-error-syntax-error",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

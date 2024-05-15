@@ -2,7 +2,7 @@
   "@parcel/bundler-default": {
     "minBundleSize": 0
   },
-  "name": "@workspace/cache-add-dep-referenced",
+  "name": "@workspace/integration-test-cache-add-dep-referenced",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

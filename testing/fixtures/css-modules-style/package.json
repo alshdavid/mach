@@ -3,7 +3,7 @@
   "@parcel/transformer-css": {
     "cssModules": true
   },
-  "name": "@workspace/css-modules-style",
+  "name": "@workspace/integration-test-css-modules-style",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/global-redeclare",
+  "name": "@workspace/integration-test-global-redeclare",
   "private": true,
   "browserslist": [
     "last 2 Chrome versions"

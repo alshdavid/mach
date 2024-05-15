@@ -5,7 +5,7 @@
       "global": "React"
     }
   },
-  "name": "@workspace/global-alias",
+  "name": "@workspace/integration-test-global-alias",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

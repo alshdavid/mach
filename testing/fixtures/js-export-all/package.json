@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-export-all",
+  "name": "@workspace/integration-test-js-export-all",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

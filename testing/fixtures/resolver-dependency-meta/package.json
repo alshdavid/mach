@@ -1,7 +1,7 @@
 {
   "private": true,
   "main": "dist/index.js",
-  "name": "@workspace/resolver-dependency-meta",
+  "name": "@workspace/integration-test-resolver-dependency-meta",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

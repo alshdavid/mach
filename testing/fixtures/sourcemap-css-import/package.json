@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-css-import",
+  "name": "@workspace/integration-test-sourcemap-css-import",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,

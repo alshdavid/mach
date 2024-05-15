@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/resolver-alternative-module",
+  "name": "@workspace/integration-test-resolver-alternative-module",
   "private": true,
   "scripts": {
     "build": "npx mach build",

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/node_hashbang",
+  "name": "@workspace/integration-test-node_hashbang",
   "main": "dist/node/main.js",
   "browser": "dist/browser/main.js",
   "engines": {

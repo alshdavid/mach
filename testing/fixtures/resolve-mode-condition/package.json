@@ -10,7 +10,7 @@
   "@parcel/resolver-default": {
     "packageExports": true
   },
-  "name": "@workspace/resolve-mode-condition",
+  "name": "@workspace/integration-test-resolve-mode-condition",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/async-dep-internal-external",
+  "name": "@workspace/integration-test-async-dep-internal-external",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

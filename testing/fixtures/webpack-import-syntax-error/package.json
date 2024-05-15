@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@workspace/webpack-import-syntax-error",
+  "name": "@workspace/integration-test-webpack-import-syntax-error",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

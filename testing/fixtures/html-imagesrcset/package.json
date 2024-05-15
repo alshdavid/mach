@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-imagesrcset",
+  "name": "@workspace/integration-test-html-imagesrcset",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

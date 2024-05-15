@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/import-html-async",
+  "name": "@workspace/integration-test-import-html-async",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

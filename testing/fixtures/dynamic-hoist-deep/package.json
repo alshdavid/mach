@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/dynamic-hoist-deep",
+  "name": "@workspace/integration-test-dynamic-hoist-deep",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

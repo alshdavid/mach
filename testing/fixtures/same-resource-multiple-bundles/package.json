@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/same-resource-multiple-bundles",
+  "name": "@workspace/integration-test-same-resource-multiple-bundles",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -3,7 +3,7 @@
     "react": "^18.1.0"
   },
   "browserslist": "ie 11",
-  "name": "@workspace/transpilation-invalid",
+  "name": "@workspace/integration-test-transpilation-invalid",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

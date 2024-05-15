@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/dynamic-import-attributes",
+  "name": "@workspace/integration-test-dynamic-import-attributes",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

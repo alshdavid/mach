@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-js-shared-dynamic-nested",
+  "name": "@workspace/integration-test-html-js-shared-dynamic-nested",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

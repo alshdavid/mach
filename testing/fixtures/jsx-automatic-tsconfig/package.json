@@ -3,7 +3,7 @@
   "dependencies": {
     "preact": "^17"
   },
-  "name": "@workspace/jsx-automatic-tsconfig",
+  "name": "@workspace/integration-test-jsx-automatic-tsconfig",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

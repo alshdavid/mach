@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/env-node",
+  "name": "@workspace/integration-test-env-node",
   "engines": {
     "node": "8"
   },

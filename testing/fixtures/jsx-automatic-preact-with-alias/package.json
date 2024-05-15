@@ -10,7 +10,7 @@
     "react/jsx-runtime": "preact/jsx-runtime",
     "react/jsx-dev-runtime": "preact/jsx-dev-runtime"
   },
-  "name": "@workspace/jsx-automatic-preact-with-alias",
+  "name": "@workspace/integration-test-jsx-automatic-preact-with-alias",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

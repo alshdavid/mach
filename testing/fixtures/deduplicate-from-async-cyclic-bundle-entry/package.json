@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/deduplicate-from-async-cyclic-bundle-entry",
+  "name": "@workspace/integration-test-deduplicate-from-async-cyclic-bundle-entry",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

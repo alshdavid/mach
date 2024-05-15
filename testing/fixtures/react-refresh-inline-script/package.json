@@ -2,7 +2,7 @@
   "dependencies": {
     "react": "*"
   },
-  "name": "@workspace/react-refresh-inline-script",
+  "name": "@workspace/integration-test-react-refresh-inline-script",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

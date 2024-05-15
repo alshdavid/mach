@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/graphql-named-import",
+  "name": "@workspace/integration-test-graphql-named-import",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/htmlnano-defaults-form",
+  "name": "@workspace/integration-test-htmlnano-defaults-form",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

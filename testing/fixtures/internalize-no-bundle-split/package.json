@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/internalize-no-bundle-split",
+  "name": "@workspace/integration-test-internalize-no-bundle-split",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

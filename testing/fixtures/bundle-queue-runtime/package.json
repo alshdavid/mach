@@ -5,7 +5,7 @@
   "@parcel/packager-js": {
     "unstable_asyncBundleRuntime": true
   },
-  "name": "@workspace/bundle-queue-runtime",
+  "name": "@workspace/integration-test-bundle-queue-runtime",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

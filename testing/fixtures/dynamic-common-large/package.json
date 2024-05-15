@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/dynamic-common-large",
+  "name": "@workspace/integration-test-dynamic-common-large",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

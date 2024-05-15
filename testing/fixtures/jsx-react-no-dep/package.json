@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@workspace/jsx-react-no-dep",
+  "name": "@workspace/integration-test-jsx-react-no-dep",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/same-dependency-multiple-times",
+  "name": "@workspace/integration-test-same-dependency-multiple-times",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

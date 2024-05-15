@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/resolve-node-prefix",
+  "name": "@workspace/integration-test-resolve-node-prefix",
   "private": true,
   "engines": {
     "node": "12"

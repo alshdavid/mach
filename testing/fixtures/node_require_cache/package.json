@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/node_require_cache",
+  "name": "@workspace/integration-test-node_require_cache",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -2,7 +2,7 @@
   "@parcel/bundler-default": {
     "minBundleSize": 0
   },
-  "name": "@workspace/shared-sibling-entries",
+  "name": "@workspace/integration-test-shared-sibling-entries",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

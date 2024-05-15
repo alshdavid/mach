@@ -2,7 +2,7 @@
   "dependencies": {
     "react": "*"
   },
-  "name": "@workspace/typescript-legacy-cast",
+  "name": "@workspace/integration-test-typescript-legacy-cast",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

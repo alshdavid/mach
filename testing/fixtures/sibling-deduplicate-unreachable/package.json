@@ -3,7 +3,7 @@
     "minBundleSize": 200,
     "maxParallelRequests": 3
   },
-  "name": "@workspace/sibling-deduplicate-unreachable",
+  "name": "@workspace/integration-test-sibling-deduplicate-unreachable",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

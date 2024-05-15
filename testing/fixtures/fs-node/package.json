@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/fs-node",
+  "name": "@workspace/integration-test-fs-node",
   "engines": {
     "node": "6"
   },

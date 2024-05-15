@@ -5,7 +5,7 @@
   "dependencies": {
     "@swc/helpers": "^0.5.0"
   },
-  "name": "@workspace/swc-helpers-library",
+  "name": "@workspace/integration-test-swc-helpers-library",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -8,7 +8,7 @@
     "index-with-css.js",
     "index.js"
   ],
-  "name": "@workspace/incremental-bundling",
+  "name": "@workspace/integration-test-incremental-bundling",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

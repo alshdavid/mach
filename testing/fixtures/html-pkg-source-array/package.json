@@ -3,7 +3,7 @@
     "a.html",
     "b.html"
   ],
-  "name": "@workspace/html-pkg-source-array",
+  "name": "@workspace/integration-test-html-pkg-source-array",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

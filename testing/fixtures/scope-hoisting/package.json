@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/scope-hoisting",
+  "name": "@workspace/integration-test-scope-hoisting",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

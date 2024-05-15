@@ -1,6 +1,6 @@
 {
   "browserslist": "Chrome 50",
-  "name": "@workspace/html-js-shared-nomodule",
+  "name": "@workspace/integration-test-html-js-shared-nomodule",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

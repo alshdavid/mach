@@ -1,6 +1,6 @@
 {
   "source": "src/index.html",
-  "name": "@workspace/namer-dir",
+  "name": "@workspace/integration-test-namer-dir",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

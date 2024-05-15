@@ -2,7 +2,7 @@
   "@parcel/bundler-default": {
     "minBundleSize": 40
   },
-  "name": "@workspace/shared-bundle-internalization",
+  "name": "@workspace/integration-test-shared-bundle-internalization",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

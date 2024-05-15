@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/multiple-empty-js-assets",
+  "name": "@workspace/integration-test-multiple-empty-js-assets",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-import-shadow-func-var",
+  "name": "@workspace/integration-test-js-import-shadow-func-var",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

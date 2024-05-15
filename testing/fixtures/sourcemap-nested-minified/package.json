@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-nested-minified",
+  "name": "@workspace/integration-test-sourcemap-nested-minified",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,

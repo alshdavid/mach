@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/config-merging",
+  "name": "@workspace/integration-test-config-merging",
   "version": "1.2.3",
   "main": "dist/index.js",
   "engines": {

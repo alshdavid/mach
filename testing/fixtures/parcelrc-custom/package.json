@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/parcelrc-custom",
+  "name": "@workspace/integration-test-parcelrc-custom",
   "version": "1.2.3",
   "scripts": {
     "build": "npx mach build",

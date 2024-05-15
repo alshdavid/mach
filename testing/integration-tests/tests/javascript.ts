@@ -15,11 +15,15 @@ describe('javascript', { concurrency: true }, () => {
   })
 
   test('synchronous passing test', async (t) => {
-    const result = await build_mach({
-      cwd: FIXTURES('commonjs'),
-      entries: ['src/index.js']
-    })
-    console.log(result)
+    const page = await browser.newPage()
+    await page.evaluate(() => { globalThis.foo = 'bar' })
+    console.log(await page.evaluate(() => globalThis.foo))
+    // const result = await build_mach({
+    //   cwd: FIXTURES('js-commonjs'),
+    //   entries: ['src/index.js']
+    // })
+    // console.log(result.assets['bundle_manifest.json'].toString())
+    await page.close()
   });
 
 })

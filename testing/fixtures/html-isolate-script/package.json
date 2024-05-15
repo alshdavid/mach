@@ -1,6 +1,6 @@
 {
   "browserslist": ">= 0.25%",
-  "name": "@workspace/html-isolate-script",
+  "name": "@workspace/integration-test-html-isolate-script",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

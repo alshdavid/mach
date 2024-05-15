@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/js-this-es6",
+  "name": "@workspace/integration-test-js-this-es6",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

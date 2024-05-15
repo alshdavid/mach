@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/compressors",
+  "name": "@workspace/integration-test-compressors",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

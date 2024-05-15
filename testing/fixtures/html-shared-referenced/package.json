@@ -2,7 +2,7 @@
   "@parcel/bundler-default": {
     "minBundleSize": 0
   },
-  "name": "@workspace/html-shared-referenced",
+  "name": "@workspace/integration-test-html-shared-referenced",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

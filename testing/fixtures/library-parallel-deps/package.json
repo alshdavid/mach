@@ -1,6 +1,6 @@
 {
   "module": "dist/out.js",
-  "name": "@workspace/library-parallel-deps",
+  "name": "@workspace/integration-test-library-parallel-deps",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

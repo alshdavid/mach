@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/es6-default-only",
+  "name": "@workspace/integration-test-es6-default-only",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

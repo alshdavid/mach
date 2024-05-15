@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sync-async",
+  "name": "@workspace/integration-test-sync-async",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

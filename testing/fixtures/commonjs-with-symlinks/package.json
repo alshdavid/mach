@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/commonjs-with-symlinks",
+  "name": "@workspace/integration-test-commonjs-with-symlinks",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

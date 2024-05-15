@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/undeclared-external",
+  "name": "@workspace/integration-test-undeclared-external",
   "main": "dist/out.js",
   "browserslist": ">= 0.25%",
   "dependencies": {},

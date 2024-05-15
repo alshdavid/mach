@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/html-multi-targets",
+  "name": "@workspace/integration-test-html-multi-targets",
   "version": "0.1.0",
   "private": true,
   "targets": {

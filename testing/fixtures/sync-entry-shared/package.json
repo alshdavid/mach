@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sync-entry-shared",
+  "name": "@workspace/integration-test-sync-entry-shared",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

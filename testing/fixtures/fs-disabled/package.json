@@ -2,7 +2,7 @@
   "@parcel/transformer-js": {
     "inlineFS": false
   },
-  "name": "@workspace/fs-disabled",
+  "name": "@workspace/integration-test-fs-disabled",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

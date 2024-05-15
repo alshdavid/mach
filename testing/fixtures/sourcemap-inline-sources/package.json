@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-inline-sources",
+  "name": "@workspace/integration-test-sourcemap-inline-sources",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,

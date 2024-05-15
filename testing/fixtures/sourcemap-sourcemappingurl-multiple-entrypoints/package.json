@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/sourcemap-sourcemappingurl-multiple-entrypoints",
+  "name": "@workspace/integration-test-sourcemap-sourcemappingurl-multiple-entrypoints",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

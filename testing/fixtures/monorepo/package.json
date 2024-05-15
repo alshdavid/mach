@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/monorepo",
+  "name": "@workspace/integration-test-monorepo",
   "private": true,
   "workspaces": [
     "pkg-a",

@@ -1,6 +1,6 @@
 {
   "browserslist": "Chrome 75",
-  "name": "@workspace/globals-module-specifier",
+  "name": "@workspace/integration-test-globals-module-specifier",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

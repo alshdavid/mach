@@ -1,6 +1,6 @@
 {
   "browserslist": ">= 0.25%",
-  "name": "@workspace/worker-shared-page",
+  "name": "@workspace/integration-test-worker-shared-page",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."

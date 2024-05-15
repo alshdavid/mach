@@ -3,7 +3,7 @@
   "dependencies": {
     "react": "^17"
   },
-  "name": "@workspace/jsx-automatic",
+  "name": "@workspace/integration-test-jsx-automatic",
   "scripts": {
     "build": "npx mach build",
     "serve": "npx http-server -c=-1 -p=3000 ."
