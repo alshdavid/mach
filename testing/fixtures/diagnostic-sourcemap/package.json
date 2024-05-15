@@ -1,8 +1,7 @@
 {
   "devDependencies": {
     "@alshdavid/mach": "../../../npm/mach",
-    "flow-bin": "*",
-    "http-server": "*"
+    "flow-bin": "*"
   },
   "name": "@workspace/diagnostic-sourcemap",
   "scripts": {

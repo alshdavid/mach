@@ -58,7 +58,7 @@ for (const example_name of fs.readdirSync(Paths.TestingFixtures)) {
   json.scripts = sort_object(json.scripts)
 
   json.devDependencies = json.devDependencies || {}
-  json.devDependencies['http-server'] = "*"
+  delete json.devDependencies['http-server']
   json.devDependencies['@alshdavid/mach'] = "../../../npm/mach"
   json.devDependencies = sort_object(json.devDependencies)
   

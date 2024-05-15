@@ -1,7 +1,7 @@
 import {test, before, after, describe} from 'node:test';
 import assert from 'node:assert';
 import * as puppeteer from 'puppeteer-core';
-import { connect_to_browser } from '../utils/browser';
+import { FIXTURES, build_mach, connect_to_browser } from '../utils/browser';
 
 describe('javascript', { concurrency: true }, () => {
   let browser: puppeteer.Browser
@@ -15,16 +15,11 @@ describe('javascript', { concurrency: true }, () => {
   })
 
   test('synchronous passing test', async (t) => {
-    console.log(browser)
-    await new Promise<void>(res => setTimeout(res, 5000))
-
-    assert.strictEqual(1, 1);
+    const result = await build_mach({
+      cwd: FIXTURES('commonjs'),
+      entries: ['src/index.js']
+    })
+    console.log(result)
   });
 
-  test('synchronous passing test', async (t) => {
-    console.log(browser)
-    await new Promise<void>(res => setTimeout(res, 5000))
-    
-    assert.strictEqual(1, 1);
-  });
 })
