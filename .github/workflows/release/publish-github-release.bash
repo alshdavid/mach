@@ -13,7 +13,7 @@ else
 fi
 
 gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/linux-amd64.tar.gz/mach-linux-amd64.tar.gz"
-# gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/linux-arm64.tar.gz/mach-linux-arm64.tar.gz"
+gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/linux-arm64.tar.gz/mach-linux-arm64.tar.gz"
 gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/macos-amd64.tar.gz/mach-macos-amd64.tar.gz"
 gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/macos-arm64.tar.gz/mach-macos-arm64.tar.gz"
 gh release upload $MACH_VERSION "$ROOT_DIR/artifacts/windows-amd64.tar.gz/mach-windows-amd64.tar.gz"
