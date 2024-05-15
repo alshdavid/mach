@@ -6,6 +6,7 @@ use swc_core::common::SourceMap;
 use swc_core::ecma::transforms::base::resolver;
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
+use swc_core::ecma::transforms::optimization::simplify::{self as ecma_simplify};
 use swc_core::ecma::visit::FoldWith;
 
 use super::read_imports_exports;
@@ -35,39 +36,19 @@ impl Transformer for TransformerJavaScript {
         return Err(format!("SWC Parse Error"));
       };
 
-      let program = result.program;
+      let mut program = result.program;
 
       let comments = result.comments;
       let source_map = source_map_og.clone();
-      let file_extension = asset
-        .file_path
-        .extension()
-        .unwrap()
-        .to_str()
-        .unwrap()
-        .to_string();
 
       let top_level_mark = Mark::fresh(Mark::root());
       let unresolved_mark = Mark::fresh(Mark::root());
 
-      let mut program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
-
-      // let decls = collect_decls(&program);
-
+      program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
       program = program.fold_with(&mut NodeEnvReplacer { env: &config.env });
 
-      if file_extension == "jsx" {
-        program = program.fold_with(&mut react_transforms::react(
-          source_map.clone(),
-          Some(&comments),
-          react_transforms::Options::default(),
-          top_level_mark,
-          unresolved_mark,
-        ));
-        *asset.kind = "js".to_string();
-      }
-
-      if file_extension == "tsx" {
+      // Strip Types
+      if *asset.kind == "tsx" {
         program = program.fold_with(&mut typescript_transforms::tsx(
           source_map.clone(),
           Default::default(),
@@ -76,16 +57,38 @@ impl Transformer for TransformerJavaScript {
           top_level_mark,
         ));
 
-        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
+        *asset.kind = "jsx".to_string();
+      }
+
+      // Strip Types
+      if *asset.kind == "ts" {
+        program = program.fold_with(&mut typescript_transforms::typescript(
+          Default::default(),
+          top_level_mark,
+        ));
 
         *asset.kind = "js".to_string();
       }
 
-      if file_extension == "ts" {
-        program = program.fold_with(&mut typescript_transforms::strip(top_level_mark));
-        *asset.kind = "js".to_string();
+      // Convert JSX
+      if *asset.kind == "jsx" {
+        program = program.fold_with(&mut react_transforms::react(
+          source_map.clone(),
+          Some(&comments),
+          react_transforms::Options::default(),
+          top_level_mark,
+          unresolved_mark,
+        ));
       }
 
+      // Dead code elimination
+      // Turned off for now because React doesn't like it
+      
+      // program = program.fold_with(&mut ecma_simplify::expr_simplifier(unresolved_mark, Default::default()));
+      // program = program.fold_with(&mut ecma_simplify::dead_branch_remover(unresolved_mark));
+
+      *asset.kind = "js".to_string();
+      
       let (dependencies, _) = read_imports_exports(&program, &asset.file_path);
 
       for dependency in dependencies {
