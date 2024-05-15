@@ -4,7 +4,6 @@ use swc_core::common::Globals;
 use swc_core::common::Mark;
 use swc_core::common::SourceMap;
 use swc_core::ecma::transforms::base::resolver;
-use swc_core::ecma::transforms::optimization::simplify::{self as ecma_simplify};
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
