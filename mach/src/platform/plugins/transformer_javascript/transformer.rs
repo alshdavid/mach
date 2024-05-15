@@ -4,9 +4,9 @@ use swc_core::common::Globals;
 use swc_core::common::Mark;
 use swc_core::common::SourceMap;
 use swc_core::ecma::transforms::base::resolver;
+use swc_core::ecma::transforms::optimization::simplify::{self as ecma_simplify};
 use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
-use swc_core::ecma::transforms::optimization::simplify::{self as ecma_simplify};
 use swc_core::ecma::visit::FoldWith;
 
 use super::read_imports_exports;
@@ -83,12 +83,12 @@ impl Transformer for TransformerJavaScript {
 
       // Dead code elimination
       // Turned off for now because React doesn't like it
-      
+
       // program = program.fold_with(&mut ecma_simplify::expr_simplifier(unresolved_mark, Default::default()));
       // program = program.fold_with(&mut ecma_simplify::dead_branch_remover(unresolved_mark));
 
       *asset.kind = "js".to_string();
-      
+
       let (dependencies, _) = read_imports_exports(&program, &asset.file_path);
 
       for dependency in dependencies {

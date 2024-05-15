@@ -476,7 +476,13 @@ impl RuntimeFactory {
     // Bundle src
     {
       let Stmt::Decl(decl) = &mut prelude.stmts[5] else { panic!() };
-      println!("{}", bundle_src);
+      let Decl::Var(var) = &mut *decl else { panic!() };
+      let Some(decl) = &mut var.decls[0].init else { panic!(); };
+      *decl = Box::new(Expr::Lit(Lit::Str(Str {
+        span: Span::default(),
+        value: Atom::from(format!("{}", bundle_src)),
+        raw: Some(Atom::from(format!("\"{}\"", bundle_src))),
+      })));
     }
 
     prelude.stmts
