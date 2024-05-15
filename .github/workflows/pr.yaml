@@ -10,31 +10,16 @@ on:
       - '*'
 
 jobs:
-  vars:
-    name: "🧠 Generate Variables"
-    runs-on: ubuntu-latest
-    outputs:
-      BRANCH_NAME: ${{ steps.step1.outputs.BRANCH_NAME }}
-      NPM_TAG: ${{ steps.step1.outputs.NPM_TAG }}
-      NEXT_MACH_VERSION: ${{ steps.step1.outputs.NEXT_MACH_VERSION }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: step1
-        run: bash .github/workflows/release/generate-variables.bash
-
   linux-amd64:
     name: "🐥 Linux AMD64"
     runs-on: ubuntu-latest
-    needs: [vars]
     steps:
       - uses: actions/checkout@v4
-      - env:
-          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-        run: bash .github/workflows/release/linux-amd64.bash
+      - run: bash .github/workflows/release/linux-amd64.bash
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}.tar.gz
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  test-integration:
+    name: "🧪 Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash .github/workflows/release/test-integration.bash
