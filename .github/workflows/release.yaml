@@ -23,10 +23,18 @@ jobs:
       - id: step1
         run: bash .github/workflows/release/generate-variables.bash
 
+  test-integration:
+    name: "🧪 Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: step1
+        run: bash .github/workflows/release/test-integration.bash
+
   linux-amd64:
     name: "🐥 Linux AMD64"
     runs-on: ubuntu-latest
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -46,7 +54,7 @@ jobs:
   linux-arm64:
     name: "🐥 Linux ARM64"
     runs-on: ubuntu-latest
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -66,7 +74,7 @@ jobs:
   macos-amd64:
     name: "🍎 MacOS AMD64"
     runs-on: macos-13
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -86,7 +94,7 @@ jobs:
   macos-arm64:
     name: "🍎 MacOS ARM64"
     runs-on: macos-14
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -106,7 +114,7 @@ jobs:
   windows-amd64:
     name: "🟦 Windows AMD64"
     runs-on: windows-latest
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -126,7 +134,7 @@ jobs:
   windows-arm64:
     name: "🟦 Windows ARM64"
     runs-on: windows-latest
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -146,7 +154,7 @@ jobs:
   npm-package:
     name: "📦 NPM"
     runs-on: ubuntu-latest
-    needs: [vars]
+    needs: [test-integration, vars]
     steps:
       - uses: actions/checkout@v4
       - env:
@@ -163,7 +171,7 @@ jobs:
   publish-github-release:
     name: "🔁 Github Release"
     runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -180,7 +188,7 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
