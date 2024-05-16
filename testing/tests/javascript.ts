@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {test, describe} from 'node:test';
 import assert from 'node:assert';
 import { create_page } from '../utils/browser';
@@ -14,4 +15,14 @@ describe('javascript', { concurrency: true }, () => {
 
     assert.equal(Object.keys(result.assets).length, 2)
   });
+
+  test('Nodejs ESM: Setting foo', async () => {
+    const report = await mach_build({ ...options })
+    await using nodejs = new NodejsContext({ type: 'module' })
+    
+    await nodejs.require(report.output.entries[0])
+  
+    const result = nodejs.eval(() => globalThis.foo)
+    assert.isTruthy(foo, 'expect foo to be set')
+  })
 })
