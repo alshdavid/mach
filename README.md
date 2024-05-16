@@ -47,7 +47,7 @@ $ mach build ./src/index.html
 $ mach dev ./src/index.html #todo
 ```
 
-## Programatic Usage
+## Programmatic Usage
 
 ```javascript
 import { Mach } from '@alshdavid/mach'
