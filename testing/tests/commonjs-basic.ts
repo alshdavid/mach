@@ -1,21 +1,32 @@
-import {test, describe} from 'node:test';
+import {test, describe, before} from 'node:test';
 import * as assert from 'node:assert';
-import { Mach } from '@alshdavid/mach';
-import { FIXTURES } from '../utils/mach/index.js';
+import { BuildReport, Mach } from '@alshdavid/mach';
+import { FIXTURES_FN } from '../utils/mach/index.js';
 import { NodejsContext } from '../utils/nodejs/index.js';
+import { install_npm } from '../utils/npm.js';
 
-describe('javascript', { concurrency: true }, () => {
-  test('synchronous passing test', async (t) => {    
-    const report = await Mach.build({
-      projectRoot: FIXTURES('js-commonjs'),
+const FIXTURE = FIXTURES_FN('commonjs-basic')
+
+describe('commonjs-basic', { concurrency: true }, () => {
+  let report: BuildReport
+
+  before(async () => {
+    await install_npm(FIXTURE())
+    
+    report = await Mach.build({
+      projectRoot: FIXTURE(),
       clean: true,
       outFolder: 'dist',
       entries: ['src/index.js']
     })
+  })
 
-    await using nodejs = new NodejsContext({ type: 'commonjs' })
+  test('Should set exports correctly ', async (t) => { 
+    await using nodejs = new NodejsContext({ 
+      type: 'commonjs',
+      entry: FIXTURE('dist', report.entries['src/index.js']),
+    })
     
-    await nodejs.import(FIXTURES('js-commonjs', 'dist', report.entries['src/index.js']))
     await nodejs.get_global('onready')
 
     const values = {
