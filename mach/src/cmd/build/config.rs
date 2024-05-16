@@ -108,6 +108,16 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
     vars
   };
 
+  let diagnostic_port: Option<usize> = 'block: {
+    let Ok(value) = std::env::var("MACH_DIAGNOSTIC_PORT") else {
+      break 'block None;
+    };
+    let Ok(value) = value.parse::<usize>() else {
+      break 'block None;
+    };
+    Some(value)
+  };
+
   return Ok(Arc::new(MachConfig {
     start_time,
     entry_point,
@@ -126,6 +136,7 @@ pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
     optimize: !command.no_optimize,
     env,
     debug: command.debug,
+    diagnostic_port,
   }));
 }
 

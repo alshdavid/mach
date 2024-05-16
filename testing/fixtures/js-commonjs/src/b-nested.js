@@ -10,7 +10,6 @@
   exports['b3'] = 'value_b3'
   exports[ident_b4] = 'value_b4'
   exports.b5 = b5
-  exports.b5()
 
   exports.b6 = function () {
     const _ = require('./noop')

@@ -47,6 +47,25 @@ $ mach build ./src/index.html
 $ mach dev ./src/index.html #todo
 ```
 
+## Programatic Usage
+
+```javascript
+import { Mach } from '@alshdavid/mach'
+
+// Create a Mach instance
+const mach = new Mach()
+
+// Listen to build events
+mach.subscribe('build_event', event => console.log(event))
+
+// Build a target
+const report = await mach.build({
+  projectRoot: process.cwd(),
+  outFolder: 'dist',
+  entries: ['src/index.js']
+})
+```
+
 ## Supported Types
 
 Mach comes preconfigured with sensible defaults and does not need configuration. Mach ships with built-in support for the most common source files in web development.

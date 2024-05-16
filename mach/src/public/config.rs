@@ -30,6 +30,7 @@ pub struct MachConfig {
   pub bundle_splitting: bool,
   pub env: HashMap<String, String>,
   pub debug: bool,
+  pub diagnostic_port: Option<usize>,
 }
 
 impl MachConfig {

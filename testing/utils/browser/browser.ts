@@ -1,7 +1,9 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import * as url from 'node:url'
 import * as puppeteer from 'puppeteer-core';
 
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export const PATH_BROWSER_SOCKET = path.resolve(__dirname, '..', '..', '.puppeteer_socket')
 
 let BROWSER: Promise<puppeteer.Browser & AsyncDisposable & Disposable> | undefined

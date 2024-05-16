@@ -23,6 +23,7 @@ mod mutable_asset;
 pub mod nodejs;
 mod package_json;
 mod packages;
+pub mod programmatic;
 mod resolver;
 mod specifier_type;
 mod transformer;

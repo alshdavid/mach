@@ -3,8 +3,10 @@
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
     "module": "Node16",
-    "moduleResolution": "Node16"
+    "moduleResolution": "Node16",
+    "checkJs": true,
+    "noEmit": true
   },
-  "include": ["types"],
+  "include": ["types", "lib"],
   "exclude": ["node_modules", "_parcel"]
 }

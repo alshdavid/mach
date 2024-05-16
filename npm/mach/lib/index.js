@@ -5,6 +5,7 @@ class MachInitError extends Error {
   }
 }
 
+export * from './mach.js'
 export const Resolver = globalThis.Mach?.Resolver || MachInitError
 export const Transformer = globalThis.Mach?.Transformer || MachInitError
 export const Dependency = globalThis.Mach?.Dependency || MachInitError

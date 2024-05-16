@@ -8,7 +8,8 @@ const require = createRequire(import.meta.url)
 
 if (
   JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'))
-    .version === '0.0.0-local' || process.env.MACH_SKIP_POST_INSTALL === "true"
+    .version === '0.0.0-local' ||
+  process.env.MACH_SKIP_POST_INSTALL === 'true'
 ) {
   process.exit(0)
 }
