@@ -10,4 +10,3 @@ module.exports[ident_a4] = 'value_a4'
 module.exports[ident_a4 + '_1'] = 'value_a4.1'
 module.exports[`${ident_a4 + '_2'}`] = 'value_a4.2'
 module.exports.a5 = a5
-module.exports.a5()

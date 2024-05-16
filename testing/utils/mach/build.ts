@@ -18,6 +18,10 @@ export async function build_mach(options: BuildOptions): Promise<BuildReport> {
   const mach_bin = path.join(options.cwd, 'node_modules', '.bin', 'mach')
   const entries = options.entries?.join(' ') || ''
 
+  if (!fs.existsSync(options.cwd)) {
+    throw new Error(`Error Does Not Exist: ${options.cwd}`)
+  }
+
   if (!fs.existsSync(path.join(options.cwd, 'node_modules'))) {
     await new Promise((resolve, reject) => {
       child_process.exec(`npm install --no-package-lock`, { cwd: options.cwd }, (err, stdout) => {

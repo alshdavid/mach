@@ -1,28 +1,54 @@
-//@ts-nocheck
 import {test, describe} from 'node:test';
-import assert from 'node:assert';
-import { create_page } from '../utils/browser';
+import * as assert from 'node:assert';
+import * as path from 'node:path';
 import { FIXTURES, build_mach } from '../utils/mach';
+import { NodejsContext } from '../utils/nodejs';
 
 describe('javascript', { concurrency: true }, () => {
-  test('synchronous passing test', async (t) => {
-    await using page = await create_page()
-    
+  test('synchronous passing test', async (t) => {    
     const result = await build_mach({
       cwd: FIXTURES('js-commonjs'),
       entries: ['src/index.js']
     })
 
-    assert.equal(Object.keys(result.assets).length, 2)
-  });
-
-  test('Nodejs ESM: Setting foo', async () => {
-    const report = await mach_build({ ...options })
-    await using nodejs = new NodejsContext({ type: 'module' })
+    await using nodejs = new NodejsContext({ type: 'commonjs' })
     
-    await nodejs.require(report.output.entries[0])
-  
-    const result = nodejs.eval(() => globalThis.foo)
-    assert.isTruthy(foo, 'expect foo to be set')
-  })
+    // TODO need a better report format
+    // await nodejs.import(path.join(FIXTURES('js-commonjs'), 'src', 'index.js'))
+    await nodejs.import(path.join(FIXTURES('js-commonjs'), 'dist', Object.keys(result.assets).find(e => e.endsWith('.js'))!))
+    await nodejs.get_global('onready')
+
+    const values = {
+      a1: 'value_a1',
+      a2: 'value_a2',
+      a3: 'value_a3',
+      a4_ident: 'value_a4',
+      a4_ident_1: 'value_a4.1',
+      a4_ident_2: 'value_a4.2',
+      a5: 'function',
+      b1: 'value_b1',
+      b2: 'value_b2',
+      b3: 'value_b3',
+      b4_ident: 'value_b4',
+      b4_ident_1: undefined,
+      b5: 'function',
+      nested_b1: 'value_b1',
+      nested_b2: 'value_b2',
+      nested_b3: 'value_b3',
+      nested_b4_ident: 'value_b4',
+      nested_b4_ident_1: undefined,
+      nested_b5: 'function',
+      nested_b6: 'function',
+      c1: 'c1',
+    }
+
+    for (const [key, expect] of Object.entries(values)) {
+      const result = await nodejs.get_global(key)
+      assert.equal(
+        result, 
+        expect,
+        `Expect global key "${key}" to be "${expect}", got "${result}"`
+      )
+    }
+  });
 })

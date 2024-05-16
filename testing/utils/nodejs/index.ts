@@ -29,10 +29,10 @@ export class NodejsContext {
     }
   }
 
-  async eval(cb: string | Function, args: JSONObject[] = []) {
+  async eval<T extends Array<JSONObject>>(cb: string | ((...args: T) => any | Promise<any>), args?: T): Promise<JSONObject | undefined> {
     let data = cb
     if (typeof cb === 'function') {
-      const fn_args = args.map(arg => JSON.stringify(arg)).join(',')
+      const fn_args = (args|| []).map(arg => JSON.stringify(arg)).join(',')
       data = `(${cb.toString()})(${fn_args})`
     }
 
@@ -61,7 +61,7 @@ export class NodejsContext {
       const reply = await on_reply
       this.#reqs.delete(id)
       this.#worker.removeListener('message', fn)
-      return reply
+      return reply as any
     } catch (error) {
       this.#reqs.delete(id)
       this.#worker.removeListener('message', fn)
@@ -69,8 +69,24 @@ export class NodejsContext {
     }
   }
 
-  import(specifier: string) {
-    return this.eval(`import(${specifier})`)
+  async get_global(key: string): Promise<JSONObject | undefined> {
+    return this.eval(async (key) => {
+      // @ts-expect-error
+      return await globalThis[key]
+    }, [key])
+  }
+
+  async resolve_global(key: string): Promise<JSONObject | undefined> {
+    return this.eval(async (key) => {
+      // @ts-expect-error
+      return await globalThis[key]
+    }, [key])
+  }
+
+  async import(specifier: string) {
+    await this.eval(async (specifier) => { 
+      await import(specifier)
+    }, [specifier])
   }
 
   shutdown() {
