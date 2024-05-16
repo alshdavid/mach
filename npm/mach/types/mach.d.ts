@@ -29,7 +29,7 @@ export type BuildProgress = {}
 
 export type BuildReport = {
   bundleManifest: Record<string, string>
-  output: Record<string, string>
+  entries: Record<string, string>
 }
 
 export declare class Mach {

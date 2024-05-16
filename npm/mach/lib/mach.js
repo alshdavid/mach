@@ -71,13 +71,18 @@ export class Mach {
 
     if (options.bundleSplitting)
       cli_args.push('--bundle-splitting', `${options.bundleSplitting}`)
-    if (options.clean) cli_args.push('--clean', `${options.clean}`)
+    if (options.clean) cli_args.push('--clean')
     if (options.nodeWorkers)
       cli_args.push('--node-workers', `${options.nodeWorkers}`)
     if (options.optimize) cli_args.push('--no-optimize', `${!options.optimize}`)
     if (options.outFolder) cli_args.push('--dist', options.outFolder)
     if (options.threads) cli_args.push('--threads', `${options.threads}`)
 
+    for (const entry of options.entries) {
+      cli_args.push(entry)
+    }
+
+    console.log(cli_args.join(' '))
     const child = child_process.spawn(BIN_PATH, cli_args, {
       shell: true,
       cwd: options.projectRoot ?? process.cwd(),
@@ -135,5 +140,10 @@ export class Mach {
     for (const subscriber of this.#subscribers) {
       setTimeout(() => subscriber(event), 0)
     }
+  }
+
+  static build(options) {
+    const mach = new Mach(options)
+    return mach.build(options)
   }
 }

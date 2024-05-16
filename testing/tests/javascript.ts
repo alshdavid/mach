@@ -8,12 +8,14 @@ describe('javascript', { concurrency: true }, () => {
   test('synchronous passing test', async (t) => {    
     const report = await Mach.build({
       projectRoot: FIXTURES('js-commonjs'),
+      clean: true,
+      outFolder: 'dist',
       entries: ['src/index.js']
     })
 
     await using nodejs = new NodejsContext({ type: 'commonjs' })
     
-    await nodejs.import(FIXTURES('js-commonjs', report.output['src/index.js']))
+    await nodejs.import(FIXTURES('js-commonjs', 'dist', report.entries['src/index.js']))
     await nodejs.get_global('onready')
 
     const values = {
