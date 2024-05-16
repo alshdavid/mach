@@ -1,6 +1,7 @@
 import * as worker_threads from 'node:worker_threads'
 import * as path from 'node:path'
 import * as url from 'node:url'
+import * as fs from 'node:fs'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -87,6 +88,9 @@ export class NodejsContext {
   }
 
   async import(specifier: string) {
+    if (specifier.startsWith(path.sep) && !fs.existsSync(specifier)) {
+      throw new Error(`Cannot find specifier: ${specifier}`)
+    }
     await this.eval(async (specifier) => { 
       await import(specifier)
     }, [specifier])
