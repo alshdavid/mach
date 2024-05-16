@@ -16,9 +16,11 @@ export type JSONObject =
 
 export type NodejsContextOptions = {
   type: 'commonjs' | 'module'
+  entry?: string
 }
 
 export class NodejsContext {
+  #ready
   #worker
   #counter
   #reqs
@@ -31,9 +33,16 @@ export class NodejsContext {
     } else {
       this.#worker = new worker_threads.Worker(path.join(__dirname, 'worker-module', 'index.js'))
     }
+    if (options.entry) {
+      this.#ready = this.import(options.entry)
+    } else {
+      this.#ready = Promise.resolve()
+    }
   }
 
   async eval<T extends Array<JSONObject>>(cb: string | ((...args: T) => any | Promise<any>), args?: T): Promise<JSONObject | undefined> {
+    await this.#ready
+    
     let data = cb
     if (typeof cb === 'function') {
       const fn_args = (args|| []).map(arg => JSON.stringify(arg)).join(',')

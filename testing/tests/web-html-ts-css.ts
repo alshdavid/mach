@@ -4,23 +4,21 @@ import { Mach } from '@alshdavid/mach';
 import { FIXTURES_FN } from '../utils/mach/index.js';
 import { NodejsContext } from '../utils/nodejs/index.js';
 
-const FIXTURE = FIXTURES_FN('commonjs-basic')
+const FIXTURE = FIXTURES_FN('web-html-ts-css')
 
-describe('commonjs-basic', { concurrency: true }, () => {
+describe.skip('web-html-ts-css', { concurrency: true }, () => {
 
   test('Should set exports correctly ', async (t) => { 
     const report = await Mach.build({
       projectRoot: FIXTURE(),
       clean: true,
       outFolder: 'dist',
-      entries: ['src/index.js']
+      entries: ['src/index.html']
     })
 
-    await using nodejs = new NodejsContext({ 
-      type: 'commonjs',
-      entry: FIXTURE('dist', report.entries['src/index.js']),
-    })
+    await using nodejs = new NodejsContext({ type: 'commonjs' })
     
+    await nodejs.import(FIXTURE('dist', report.entries['src/index.html']))
     await nodejs.get_global('onready')
 
     const values = {
