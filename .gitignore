@@ -34,6 +34,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+.puppeteer_socket
+package-lock.json
 
 # JUnit test results
 junit.xml

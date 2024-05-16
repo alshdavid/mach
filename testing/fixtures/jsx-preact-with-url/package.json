@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "dependencies": {
+    "preact": "https://pkg.csb.dev/preactjs/preact/commit/96082866/preact"
+  },
+  "name": "@workspace/integration-test-jsx-preact-with-url",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

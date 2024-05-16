@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "default": {
+      "context": "browser",
+      "includeNodeModules": true
+    }
+  },
+  "name": "@workspace/integration-test-include_builtins-browser",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

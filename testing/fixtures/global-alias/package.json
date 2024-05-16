@@ -1,0 +1,16 @@
+{
+  "main": "dist/index.js",
+  "alias": {
+    "react": {
+      "global": "React"
+    }
+  },
+  "name": "@workspace/integration-test-global-alias",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@workspace/integration-test-cache",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

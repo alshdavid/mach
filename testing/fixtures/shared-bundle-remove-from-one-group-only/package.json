@@ -1,0 +1,14 @@
+{
+  "@parcel/bundler-default": {
+    "minBundleSize": 200,
+    "maxParallelRequests": 2
+  },
+  "name": "@workspace/integration-test-shared-bundle-remove-from-one-group-only",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

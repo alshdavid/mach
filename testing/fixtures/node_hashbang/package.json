@@ -1,0 +1,27 @@
+{
+  "name": "@workspace/integration-test-node_hashbang",
+  "main": "dist/node/main.js",
+  "browser": "dist/browser/main.js",
+  "engines": {
+    "node": "8"
+  },
+  "targets": {
+    "main": {
+      "engines": {
+        "node": "8"
+      }
+    },
+    "browser": {
+      "engines": {
+        "browsers": "last 1 version"
+      }
+    }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

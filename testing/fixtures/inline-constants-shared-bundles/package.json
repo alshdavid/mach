@@ -1,0 +1,16 @@
+{
+  "@parcel/transformer-js": {
+    "unstable_inlineConstants": true
+  },
+  "@parcel/bundler-default": {
+    "minBundleSize": 0
+  },
+  "name": "@workspace/integration-test-inline-constants-shared-bundles",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

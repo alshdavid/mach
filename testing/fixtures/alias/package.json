@@ -1,0 +1,16 @@
+{
+  "alias": {
+    "foo": "lodash",
+    "bar": "./bar.js",
+    "foo-exclude": false,
+    "./bar-exclude": false
+  },
+  "name": "@workspace/integration-test-alias",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "source": "react.ts",
+  "main": "icons.js",
+  "types": "types.d.ts",
+  "dependencies": {
+    "react": "*"
+  },
+  "name": "@workspace/integration-test-svg-react-typescript",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

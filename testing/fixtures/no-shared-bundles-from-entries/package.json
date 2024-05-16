@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "dependencies": {
+    "lodash": "*"
+  },
+  "name": "@workspace/integration-test-no-shared-bundles-from-entries",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}
