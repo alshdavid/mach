@@ -1,3 +1,4 @@
+use std::collections::hash_map::Iter;
 use std::collections::hash_map::Values;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -21,8 +22,12 @@ impl BundleMap {
     self.bundles.insert(bundle.id.clone(), bundle);
   }
 
-  pub fn iter(&self) -> Values<'_, BundleId, Bundle> {
+  pub fn values(&self) -> Values<'_, BundleId, Bundle> {
     self.bundles.values()
+  }
+
+  pub fn iter(&self) -> Iter<'_, BundleId, Bundle> {
+    self.bundles.iter()
   }
 
   pub fn len(&self) -> usize {

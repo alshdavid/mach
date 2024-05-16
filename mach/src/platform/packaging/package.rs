@@ -10,7 +10,7 @@ use super::javascript::runtime_factory::RuntimeFactory;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
-use crate::public::BundleManifest;
+use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
@@ -24,22 +24,22 @@ pub fn package(
   dependency_map: DependencyMapSync,
   bundle_map: BundleMapSync,
   bundle_graph: BundleGraphSync,
+  bundle_manifest: BundleManifestSync,
   outputs: OutputsSync,
 ) -> Result<(), String> {
   let asset_map = asset_map;
   let source_map = Arc::new(SourceMap::default());
-  let runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
+  let js_runtime_factory = Arc::new(RuntimeFactory::new(source_map.clone()));
 
-  let bundle_manifest = {
-    let mut bundle_manifest = BundleManifest::new();
+  {
+    let mut bundle_manifest = bundle_manifest.write().unwrap();
 
-    for bundle in bundle_map.read().unwrap().iter() {
+    for bundle in bundle_map.read().unwrap().values() {
       bundle_manifest.insert(bundle.content_hash(), bundle.name.clone());
     }
-    Arc::new(bundle_manifest)
   };
 
-  for bundle in bundle_map.read().unwrap().iter() {
+  for bundle in bundle_map.read().unwrap().values() {
     let bundle = bundle.clone();
     let bundle_manifest = bundle_manifest.clone();
 
@@ -52,7 +52,7 @@ pub fn package(
         bundle_map.clone(),
         bundle_graph.clone(),
         outputs.clone(),
-        runtime_factory.clone(),
+        js_runtime_factory.clone(),
         bundle,
         bundle_manifest,
       );
@@ -67,8 +67,8 @@ pub fn package(
         bundle_graph.clone(),
         outputs.clone(),
         bundle,
-        &bundle_manifest,
-        runtime_factory.clone(),
+        bundle_manifest,
+        js_runtime_factory.clone(),
       );
     }
   }

@@ -22,7 +22,7 @@ use crate::public::AssetId;
 use crate::public::AssetMapSync;
 use crate::public::Bundle;
 use crate::public::BundleGraphSync;
-use crate::public::BundleManifest;
+use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::MachConfigSync;
@@ -39,9 +39,10 @@ pub fn package_javascript<'a>(
   outputs: Arc<RwLock<Outputs>>,
   runtime_factory: Arc<RuntimeFactory>,
   bundle: Bundle,
-  bundle_manifest: Arc<BundleManifest>,
+  bundle_manifest: BundleManifestSync,
 ) {
   let bundle_map = bundle_map.read().unwrap();
+  let bundle_manifest = bundle_manifest.read().unwrap();
   let bundle_graph = bundle_graph.read().unwrap();
   let source_map = Arc::new(SourceMap::default());
 

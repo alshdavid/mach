@@ -8,9 +8,11 @@ use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::resolve_and_transform;
+use crate::public::programmatic::ProgrammaticReporter;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
+use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::OutputsSync;
@@ -28,7 +30,14 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
   let asset_graph = AssetGraphSync::default();
   let bundles = BundleMapSync::default();
   let bundle_graph = BundleGraphSync::default();
+  let bundle_manifest = BundleManifestSync::default();
   let outputs = OutputsSync::default();
+  let programmatic_reporter = ProgrammaticReporter::new(
+    config.clone(),
+    asset_map.clone(),
+    bundles.clone(),
+    bundle_manifest.clone(),
+  );
   let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
     workers: config.node_workers.clone() as u8,
   })?;
@@ -100,6 +109,7 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
     dependency_map.clone(),
     bundles.clone(),
     bundle_graph.clone(),
+    bundle_manifest.clone(),
     outputs.clone(),
   )?;
 
@@ -112,5 +122,6 @@ pub fn main(command: BuildCommand) -> Result<(), String> {
 
   reporter.print_emit_stats();
   reporter.print_finished_stats();
+  programmatic_reporter.emit_build_report();
   Ok(())
 }

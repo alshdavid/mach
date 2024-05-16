@@ -128,7 +128,7 @@ impl AppReporter {
     let bundles = self.bundles.read().unwrap();
     let time_bundle = self.config.time_elapsed();
     let mut bundle_kinds = HashMap::<String, usize>::new();
-    for bundle in bundles.iter() {
+    for bundle in bundles.values() {
       if !bundle_kinds.contains_key(&bundle.kind) {
         bundle_kinds.insert(bundle.kind.clone(), 0);
       }

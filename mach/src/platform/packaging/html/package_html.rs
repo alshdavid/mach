@@ -17,7 +17,7 @@ use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::Bundle;
 use crate::public::BundleGraphSync;
-use crate::public::BundleManifest;
+use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::Output;
@@ -31,13 +31,14 @@ pub fn package_html(
   bundle_graph: BundleGraphSync,
   outputs: Arc<RwLock<Outputs>>,
   bundle: Bundle,
-  bundle_manifest: &BundleManifest,
+  bundle_manifest: BundleManifestSync,
   js_runtime_factory: Arc<RuntimeFactory>,
 ) {
   let asset_graph = asset_graph.read().unwrap();
   let dependency_map = dependency_map.read().unwrap();
   let bundle_map = bundle_map.read().unwrap();
   let bundle_graph = bundle_graph.read().unwrap();
+  let bundle_manifest = bundle_manifest.read().unwrap();
 
   let entry_asset = bundle.entry_asset.as_ref().unwrap();
   let Some(dependencies) = asset_graph.get_dependencies(&entry_asset) else {
@@ -131,7 +132,7 @@ pub fn package_html(
 
     let bundle_id = bundle_graph.get(&dependency.id).unwrap();
     let bundle_hash = bundle_map
-      .iter()
+      .values()
       .find(|b| &b.id == bundle_id)
       .unwrap()
       .content_hash();
@@ -148,7 +149,7 @@ pub fn package_html(
     html::set_attribute(script_node, "src", file_path);
   }
 
-  for bundle in bundle_map.iter() {
+  for bundle in bundle_map.values() {
     if bundle.kind == "css" {
       let elm = html::create_element(html::CreateElementOptions {
         tag_name: "link",

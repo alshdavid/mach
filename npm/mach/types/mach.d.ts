@@ -42,11 +42,20 @@ export declare class Mach {
   /** @todo */
   serve(options: ServeOptions): DisposeFunc
   /** @todo */
-  subscribe(type: "build_start", callback: (value: BuildOptions) => any | Promise<any>): DisposeFunc
+  subscribe(
+    type: 'build_start',
+    callback: (value: BuildOptions) => any | Promise<any>,
+  ): DisposeFunc
   /** @todo */
-  subscribe(type: "build_progress", callback: (value: BuildProgress) => any | Promise<any>): DisposeFunc
+  subscribe(
+    type: 'build_progress',
+    callback: (value: BuildProgress) => any | Promise<any>,
+  ): DisposeFunc
   /** @todo */
-  subscribe(type: "build_end", callback: (value: BuildReport) => any | Promise<any>): DisposeFunc
+  subscribe(
+    type: 'build_end',
+    callback: (value: BuildReport) => any | Promise<any>,
+  ): DisposeFunc
   static build(options: MachOptions & BuildOptions): Promise<BuildReport>
 }
 
