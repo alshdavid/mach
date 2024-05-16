@@ -71,7 +71,6 @@ export class Mach {
 
     if (options.bundleSplitting)
       cli_args.push('--bundle-splitting', `${options.bundleSplitting}`)
-    if (options.clean) cli_args.push('--clean')
     if (options.nodeWorkers)
       cli_args.push('--node-workers', `${options.nodeWorkers}`)
     if (options.optimize) cli_args.push('--no-optimize', `${!options.optimize}`)
@@ -92,6 +91,10 @@ export class Mach {
       },
     })
 
+    // child.stdout.on('data', (data) => {
+    //   console.log(`${data}`)
+    // })
+
     let buff_error = ''
     child.stderr.on('data', (data) => {
       buff_error += data
@@ -103,6 +106,7 @@ export class Mach {
 
     let result = await on_complete
     server.close()
+    child.kill()
     return result
   }
 
