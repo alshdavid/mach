@@ -2,7 +2,7 @@ import '@shigen/polyfill-symbol-dispose'
 import * as reporter from 'node:test/reporters';
 import { run } from 'node:test';
 import path from 'node:path';
-import { new_browser } from './utils/browser';
+import { new_browser } from './utils/browser/index.js';
 
 void async function() {
   await using _browser = await new_browser();

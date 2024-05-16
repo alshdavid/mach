@@ -1,5 +1,8 @@
 import * as worker_threads from 'node:worker_threads'
 import * as path from 'node:path'
+import * as url from 'node:url'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 export type JSONObject =
   | string

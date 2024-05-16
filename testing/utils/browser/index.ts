@@ -1,2 +1,2 @@
-export * from './browser'
-export * from './page'
+export * from './browser.js'
+export * from './page.js'

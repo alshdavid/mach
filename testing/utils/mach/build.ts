@@ -1,8 +1,10 @@
 import path from 'node:path';
 import child_process from 'node:child_process';
 import fs from 'node:fs';
+import * as url from 'node:url'
 import fsAsync from 'node:fs/promises';
 
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export const FIXTURES = (...segments: string[]) => path.resolve(__dirname, '..', '..', 'fixtures', ...segments)
 
 export type BuildOptions = {

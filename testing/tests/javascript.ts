@@ -1,21 +1,19 @@
 import {test, describe} from 'node:test';
 import * as assert from 'node:assert';
-import * as path from 'node:path';
-import { FIXTURES, build_mach } from '../utils/mach';
-import { NodejsContext } from '../utils/nodejs';
+import { Mach } from '@alshdavid/mach';
+import { FIXTURES } from '../utils/mach/index.js';
+import { NodejsContext } from '../utils/nodejs/index.js';
 
 describe('javascript', { concurrency: true }, () => {
   test('synchronous passing test', async (t) => {    
-    const result = await build_mach({
-      cwd: FIXTURES('js-commonjs'),
+    const report = await Mach.build({
+      projectRoot: FIXTURES('js-commonjs'),
       entries: ['src/index.js']
     })
 
     await using nodejs = new NodejsContext({ type: 'commonjs' })
     
-    // TODO need a better report format
-    // await nodejs.import(path.join(FIXTURES('js-commonjs'), 'src', 'index.js'))
-    await nodejs.import(path.join(FIXTURES('js-commonjs'), 'dist', Object.keys(result.assets).find(e => e.endsWith('.js'))!))
+    await nodejs.import(FIXTURES('js-commonjs', report.output['src/index.js']))
     await nodejs.get_global('onready')
 
     const values = {
