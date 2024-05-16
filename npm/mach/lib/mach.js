@@ -82,7 +82,6 @@ export class Mach {
       cli_args.push(entry)
     }
 
-    console.log(cli_args.join(' '))
     const child = child_process.spawn(BIN_PATH, cli_args, {
       shell: true,
       cwd: options.projectRoot ?? process.cwd(),
