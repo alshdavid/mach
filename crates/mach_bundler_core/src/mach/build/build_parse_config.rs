@@ -1,3 +1,6 @@
+/*
+  TODO rewrite this
+*/
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -27,6 +30,10 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
   // Auto detect project root
   let project_root = 'block: {
     if let Some(project_root) = command.project_root {
+      break 'block get_absolute_path(None, &project_root);
+    };
+
+    if let Some((project_root, _)) = find_crawl_up(&get_absolute_path(None, &entry_arg), &["package.json"]) {
       break 'block project_root;
     };
 
@@ -39,7 +46,7 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &["package.json"]) {
       break 'block project_root;
     };
-    
+
     return Err("Could not find project root".to_string());
   };
 
@@ -52,16 +59,14 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
   let machrc = parse_machrc(&file_index).expect("Cannot parse .machrc");
 
   // Project root is the location of the first package.json
-  let Some((_, package_json_path)) = find_crawl_up(&project_root, &["package.json"]) else {
-    return Err("Unable to find package.json".to_string())
-  };
+  // let Some((_, package_json_path)) = find_crawl_up(&project_root, &["package.json"]) else {
+  //   return Err("Unable to find package.json".to_string())
+  // };
 
-  let package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
+  // let package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
 
-  let project_root = package_json_path.parent().unwrap().to_path_buf();
-  
   // Ignore multiple entries for now
-  let Some(entry_point) = get_entry(Some(project_root.clone()), &entry_arg) else {
+  let Some(entry_point) = get_entry(None, &entry_arg) else {
     return Err("Could not find entry point".to_string());
   };
 
@@ -113,7 +118,7 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     workspace_kind: None,
     bundle_splitting: command.bundle_splitting,
     project_root,
-    package_json: Arc::new(package_json),
+    // package_json: Arc::new(package_json),
     machrc,
     threads,
     node_workers,
@@ -220,7 +225,7 @@ fn parse_machrc(file_index: &FileIndex) -> Result<Machrc, String> {
   return Ok(mach_config);
 }
 
-fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
+fn _parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
   let Ok(json_file) = fs::read_to_string(target) else {
     return Err("Unable to read file".to_string());
   };

@@ -11,6 +11,10 @@ pub struct BuildCommand {
   #[arg(short = 'o', long = "dist", default_value = "dist")]
   pub out_folder: PathBuf,
 
+  /// Output folder
+  #[arg(long = "project-root")]
+  pub project_root: Option<PathBuf>,
+
   /// Delete output folder before emitting files
   #[arg(short = 'c', long = "clean")]
   pub clean: bool,

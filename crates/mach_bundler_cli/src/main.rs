@@ -25,7 +25,7 @@ fn main() {
         bundle_splitting: command.bundle_splitting,
         threads: command.threads,
         node_workers: command.node_workers,
-        project_root: None,
+        project_root: command.project_root,
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;
