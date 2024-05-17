@@ -157,12 +157,14 @@ fmt:
 
 [unix]
 build-publish:
+  pnpm i
   just build-publish-common
   just build
   cp "./README.md" "npm/mach"
 
 [windows]
 build-publish:
+  pnpm i 
   just build-publish-common
   just build
   Copy-Item ".\README.md" -Destination "npm\mach" | Out-Null
