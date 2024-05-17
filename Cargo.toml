@@ -2,8 +2,7 @@
 resolver = "2"
 
 members = [
-  "./mach",
-  "./mach-nodejs",
+  "./crates/*",
 ]
 
 [profile.release]
