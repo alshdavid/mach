@@ -1,5 +1,5 @@
 {
-  "name": "@alshdavid/mach-nodejs",
+  "name": "@alshdavid/mach_bundler_nodejs",
   "version": "1.0.0",
   "type": "module",
   "devDependencies": {

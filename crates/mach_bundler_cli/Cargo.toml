@@ -1,0 +1,19 @@
+[package]
+name = "mach_bundler_cli"
+version = "0.0.0-local"
+authors = ["alshdavid"]
+repository = "https://github.com/alshdavid/mach"
+description = "Bundler For The Modern Web"
+edition = "2021"
+license = "MIT"
+
+[[bin]]
+name = "mach"
+path = "src/main.rs"
+
+[dependencies]
+mach_bundler_core = { path = "../mach_bundler_core" }
+clap = { version = "4.*", features = ["derive", "env"] }
+normalize-path = "0.*"
+num_cpus = "1.*"
+serde_json = "1.*"

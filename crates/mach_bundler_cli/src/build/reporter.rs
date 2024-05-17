@@ -2,14 +2,14 @@
 
 use std::collections::HashMap;
 
-use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::public::AssetGraphSync;
-use crate::public::AssetMapSync;
-use crate::public::BundleGraphSync;
-use crate::public::BundleMapSync;
-use crate::public::DependencyMapSync;
-use crate::public::MachConfigSync;
-use crate::public::OutputsSync;
+use mach_bundler_core::platform::adapters::nodejs::NodejsAdapter;
+use mach_bundler_core::public::AssetGraphSync;
+use mach_bundler_core::public::AssetMapSync;
+use mach_bundler_core::public::BundleGraphSync;
+use mach_bundler_core::public::BundleMapSync;
+use mach_bundler_core::public::DependencyMapSync;
+use mach_bundler_core::public::MachConfigSync;
+use mach_bundler_core::public::OutputsSync;
 
 pub struct AppReporter {
   config: MachConfigSync,

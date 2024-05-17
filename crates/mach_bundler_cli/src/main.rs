@@ -1,18 +1,18 @@
-// #![deny(unused_crate_dependencies)]
+#![deny(unused_crate_dependencies)]
 
-mod cmd;
-mod kit;
-mod platform;
-mod public;
+mod build;
+mod dev;
+mod version;
+mod watch;
 
 use std::time::SystemTime;
 
 use clap::Parser;
 use clap::Subcommand;
-use cmd::build::BuildCommand;
-use cmd::dev::DevCommand;
-use cmd::version::VersionCommand;
-use cmd::watch::WatchCommand;
+use build::BuildCommand;
+use dev::DevCommand;
+use version::VersionCommand;
+use watch::WatchCommand;
 
 /*
   Main just acts as a router to run CLI commands
@@ -43,18 +43,18 @@ fn main() {
 
     match command.command {
       CommandType::Build(command) => {
-        if let Err(msg) = cmd::build::main(command) {
+        if let Err(msg) = build::main(command) {
           println!("Build Error\n{}", msg);
         };
       }
       CommandType::Dev(command) => {
-        cmd::dev::main(command);
+        dev::main(command);
       }
       CommandType::Watch(command) => {
-        cmd::watch::main(command);
+        watch::main(command);
       }
       CommandType::Version(_) => {
-        cmd::version::main();
+        version::main();
       }
     }
   }

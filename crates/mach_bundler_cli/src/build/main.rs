@@ -1,21 +1,21 @@
 use super::parse_config;
 use super::reporter::AppReporter;
 use super::BuildCommand;
-use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::platform::adapters::nodejs::NodejsAdapterOptions;
-use crate::platform::bundling::bundle;
-use crate::platform::config::load_plugins;
-use crate::platform::emit::emit;
-use crate::platform::packaging::package;
-use crate::platform::transformation::resolve_and_transform;
-use crate::public::programmatic::ProgrammaticReporter;
-use crate::public::AssetGraphSync;
-use crate::public::AssetMapSync;
-use crate::public::BundleGraphSync;
-use crate::public::BundleManifestSync;
-use crate::public::BundleMapSync;
-use crate::public::DependencyMapSync;
-use crate::public::OutputsSync;
+use mach_bundler_core::platform::adapters::nodejs::NodejsAdapter;
+use mach_bundler_core::platform::adapters::nodejs::NodejsAdapterOptions;
+use mach_bundler_core::platform::bundling::bundle;
+use mach_bundler_core::platform::config::load_plugins;
+use mach_bundler_core::platform::emit::emit;
+use mach_bundler_core::platform::packaging::package;
+use mach_bundler_core::platform::transformation::resolve_and_transform;
+use mach_bundler_core::public::programmatic::ProgrammaticReporter;
+use mach_bundler_core::public::AssetGraphSync;
+use mach_bundler_core::public::AssetMapSync;
+use mach_bundler_core::public::BundleGraphSync;
+use mach_bundler_core::public::BundleManifestSync;
+use mach_bundler_core::public::BundleMapSync;
+use mach_bundler_core::public::DependencyMapSync;
+use mach_bundler_core::public::OutputsSync;
 
 pub fn main(command: BuildCommand) -> Result<(), String> {
   let config = parse_config(command)?;

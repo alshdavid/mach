@@ -63,7 +63,7 @@ impl NodejsInstance {
 
     let mut command = Command::new("node");
     command.arg("--title");
-    command.arg("mach_nodejs_worker");
+    command.arg("mach_bundler_nodejs_worker");
     command.arg(entry);
 
     command.stderr(Stdio::inherit());
