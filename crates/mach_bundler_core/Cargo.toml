@@ -7,10 +7,6 @@ description = "Bundler For The Modern Web"
 edition = "2021"
 license = "MIT"
 
-[[bin]]
-name = "foo"
-path = "src/main.rs"
-
 [features]
 cli_parser = ["clap"]
 
