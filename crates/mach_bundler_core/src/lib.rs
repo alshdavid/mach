@@ -5,7 +5,7 @@ pub mod cli;
 pub mod kit;
 pub mod mach;
 pub mod platform;
-pub mod public;
 pub mod plugins;
+pub mod public;
 
 pub use self::mach::*;

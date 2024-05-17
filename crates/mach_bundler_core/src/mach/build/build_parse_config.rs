@@ -101,8 +101,8 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     node_workers,
     optimize: command.optimize,
     env,
-    debug: command.debug,
-    diagnostic_port,
+    debug: false, //todo remove
+    diagnostic_port, //todo remove
   }));
 }
 

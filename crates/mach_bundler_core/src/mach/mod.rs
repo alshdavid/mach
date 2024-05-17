@@ -1,13 +1,15 @@
 mod build;
-mod build_app_reporter;
-mod build_parse_config;
 mod dev;
 mod mach;
 mod version;
 mod watch;
 
-pub use self::build::*;
-pub use self::dev::*;
+pub use self::build::BuildOptions;
+pub use self::build::BuildResult;
+pub use self::dev::DevOptions;
+pub use self::dev::DevResult;
 pub use self::mach::*;
-pub use self::version::*;
-pub use self::watch::*;
+pub use self::version::VersionOptions;
+pub use self::version::VersionResult;
+pub use self::watch::WatchOptions;
+pub use self::watch::WatchResult;

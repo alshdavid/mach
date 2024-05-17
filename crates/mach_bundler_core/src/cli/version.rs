@@ -1,4 +1,4 @@
 use clap::Parser;
 
-#[derive(Parser,Debug)]
+#[derive(Parser, Debug)]
 pub struct VersionCommand {}
