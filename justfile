@@ -84,7 +84,7 @@ _default:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./crates/mach_nodejs/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs.{{dylib}} ./crates/mach_bundler_nodejs/lib/napi/index.node
 
   # Copy output to target
   @rm -rf {{out_dir}}
@@ -92,7 +92,7 @@ build:
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./crates/mach_nodejs/lib {{out_dir}}/nodejs
+  @cp -r ./crates/mach_bundler_nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
   # Prepare local npm package to use local binary
@@ -105,7 +105,7 @@ build:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\crates\mach_nodejs\lib\napi\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_nodejs.{{dylib}}" -Destination ".\crates\mach_bundler_nodejs\lib\napi\index.node" | Out-Null  
 
   # Copy output to target
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -113,7 +113,7 @@ build:
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\crates\mach_nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\crates\mach_bundler_nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
   # Prepare local npm package to use local binary
@@ -152,7 +152,7 @@ test:
 
 fmt:
   cargo +nightly fmt
-  ./.github/scripts/node_modules/.bin/prettier ./mach_nodejs --write
+  ./.github/scripts/node_modules/.bin/prettier ./mach_bundler_nodejs --write
   ./.github/scripts/node_modules/.bin/prettier ./npm --write
   ./.github/scripts/node_modules/.bin/prettier ./examples --write
 

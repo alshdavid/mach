@@ -1,5 +1,5 @@
 [package]
-name = "mach"
+name = "mach_bundler_core"
 version = "0.0.0-local"
 authors = ["alshdavid"]
 repository = "https://github.com/alshdavid/mach"
@@ -8,11 +8,11 @@ edition = "2021"
 license = "MIT"
 
 [[bin]]
-name = "mach"
+name = "mach_bundler_cli"
 path = "src/main.rs"
 
 [lib]
-name = "libmach"
+name = "mach_bundler_core"
 path = "src/lib.rs"
 
 [dependencies]

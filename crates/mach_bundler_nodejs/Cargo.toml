@@ -1,5 +1,5 @@
 [package]
-name = "mach_nodejs"
+name = "mach_bundler_nodejs"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-mach = { path = "../mach" }
+mach_bundler_core = { path = "../mach" }
 napi = { version = "2.12.2", default-features = false, features = ["napi8", "tokio_rt", "serde-json", "async"] }
 napi-derive = "2.12.2"
 serde = { version = "1.0.197", features = ["derive"] }
