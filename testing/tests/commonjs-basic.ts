@@ -15,9 +15,9 @@ describe('commonjs-basic', { concurrency: true }, () => {
     
     report = await Mach.build({
       projectRoot: FIXTURE(),
-      clean: true,
+      entries: ['src/index.js'],
       outFolder: 'dist',
-      entries: ['src/index.js']
+      clean: true,
     })
   })
 

@@ -82,9 +82,13 @@ _default:
 
 [unix]
 build:
+  # Install npm
+  test -d node_modules || pnpm install
+  
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs.{{dylib}} ./crates/mach_bundler_nodejs/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs_adapter.{{dylib}} ./crates/mach_bundler_nodejs_adapter/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}} "./npm/mach-os-arch/bin/index.node"
 
   # Copy output to target
   @rm -rf {{out_dir}}
@@ -92,20 +96,20 @@ build:
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./crates/mach_bundler_nodejs/lib {{out_dir}}/nodejs
+  @cp -r ./crates/mach_bundler_nodejs_adapter/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
   # Prepare local npm package to use local binary
-  @rm -rf npm/mach/cmd
-  @cp -r {{out_dir}} npm/mach/cmd
-  @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
-  test -d node_modules || pnpm install
+  # @rm -rf npm/mach/cmd
+  # @cp -r {{out_dir}} npm/mach/cmd
+  # @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
+  # test -d node_modules || pnpm install
 
 [windows]
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_nodejs.{{dylib}}" -Destination ".\crates\mach_bundler_nodejs\lib\napi\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_nodejs_adapter.{{dylib}}" -Destination ".\crates\mach_bundler_nodejs_adapter\lib\napi\index.node" | Out-Null  
 
   # Copy output to target
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -113,7 +117,7 @@ build:
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\crates\mach_bundler_nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\crates\mach_bundler_nodejs_adapter\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
   # Prepare local npm package to use local binary
@@ -134,12 +138,12 @@ run *ARGS:
 [unix]
 example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./examples/{{fixture}}
+  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach {{cmd}} {{ARGS}}
 
 [windows]
 example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./examples/{{fixture}}
+  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} 
 
 serve:
   npx http-server -p 3000 ./examples
@@ -152,7 +156,7 @@ test:
 
 fmt:
   cargo +nightly fmt
-  ./.github/scripts/node_modules/.bin/prettier ./mach_bundler_nodejs --write
+  ./.github/scripts/node_modules/.bin/prettier ./mach_bundler_nodejs_adapter --write
   ./.github/scripts/node_modules/.bin/prettier ./npm --write
   ./.github/scripts/node_modules/.bin/prettier ./examples --write
 
@@ -160,21 +164,12 @@ fmt:
 build-publish:
   just build
   just build-publish-common
-  cp -r {{out_dir}}/* "npm/mach-os-arch"
-  mv "npm/mach-os-arch/bin/mach" "npm/mach-os-arch/bin/mach.exe"
-  rm -rf "npm/mach/cmd"
-  mkdir -p "npm/mach/cmd/bin"
-  touch "npm/mach/cmd/bin/mach.exe"
   cp "./README.md" "npm/mach"
 
 [windows]
 build-publish:
   just build
   just build-publish-common
-  Copy-Item {{out_dir}}\* -Destination "npm\mach-os-arch" -Recurse | Out-Null
-  Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null
-  New-Item -ItemType "directory" -Force -Path "npm\mach\cmd\bin" | Out-Null
-  New-Item -ItemType "file" "npm\mach\cmd\bin\mach.exe"
   Copy-Item ".\README.md" -Destination "npm\mach" | Out-Null
 
 [private]

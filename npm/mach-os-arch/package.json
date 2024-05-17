@@ -3,7 +3,8 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "bin": "bin/mach.exe",
+  "bin": "bin/mach.js",
+  "main": "./lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"

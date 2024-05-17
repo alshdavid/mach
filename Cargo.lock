@@ -699,22 +699,20 @@ checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 name = "mach_bundler_cli"
 version = "0.0.0-local"
 dependencies = [
- "clap",
  "mach_bundler_core",
- "normalize-path",
- "num_cpus",
- "serde_json",
 ]
 
 [[package]]
 name = "mach_bundler_core"
 version = "0.0.0-local"
 dependencies = [
+ "clap",
  "glob-match",
  "html5ever",
  "ipc_channel_adapter",
  "markup5ever_rcdom",
  "normalize-path",
+ "num_cpus",
  "once_cell",
  "oxc_resolver",
  "pathdiff",
@@ -725,7 +723,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mach_bundler_nodejs"
+name = "mach_bundler_nodejs_adapter"
 version = "0.1.0"
 dependencies = [
  "ipc_channel_adapter",
@@ -736,6 +734,17 @@ dependencies = [
  "once_cell",
  "serde",
  "tokio",
+]
+
+[[package]]
+name = "mach_bundler_npm_os_arch"
+version = "0.1.0"
+dependencies = [
+ "mach_bundler_core",
+ "napi",
+ "napi-build",
+ "napi-derive",
+ "serde",
 ]
 
 [[package]]

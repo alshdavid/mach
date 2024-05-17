@@ -6,14 +6,11 @@
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
   "bin": {
-    "mach": "cmd/bin/mach.exe"
+    "mach": "./bin/mach.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"
-  },
-  "scripts": {
-    "postinstall": "node postinstall.mjs"
   },
   "files": [
     "cmd",
@@ -32,9 +29,11 @@
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "@types/node": "20.x.x",
+    "typescript": "^5.4.5",
+    "@alshdavid/mach-os-arch": "workspace:*"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@types/node": "20.x.x"
   }
 }
