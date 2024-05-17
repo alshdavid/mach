@@ -716,7 +716,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mach-nodejs"
+name = "mach_nodejs"
 version = "0.1.0"
 dependencies = [
  "ipc_channel_adapter",
