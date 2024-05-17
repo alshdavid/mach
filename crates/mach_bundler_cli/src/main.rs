@@ -38,4 +38,3 @@ fn main() {
     start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64
   );
 }
-

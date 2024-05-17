@@ -30,7 +30,10 @@ pub struct VersionResult {
 }
 
 impl Mach {
-  pub fn version(&self, options: VersionOptions) -> VersionResult {
+  pub fn version(
+    &self,
+    options: VersionOptions,
+  ) -> VersionResult {
     let mut pretty = String::new();
 
     pretty.push_str(&format!(r#"{color_red}{style_bold}"#));
@@ -42,9 +45,18 @@ impl Mach {
     pretty.push_str(&format!(r#"\_|  |_/\__,_|\___|_| |_|{}"#, "\n"));
     pretty.push_str(&format!(r#"{color_reset}{style_reset}"#));
     pretty.push_str(&format!(r#"{}"#, "\n"));
-    pretty.push_str(&format!(r#"{style_bold}Description{style_reset}   {DESCRIPTION}{}"#, "\n"));
-    pretty.push_str(&format!(r#"{style_bold}Repository{style_reset}    {REPOSITORY}{}"#, "\n"));
-    pretty.push_str(&format!(r#"{style_bold}Version{style_reset}       {VERSION}{}"#, "\n"));
+    pretty.push_str(&format!(
+      r#"{style_bold}Description{style_reset}   {DESCRIPTION}{}"#,
+      "\n"
+    ));
+    pretty.push_str(&format!(
+      r#"{style_bold}Repository{style_reset}    {REPOSITORY}{}"#,
+      "\n"
+    ));
+    pretty.push_str(&format!(
+      r#"{style_bold}Version{style_reset}       {VERSION}{}"#,
+      "\n"
+    ));
 
     VersionResult {
       description: DESCRIPTION.to_string(),

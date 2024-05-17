@@ -1,5 +1,11 @@
 use std::path::PathBuf;
 
+#[cfg(feature = "cli_parser")]
+use clap::Parser;
+
+use super::build_app_reporter::AppReporter;
+use super::build_parse_config::parse_config;
+use super::mach::Mach;
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
@@ -15,12 +21,6 @@ use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::OutputsSync;
-use super::build_app_reporter::AppReporter;
-use super::build_parse_config::parse_config;
-use super::mach::Mach;
-
-#[cfg(feature = "cli_parser")]
-use clap::Parser;
 
 #[cfg_attr(feature = "cli_parser", derive(Parser))]
 #[derive(Debug)]
@@ -29,7 +29,10 @@ pub struct BuildOptions {
   pub entries: Option<Vec<PathBuf>>,
 
   /// Output folder
-  #[cfg_attr(feature = "cli_parser", arg(short = 'o', long = "dist", default_value = "dist"))]
+  #[cfg_attr(
+    feature = "cli_parser",
+    arg(short = 'o', long = "dist", default_value = "dist")
+  )]
   pub out_folder: PathBuf,
 
   /// Delete output folder before emitting files
@@ -45,11 +48,17 @@ pub struct BuildOptions {
   pub bundle_splitting: bool,
 
   /// How many threads to use for compilation
-  #[cfg_attr(feature = "cli_parser", arg(short = 't', long = "threads", env = "MACH_THREADS"))]
+  #[cfg_attr(
+    feature = "cli_parser",
+    arg(short = 't', long = "threads", env = "MACH_THREADS")
+  )]
   pub threads: Option<usize>,
 
   /// How many Node.js workers to spawn for plugins
-  #[cfg_attr(feature = "cli_parser", arg(long = "node-workers", env = "MACH_NODE_WORKERS"))]
+  #[cfg_attr(
+    feature = "cli_parser",
+    arg(long = "node-workers", env = "MACH_NODE_WORKERS")
+  )]
   pub node_workers: Option<usize>,
 
   /// Enable logging debug info
@@ -57,12 +66,13 @@ pub struct BuildOptions {
   pub debug: bool,
 }
 
-pub struct BuildResult {
-
-}
+pub struct BuildResult {}
 
 impl Mach {
-  pub fn build(&self, options: BuildOptions) -> Result<BuildResult, String> {
+  pub fn build(
+    &self,
+    options: BuildOptions,
+  ) -> Result<BuildResult, String> {
     let config = parse_config(options)?;
 
     /*
@@ -168,7 +178,7 @@ impl Mach {
     reporter.print_emit_stats();
     reporter.print_finished_stats();
     programmatic_reporter.emit_build_report();
-    
-    return Ok(BuildResult{});
+
+    return Ok(BuildResult {});
   }
 }

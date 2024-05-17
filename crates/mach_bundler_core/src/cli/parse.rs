@@ -3,8 +3,8 @@ use clap::Subcommand;
 
 use crate::mach::BuildOptions;
 use crate::mach::DevOptions;
-use crate::mach::WatchOptions;
 use crate::mach::VersionOptions;
+use crate::mach::WatchOptions;
 
 #[derive(Parser, Debug)]
 pub struct Commands {
@@ -29,7 +29,7 @@ pub fn parse_options<T: AsRef<str>>(input: &[T]) -> Result<Commands, String> {
   for item in input {
     updated_input.push(item.as_ref().to_owned());
   }
-  
+
   match Commands::try_parse_from(updated_input) {
     Ok(command) => Ok(command),
     Err(error) => Err(format!("{}", error)),
