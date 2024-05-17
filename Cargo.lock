@@ -700,33 +700,21 @@ name = "mach_bundler_cli"
 version = "0.0.0-local"
 dependencies = [
  "clap",
- "glob-match",
- "html5ever",
- "ipc_channel_adapter",
  "mach_bundler_core",
- "markup5ever_rcdom",
  "normalize-path",
  "num_cpus",
- "once_cell",
- "oxc_resolver",
- "pathdiff",
- "serde",
  "serde_json",
- "sha2",
- "swc_core",
 ]
 
 [[package]]
 name = "mach_bundler_core"
 version = "0.0.0-local"
 dependencies = [
- "clap",
  "glob-match",
  "html5ever",
  "ipc_channel_adapter",
  "markup5ever_rcdom",
  "normalize-path",
- "num_cpus",
  "once_cell",
  "oxc_resolver",
  "pathdiff",
