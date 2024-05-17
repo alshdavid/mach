@@ -84,7 +84,7 @@ _default:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./mach-nodejs/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./crates/mach-nodejs/lib/napi/index.node
 
   # Copy output to target
   @rm -rf {{out_dir}}
@@ -105,7 +105,7 @@ build:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\mach-nodejs\lib\napi\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\crates\mach-nodejs\lib\napi\index.node" | Out-Null  
 
   # Copy output to target
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
