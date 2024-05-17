@@ -8,13 +8,13 @@ import * as puppeteer from 'puppeteer-core';
 
 const FIXTURE = FIXTURES_FN('web-html-ts-css')
 
-describe('web-html-ts-css', { concurrency: false }, async () => {
+describe('web-html-ts-css', { concurrency: true }, async () => {
   let browser: puppeteer.Browser
   let client: ClientContext
   let report: BuildReport
 
   before(async () => {
-    await install_npm(FIXTURE())
+    install_npm(FIXTURE())
 
     report = await Mach.build({
       projectRoot: FIXTURE(),
