@@ -12,7 +12,7 @@ name = "mach"
 path = "src/main.rs"
 
 [lib]
-name = "mach"
+name = "libmach"
 path = "src/lib.rs"
 
 [dependencies]
