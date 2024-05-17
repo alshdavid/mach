@@ -14,8 +14,8 @@ use napi::JsFunction;
 use napi::JsUndefined;
 use napi::JsUnknown;
 use napi_derive::napi;
-use crate::napi_utils::await_promise;
-use crate::napi_utils::PromiseResult;
+use super::await_promise;
+use super::PromiseResult;
 
 #[napi]
 pub fn worker(
