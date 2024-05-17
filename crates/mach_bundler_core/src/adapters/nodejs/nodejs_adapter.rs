@@ -36,7 +36,8 @@ pub struct NodejsAdapter {
   pub rx_host_request:
     Arc<Mutex<Option<Receiver<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>>>>,
   tx_to_workers: Arc<Vec<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>,
-  rx_to_workers: Arc<Mutex<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>,
+  rx_to_workers:
+    Arc<Mutex<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>,
 }
 
 impl Adapter for NodejsAdapter {

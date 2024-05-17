@@ -1,6 +1,6 @@
-import path from 'node:path';
-import child_process from 'node:child_process';
-import fs from 'node:fs';
+import path from 'node:path'
+import child_process from 'node:child_process'
+import fs from 'node:fs'
 
 export function install_npm(cwd: string): void {
   if (!fs.existsSync(cwd)) {

@@ -52,8 +52,6 @@ fn main() {
       println!("{}", result.pretty);
     }
   }
-
-  
 }
 
 // fn time_elapsed(time: &SystemTime) -> f64 {
@@ -70,7 +68,7 @@ fn main() {
 //     let mut bundling_time = None::<SystemTime>;
 //     let mut packaging_time = None::<SystemTime>;
 //     let mut emit_time = None::<SystemTime>;
-    
+
 //     while let Ok(build_event) = rx.recv() {
 //       if let BuildEvent::InitializationComplete{ timestamp } = build_event {
 //         println!("Init: {:.3}", time_elapsed(&start_time));

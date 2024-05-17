@@ -72,12 +72,10 @@ pub enum AdapterOutgoingResponse {
 pub struct AdapterOutgoingResponsePing {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AdapterOutgoingResponseResolverRegister {
-}
+pub struct AdapterOutgoingResponseResolverRegister {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct AdapterOutgoingResponseResolverLoadConfig {
-}
+pub struct AdapterOutgoingResponseResolverLoadConfig {}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AdapterOutgoingResponseResolverResolve {

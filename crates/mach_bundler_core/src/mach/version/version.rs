@@ -20,9 +20,7 @@ pub struct VersionResult {
   pub pretty: String,
 }
 
-pub fn version(
-  _options: VersionOptions,
-) -> VersionResult {
+pub fn version(_options: VersionOptions) -> VersionResult {
   let mut pretty = String::new();
 
   pretty.push_str(&format!(r#"{color_red}{style_bold}"#));

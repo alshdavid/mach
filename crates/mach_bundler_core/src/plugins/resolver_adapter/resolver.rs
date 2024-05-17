@@ -13,7 +13,7 @@ use crate::public::ResolveResult;
 use crate::public::Resolver;
 
 #[derive(Debug)]
-pub struct ResolverAdapter{
+pub struct ResolverAdapter {
   pub resolver_specifier: String,
   pub adapter: Arc<dyn Adapter>,
 }
@@ -33,13 +33,17 @@ impl ResolverAdapter {
     }
     let specifier = specifier.to_str().unwrap().to_string();
 
-    adapter.send_all(AdapterOutgoingRequest::ResolverRegister(AdapterOutgoingRequestResolverRegister{
-      specifier: specifier.clone(),
-    }))?;
+    adapter.send_all(AdapterOutgoingRequest::ResolverRegister(
+      AdapterOutgoingRequestResolverRegister {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
-    adapter.send_all(AdapterOutgoingRequest::ResolverLoadConfig(AdapterOutgoingRequestResolverLoadConfig{
-      specifier: specifier.clone(),
-    }))?;
+    adapter.send_all(AdapterOutgoingRequest::ResolverLoadConfig(
+      AdapterOutgoingRequestResolverLoadConfig {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
     Ok(Self {
       resolver_specifier: specifier,
@@ -55,10 +59,12 @@ impl Resolver for ResolverAdapter {
   ) -> Result<Option<ResolveResult>, String> {
     let response = self
       .adapter
-      .send_and_wait(AdapterOutgoingRequest::ResolverResolve(AdapterOutgoingRequestResolverResolve{
-        specifier: self.resolver_specifier.clone(),
-        dependency: dependency.clone(),
-      }))?;
+      .send_and_wait(AdapterOutgoingRequest::ResolverResolve(
+        AdapterOutgoingRequestResolverResolve {
+          specifier: self.resolver_specifier.clone(),
+          dependency: dependency.clone(),
+        },
+      ))?;
 
     if let AdapterOutgoingResponse::Err(error) = response {
       return Err(error);

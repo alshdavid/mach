@@ -5,8 +5,5 @@ console.log(napi)
 
 const mach = new napi.Mach()
 
-
-mach.build({
-  
-})
+mach.build({})
 console.log(mach)

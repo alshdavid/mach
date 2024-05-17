@@ -33,13 +33,17 @@ impl TransformerAdapter {
     }
     let specifier = specifier.to_str().unwrap().to_string();
 
-    adapter.send_all(AdapterOutgoingRequest::TransformerRegister(AdapterOutgoingRequestTransformerRegister{
-      specifier: specifier.clone(),
-    }))?;
+    adapter.send_all(AdapterOutgoingRequest::TransformerRegister(
+      AdapterOutgoingRequestTransformerRegister {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
-    adapter.send_all(AdapterOutgoingRequest::TransformerLoadConfig(AdapterOutgoingRequestTransformerLoadConfig{
-      specifier: specifier.clone(),
-    }))?;
+    adapter.send_all(AdapterOutgoingRequest::TransformerLoadConfig(
+      AdapterOutgoingRequestTransformerLoadConfig {
+        specifier: specifier.clone(),
+      },
+    ))?;
 
     Ok(Self {
       transformer_specifier: specifier.to_string(),
@@ -56,12 +60,14 @@ impl Transformer for TransformerAdapter {
   ) -> Result<(), String> {
     let response = self
       .adapter
-      .send_and_wait(AdapterOutgoingRequest::TransformerTransform(AdapterOutgoingRequestTransformerTransform{
-        specifier: self.transformer_specifier.clone(),
-        file_path: asset.file_path.to_path_buf(),
-        kind: asset.kind.clone(),
-        content: asset.get_bytes().to_vec(),
-      }))?;
+      .send_and_wait(AdapterOutgoingRequest::TransformerTransform(
+        AdapterOutgoingRequestTransformerTransform {
+          specifier: self.transformer_specifier.clone(),
+          file_path: asset.file_path.to_path_buf(),
+          kind: asset.kind.clone(),
+          content: asset.get_bytes().to_vec(),
+        },
+      ))?;
 
     if let AdapterOutgoingResponse::Err(err) = response {
       return Err(err);

@@ -1,4 +1,4 @@
-const {parentPort} = require('worker_threads');
+const { parentPort } = require('worker_threads')
 
 parentPort.addEventListener('message', async (event) => {
   const { id, action, data } = event.data

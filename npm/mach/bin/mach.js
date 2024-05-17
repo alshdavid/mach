@@ -27,6 +27,6 @@ try {
   try {
     await import(`@alshdavid/mach-os-arch/bin/mach.js`)
   } catch (err) {
-    throw error    
+    throw error
   }
 }

@@ -1,9 +1,9 @@
-import {test, describe, before} from 'node:test';
-import * as assert from 'node:assert';
-import { BuildReport, Mach } from '@alshdavid/mach';
-import { FIXTURES_FN } from '../utils/mach/index.js';
-import { NodejsContext } from '../utils/nodejs/index.js';
-import { install_npm } from '../utils/npm.js';
+import { test, describe, before } from 'node:test'
+import * as assert from 'node:assert'
+import { BuildReport, Mach } from '@alshdavid/mach'
+import { FIXTURES_FN } from '../utils/mach/index.js'
+import { NodejsContext } from '../utils/nodejs/index.js'
+import { install_npm } from '../utils/npm.js'
 
 const FIXTURE = FIXTURES_FN('commonjs-basic')
 
@@ -12,7 +12,7 @@ describe('commonjs-basic', { concurrency: true }, () => {
 
   before(async () => {
     install_npm(FIXTURE())
-    
+
     report = await Mach.build({
       projectRoot: FIXTURE(),
       entries: ['src/index.js'],
@@ -21,12 +21,12 @@ describe('commonjs-basic', { concurrency: true }, () => {
     })
   })
 
-  test('Should set exports correctly ', async (t) => { 
-    await using nodejs = new NodejsContext({ 
+  test('Should set exports correctly ', async (t) => {
+    await using nodejs = new NodejsContext({
       type: 'commonjs',
       entry: FIXTURE('dist', report.entries['src/index.js']),
     })
-    
+
     await nodejs.get_global('onready')
 
     const values = {
@@ -56,10 +56,10 @@ describe('commonjs-basic', { concurrency: true }, () => {
     for (const [key, expect] of Object.entries(values)) {
       const result = await nodejs.get_global(key)
       assert.equal(
-        result, 
+        result,
         expect,
-        `Expect global key "${key}" to be "${expect}", got "${result}"`
+        `Expect global key "${key}" to be "${expect}", got "${result}"`,
       )
     }
-  });
+  })
 })

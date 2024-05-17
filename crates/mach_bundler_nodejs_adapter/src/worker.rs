@@ -37,7 +37,8 @@ pub fn worker(
   let (_, rx_ipc) =
     HostReceiver::<AdapterOutgoingRequest, AdapterOutgoingResponse>::new(&child_sender).unwrap();
 
-  let _tx_ipc = HostSender::<AdapterIncomingRequest, AdapterIncomingResponse>::new(&child_receiver).unwrap();
+  let _tx_ipc =
+    HostSender::<AdapterIncomingRequest, AdapterIncomingResponse>::new(&child_receiver).unwrap();
 
   let tsfn = env
     .create_threadsafe_function(
@@ -58,23 +59,24 @@ pub fn worker(
       let (tx, rx) = channel::<PromiseResult<AdapterOutgoingResponse>>();
 
       let action_n: u8 = match action {
-          AdapterOutgoingRequest::Ping(_) => 0,
-          AdapterOutgoingRequest::ResolverRegister(_) => 1,
-          AdapterOutgoingRequest::ResolverLoadConfig(_) => 2,
-          AdapterOutgoingRequest::ResolverResolve(_) => 3,
-          AdapterOutgoingRequest::TransformerRegister(_) => 4,
-          AdapterOutgoingRequest::TransformerLoadConfig(_) => 5,
-          AdapterOutgoingRequest::TransformerTransform(_) => 6,
+        AdapterOutgoingRequest::Ping(_) => 0,
+        AdapterOutgoingRequest::ResolverRegister(_) => 1,
+        AdapterOutgoingRequest::ResolverLoadConfig(_) => 2,
+        AdapterOutgoingRequest::ResolverResolve(_) => 3,
+        AdapterOutgoingRequest::TransformerRegister(_) => 4,
+        AdapterOutgoingRequest::TransformerLoadConfig(_) => 5,
+        AdapterOutgoingRequest::TransformerTransform(_) => 6,
       };
-          
+
       tsfn.call_with_return_value(
         Ok((action_n, action)),
         ThreadsafeFunctionCallMode::Blocking,
         move |result: JsUnknown| {
           let env = unsafe { Env::from_raw(unsafe_env as _) };
-          
+
           if !result.is_promise()? {
-            tx.send(PromiseResult::Ok(cast_return_value(&env, result)?)).unwrap();
+            tx.send(PromiseResult::Ok(cast_return_value(&env, result)?))
+              .unwrap();
             return Ok(());
           }
 
@@ -83,10 +85,11 @@ pub fn worker(
 
           let cb = env.create_function_from_closure("callback", {
             let tx = tx.clone();
-        
+
             move |ctx| {
               let v = ctx.get::<JsUnknown>(0)?;
-              tx.send(PromiseResult::Ok(cast_return_value(&env, v)?)).unwrap();
+              tx.send(PromiseResult::Ok(cast_return_value(&env, v)?))
+                .unwrap();
               ctx.env.get_undefined()
             }
           })?;
@@ -99,7 +102,7 @@ pub fn worker(
               .unwrap();
               return ctx.env.get_undefined();
             };
-        
+
             let Ok(err) = ctx.env.from_js_value::<String, JsString>(arg) else {
               tx.send(PromiseResult::Err(
                 "Worker Failure, unable to cast type".to_string(),
@@ -107,11 +110,11 @@ pub fn worker(
               .unwrap();
               return ctx.env.get_undefined();
             };
-        
+
             tx.send(PromiseResult::Err(err)).unwrap();
             ctx.env.get_undefined()
           })?;
-        
+
           then.call(Some(&result), &[cb, eb])?;
 
           Ok(())
@@ -128,20 +131,37 @@ pub fn worker(
   env.get_undefined()
 }
 
-fn cast_return_value(env: &Env, v: JsUnknown) -> napi::Result<AdapterOutgoingResponse> {
+fn cast_return_value(
+  env: &Env,
+  v: JsUnknown,
+) -> napi::Result<AdapterOutgoingResponse> {
   let resp: JsObject = v.try_into()?;
   let key: JsNumber = resp.get("0")?.unwrap();
   let value: JsObject = resp.get("1")?.unwrap();
   let key = env.from_js_value::<u8, JsNumber>(key)?;
 
   Ok(match key {
-    0 => AdapterOutgoingResponse::Ping(env.from_js_value::<AdapterOutgoingResponsePing, JsObject>(value)?),
-    1 => AdapterOutgoingResponse::ResolverRegister(env.from_js_value::<AdapterOutgoingResponseResolverRegister, JsObject>(value)?),
-    2 => AdapterOutgoingResponse::ResolverLoadConfig(env.from_js_value::<AdapterOutgoingResponseResolverLoadConfig, JsObject>(value)?),
-    3 => AdapterOutgoingResponse::ResolverResolve(env.from_js_value::<AdapterOutgoingResponseResolverResolve, JsObject>(value)?),
-    4 => AdapterOutgoingResponse::TransformerRegister(env.from_js_value::<AdapterOutgoingResponseTransformerRegister, JsObject>(value)?),
-    5 => AdapterOutgoingResponse::TransformerLoadConfig(env.from_js_value::<AdapterOutgoingResponseTransformerLoadConfig, JsObject>(value)?),
-    6 => AdapterOutgoingResponse::TransformerTransform(env.from_js_value::<AdapterOutgoingResponseTransformerTransform, JsObject>(value)?),
+    0 => AdapterOutgoingResponse::Ping(
+      env.from_js_value::<AdapterOutgoingResponsePing, JsObject>(value)?,
+    ),
+    1 => AdapterOutgoingResponse::ResolverRegister(
+      env.from_js_value::<AdapterOutgoingResponseResolverRegister, JsObject>(value)?,
+    ),
+    2 => AdapterOutgoingResponse::ResolverLoadConfig(
+      env.from_js_value::<AdapterOutgoingResponseResolverLoadConfig, JsObject>(value)?,
+    ),
+    3 => AdapterOutgoingResponse::ResolverResolve(
+      env.from_js_value::<AdapterOutgoingResponseResolverResolve, JsObject>(value)?,
+    ),
+    4 => AdapterOutgoingResponse::TransformerRegister(
+      env.from_js_value::<AdapterOutgoingResponseTransformerRegister, JsObject>(value)?,
+    ),
+    5 => AdapterOutgoingResponse::TransformerLoadConfig(
+      env.from_js_value::<AdapterOutgoingResponseTransformerLoadConfig, JsObject>(value)?,
+    ),
+    6 => AdapterOutgoingResponse::TransformerTransform(
+      env.from_js_value::<AdapterOutgoingResponseTransformerTransform, JsObject>(value)?,
+    ),
     _ => panic!("Invalid"),
   })
 }

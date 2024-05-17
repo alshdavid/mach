@@ -89,14 +89,11 @@ pub fn load_plugins(
         }
 
         let Some(adapter) = adapter_map.get(engine) else {
-          return Err(format!(
-            "Unable to load plugin: {}:{}",
-            engine, specifier
-          ));
+          return Err(format!("Unable to load plugin: {}:{}", engine, specifier));
         };
-  
+
         adapter.init()?;
-  
+
         transformers.push(Box::new(TransformerAdapter::new(
           &*config,
           specifier,

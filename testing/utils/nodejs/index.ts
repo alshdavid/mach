@@ -13,7 +13,6 @@ export type JSONObject =
   | JSONObject[]
   | { [key: string]: JSONObject }
 
-
 export type NodejsContextOptions = {
   type: 'commonjs' | 'module'
   entry?: string
@@ -29,9 +28,13 @@ export class NodejsContext {
     this.#reqs = new Map<number, Promise<any>>()
     this.#counter = 0
     if (options.type === 'commonjs') {
-      this.#worker = new worker_threads.Worker(path.join(__dirname, 'worker-commonjs', 'index.js'))
+      this.#worker = new worker_threads.Worker(
+        path.join(__dirname, 'worker-commonjs', 'index.js'),
+      )
     } else {
-      this.#worker = new worker_threads.Worker(path.join(__dirname, 'worker-module', 'index.js'))
+      this.#worker = new worker_threads.Worker(
+        path.join(__dirname, 'worker-module', 'index.js'),
+      )
     }
     if (options.entry) {
       this.#ready = this.import(options.entry)
@@ -40,24 +43,27 @@ export class NodejsContext {
     }
   }
 
-  async eval<T extends Array<JSONObject>>(cb: string | ((...args: T) => any | Promise<any>), args?: T): Promise<JSONObject | undefined> {
+  async eval<T extends Array<JSONObject>>(
+    cb: string | ((...args: T) => any | Promise<any>),
+    args?: T,
+  ): Promise<JSONObject | undefined> {
     await this.#ready
-    
+
     let data = cb
     if (typeof cb === 'function') {
-      const fn_args = (args|| []).map(arg => JSON.stringify(arg)).join(',')
+      const fn_args = (args || []).map((arg) => JSON.stringify(arg)).join(',')
       data = `(${cb.toString()})(${fn_args})`
     }
 
-    let resolve!: ((value: any) => void)
-    let reject!: ((value: any) => void)
+    let resolve!: (value: any) => void
+    let reject!: (value: any) => void
 
-    const on_reply = new Promise((res, rej) => { 
-      resolve = res 
+    const on_reply = new Promise((res, rej) => {
+      resolve = res
       reject = rej
     })
 
-    const id = this.#counter += 1
+    const id = (this.#counter += 1)
     this.#reqs.set(id, on_reply)
 
     const fn = (event: any) => {
@@ -83,26 +89,35 @@ export class NodejsContext {
   }
 
   async get_global(key: string): Promise<JSONObject | undefined> {
-    return this.eval(async (key) => {
-      // @ts-expect-error
-      return await globalThis[key]
-    }, [key])
+    return this.eval(
+      async (key) => {
+        // @ts-expect-error
+        return await globalThis[key]
+      },
+      [key],
+    )
   }
 
   async resolve_global(key: string): Promise<JSONObject | undefined> {
-    return this.eval(async (key) => {
-      // @ts-expect-error
-      return await globalThis[key]
-    }, [key])
+    return this.eval(
+      async (key) => {
+        // @ts-expect-error
+        return await globalThis[key]
+      },
+      [key],
+    )
   }
 
   async import(specifier: string) {
     if (specifier.startsWith(path.sep) && !fs.existsSync(specifier)) {
       throw new Error(`Cannot find specifier: ${specifier}`)
     }
-    await this.eval(async (specifier) => { 
-      await import(specifier)
-    }, [specifier])
+    await this.eval(
+      async (specifier) => {
+        await import(specifier)
+      },
+      [specifier],
+    )
   }
 
   shutdown() {
@@ -110,7 +125,7 @@ export class NodejsContext {
   }
 
   async [Symbol.asyncDispose]() {
-    for (const [,req] of this.#reqs.entries()) {
+    for (const [, req] of this.#reqs.entries()) {
       try {
         await req
       } catch (error) {}
@@ -119,7 +134,7 @@ export class NodejsContext {
   }
 
   async [Symbol.dispose]() {
-    for (const [,req] of this.#reqs.entries()) {
+    for (const [, req] of this.#reqs.entries()) {
       try {
         await req
       } catch (error) {}

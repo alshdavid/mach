@@ -3,11 +3,11 @@ use std::path::PathBuf;
 
 use mach_bundler_core::BuildOptions as BuildOptionsCore;
 use mach_bundler_core::Mach as MachCore;
-use napi::JsObject;
 use napi::Env;
+use napi::JsObject;
 use napi::JsUnknown;
-use serde::Serialize;
 use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -29,7 +29,10 @@ pub struct BuildResult {
   pub entries: HashMap<String, String>,
 }
 
-pub fn build(env: Env, options: JsObject) -> napi::Result<JsUnknown> {
+pub fn build(
+  env: Env,
+  options: JsObject,
+) -> napi::Result<JsUnknown> {
   let options_napi = env.from_js_value::<MachBuildOptions, JsObject>(options)?;
   let mut options = BuildOptionsCore::default();
 
@@ -73,9 +76,9 @@ pub fn build(env: Env, options: JsObject) -> napi::Result<JsUnknown> {
       })?;
 
       return Ok(js_result);
-    },
+    }
     Err(error) => {
       return Err(napi::Error::from_reason(error));
-    },
+    }
   };
 }

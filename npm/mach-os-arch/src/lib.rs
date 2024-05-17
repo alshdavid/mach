@@ -1,2 +1,2 @@
-pub mod mach;
 pub mod cli;
+pub mod mach;

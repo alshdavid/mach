@@ -33,7 +33,7 @@ napi.worker(
   workerData.child_receiver,
   async (/** @type {any} */ err, /** @type {types.Action} */ payload) => {
     try {
-      const [action, data] = payload;
+      const [action, data] = payload
       if (err) {
         console.log('JS ------------ has error')
         console.error(err)
@@ -68,7 +68,8 @@ napi.worker(
       }
 
       if (action === 3) {
-        const { specifier, dependency: internalDependency } = data.ResolverResolve
+        const { specifier, dependency: internalDependency } =
+          data.ResolverResolve
         const dependency = new Dependency(internalDependency)
         const result = await resolvers[specifier].triggerResolve({
           dependency,
@@ -80,7 +81,7 @@ napi.worker(
           get logger() {
             throw new Error('Not implemented')
           },
-          // @ts-expect-error 
+          // @ts-expect-error
           get pipeline() {
             throw new Error('Not implemented')
           },
@@ -143,11 +144,14 @@ napi.worker(
           return [action, {}]
         }
 
-        return [action, {
-          content: internalMutableAsset.content,
-          kind: internalMutableAsset.kind,
-          dependencies,
-        }]
+        return [
+          action,
+          {
+            content: internalMutableAsset.content,
+            kind: internalMutableAsset.kind,
+            dependencies,
+          },
+        ]
       }
 
       throw new Error('No action')

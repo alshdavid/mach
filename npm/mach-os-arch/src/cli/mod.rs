@@ -1,5 +1,4 @@
 use std::time::SystemTime;
-use napi_derive::napi;
 
 use mach_bundler_core::cli::parse_options;
 use mach_bundler_core::cli::CommandType;
@@ -8,6 +7,7 @@ use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
 use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
+use napi_derive::napi;
 
 #[napi]
 pub fn run(args: Vec<String>) {
@@ -53,6 +53,4 @@ pub fn run(args: Vec<String>) {
       println!("{}", result.pretty);
     }
   }
-
-  
 }

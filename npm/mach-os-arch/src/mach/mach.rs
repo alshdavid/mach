@@ -1,5 +1,6 @@
+use napi::Env;
+use napi::JsObject;
 use napi::JsUnknown;
-use napi::{Env, JsObject};
 use napi_derive::napi;
 
 use super::build::build;
@@ -11,12 +12,15 @@ pub struct Mach {}
 impl Mach {
   #[napi(constructor)]
   pub fn new() -> Self {
-    Self {
-    }
+    Self {}
   }
 
   #[napi]
-  pub fn build(&self, env: Env, options: JsObject) -> napi::Result<JsUnknown> {
+  pub fn build(
+    &self,
+    env: Env,
+    options: JsObject,
+  ) -> napi::Result<JsUnknown> {
     build(env, options)
   }
 }

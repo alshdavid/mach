@@ -39,7 +39,7 @@ pub struct BuildOptions {
   /// How many Node.js workers to spawn for plugins
   pub node_workers: Option<usize>,
   /// Map of adapters used to communicate with plugin contexts
-  pub adapter_map: Option<HashMap<Engine, Arc<dyn Adapter>>>
+  pub adapter_map: Option<HashMap<Engine, Arc<dyn Adapter>>>,
 }
 
 impl Default for BuildOptions {
@@ -79,13 +79,14 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let bundle_graph = BundleGraphSync::default();
   let bundle_manifest = BundleManifestSync::default();
   let outputs = OutputsSync::default();
-  
+
   let mut adapter_map = options.adapter_map.unwrap_or_default();
 
   if !adapter_map.contains_key("node") {
     let nodejs_adapter = NodejsAdapter::new(HashMap::from_iter([(
-      "workers".to_string(), format!("{}", config.node_workers.clone()))
-    ]))?;
+      "workers".to_string(),
+      format!("{}", config.node_workers.clone()),
+    )]))?;
 
     adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
   }

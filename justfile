@@ -156,9 +156,12 @@ test:
 
 fmt:
   cargo +nightly fmt
-  ./.github/scripts/node_modules/.bin/prettier ./mach_bundler_nodejs_adapter --write
+  ./.github/scripts/node_modules/.bin/prettier ./crates/mach_bundler_nodejs_adapter --write
   ./.github/scripts/node_modules/.bin/prettier ./npm --write
   ./.github/scripts/node_modules/.bin/prettier ./examples --write
+  ./.github/scripts/node_modules/.bin/prettier "./testing/tests" --write
+  ./.github/scripts/node_modules/.bin/prettier "./testing/setup.ts" --write
+  ./.github/scripts/node_modules/.bin/prettier "./testing/utils" --write
 
 [unix]
 build-publish:

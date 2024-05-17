@@ -41,7 +41,12 @@ impl NodejsInstance {
     let exe_dir = exe_path.parent().unwrap();
 
     let entry = 'block: {
-      let local_path = exe_dir.parent().unwrap().join("nodejs").join("worker").join("main.js");
+      let local_path = exe_dir
+        .parent()
+        .unwrap()
+        .join("nodejs")
+        .join("worker")
+        .join("main.js");
 
       if local_path.exists() {
         break 'block local_path;
@@ -94,7 +99,8 @@ impl NodejsInstance {
   }
 
   pub fn spawn_worker(&self) -> NodejsWorker {
-    let child_sender = ChildSender::<AdapterOutgoingRequest, AdapterOutgoingResponse>::new().unwrap();
+    let child_sender =
+      ChildSender::<AdapterOutgoingRequest, AdapterOutgoingResponse>::new().unwrap();
     let (child_receiver, rx_child_receiver) =
       ChildReceiver::<AdapterIncomingRequest, AdapterIncomingResponse>::new().unwrap();
 

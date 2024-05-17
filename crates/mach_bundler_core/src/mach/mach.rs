@@ -11,8 +11,7 @@ use crate::VersionResult;
 use crate::WatchOptions;
 use crate::WatchResult;
 
-pub struct Mach {
-}
+pub struct Mach {}
 
 impl Mach {
   pub fn new() -> Self {

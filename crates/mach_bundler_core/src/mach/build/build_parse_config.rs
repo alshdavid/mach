@@ -31,17 +31,28 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
       break 'block get_absolute_path(None, &project_root);
     };
 
-    if let Some((project_root, _)) = find_crawl_up(&get_absolute_path(None, &entry_start), &["package.json"]) {
+    if let Some((project_root, _)) =
+      find_crawl_up(&get_absolute_path(None, &entry_start), &["package.json"])
+    {
       break 'block project_root;
     };
 
-    if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &[
-      ".machrc", "yarn.lock", "package-lock.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"
-    ]) {
+    if let Some((project_root, _)) = find_crawl_up(
+      &std::env::current_dir().unwrap(),
+      &[
+        ".machrc",
+        "yarn.lock",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+      ],
+    ) {
       break 'block project_root;
     };
 
-    if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &["package.json"]) {
+    if let Some((project_root, _)) =
+      find_crawl_up(&std::env::current_dir().unwrap(), &["package.json"])
+    {
       break 'block project_root;
     };
 
@@ -53,7 +64,7 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
       break 'block args[0].clone();
     }
     if let Some(entry) = find_entry(&project_root) {
-      break 'block entry
+      break 'block entry;
     }
     return Err("Cannot find entry".to_string());
   };
@@ -87,7 +98,10 @@ fn get_threads(options: &BuildOptions) -> usize {
   }
 }
 
-fn get_dist_dir(options: &BuildOptions, project_root: &Path) -> PathBuf {
+fn get_dist_dir(
+  options: &BuildOptions,
+  project_root: &Path,
+) -> PathBuf {
   let dist_dir_arg = options.out_folder.clone();
   if dist_dir_arg.is_absolute() {
     dist_dir_arg
@@ -96,7 +110,7 @@ fn get_dist_dir(options: &BuildOptions, project_root: &Path) -> PathBuf {
   }
 }
 
-fn get_env() -> HashMap<String, String>{
+fn get_env() -> HashMap<String, String> {
   let mut vars = HashMap::<String, String>::new();
   for (k, v) in std::env::vars() {
     vars.insert(k, v);
@@ -208,7 +222,10 @@ fn _parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
 //   return Ok(yaml);
 // }
 
-fn find_crawl_up(start: &Path, targets: &[&str]) -> Option<(PathBuf, PathBuf)> {
+fn find_crawl_up(
+  start: &Path,
+  targets: &[&str],
+) -> Option<(PathBuf, PathBuf)> {
   let mut current = start.to_path_buf();
 
   loop {
@@ -224,23 +241,26 @@ fn find_crawl_up(start: &Path, targets: &[&str]) -> Option<(PathBuf, PathBuf)> {
       }
     }
     if !current.pop() {
-      break
+      break;
     }
   }
 
   None
 }
 
-fn get_absolute_path(cwd: Option<PathBuf>, target: &Path) -> PathBuf {
+fn get_absolute_path(
+  cwd: Option<PathBuf>,
+  target: &Path,
+) -> PathBuf {
   let file_path = target.to_path_buf();
 
   if file_path.is_absolute() {
     return file_path.normalize();
   }
 
-  if let Some (cwd) = cwd {
-    return cwd.join(target).normalize()
+  if let Some(cwd) = cwd {
+    return cwd.join(target).normalize();
   }
-  
+
   std::env::current_dir().unwrap().join(file_path).normalize()
 }

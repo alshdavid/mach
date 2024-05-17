@@ -1,10 +1,10 @@
-import {test, describe, before, after} from 'node:test';
-import * as assert from 'node:assert';
-import { BuildReport, Mach } from '@alshdavid/mach';
-import { FIXTURES_FN } from '../utils/paths/index.js';
-import { ClientContext } from '../utils/browser/index.js';
-import { install_npm } from '../utils/npm/index.js';
-import * as puppeteer from 'puppeteer-core';
+import { test, describe, before, after } from 'node:test'
+import * as assert from 'node:assert'
+import { BuildReport, Mach } from '@alshdavid/mach'
+import { FIXTURES_FN } from '../utils/paths/index.js'
+import { ClientContext } from '../utils/browser/index.js'
+import { install_npm } from '../utils/npm/index.js'
+import * as puppeteer from 'puppeteer-core'
 
 const FIXTURE = FIXTURES_FN('web-html-ts-css')
 
@@ -18,15 +18,15 @@ describe('web-html-ts-css', { concurrency: true }, async () => {
 
     report = await Mach.build({
       projectRoot: FIXTURE(),
-      entries: ['src/index.html']
+      entries: ['src/index.html'],
     })
 
     browser = await puppeteer.connect({
-      browserWSEndpoint: process.env.PUPPETEER_WS_ENDPOINT
+      browserWSEndpoint: process.env.PUPPETEER_WS_ENDPOINT,
     })
 
-    client = await ClientContext.new({ 
-      serve_path: FIXTURE('dist')
+    client = await ClientContext.new({
+      serve_path: FIXTURE('dist'),
     })
   })
 
@@ -40,11 +40,12 @@ describe('web-html-ts-css', { concurrency: true }, async () => {
     await page.goto(client.address())
 
     const innerText = await page.evaluate(() => window.document.body.innerText)
-    const backgroundColor = await page.evaluate(() => window.getComputedStyle(document.body).backgroundColor)
+    const backgroundColor = await page.evaluate(
+      () => window.getComputedStyle(document.body).backgroundColor,
+    )
 
     assert.equal(innerText, 'Hello World')
     assert.equal(backgroundColor, 'rgb(224, 224, 224)')
     await page.close()
-  });
+  })
 })
-
