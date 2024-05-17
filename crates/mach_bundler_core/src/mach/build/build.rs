@@ -1,9 +1,11 @@
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
 
 use super::build_parse_config::parse_config;
+use super::create_result::create_build_result;
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
@@ -25,6 +27,8 @@ pub struct BuildOptions {
   pub entries: Option<Vec<PathBuf>>,
   /// Output folder
   pub out_folder: PathBuf,
+  /// Root directory of project
+  pub project_root: Option<PathBuf>,
   /// Delete output folder before emitting files
   pub clean: bool,
   /// Disable optimizations
@@ -45,13 +49,18 @@ impl Default for BuildOptions {
       clean: false,
       optimize: true,
       bundle_splitting: false,
+      project_root: None,
       threads: Some(num_cpus::get_physical()),
       node_workers: Some(num_cpus::get_physical()),
     }
   }
 }
 
-pub struct BuildResult {}
+#[derive(Debug, Clone)]
+pub struct BuildResult {
+  pub bundle_manifest: HashMap<String, String>,
+  pub entries: HashMap<String, String>,
+}
 
 pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let config = parse_config(options)?;
@@ -129,5 +138,5 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   */
   emit(config.clone(), outputs)?;
 
-  return Ok(BuildResult {});
+  return Ok(create_build_result(asset_map, bundles, bundle_manifest));
 }

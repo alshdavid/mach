@@ -1,51 +1,46 @@
-import * as mach from '@alshdavid/mach'
+import '@shigen/polyfill-symbol-dispose'
+import * as reporter from 'node:test/reporters';
+import { run } from 'node:test';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+import * as url from 'node:url';
+import * as puppeteer from 'puppeteer-core';
+import { finished } from 'node:stream';
+import { CHROME_EXECUTABLE_PATH } from './utils/browser/executable.js';
 
-console.log(mach)
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
+void async function() {
+  const browser = await puppeteer.launch({
+    executablePath: CHROME_EXECUTABLE_PATH,
+    headless: true,
+    devtools: true,
+    ignoreHTTPSErrors: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-sync',
+      '--ignore-certificate-errors',
+      '--disable-gpu'
+    ],
+  })
 
-// import '@shigen/polyfill-symbol-dispose'
-// import * as reporter from 'node:test/reporters';
-// import { run } from 'node:test';
-// import * as path from 'node:path';
-// import * as fs from 'node:fs';
-// import * as url from 'node:url';
-// import * as puppeteer from 'puppeteer-core';
-// import { finished } from 'node:stream';
-// import { CHROME_EXECUTABLE_PATH } from './utils/browser/executable.js';
+  process.env.PUPPETEER_WS_ENDPOINT = browser.wsEndpoint()
 
-// const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-
-// void async function() {
-//   const browser = await puppeteer.launch({
-//     executablePath: CHROME_EXECUTABLE_PATH,
-//     headless: true,
-//     devtools: true,
-//     ignoreHTTPSErrors: true,
-//     args: [
-//       '--no-sandbox',
-//       '--disable-setuid-sandbox',
-//       '--disable-sync',
-//       '--ignore-certificate-errors',
-//       '--disable-gpu'
-//     ],
-//   })
-
-//   process.env.PUPPETEER_WS_ENDPOINT = browser.wsEndpoint()
-
-//   const files = fs.readdirSync(path.join(__dirname, 'tests'))
-//     .filter(test => !test.startsWith('_'))
-//     .map(test => path.join(__dirname, 'tests', test))
+  const files = fs.readdirSync(path.join(__dirname, 'tests'))
+    .filter(test => !test.startsWith('_'))
+    .map(test => path.join(__dirname, 'tests', test))
   
-//   const test_stream = run({ 
-//     files,
-//     concurrency: true,
-//   })
-//     .on('test:fail', () => {
-//       process.exitCode = 1;
-//     })
-//     .compose(new reporter.spec())
+  const test_stream = run({ 
+    files,
+    concurrency: true,
+  })
+    .on('test:fail', () => {
+      process.exitCode = 1;
+    })
+    .compose(new reporter.spec())
 
-//   test_stream.pipe(process.stdout)
-//   await new Promise(res => finished(test_stream, res))
-//   await browser.close()
-// }()
+  test_stream.pipe(process.stdout)
+  await new Promise(res => finished(test_stream, res))
+  await browser.close()
+}()

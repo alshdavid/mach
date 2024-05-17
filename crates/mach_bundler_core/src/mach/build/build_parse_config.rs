@@ -23,29 +23,47 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     }
     break 'block std::env::current_dir().unwrap();
   };
-  // Ignore multiple entries for now
-  let Some(entry_point) = get_entry(&entry_arg) else {
-    return Err("Could not find entry point".to_string());
+
+  // Auto detect project root
+  let project_root = 'block: {
+    if let Some(project_root) = command.project_root {
+      break 'block project_root;
+    };
+
+    if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &[
+      ".machrc", "yarn.lock", "package-lock.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"
+    ]) {
+      break 'block project_root;
+    };
+
+    if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &["package.json"]) {
+      break 'block project_root;
+    };
+    
+    return Err("Could not find project root".to_string());
   };
 
   // Find these points of interest
   let file_index = find_file_by_name(
-    &entry_point,
+    &project_root,
     &["package.json", ".machrc", "pnpm-workspace.yaml"],
   );
 
   let machrc = parse_machrc(&file_index).expect("Cannot parse .machrc");
 
   // Project root is the location of the first package.json
-  let package_json_path = file_index
-    .get("package.json")
-    .unwrap()
-    .get(0)
-    .unwrap()
-    .clone();
+  let Some((_, package_json_path)) = find_crawl_up(&project_root, &["package.json"]) else {
+    return Err("Unable to find package.json".to_string())
+  };
+
   let package_json = parse_json_file(&package_json_path).expect("Cannot parse package.json");
 
   let project_root = package_json_path.parent().unwrap().to_path_buf();
+  
+  // Ignore multiple entries for now
+  let Some(entry_point) = get_entry(Some(project_root.clone()), &entry_arg) else {
+    return Err("Could not find entry point".to_string());
+  };
 
   let dist_dir = {
     let dist_dir_arg = command.out_folder;
@@ -106,8 +124,8 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
   }));
 }
 
-fn get_entry(entry_arg: &Path) -> Option<PathBuf> {
-  let absolute = get_absolute_path(entry_arg);
+fn get_entry(project_root: Option<PathBuf>, entry_arg: &Path) -> Option<PathBuf> {
+  let absolute = get_absolute_path(project_root, entry_arg);
 
   if absolute.is_file() {
     return Some(absolute.to_path_buf());
@@ -222,6 +240,29 @@ fn parse_json_file(target: &PathBuf) -> Result<serde_json::Value, String> {
 //   return Ok(yaml);
 // }
 
+fn find_crawl_up(start: &Path, targets: &[&str]) -> Option<(PathBuf, PathBuf)> {
+  let mut current = start.to_path_buf();
+
+  loop {
+    for entry in fs::read_dir(&current).unwrap() {
+      let Ok(entry) = entry else {
+        continue;
+      };
+      for target in targets {
+        if entry.file_name() == *target {
+          let complete = current.join(target);
+          return Some((current, complete));
+        }
+      }
+    }
+    if !current.pop() {
+      break
+    }
+  }
+
+  None
+}
+
 fn find_file_by_name(
   start_path: &PathBuf,
   targets: &[&str],
@@ -234,7 +275,9 @@ fn find_file_by_name(
   let mut current_test = start_path.clone();
 
   let mut paths_to_test = Vec::<PathBuf>::new();
+
   paths_to_test.push(current_test.clone());
+
   while current_test.pop() {
     paths_to_test.push(current_test.clone())
   }
@@ -280,10 +323,13 @@ fn find_file_by_name(
   return found;
 }
 
-fn get_absolute_path(target: &Path) -> PathBuf {
+fn get_absolute_path(project_root: Option<PathBuf>, target: &Path) -> PathBuf {
   let mut file_path = PathBuf::from(&target);
-  if !file_path.is_absolute() {
+  if !file_path.is_absolute() && project_root.is_some() {
+    file_path = project_root.unwrap().join(file_path);
+  } else if !file_path.is_absolute() {
     file_path = std::env::current_dir().unwrap().join(file_path);
   }
+
   return file_path.normalize();
 }

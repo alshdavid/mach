@@ -26,6 +26,7 @@ pub fn run(args: Vec<String>) {
         bundle_splitting: command.bundle_splitting,
         threads: command.threads,
         node_workers: command.node_workers,
+        project_root: None,
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;
