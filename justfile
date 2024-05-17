@@ -84,7 +84,7 @@ _default:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./mach-nodejs/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_nodejs.{{dylib}} ./crates/mach-nodejs/lib/napi/index.node
 
   # Copy output to target
   @rm -rf {{out_dir}}
@@ -92,7 +92,7 @@ build:
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
+  @cp -r ./crates/mach-nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
   # Prepare local npm package to use local binary
@@ -105,7 +105,7 @@ build:
 build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\mach-nodejs\lib\napi\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_nodejs.{{dylib}}" -Destination ".\crates\mach-nodejs\lib\napi\index.node" | Out-Null  
 
   # Copy output to target
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -113,7 +113,7 @@ build:
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\crates\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
   # Prepare local npm package to use local binary
@@ -144,7 +144,7 @@ example cmd fixture *ARGS:
 serve:
   npx http-server -p 3000 ./examples
 
-test-integration:
+integration-tests:
   cd testing && node --import tsx setup.ts
 
 test:
@@ -180,7 +180,7 @@ build-publish:
 [private]
 build-publish-common:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./mach/Cargo.toml" \
+    "./crates/mach/Cargo.toml" \
     "0.0.0-local" \
     {{MACH_VERSION}}
 

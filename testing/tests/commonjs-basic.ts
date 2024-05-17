@@ -11,7 +11,7 @@ describe('commonjs-basic', { concurrency: true }, () => {
   let report: BuildReport
 
   before(async () => {
-    await install_npm(FIXTURE())
+    install_npm(FIXTURE())
     
     report = await Mach.build({
       projectRoot: FIXTURE(),

@@ -5,10 +5,10 @@ use std::thread;
 
 use ipc_channel_adapter::child::sync::HostReceiver;
 use ipc_channel_adapter::child::sync::HostSender;
-use mach::public::nodejs::client::NodejsClientRequest;
-use mach::public::nodejs::client::NodejsClientResponse;
-use mach::public::nodejs::NodejsHostRequest;
-use mach::public::nodejs::NodejsHostResponse;
+use libmach::public::nodejs::client::NodejsClientRequest;
+use libmach::public::nodejs::client::NodejsClientResponse;
+use libmach::public::nodejs::NodejsHostRequest;
+use libmach::public::nodejs::NodejsHostResponse;
 use napi::threadsafe_function::ThreadSafeCallContext;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;

@@ -11,6 +11,22 @@ import { CHROME_EXECUTABLE_PATH } from './utils/browser/executable.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 void async function() {
+  const browser = await puppeteer.launch({
+    executablePath: CHROME_EXECUTABLE_PATH,
+    headless: true,
+    devtools: true,
+    ignoreHTTPSErrors: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-sync',
+      '--ignore-certificate-errors',
+      '--disable-gpu'
+    ],
+  })
+
+  process.env.PUPPETEER_WS_ENDPOINT = browser.wsEndpoint()
+
   const files = fs.readdirSync(path.join(__dirname, 'tests'))
     .filter(test => !test.startsWith('_'))
     .map(test => path.join(__dirname, 'tests', test))
@@ -26,4 +42,5 @@ void async function() {
 
   test_stream.pipe(process.stdout)
   await new Promise(res => finished(test_stream, res))
+  await browser.close()
 }()
