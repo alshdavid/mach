@@ -19,18 +19,13 @@ pub struct MachConfig {
   pub entry_point: PathBuf,
   pub dist_dir: PathBuf,
   pub clean_dist_dir: bool,
-  pub workspace_root: Option<PathBuf>,
-  pub workspace_kind: Option<()>, //Option<WorkspaceKind>,
   pub project_root: PathBuf,
-  // pub package_json: Arc<serde_json::Value>,
   pub machrc: Machrc,
   pub threads: usize,
   pub node_workers: usize,
   pub optimize: bool,
   pub bundle_splitting: bool,
   pub env: HashMap<String, String>,
-  pub debug: bool,
-  pub diagnostic_port: Option<usize>,
 }
 
 impl MachConfig {

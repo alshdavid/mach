@@ -135,12 +135,12 @@ run *ARGS:
 [unix]
 example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach {{cmd}} {{ARGS}} ./examples/{{fixture}}
+  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach {{cmd}} {{ARGS}}
 
 [windows]
 example cmd fixture *ARGS:
   @just build
-  {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} ./examples/{{fixture}}
+  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} 
 
 serve:
   npx http-server -p 3000 ./examples
