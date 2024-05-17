@@ -18,15 +18,22 @@ use crate::BuildOptions;
 pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();
 
+  let entry_start = 'block: {
+    if let Some(args) = &command.entries {
+      break 'block args[0].clone();
+    }
+    std::env::current_dir().unwrap()
+  };
+
   // Auto detect project root
   let project_root = 'block: {
     if let Some(project_root) = &command.project_root {
       break 'block get_absolute_path(None, &project_root);
     };
 
-    // if let Some((project_root, _)) = find_crawl_up(&get_absolute_path(None, &entry_arg), &["package.json"]) {
-    //   break 'block project_root;
-    // };
+    if let Some((project_root, _)) = find_crawl_up(&get_absolute_path(None, &entry_start), &["package.json"]) {
+      break 'block project_root;
+    };
 
     if let Some((project_root, _)) = find_crawl_up(&std::env::current_dir().unwrap(), &[
       ".machrc", "yarn.lock", "package-lock.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"
@@ -41,7 +48,7 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     return Err("Could not find project root".to_string());
   };
 
-  let entry_arg = 'block: {
+  let entry = 'block: {
     if let Some(args) = &command.entries {
       break 'block args[0].clone();
     }
@@ -51,10 +58,11 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     return Err("Cannot find entry".to_string());
   };
 
+  let entry = get_absolute_path(Some(project_root.clone()), &entry);
 
   return Ok(Arc::new(MachConfig {
     start_time,
-    entry_point: entry_arg.clone(),
+    entry_point: entry.clone(),
     dist_dir: get_dist_dir(&command, &project_root),
     clean_dist_dir: command.clean,
     bundle_splitting: command.bundle_splitting,
@@ -234,6 +242,5 @@ fn get_absolute_path(cwd: Option<PathBuf>, target: &Path) -> PathBuf {
     return cwd.join(target).normalize()
   }
   
-  println!("{:?}", target);
   std::env::current_dir().unwrap().join(file_path).normalize()
 }
