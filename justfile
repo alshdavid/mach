@@ -180,7 +180,12 @@ build-publish:
 [private]
 build-publish-common:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./crates/mach/Cargo.toml" \
+    "./crates/mach_bundler_cli/Cargo.toml" \
+    "0.0.0-local" \
+    {{MACH_VERSION}}
+
+  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
+    "./crates/mach_bundler_core/Cargo.toml" \
     "0.0.0-local" \
     {{MACH_VERSION}}
 
