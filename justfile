@@ -164,21 +164,12 @@ fmt:
 build-publish:
   just build
   just build-publish-common
-  cp -r {{out_dir}}/* "npm/mach-os-arch"
-  mv "npm/mach-os-arch/bin/mach" "npm/mach-os-arch/bin/mach.exe"
-  rm -rf "npm/mach/cmd"
-  mkdir -p "npm/mach/cmd/bin"
-  touch "npm/mach/cmd/bin/mach.exe"
   cp "./README.md" "npm/mach"
 
 [windows]
 build-publish:
   just build
   just build-publish-common
-  Copy-Item {{out_dir}}\* -Destination "npm\mach-os-arch" -Recurse | Out-Null
-  Remove-Item -Recurse -Force "npm\mach\cmd" | Out-Null
-  New-Item -ItemType "directory" -Force -Path "npm\mach\cmd\bin" | Out-Null
-  New-Item -ItemType "file" "npm\mach\cmd\bin\mach.exe"
   Copy-Item ".\README.md" -Destination "npm\mach" | Out-Null
 
 [private]
