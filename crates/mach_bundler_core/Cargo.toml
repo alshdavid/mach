@@ -7,6 +7,13 @@ description = "Bundler For The Modern Web"
 edition = "2021"
 license = "MIT"
 
+[[bin]]
+name = "foo"
+path = "src/main.rs"
+
+[features]
+cli_parser = ["clap"]
+
 [dependencies]
 swc_core = { version = "=0.90.23", features = ["ecma_ast", "ecma_parser", "common", "ecma_visit", "ecma_transforms", "common_concurrent", "ecma_codegen", "ecma_transforms_typescript", "ecma_transforms_react", "ecma_transforms_optimization", "ecma_minifier"] }
 glob-match = "0.*"
@@ -20,3 +27,4 @@ serde = "1.*"
 html5ever = "0.*"
 markup5ever_rcdom = "0.*"
 ipc_channel_adapter = { version = "0.*"}
+clap = { version = "4.*", features = ["derive", "env"], optional = true }

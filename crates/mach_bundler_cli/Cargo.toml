@@ -12,7 +12,7 @@ name = "mach"
 path = "src/main.rs"
 
 [dependencies]
-mach_bundler_core = { path = "../mach_bundler_core" }
+mach_bundler_core = { path = "../mach_bundler_core", features = ["cli_parser"]}
 clap = { version = "4.*", features = ["derive", "env"] }
 normalize-path = "0.*"
 num_cpus = "1.*"
