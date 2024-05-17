@@ -4,7 +4,7 @@
 */
 import { workerData } from 'node:worker_threads'
 import * as types from './types/index.js'
-import napi from './napi/index.cjs'
+import napi from '../napi/index.cjs'
 import { Resolver } from './plugins/resolver.js'
 import { Transformer } from './plugins/transformer.js'
 import { Dependency } from './plugins/dependency.js'

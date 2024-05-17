@@ -41,7 +41,7 @@ impl NodejsInstance {
     let exe_dir = exe_path.parent().unwrap();
 
     let entry = 'block: {
-      let local_path = exe_dir.parent().unwrap().join("nodejs").join("main.js");
+      let local_path = exe_dir.parent().unwrap().join("nodejs").join("worker").join("main.js");
 
       if local_path.exists() {
         break 'block local_path;
@@ -49,7 +49,7 @@ impl NodejsInstance {
 
       if let Ok(resolved) = resolve_oxc(
         exe_dir,
-        "@alshdavid/mach/cmd/nodejs/main.js",
+        "@alshdavid/mach/cmd/nodejs/worker/main.js",
         ResolveOptions {
           symlinks: false,
           ..Default::default()
