@@ -96,10 +96,10 @@ build:
   @ln -s {{out_dir}} {{out_dir_link}}
 
   # Prepare local npm package to use local binary
-  @rm -rf npm/mach/cmd
-  @cp -r {{out_dir}} npm/mach/cmd
-  @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
-  test -d node_modules || pnpm install
+  # @rm -rf npm/mach/cmd
+  # @cp -r {{out_dir}} npm/mach/cmd
+  # @mv npm/mach/cmd/bin/mach npm/mach/cmd/bin/mach.exe
+  # test -d node_modules || pnpm install
 
 [windows]
 build:
