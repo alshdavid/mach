@@ -1,4 +1,6 @@
 mod adapter;
+mod adapter_incoming;
+mod adapter_outgoing;
 mod asset;
 mod asset_graph;
 mod asset_id;
@@ -21,7 +23,6 @@ mod import_symbol;
 mod internal_id;
 mod machrc;
 mod mutable_asset;
-pub mod nodejs;
 mod package_json;
 mod packages;
 mod resolver;
@@ -29,6 +30,8 @@ mod specifier_type;
 mod transformer;
 
 pub use self::adapter::*;
+pub use self::adapter_incoming::*;
+pub use self::adapter_outgoing::*;
 pub use self::asset::*;
 pub use self::asset_graph::*;
 pub use self::asset_id::*;

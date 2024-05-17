@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
@@ -6,10 +9,11 @@ use std::sync::Mutex;
 use std::thread;
 
 use super::NodejsInstance;
-use crate::public::nodejs::client::NodejsClientRequest;
-use crate::public::nodejs::client::NodejsClientResponse;
-use crate::public::nodejs::NodejsHostRequest;
-use crate::public::nodejs::NodejsHostResponse;
+use crate::public::Adapter;
+use crate::public::AdapterIncomingRequest;
+use crate::public::AdapterIncomingResponse;
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsAdapterOptions {
@@ -28,24 +32,34 @@ pub struct NodejsAdapter {
   counter: Arc<Mutex<u8>>,
   worker_count: Arc<u8>,
   nodejs_instance: Arc<Mutex<Option<NodejsInstance>>>,
-  tx_to_host: Arc<Sender<(NodejsHostRequest, Sender<NodejsHostResponse>)>>,
+  tx_to_host: Arc<Sender<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>>,
   pub rx_host_request:
-    Arc<Mutex<Option<Receiver<(NodejsHostRequest, Sender<NodejsHostResponse>)>>>>,
-  tx_to_workers: Arc<Vec<Sender<(NodejsClientRequest, Sender<NodejsClientResponse>)>>>,
-  rx_to_workers: Arc<Mutex<Vec<Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)>>>>,
+    Arc<Mutex<Option<Receiver<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>>>>,
+  tx_to_workers: Arc<Vec<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>,
+  rx_to_workers: Arc<Mutex<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>,
 }
 
-impl NodejsAdapter {
-  pub fn new(options: NodejsAdapterOptions) -> Result<Self, String> {
+impl Adapter for NodejsAdapter {
+  fn new(options: HashMap<String, String>) -> Result<Self, String>
+  where
+    Self: Sized,
+  {
+    let Some(workers) = options.get("workers") else {
+      return Err("Invalid config".to_string());
+    };
+    let Ok(workers) = workers.parse::<u8>() else {
+      return Err("Invalid config".to_string());
+    };
+
     let mut tx_to_workers =
-      Vec::<Sender<(NodejsClientRequest, Sender<NodejsClientResponse>)>>::new();
+      Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
     let mut rx_from_workers =
-      Vec::<Receiver<(NodejsClientRequest, Sender<NodejsClientResponse>)>>::new();
+      Vec::<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
 
     let (tx_worker_host, rx_worker_host) =
-      channel::<(NodejsHostRequest, Sender<NodejsHostResponse>)>();
+      channel::<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>();
 
-    for _ in 0..options.workers {
+    for _ in 0..workers {
       let (tx, rx) = channel();
       tx_to_workers.push(tx);
       rx_from_workers.push(rx);
@@ -53,7 +67,7 @@ impl NodejsAdapter {
 
     Ok(Self {
       counter: Arc::new(Mutex::new(0)),
-      worker_count: Arc::new(options.workers),
+      worker_count: Arc::new(workers),
       nodejs_instance: Arc::new(Mutex::new(None)),
       tx_to_host: Arc::new(tx_worker_host),
       rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
@@ -62,11 +76,11 @@ impl NodejsAdapter {
     })
   }
 
-  pub fn nodejs_is_running(&self) -> bool {
+  fn is_running(&self) -> bool {
     self.nodejs_instance.lock().unwrap().is_some()
   }
 
-  pub fn start_nodejs(&self) -> Result<(), String> {
+  fn init(&self) -> Result<(), String> {
     let mut nodejs_instance_container = self.nodejs_instance.lock().unwrap();
     if nodejs_instance_container.is_some() || *self.worker_count == 0 {
       return Ok(());
@@ -108,10 +122,10 @@ impl NodejsAdapter {
     return Ok(());
   }
 
-  pub fn send_all(
+  fn send_all(
     &self,
-    req: NodejsClientRequest,
-  ) -> Result<Vec<NodejsClientResponse>, String> {
+    req: AdapterOutgoingRequest,
+  ) -> Result<Vec<AdapterOutgoingResponse>, String> {
     let mut requests = vec![];
     let mut responses = vec![];
 
@@ -121,7 +135,7 @@ impl NodejsAdapter {
 
     for request in requests {
       let response = request.recv().unwrap();
-      if let NodejsClientResponse::Err(msg) = response {
+      if let AdapterOutgoingResponse::Err(msg) = response {
         return Err(msg);
       }
       responses.push(response);
@@ -130,21 +144,26 @@ impl NodejsAdapter {
     Ok(responses)
   }
 
-  pub fn send(
+  fn send(
     &self,
-    req: NodejsClientRequest,
-  ) -> Receiver<NodejsClientResponse> {
+    req: AdapterOutgoingRequest,
+  ) -> Receiver<AdapterOutgoingResponse> {
     let next = self.get_next();
     self.send_internal(next, req)
   }
 
-  pub fn send_and_wait(
+  fn send_and_wait(
     &self,
-    req: NodejsClientRequest,
-  ) -> NodejsClientResponse {
-    self.send(req).recv().unwrap()
+    req: AdapterOutgoingRequest,
+  ) -> Result<AdapterOutgoingResponse, String> {
+    if let Ok(resp) = self.send(req).recv() {
+      return Ok(resp);
+    }
+    Err("Recv Error".to_string())
   }
+}
 
+impl NodejsAdapter {
   // TODO use an atomicu8
   fn get_next(&self) -> usize {
     let mut i = self.counter.lock().unwrap();
@@ -159,18 +178,18 @@ impl NodejsAdapter {
   fn send_internal(
     &self,
     index: usize,
-    req: NodejsClientRequest,
-  ) -> Receiver<NodejsClientResponse> {
+    req: AdapterOutgoingRequest,
+  ) -> Receiver<AdapterOutgoingResponse> {
     let (tx, rx) = channel();
     self.tx_to_workers[index].send((req, tx)).unwrap();
     rx
   }
 }
 
-impl std::fmt::Debug for NodejsAdapter {
+impl Debug for NodejsAdapter {
   fn fmt(
     &self,
-    f: &mut std::fmt::Formatter<'_>,
+    f: &mut Formatter<'_>,
   ) -> std::fmt::Result {
     f.debug_struct("NodejsAdapter")
       .field("worker_count", &self.worker_count)

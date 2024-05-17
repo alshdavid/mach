@@ -15,7 +15,7 @@ use crate::public::MachConfigSync;
 use crate::public::Machrc;
 use crate::BuildOptions;
 
-pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
+pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();
 
   let entry_start = 'block: {

@@ -2,6 +2,6 @@ packages:
   - '.github/scripts'
   - 'examples/*'
   - 'npm/*'
-  - 'mach-nodejs'
+  - 'crates/mach_bundler_nodejs_adapter'
   - 'benchmarks/*'
   - 'testing'

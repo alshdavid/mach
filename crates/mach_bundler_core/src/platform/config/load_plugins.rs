@@ -1,14 +1,14 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
-use crate::adapters::nodejs::NodejsAdapter;
+use crate::plugins::resolver_adapter::ResolverAdapter;
 use crate::plugins::resolver_javascript::ResolverJavaScript;
-use crate::plugins::resolver_nodejs::ResolverNodejs;
+use crate::plugins::transformer_adapter::TransformerAdapter;
 use crate::plugins::transformer_css::TransformerCSS;
 use crate::plugins::transformer_drop::TransformerDrop;
 use crate::plugins::transformer_html::TransformerHtml;
 use crate::plugins::transformer_javascript::TransformerJavaScript;
 use crate::plugins::transformer_json::TransformerJson;
-use crate::plugins::transformer_nodejs::TransformerNodeJs;
+use crate::public::AdapterMap;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -16,7 +16,7 @@ use crate::public::Transformer;
 pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
-  nodejs_adapter: NodejsAdapter,
+  adapter_map: &AdapterMap,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
 
@@ -34,20 +34,21 @@ pub fn load_plugins(
         continue;
       }
 
-      if engine == "node" {
-        nodejs_adapter.start_nodejs()?;
-        plugins.resolvers.push(Box::new(ResolverNodejs::new(
-          &*config,
-          specifier,
-          nodejs_adapter.clone(),
-        )?));
-        continue;
-      }
+      let Some(adapter) = adapter_map.get(engine) else {
+        return Err(format!(
+          "Unable to load plugin: {}:{}",
+          engine, plugin_string
+        ));
+      };
 
-      return Err(format!(
-        "Unable to find plugin: {}:{}",
-        engine, plugin_string
-      ));
+      adapter.init()?;
+
+      plugins.resolvers.push(Box::new(ResolverAdapter::new(
+        &*config,
+        specifier,
+        adapter.clone(),
+      )?));
+      continue;
     }
   }
 
@@ -87,20 +88,20 @@ pub fn load_plugins(
           continue;
         }
 
-        if engine == "node" {
-          nodejs_adapter.start_nodejs()?;
-          transformers.push(Box::new(TransformerNodeJs::new(
-            &config,
-            specifier,
-            nodejs_adapter.clone(),
-          )?));
-          continue;
-        }
-
-        return Err(format!(
-          "Unable to find plugin: {}:{}",
-          engine, plugin_string
-        ));
+        let Some(adapter) = adapter_map.get(engine) else {
+          return Err(format!(
+            "Unable to load plugin: {}:{}",
+            engine, specifier
+          ));
+        };
+  
+        adapter.init()?;
+  
+        transformers.push(Box::new(TransformerAdapter::new(
+          &*config,
+          specifier,
+          adapter.clone(),
+        )?));
       }
 
       plugins

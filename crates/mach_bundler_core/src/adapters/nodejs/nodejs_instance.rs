@@ -14,10 +14,10 @@ use oxc_resolver::ResolveOptions;
 
 use super::NodejsWorker;
 use crate::plugins::resolver_javascript::resolve_oxc;
-use crate::public::nodejs::client::NodejsClientRequest;
-use crate::public::nodejs::client::NodejsClientResponse;
-use crate::public::nodejs::NodejsHostRequest;
-use crate::public::nodejs::NodejsHostResponse;
+use crate::public::AdapterIncomingRequest;
+use crate::public::AdapterIncomingResponse;
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsInstance {
@@ -94,9 +94,9 @@ impl NodejsInstance {
   }
 
   pub fn spawn_worker(&self) -> NodejsWorker {
-    let child_sender = ChildSender::<NodejsClientRequest, NodejsClientResponse>::new().unwrap();
+    let child_sender = ChildSender::<AdapterOutgoingRequest, AdapterOutgoingResponse>::new().unwrap();
     let (child_receiver, rx_child_receiver) =
-      ChildReceiver::<NodejsHostRequest, NodejsHostResponse>::new().unwrap();
+      ChildReceiver::<AdapterIncomingRequest, AdapterIncomingResponse>::new().unwrap();
 
     let msg = format!(
       "{}&{}",

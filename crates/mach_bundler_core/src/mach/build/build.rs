@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use super::build_parse_config::parse_config;
 use super::create_result::create_build_result;
 use crate::adapters::nodejs::NodejsAdapter;
-use crate::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
@@ -39,7 +39,7 @@ pub struct BuildOptions {
   /// How many Node.js workers to spawn for plugins
   pub node_workers: Option<usize>,
   /// Map of adapters used to communicate with plugin contexts
-  pub adapter_map: Option<HashMap<Engine, Box<dyn Adapter>>>
+  pub adapter_map: Option<HashMap<Engine, Arc<dyn Adapter>>>
 }
 
 impl Default for BuildOptions {
@@ -65,7 +65,7 @@ pub struct BuildResult {
 }
 
 pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
-  let config = parse_config(options)?;
+  let config = parse_config(&options)?;
 
   /*
     This is the bundler state. It is passed into
@@ -79,15 +79,22 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let bundle_graph = BundleGraphSync::default();
   let bundle_manifest = BundleManifestSync::default();
   let outputs = OutputsSync::default();
-  let nodejs_adapter = NodejsAdapter::new(NodejsAdapterOptions {
-    workers: config.node_workers.clone() as u8,
-  })?;
+  
+  let mut adapter_map = options.adapter_map.unwrap_or_default();
+
+  if !adapter_map.contains_key("node") {
+    let nodejs_adapter = NodejsAdapter::new(HashMap::from_iter([(
+      "workers".to_string(), format!("{}", config.node_workers.clone()))
+    ]))?;
+
+    adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
+  }
 
   /*
     load_plugins() will read source the .machrc and will
     fetch then initialize the referenced plugins
   */
-  let plugins = load_plugins(&config, &config.machrc, nodejs_adapter.clone())?;
+  let plugins = load_plugins(&config, &config.machrc, &adapter_map)?;
 
   /*
     resolve_and_transform() will read source files, identify import statements
