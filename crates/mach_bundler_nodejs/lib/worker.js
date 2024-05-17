@@ -28,7 +28,7 @@ const transformers = {}
 /** @type {Record<string, unknown>} */
 const transformers_config = {}
 
-napi.run(
+napi.worker(
   workerData.child_sender,
   workerData.child_receiver,
   async (/** @type {any} */ err, /** @type {types.Action} */ action) => {
@@ -81,7 +81,6 @@ napi.run(
           get logger() {
             throw new Error('Not implemented')
           },
-          // @ts-expect-error
           get pipeline() {
             throw new Error('Not implemented')
           },

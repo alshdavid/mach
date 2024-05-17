@@ -1,5 +1,8 @@
 use std::path::PathBuf;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 use super::build_parse_config::parse_config;
 use crate::platform::adapters::nodejs::NodejsAdapter;
 use crate::platform::adapters::nodejs::NodejsAdapterOptions;
@@ -16,7 +19,7 @@ use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
 use crate::public::OutputsSync;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BuildOptions {
   /// Input file to build
   pub entries: Option<Vec<PathBuf>>,
@@ -34,11 +37,23 @@ pub struct BuildOptions {
   pub node_workers: Option<usize>,
 }
 
+impl Default for BuildOptions {
+  fn default() -> Self {
+    Self {
+      entries: None,
+      out_folder: PathBuf::from("dist"),
+      clean: false,
+      optimize: true,
+      bundle_splitting: false,
+      threads: Some(num_cpus::get_physical()),
+      node_workers: Some(num_cpus::get_physical()),
+    }
+  }
+}
+
 pub struct BuildResult {}
 
-pub fn build(
-  options: BuildOptions,
-) -> Result<BuildResult, String> {
+pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let config = parse_config(options)?;
 
   /*

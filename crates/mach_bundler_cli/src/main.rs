@@ -27,6 +27,7 @@ fn main() {
         node_workers: command.node_workers,
       }) {
         println!("❌ Build Failure\n{}", msg);
+        return;
       };
 
       println!(

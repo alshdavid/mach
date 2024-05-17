@@ -64,8 +64,12 @@ impl Resolver for ResolverNodejs {
         },
       ));
 
+    if let NodejsClientResponse::Err(error) = response {
+      return Err(error);
+    }
+
     let NodejsClientResponse::ResolverResolve(result) = response else {
-      panic!();
+      return Err("Incorrect response".to_string());
     };
 
     Ok(result.resolve_result)
