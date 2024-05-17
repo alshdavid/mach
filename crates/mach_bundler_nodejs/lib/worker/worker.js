@@ -81,6 +81,7 @@ napi.worker(
           get logger() {
             throw new Error('Not implemented')
           },
+          // @ts-expect-error 
           get pipeline() {
             throw new Error('Not implemented')
           },
