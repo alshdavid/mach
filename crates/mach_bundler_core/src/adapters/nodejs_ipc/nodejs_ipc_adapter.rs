@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::sync::mpsc::channel;
@@ -16,11 +15,11 @@ use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
-pub struct NodejsAdapterOptions {
+pub struct NodejsIpcAdapterOptions {
   pub workers: u8,
 }
 
-/// NodejsAdapter holds the Nodejs child process and the IPC channels
+/// NodejsIpcAdapter holds the Nodejs child process and the IPC channels
 /// for each worker.
 ///
 /// This will initialize Nodejs lazily as needed
@@ -28,7 +27,7 @@ pub struct NodejsAdapterOptions {
 /// The send() method uses a "round-robin" strategy to decide which
 /// Nodejs child to send a request to.
 #[derive(Clone)]
-pub struct NodejsAdapter {
+pub struct NodejsIpcAdapter {
   counter: Arc<Mutex<u8>>,
   worker_count: Arc<u8>,
   nodejs_instance: Arc<Mutex<Option<NodejsInstance>>>,
@@ -40,43 +39,7 @@ pub struct NodejsAdapter {
     Arc<Mutex<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>,
 }
 
-impl Adapter for NodejsAdapter {
-  fn new(options: HashMap<String, String>) -> Result<Self, String>
-  where
-    Self: Sized,
-  {
-    let Some(workers) = options.get("workers") else {
-      return Err("Invalid config".to_string());
-    };
-    let Ok(workers) = workers.parse::<u8>() else {
-      return Err("Invalid config".to_string());
-    };
-
-    let mut tx_to_workers =
-      Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
-    let mut rx_from_workers =
-      Vec::<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
-
-    let (tx_worker_host, rx_worker_host) =
-      channel::<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>();
-
-    for _ in 0..workers {
-      let (tx, rx) = channel();
-      tx_to_workers.push(tx);
-      rx_from_workers.push(rx);
-    }
-
-    Ok(Self {
-      counter: Arc::new(Mutex::new(0)),
-      worker_count: Arc::new(workers),
-      nodejs_instance: Arc::new(Mutex::new(None)),
-      tx_to_host: Arc::new(tx_worker_host),
-      rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
-      tx_to_workers: Arc::new(tx_to_workers),
-      rx_to_workers: Arc::new(Mutex::new(rx_from_workers)),
-    })
-  }
-
+impl Adapter for NodejsIpcAdapter {
   fn is_running(&self) -> bool {
     self.nodejs_instance.lock().unwrap().is_some()
   }
@@ -164,7 +127,35 @@ impl Adapter for NodejsAdapter {
   }
 }
 
-impl NodejsAdapter {
+impl NodejsIpcAdapter {
+  pub fn new(options: NodejsIpcAdapterOptions) -> Result<Self, String> {
+    let workers = options.workers;
+
+    let mut tx_to_workers =
+      Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
+    let mut rx_from_workers =
+      Vec::<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
+
+    let (tx_worker_host, rx_worker_host) =
+      channel::<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>();
+
+    for _ in 0..workers {
+      let (tx, rx) = channel();
+      tx_to_workers.push(tx);
+      rx_from_workers.push(rx);
+    }
+
+    Ok(Self {
+      counter: Arc::new(Mutex::new(0)),
+      worker_count: Arc::new(workers),
+      nodejs_instance: Arc::new(Mutex::new(None)),
+      tx_to_host: Arc::new(tx_worker_host),
+      rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
+      tx_to_workers: Arc::new(tx_to_workers),
+      rx_to_workers: Arc::new(Mutex::new(rx_from_workers)),
+    })
+  }
+
   // TODO use an atomicu8
   fn get_next(&self) -> usize {
     let mut i = self.counter.lock().unwrap();
@@ -187,12 +178,12 @@ impl NodejsAdapter {
   }
 }
 
-impl Debug for NodejsAdapter {
+impl Debug for NodejsIpcAdapter {
   fn fmt(
     &self,
     f: &mut Formatter<'_>,
   ) -> std::fmt::Result {
-    f.debug_struct("NodejsAdapter")
+    f.debug_struct("NodejsIpcAdapter")
       .field("worker_count", &self.worker_count)
       .finish()
   }

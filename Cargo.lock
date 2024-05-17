@@ -700,6 +700,7 @@ name = "mach_bundler_cli"
 version = "0.0.0-local"
 dependencies = [
  "mach_bundler_core",
+ "num_cpus",
 ]
 
 [[package]]

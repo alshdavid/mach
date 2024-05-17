@@ -4,7 +4,6 @@ use std::sync::Arc;
 
 use super::build_parse_config::parse_config;
 use super::create_result::create_build_result;
-use crate::adapters::nodejs_ipc::NodejsAdapter;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
@@ -79,17 +78,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let bundle_graph = BundleGraphSync::default();
   let bundle_manifest = BundleManifestSync::default();
   let outputs = OutputsSync::default();
-
-  let mut adapter_map = options.adapter_map.unwrap_or_default();
-
-  if !adapter_map.contains_key("node") {
-    let nodejs_adapter = NodejsAdapter::new(HashMap::from_iter([(
-      "workers".to_string(),
-      format!("{}", config.node_workers.clone()),
-    )]))?;
-
-    adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
-  }
+  let adapter_map = options.adapter_map.unwrap_or_default();
 
   /*
     load_plugins() will read source the .machrc and will

@@ -10,10 +10,6 @@ pub type Engine = String;
 pub type AdapterMap = HashMap<Engine, Arc<dyn Adapter>>;
 
 pub trait Adapter: Debug + Send + Sync {
-  fn new(options: HashMap<String, String>) -> Result<Self, String>
-  where
-    Self: Sized;
-
   fn is_running(&self) -> bool;
 
   fn init(&self) -> Result<(), String>;

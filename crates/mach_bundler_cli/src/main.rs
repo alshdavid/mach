@@ -1,8 +1,12 @@
 #![deny(unused_crate_dependencies)]
+use std::sync::Arc;
 use std::time::SystemTime;
 
+use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapter;
+use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapterOptions;
 use mach_bundler_core::cli::parse_options_from_cli;
 use mach_bundler_core::cli::CommandType;
+use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
@@ -17,6 +21,23 @@ fn main() {
     CommandType::Build(command) => {
       let start_time = SystemTime::now();
 
+      let mut adapter_map = AdapterMap::new();
+
+      // Setup Nodejs Child
+      let nodejs_adapter_options = NodejsIpcAdapterOptions {
+        workers: command.node_workers.unwrap_or(num_cpus::get_physical()) as u8,
+      };
+
+      let nodejs_adapter = match NodejsIpcAdapter::new(nodejs_adapter_options) {
+        Ok(nodejs_adapter) => nodejs_adapter,
+        Err(error) => {
+          println!("{}", error);
+          return;
+        }
+      };
+
+      adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
+
       if let Err(msg) = mach.build(BuildOptions {
         entries: command.entries,
         out_folder: command.out_folder,
@@ -26,7 +47,7 @@ fn main() {
         threads: command.threads,
         node_workers: command.node_workers,
         project_root: command.project_root,
-        adapter_map: None,
+        adapter_map: Some(adapter_map),
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;

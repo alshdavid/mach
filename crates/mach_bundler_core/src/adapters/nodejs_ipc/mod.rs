@@ -15,10 +15,10 @@
   types still need to be serialized when they go from Rust to Nodejs via
   napi so JavaScript plugins will never be as fast as native plugins.
 */
-mod nodejs_adapter;
 mod nodejs_instance;
+mod nodejs_ipc_adapter;
 mod nodejs_worker;
 
-pub use nodejs_adapter::*;
 pub use nodejs_instance::*;
+pub use nodejs_ipc_adapter::*;
 pub use nodejs_worker::*;
