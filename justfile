@@ -92,7 +92,7 @@ build:
   @mkdir -p {{out_dir}}
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./mach-nodejs/lib {{out_dir}}/nodejs
+  @cp -r ./crates/mach-nodejs/lib {{out_dir}}/nodejs
   @ln -s {{out_dir}} {{out_dir_link}}
 
   # Prepare local npm package to use local binary
@@ -113,7 +113,7 @@ build:
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\crates\mach-nodejs\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
   # Prepare local npm package to use local binary
