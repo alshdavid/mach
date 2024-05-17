@@ -105,8 +105,7 @@ export class Mach {
     })
 
     let result = await on_complete
-    server.close()
-    child.kill()
+    await new Promise(res => server.close(() => res()))
     return result
   }
 

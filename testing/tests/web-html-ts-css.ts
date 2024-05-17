@@ -2,13 +2,13 @@ import {test, describe, before, after} from 'node:test';
 import * as assert from 'node:assert';
 import { BuildReport, Mach } from '@alshdavid/mach';
 import { FIXTURES_FN } from '../utils/paths/index.js';
-import { CHROME_EXECUTABLE_PATH, ClientContext } from '../utils/browser/index.js';
+import { ClientContext } from '../utils/browser/index.js';
 import { install_npm } from '../utils/npm/index.js';
 import * as puppeteer from 'puppeteer-core';
 
 const FIXTURE = FIXTURES_FN('web-html-ts-css')
 
-describe('web-html-ts-css', { concurrency: true }, async () => {
+describe('web-html-ts-css', { concurrency: false }, async () => {
   let browser: puppeteer.Browser
   let client: ClientContext
   let report: BuildReport
@@ -21,18 +21,8 @@ describe('web-html-ts-css', { concurrency: true }, async () => {
       entries: ['src/index.html']
     })
 
-    browser = await puppeteer.launch({
-      executablePath: CHROME_EXECUTABLE_PATH,
-      headless: true,
-      devtools: true,
-      ignoreHTTPSErrors: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-sync',
-        '--ignore-certificate-errors',
-        '--disable-gpu'
-      ],
+    browser = await puppeteer.connect({
+      browserWSEndpoint: process.env.PUPPETEER_WS_ENDPOINT
     })
 
     client = await ClientContext.new({ 
@@ -41,8 +31,8 @@ describe('web-html-ts-css', { concurrency: true }, async () => {
   })
 
   after(async () => {
-    await browser.close()
-    client.close()
+    await browser.disconnect()
+    await client.close()
   })
 
   test('Should set exports correctly ', async (t) => {

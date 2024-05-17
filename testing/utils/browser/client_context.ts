@@ -28,8 +28,8 @@ export class ClientContext {
     return `http://localhost:${this.#server.address().port}`
   }
 
-  close() {
-    this.#server.close()
+  async close() {
+    await new Promise<void>(res => this.#server.close(() => res()))
   }
 }
 
