@@ -699,11 +699,7 @@ checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
 name = "mach_bundler_cli"
 version = "0.0.0-local"
 dependencies = [
- "clap",
  "mach_bundler_core",
- "normalize-path",
- "num_cpus",
- "serde_json",
 ]
 
 [[package]]
@@ -716,6 +712,7 @@ dependencies = [
  "ipc_channel_adapter",
  "markup5ever_rcdom",
  "normalize-path",
+ "num_cpus",
  "once_cell",
  "oxc_resolver",
  "pathdiff",

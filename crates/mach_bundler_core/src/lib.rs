@@ -6,3 +6,5 @@ pub mod public;
 pub mod platform;
 #[cfg(feature = "cli_parser")]
 pub mod cli;
+
+pub use self::mach::*;

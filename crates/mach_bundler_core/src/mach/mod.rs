@@ -1,5 +1,7 @@
 mod mach;
 mod build;
+mod build_parse_config;
+mod build_app_reporter;
 mod dev;
 mod version;
 mod watch;

@@ -5,54 +5,20 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use clap::Parser;
 use normalize_path::NormalizePath;
 
-use mach_bundler_core::public::MachConfig;
-use mach_bundler_core::public::MachConfigSync;
-use mach_bundler_core::public::Machrc;
+use crate::public::MachConfig;
+use crate::public::MachConfigSync;
+use crate::public::Machrc;
+use crate::BuildOptions;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
-#[derive(Parser, Debug)]
-pub struct BuildCommand {
-  /// Input file to build
-  pub entry: Option<Vec<PathBuf>>,
-
-  /// Output folder
-  #[arg(short = 'o', long = "dist", default_value = "dist")]
-  pub out_folder: PathBuf,
-
-  /// Delete output folder before emitting files
-  #[arg(short = 'c', long = "clean")]
-  pub clean: bool,
-
-  /// Disable optimizations
-  #[arg(long = "no-optimize")]
-  pub no_optimize: bool,
-
-  /// Enable bundle splitting (experimental)
-  #[arg(long = "bundle-splitting")]
-  pub bundle_splitting: bool,
-
-  /// How many threads to use for compilation
-  #[arg(short = 't', long = "threads", env = "MACH_THREADS")]
-  pub threads: Option<usize>,
-
-  /// How many Node.js workers to spawn for plugins
-  #[arg(long = "node-workers", env = "MACH_NODE_WORKERS")]
-  pub node_workers: Option<usize>,
-
-  /// Enable logging debug info
-  #[arg(long = "debug")]
-  pub debug: bool,
-}
-
-pub fn parse_config(command: BuildCommand) -> Result<MachConfigSync, String> {
+pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();
 
   let entry_arg = 'block: {
-    if let Some(args) = command.entry {
+    if let Some(args) = command.entries {
       break 'block args[0].clone();
     }
     break 'block std::env::current_dir().unwrap();
