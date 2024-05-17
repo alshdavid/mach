@@ -8,9 +8,9 @@ use std::time::SystemTime;
 use clap::Parser;
 use normalize_path::NormalizePath;
 
-use crate::public::MachConfig;
-use crate::public::MachConfigSync;
-use crate::public::Machrc;
+use mach_bundler_core::public::MachConfig;
+use mach_bundler_core::public::MachConfigSync;
+use mach_bundler_core::public::Machrc;
 
 type FileIndex = HashMap<String, Vec<PathBuf>>;
 
