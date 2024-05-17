@@ -1,10 +1,10 @@
 use clap::Parser;
 use clap::Subcommand;
 
-use crate::mach::BuildOptions;
-use crate::mach::DevOptions;
-use crate::mach::VersionOptions;
-use crate::mach::WatchOptions;
+use super::BuildCommand;
+use super::DevCommand;
+use super::VersionCommand;
+use super::WatchCommand;
 
 #[derive(Parser, Debug)]
 pub struct Commands {
@@ -15,13 +15,13 @@ pub struct Commands {
 #[derive(Debug, Subcommand)]
 pub enum CommandType {
   /// Build a project
-  Build(BuildOptions),
+  Build(BuildCommand),
   /// Start a web server and reload when changes are detected
-  Dev(DevOptions),
+  Dev(DevCommand),
   /// Build and rebuild when changes are detected
-  Watch(WatchOptions),
+  Watch(WatchCommand),
   /// Print version information
-  Version(VersionOptions),
+  Version(VersionCommand),
 }
 
 pub fn parse_options<T: AsRef<str>>(input: &[T]) -> Result<Commands, String> {

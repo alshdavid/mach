@@ -1,8 +1,5 @@
 #![allow(unused)]
 
-#[cfg(feature = "cli_parser")]
-use clap::Parser;
-
 use super::Mach;
 
 #[allow(non_upper_case_globals)]
@@ -18,8 +15,6 @@ const DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 
-#[cfg_attr(feature = "cli_parser", derive(Parser))]
-#[derive(Debug)]
 pub struct VersionOptions {}
 
 pub struct VersionResult {

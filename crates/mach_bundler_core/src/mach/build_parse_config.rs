@@ -99,7 +99,7 @@ pub fn parse_config(command: BuildOptions) -> Result<MachConfigSync, String> {
     machrc,
     threads,
     node_workers,
-    optimize: !command.no_optimize,
+    optimize: command.optimize,
     env,
     debug: command.debug,
     diagnostic_port,
