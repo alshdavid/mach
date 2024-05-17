@@ -82,6 +82,9 @@ _default:
 
 [unix]
 build:
+  # Install npm
+  test -d node_modules || pnpm install
+  
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs_adapter.{{dylib}} ./crates/mach_bundler_nodejs_adapter/lib/napi/index.node
