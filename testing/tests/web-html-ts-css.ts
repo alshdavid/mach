@@ -36,7 +36,6 @@ describe('web-html-ts-css', { concurrency: true }, async () => {
     })
 
     client = await ClientContext.new({ 
-      browser,
       serve_path: FIXTURE('dist')
     })
   })

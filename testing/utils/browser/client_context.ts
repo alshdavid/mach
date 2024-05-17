@@ -5,37 +5,23 @@ import * as fs from "node:fs"
 import * as fsAsync from "node:fs/promises"
 
 export type ClientContextOptions = {
-  browser: puppeteer.Browser
   serve_path: string
 }
 
 export class ClientContext {
   #server
-  #browser
 
   constructor(
     server: http.Server,
-    browser: puppeteer.Browser,
   ) {
     this.#server = server
-    this.#browser = browser
   }
 
   static async new(options: ClientContextOptions): Promise<ClientContext> {
     const server = http.createServer(serve_static(options.serve_path))
     await new Promise<void>(res => server.listen(0, "0.0.0.0", () => res()))
-    return new ClientContext(server, options.browser)
+    return new ClientContext(server)
   }
-
-  // async newPage(): Promise<puppeteer.Page & AsyncDisposable & Disposable> {
-  //   const page = await this.#browser.newPage()
-    
-  //   await page.goto(`http://localhost:${this.#server.address().port}`)
-
-   
-
-  //   return page as puppeteer.Page & AsyncDisposable & Disposable
-  // }
 
   address() {
     // @ts-expect-error

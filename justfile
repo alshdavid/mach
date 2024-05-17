@@ -144,7 +144,7 @@ example cmd fixture *ARGS:
 serve:
   npx http-server -p 3000 ./examples
 
-test-integration:
+integration-tests:
   cd testing && node --import tsx setup.ts
 
 test:
