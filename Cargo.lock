@@ -737,6 +737,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mach_bundler_npm_os_arch"
+version = "0.1.0"
+dependencies = [
+ "mach_bundler_core",
+ "napi",
+ "napi-build",
+ "napi-derive",
+ "serde",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -32,7 +32,8 @@
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@alshdavid/mach-os-arch": "workspace:*"
   },
   "dependencies": {
     "@types/node": "20.x.x"

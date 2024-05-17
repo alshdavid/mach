@@ -85,6 +85,7 @@ build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs.{{dylib}} ./crates/mach_bundler_nodejs/lib/napi/index.node
+  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}} "./npm/mach-os-arch/bin/index.node"
 
   # Copy output to target
   @rm -rf {{out_dir}}

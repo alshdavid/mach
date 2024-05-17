@@ -3,6 +3,7 @@ resolver = "2"
 
 members = [
   "./crates/*",
+  "./npm/mach-os-arch"
 ]
 
 [profile.release]
