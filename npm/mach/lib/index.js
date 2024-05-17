@@ -5,11 +5,6 @@ class MachInitError extends Error {
   }
 }
 
-export const Resolver = globalThis.Mach?.Resolver || MachInitError
-export const Transformer = globalThis.Mach?.Transformer || MachInitError
-export const Dependency = globalThis.Mach?.Dependency || MachInitError
-export const MutableAsset = globalThis.Mach?.MutableAsset || MachInitError
-
 let exports = undefined
 
 const OS = {
@@ -33,4 +28,8 @@ try {
   }
 }
 
-export const Mach = exports.Mach
+export const Mach = exports.Mach || globalThis.Mach?.Mach || MachInitError
+export const Resolver = exports.Resolver || globalThis.Mach?.Resolver || MachInitError
+export const Transformer = exports.Transformer || globalThis.Mach?.Transformer || MachInitError
+export const Dependency = exports.Dependency || globalThis.Mach?.Dependency || MachInitError
+export const MutableAsset = exports.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError

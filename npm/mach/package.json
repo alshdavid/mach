@@ -12,9 +12,6 @@
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"
   },
-  "scripts": {
-    "postinstall": "node postinstall.mjs"
-  },
   "files": [
     "cmd",
     "lib",
@@ -32,10 +29,11 @@
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
   },
   "devDependencies": {
+    "@types/node": "20.x.x",
     "typescript": "^5.4.5",
     "@alshdavid/mach-os-arch": "workspace:*"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@types/node": "20.x.x"
   }
 }
