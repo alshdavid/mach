@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-mach_bundler_core = { path = "../mach" }
+mach_bundler_core = { path = "../mach_bundler_core" }
 napi = { version = "2.12.2", default-features = false, features = ["napi8", "tokio_rt", "serde-json", "async"] }
 napi-derive = "2.12.2"
 serde = { version = "1.0.197", features = ["derive"] }
