@@ -26,6 +26,7 @@ fn main() {
         threads: command.threads,
         node_workers: command.node_workers,
         project_root: command.project_root,
+        adapter_map: None,
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;

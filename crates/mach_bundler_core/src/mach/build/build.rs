@@ -1,27 +1,26 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use serde::Deserialize;
-use serde::Serialize;
-
 use super::build_parse_config::parse_config;
 use super::create_result::create_build_result;
-use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::platform::adapters::nodejs::NodejsAdapterOptions;
+use crate::adapters::nodejs::NodejsAdapter;
+use crate::adapters::nodejs::NodejsAdapterOptions;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
 use crate::platform::packaging::package;
 use crate::platform::transformation::resolve_and_transform;
+use crate::public::Adapter;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
 use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
 use crate::public::DependencyMapSync;
+use crate::public::Engine;
 use crate::public::OutputsSync;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct BuildOptions {
   /// Input file to build
   pub entries: Option<Vec<PathBuf>>,
@@ -39,6 +38,8 @@ pub struct BuildOptions {
   pub threads: Option<usize>,
   /// How many Node.js workers to spawn for plugins
   pub node_workers: Option<usize>,
+  /// Map of adapters used to communicate with plugin contexts
+  pub adapter_map: Option<HashMap<Engine, Box<dyn Adapter>>>
 }
 
 impl Default for BuildOptions {
@@ -52,6 +53,7 @@ impl Default for BuildOptions {
       project_root: None,
       threads: Some(num_cpus::get_physical()),
       node_workers: Some(num_cpus::get_physical()),
+      adapter_map: None,
     }
   }
 }

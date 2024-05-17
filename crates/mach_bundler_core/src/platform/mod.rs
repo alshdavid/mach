@@ -1,4 +1,3 @@
-pub mod adapters;
 pub mod bundling;
 pub mod config;
 pub mod emit;

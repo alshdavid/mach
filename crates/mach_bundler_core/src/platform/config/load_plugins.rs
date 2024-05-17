@@ -1,6 +1,6 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
-use crate::platform::adapters::nodejs::NodejsAdapter;
+use crate::adapters::nodejs::NodejsAdapter;
 use crate::plugins::resolver_javascript::ResolverJavaScript;
 use crate::plugins::resolver_nodejs::ResolverNodejs;
 use crate::plugins::transformer_css::TransformerCSS;

@@ -1,3 +1,4 @@
+mod adapter;
 mod asset;
 mod asset_graph;
 mod asset_id;
@@ -27,6 +28,7 @@ mod resolver;
 mod specifier_type;
 mod transformer;
 
+pub use self::adapter::*;
 pub use self::asset::*;
 pub use self::asset_graph::*;
 pub use self::asset_id::*;

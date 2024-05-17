@@ -27,6 +27,7 @@ pub fn run(args: Vec<String>) {
         threads: command.threads,
         node_workers: command.node_workers,
         project_root: None,
+        adapter_map: None,
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;

@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::platform::adapters::nodejs::NodejsAdapter;
+use crate::adapters::nodejs::NodejsAdapter;
 use crate::plugins::resolver_javascript::resolve;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientRequestTransformerLoadConfig;
