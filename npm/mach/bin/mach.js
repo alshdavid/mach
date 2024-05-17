@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Infer the binary based on the OS and Arch
 const OS = {
   win32: 'windows',
