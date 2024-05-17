@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use super::build_parse_config::parse_config;
 use super::create_result::create_build_result;
-use crate::adapters::nodejs::NodejsAdapter;
+use crate::adapters::nodejs_ipc::NodejsAdapter;
 use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
 use crate::platform::emit::emit;
