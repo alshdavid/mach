@@ -13,4 +13,4 @@ export MACH_SKIP_POST_INSTALL="true"
 
 profile=release os=linux arch=amd64 just build
 
-just test-integration
+just integration-tests
