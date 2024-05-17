@@ -13,7 +13,7 @@ use ipc_channel_adapter::host::sync::ChildSender;
 use oxc_resolver::ResolveOptions;
 
 use super::NodejsWorker;
-use crate::platform::plugins::resolver_javascript::resolve_oxc;
+use crate::plugins::resolver_javascript::resolve_oxc;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientResponse;
 use crate::public::nodejs::NodejsHostRequest;

@@ -1,5 +1,5 @@
 use crate::platform::adapters::nodejs::NodejsAdapter;
-use crate::platform::plugins::resolver_javascript::resolve;
+use crate::plugins::resolver_javascript::resolve;
 use crate::public::nodejs::client::NodejsClientRequest;
 use crate::public::nodejs::client::NodejsClientRequestResolverLoadConfig;
 use crate::public::nodejs::client::NodejsClientRequestResolverRegister;
