@@ -4,7 +4,10 @@ import * as types from '../types/index.js'
 
 export async function transformer_transform(
   /** @type {WorkerState} */ { transformers, transformers_config },
-  /** @type {types.TransformerTransformAction} */ { specifier, ...internalMutableAsset },
+  /** @type {types.TransformerTransformAction} */ {
+    specifier,
+    ...internalMutableAsset
+  },
 ) {
   const dependencies = /** @type {Array<any>} */ ([])
   const mutable_asset = new MutableAsset(internalMutableAsset, dependencies)

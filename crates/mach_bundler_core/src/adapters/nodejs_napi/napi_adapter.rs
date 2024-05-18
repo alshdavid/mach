@@ -16,17 +16,22 @@ pub struct NodejsNapiAdapter {
   counter: Arc<Mutex<u8>>,
   worker_count: u8,
   tx_to_worker: Vec<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>,
-  rx_to_worker: Arc<Mutex<Option<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>>,
+  rx_to_worker:
+    Arc<Mutex<Option<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>>,
   tx_start_worker: Sender<usize>,
   rx_worker_connected: Arc<Mutex<Option<Receiver<()>>>>,
 }
 
 impl NodejsNapiAdapter {
-  pub fn new(tx_start_worker: Sender<usize>, rx_worker_connected: Receiver<()>, worker_count: u8) -> Self {
+  pub fn new(
+    tx_start_worker: Sender<usize>,
+    rx_worker_connected: Receiver<()>,
+    worker_count: u8,
+  ) -> Self {
     let mut tx_to_worker = vec![];
     let mut rx_to_worker = vec![];
     // let (tx_to_worker, rx_to_worker) = channel();
-    
+
     for _ in 0..worker_count {
       let (tx, rx) = channel();
       tx_to_worker.push(tx);
@@ -68,7 +73,7 @@ impl Adapter for NodejsNapiAdapter {
             tx_ready.send(()).unwrap();
           }
         });
-        
+
         for i in 0..worker_count {
           println!("sent");
           tx_start_worker.send(i as usize).unwrap();
@@ -76,7 +81,9 @@ impl Adapter for NodejsNapiAdapter {
 
         rx_ready.recv().unwrap();
       }
-    }).join().unwrap();
+    })
+    .join()
+    .unwrap();
     Ok(())
   }
 
@@ -120,7 +127,6 @@ impl Adapter for NodejsNapiAdapter {
     Err("Recv Error".to_string())
   }
 }
-
 
 impl NodejsNapiAdapter {
   // TODO use an atomicu8

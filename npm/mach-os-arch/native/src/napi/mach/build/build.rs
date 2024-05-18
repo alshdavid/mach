@@ -76,7 +76,7 @@ pub fn build(
 
   // // Setup Nodejs Plugin Runtime
   // let worker_threads = options_napi.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
-  
+
   // let tx_start_worker = START_WORKER.with(|(tx, _)| tx.borrow_mut().take().unwrap());
   // let rx_register_worker = REGISTER_WORKER.with(|(_, rx)| rx.borrow_mut().take().unwrap());
 

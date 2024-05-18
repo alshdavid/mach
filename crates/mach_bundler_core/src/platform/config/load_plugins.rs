@@ -47,7 +47,6 @@ pub fn load_plugins(
 
       println!("2");
 
-
       plugins.resolvers.push(Box::new(ResolverAdapter::new(
         &*config,
         specifier,

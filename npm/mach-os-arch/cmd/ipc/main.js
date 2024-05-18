@@ -11,16 +11,19 @@ import { buffer_bytes } from '../../platform/buffer_bytes/index.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
-process.stdin.on('data', buffer_bytes(str => {
-  const [child_sender, child_receiver] = str.split('&')
+process.stdin.on(
+  'data',
+  buffer_bytes((str) => {
+    const [child_sender, child_receiver] = str.split('&')
 
-  new Worker(path.join(__dirname, 'worker.js'), {
-    workerData: {
-      child_sender,
-      child_receiver,
-    },
-  })
-}))
+    new Worker(path.join(__dirname, 'worker.js'), {
+      workerData: {
+        child_sender,
+        child_receiver,
+      },
+    })
+  }),
+)
 
 process.stdin.on('close', () => {
   process.exit()

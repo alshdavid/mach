@@ -9,10 +9,5 @@
       "@alshdavid/mach": ["../mach/types/index.d.ts"]
     }
   },
-  "include": [
-    "lib",
-    "cmd",
-    "platform",
-    "types"
-  ]
+  "include": ["lib", "cmd", "platform", "types"]
 }

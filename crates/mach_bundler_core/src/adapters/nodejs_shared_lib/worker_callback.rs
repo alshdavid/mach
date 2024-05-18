@@ -3,15 +3,6 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::thread;
 
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingResponse;
-use crate::public::AdapterOutgoingResponsePing;
-use crate::public::AdapterOutgoingResponseResolverLoadConfig;
-use crate::public::AdapterOutgoingResponseResolverRegister;
-use crate::public::AdapterOutgoingResponseResolverResolve;
-use crate::public::AdapterOutgoingResponseTransformerLoadConfig;
-use crate::public::AdapterOutgoingResponseTransformerRegister;
-use crate::public::AdapterOutgoingResponseTransformerTransform;
 use napi::threadsafe_function::ThreadSafeCallContext;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
@@ -22,6 +13,16 @@ use napi::JsString;
 use napi::JsUnknown;
 use serde::Deserialize;
 use serde::Serialize;
+
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
+use crate::public::AdapterOutgoingResponsePing;
+use crate::public::AdapterOutgoingResponseResolverLoadConfig;
+use crate::public::AdapterOutgoingResponseResolverRegister;
+use crate::public::AdapterOutgoingResponseResolverResolve;
+use crate::public::AdapterOutgoingResponseTransformerLoadConfig;
+use crate::public::AdapterOutgoingResponseTransformerRegister;
+use crate::public::AdapterOutgoingResponseTransformerTransform;
 
 pub fn worker_callback(
   env: &Env,

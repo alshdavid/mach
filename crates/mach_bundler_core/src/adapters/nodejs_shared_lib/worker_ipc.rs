@@ -1,14 +1,14 @@
 use ipc_channel_adapter::child::sync::HostReceiver;
 use ipc_channel_adapter::child::sync::HostSender;
-use crate::public::AdapterIncomingRequest;
-use crate::public::AdapterIncomingResponse;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingResponse;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsUndefined;
 
 use super::worker_callback::worker_callback;
+use crate::public::AdapterIncomingRequest;
+use crate::public::AdapterIncomingResponse;
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
 
 pub fn worker_ipc(
   env: Env,
@@ -22,11 +22,7 @@ pub fn worker_ipc(
   let _tx_ipc =
     HostSender::<AdapterIncomingRequest, AdapterIncomingResponse>::new(&child_receiver).unwrap();
 
-  worker_callback(
-    &env,
-    rx_ipc,
-    callback,
-  );
+  worker_callback(&env, rx_ipc, callback);
 
   env.get_undefined()
 }

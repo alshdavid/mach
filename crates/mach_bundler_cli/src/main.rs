@@ -23,7 +23,7 @@ fn main() {
       let mut adapter_map = AdapterMap::new();
 
       // Setup Nodejs Plugin Runtime
-      let workers =command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
+      let workers = command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
       let nodejs_adapter = NodejsIpcAdapter::new(workers);
       adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
 
