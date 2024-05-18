@@ -713,7 +713,6 @@ dependencies = [
  "ipc_channel_adapter",
  "markup5ever_rcdom",
  "napi",
- "napi-derive",
  "normalize-path",
  "num_cpus",
  "once_cell",

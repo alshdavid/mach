@@ -14,7 +14,7 @@ use napi_derive::napi;
 
 
 #[napi]
-pub fn run(args: Vec<String>) {
+pub fn exec(args: Vec<String>) {
   let start_time = SystemTime::now();
   let command = parse_options(&args).unwrap();
   let mach = Mach::new();

@@ -1,10 +1,8 @@
 use std::sync::mpsc::channel;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 use std::thread;
 
-use ipc_channel_adapter::child::sync::HostReceiver;
-use ipc_channel_adapter::child::sync::HostSender;
-use crate::public::AdapterIncomingRequest;
-use crate::public::AdapterIncomingResponse;
 use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingResponse;
 use crate::public::AdapterOutgoingResponsePing;
@@ -21,25 +19,15 @@ use napi::JsFunction;
 use napi::JsNumber;
 use napi::JsObject;
 use napi::JsString;
-use napi::JsUndefined;
 use napi::JsUnknown;
-use napi_derive::napi;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[napi]
-pub fn worker(
-  env: Env,
-  child_sender: String,
-  child_receiver: String,
+pub fn worker_callback(
+  env: &Env,
+  child_receiver: Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>,
   callback: JsFunction,
-) -> napi::Result<JsUndefined> {
-  let (_, rx_ipc) =
-    HostReceiver::<AdapterOutgoingRequest, AdapterOutgoingResponse>::new(&child_sender).unwrap();
-
-  let _tx_ipc =
-    HostSender::<AdapterIncomingRequest, AdapterIncomingResponse>::new(&child_receiver).unwrap();
-
+) {
   let tsfn = env
     .create_threadsafe_function(
       &callback,
@@ -55,7 +43,7 @@ pub fn worker(
   let unsafe_env = env.raw() as usize;
 
   thread::spawn(move || {
-    while let Ok((action, response)) = rx_ipc.recv() {
+    while let Ok((action, response)) = child_receiver.recv() {
       let (tx, rx) = channel::<PromiseResult<AdapterOutgoingResponse>>();
 
       let action_n: u8 = match action {
@@ -127,8 +115,6 @@ pub fn worker(
       };
     }
   });
-
-  env.get_undefined()
 }
 
 fn map_return_value(

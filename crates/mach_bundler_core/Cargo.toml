@@ -9,8 +9,9 @@ license = "MIT"
 
 [features]
 cli_parser = ["clap"]
-adapters_nodejs_ipc = ["ipc_channel_adapter"]
-adapters_nodejs_napi = ["napi", "napi-derive"]
+adapters_nodejs_ipc_host = ["ipc_channel_adapter"]
+adapters_nodejs_ipc_client = ["napi", "ipc_channel_adapter"]
+adapters_nodejs_napi = ["napi"]
 
 [dependencies]
 swc_core = { version = "=0.90.23", features = ["ecma_ast", "ecma_parser", "common", "ecma_visit", "ecma_transforms", "common_concurrent", "ecma_codegen", "ecma_transforms_typescript", "ecma_transforms_react", "ecma_transforms_optimization", "ecma_minifier"] }
@@ -28,4 +29,3 @@ clap = { version = "4.*", features = ["derive", "env"], optional = true }
 num_cpus = "1.*"
 ipc_channel_adapter = { version = "0.*", optional = true }
 napi = { version = "2.*", default-features = false,  optional = true, features = ["napi8", "tokio_rt", "serde-json", "async"] }
-napi-derive = { version = "2.*", optional = true }

@@ -1,1 +1,5 @@
-pub mod worker;
+#[cfg(feature = "adapters_nodejs_ipc_client")]
+pub mod worker_ipc;
+#[cfg(feature = "adapters_nodejs_napi")]
+pub mod worker_napi;
+pub mod worker_callback;

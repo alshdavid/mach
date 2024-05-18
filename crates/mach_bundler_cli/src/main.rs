@@ -1,7 +1,6 @@
 #![deny(unused_crate_dependencies)]
 use std::sync::Arc;
 use std::time::SystemTime;
-use mach_napi as _;
 
 use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapter;
 use mach_bundler_core::cli::parse_options_from_cli;

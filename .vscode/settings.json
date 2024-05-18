@@ -24,7 +24,8 @@
   },
   "rust-analyzer.cargo.features": [
     "cli_parser",
-    "adapters_nodejs_ipc",
+    "adapters_nodejs_ipc_host",
+    "adapters_nodejs_ipc_client",
     "adapters_nodejs_napi",
   ],
 }

@@ -22,3 +22,6 @@ mod nodejs_worker;
 pub use nodejs_instance::*;
 pub use nodejs_ipc_adapter::*;
 pub use nodejs_worker::*;
+
+#[cfg(feature = "adapters_nodejs_ipc_client")]
+pub use super::nodejs_shared_lib::worker_ipc::*;
