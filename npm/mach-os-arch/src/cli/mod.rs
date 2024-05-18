@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::SystemTime;
 
+use mach_bundler_core::adapters::nodejs_napi::NodejsNapiAdapter;
 use mach_bundler_core::cli::parse_options;
 use mach_bundler_core::cli::CommandType;
 use mach_bundler_core::public::AdapterMap;
@@ -11,7 +12,6 @@ use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
 use napi_derive::napi;
 
-use crate::adapters::nodejs_napi::NodejsNapiAdapter;
 
 #[napi]
 pub fn run(args: Vec<String>) {

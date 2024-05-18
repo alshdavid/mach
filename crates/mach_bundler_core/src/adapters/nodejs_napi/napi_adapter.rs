@@ -2,15 +2,15 @@ use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::sync::mpsc::Receiver;
 
-use mach_bundler_core::public::Adapter;
-use mach_bundler_core::public::AdapterOutgoingRequest;
-use mach_bundler_core::public::AdapterOutgoingResponse;
+use crate::public::Adapter;
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsNapiAdapter {}
 
 impl NodejsNapiAdapter {
-  pub fn new(workers: u8) -> Self {
+  pub fn new(_workers: u8) -> Self {
     todo!()
   }
 }

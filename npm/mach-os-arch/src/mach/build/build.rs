@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 
+use mach_bundler_core::adapters::nodejs_napi::NodejsNapiAdapter;
+use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions as BuildOptionsCore;
 use mach_bundler_core::Mach as MachCore;
 use napi::Env;
@@ -60,13 +63,18 @@ pub fn build(
     options.threads = Some(threads);
   }
 
-  if let Some(node_workers) = options_napi.node_workers {
-    options.node_workers = Some(node_workers);
-  }
-
   if let Some(project_root) = options_napi.project_root {
     options.project_root = Some(project_root);
   }
+
+  let mut adapter_map = AdapterMap::new();
+
+  // Setup Nodejs Plugin Runtime
+  let worker_threads = options_napi.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
+  let nodejs_adapter = NodejsNapiAdapter::new(worker_threads);
+  adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
+
+  options.adapter_map = Some(adapter_map);
 
   match MachCore::new().build(options) {
     Ok(report) => {

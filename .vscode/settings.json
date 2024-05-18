@@ -22,5 +22,9 @@
     ".npmrc": false,
     "package.json": false
   },
-  "rust-analyzer.cargo.features": ["cli_parser"],
+  "rust-analyzer.cargo.features": [
+    "cli_parser",
+    "adapters_nodejs_ipc",
+    "adapters_nodejs_napi",
+  ],
 }

@@ -1,12 +1,9 @@
 #![deny(unused_crate_dependencies)]
-mod adapters;
-
 use std::sync::Arc;
 use std::time::SystemTime;
 use mach_napi as _;
 
-use self::adapters::nodejs_ipc::NodejsIpcAdapter;
-use self::adapters::nodejs_ipc::NodejsIpcAdapterOptions;
+use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapter;
 use mach_bundler_core::cli::parse_options_from_cli;
 use mach_bundler_core::cli::CommandType;
 use mach_bundler_core::public::AdapterMap;
@@ -26,19 +23,9 @@ fn main() {
 
       let mut adapter_map = AdapterMap::new();
 
-      // Setup Nodejs Child
-      let nodejs_adapter_options = NodejsIpcAdapterOptions {
-        workers: command.node_workers.unwrap_or(num_cpus::get_physical()) as u8,
-      };
-
-      let nodejs_adapter = match NodejsIpcAdapter::new(nodejs_adapter_options) {
-        Ok(nodejs_adapter) => nodejs_adapter,
-        Err(error) => {
-          println!("{}", error);
-          return;
-        }
-      };
-
+      // Setup Nodejs Plugin Runtime
+      let workers =command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
+      let nodejs_adapter = NodejsIpcAdapter::new(workers);
       adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
 
       if let Err(msg) = mach.build(BuildOptions {

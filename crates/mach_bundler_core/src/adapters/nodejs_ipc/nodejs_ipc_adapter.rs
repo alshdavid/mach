@@ -1,3 +1,13 @@
+/*
+  NodejsIpcAdapter holds the Nodejs child process and the IPC channels
+  for each worker.
+
+  This will initialize Nodejs lazily as needed
+
+  The send() method uses a "round-robin" strategy to decide which
+  Nodejs child to send a request to.
+*/
+
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::sync::mpsc::channel;
@@ -8,24 +18,12 @@ use std::sync::Mutex;
 use std::thread;
 
 use super::NodejsInstance;
-use mach_bundler_core::public::Adapter;
-use mach_bundler_core::public::AdapterIncomingRequest;
-use mach_bundler_core::public::AdapterIncomingResponse;
-use mach_bundler_core::public::AdapterOutgoingRequest;
-use mach_bundler_core::public::AdapterOutgoingResponse;
+use crate::public::Adapter;
+use crate::public::AdapterIncomingRequest;
+use crate::public::AdapterIncomingResponse;
+use crate::public::AdapterOutgoingRequest;
+use crate::public::AdapterOutgoingResponse;
 
-#[derive(Clone)]
-pub struct NodejsIpcAdapterOptions {
-  pub workers: u8,
-}
-
-/// NodejsIpcAdapter holds the Nodejs child process and the IPC channels
-/// for each worker.
-///
-/// This will initialize Nodejs lazily as needed
-///
-/// The send() method uses a "round-robin" strategy to decide which
-/// Nodejs child to send a request to.
 #[derive(Clone)]
 pub struct NodejsIpcAdapter {
   counter: Arc<Mutex<u8>>,
@@ -37,6 +35,35 @@ pub struct NodejsIpcAdapter {
   tx_to_workers: Arc<Vec<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>,
   rx_to_workers:
     Arc<Mutex<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>,
+}
+
+impl NodejsIpcAdapter {
+  pub fn new(workers: u8) -> Self {
+
+    let mut tx_to_workers =
+      Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
+    let mut rx_from_workers =
+      Vec::<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
+
+    let (tx_worker_host, rx_worker_host) =
+      channel::<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>();
+
+    for _ in 0..workers {
+      let (tx, rx) = channel();
+      tx_to_workers.push(tx);
+      rx_from_workers.push(rx);
+    }
+
+    Self {
+      counter: Arc::new(Mutex::new(0)),
+      worker_count: Arc::new(workers),
+      nodejs_instance: Arc::new(Mutex::new(None)),
+      tx_to_host: Arc::new(tx_worker_host),
+      rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
+      tx_to_workers: Arc::new(tx_to_workers),
+      rx_to_workers: Arc::new(Mutex::new(rx_from_workers)),
+    }
+  }
 }
 
 impl Adapter for NodejsIpcAdapter {
@@ -128,34 +155,6 @@ impl Adapter for NodejsIpcAdapter {
 }
 
 impl NodejsIpcAdapter {
-  pub fn new(options: NodejsIpcAdapterOptions) -> Result<Self, String> {
-    let workers = options.workers;
-
-    let mut tx_to_workers =
-      Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
-    let mut rx_from_workers =
-      Vec::<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
-
-    let (tx_worker_host, rx_worker_host) =
-      channel::<(AdapterIncomingRequest, Sender<AdapterIncomingResponse>)>();
-
-    for _ in 0..workers {
-      let (tx, rx) = channel();
-      tx_to_workers.push(tx);
-      rx_from_workers.push(rx);
-    }
-
-    Ok(Self {
-      counter: Arc::new(Mutex::new(0)),
-      worker_count: Arc::new(workers),
-      nodejs_instance: Arc::new(Mutex::new(None)),
-      tx_to_host: Arc::new(tx_worker_host),
-      rx_host_request: Arc::new(Mutex::new(Some(rx_worker_host))),
-      tx_to_workers: Arc::new(tx_to_workers),
-      rx_to_workers: Arc::new(Mutex::new(rx_from_workers)),
-    })
-  }
-
   // TODO use an atomicu8
   fn get_next(&self) -> usize {
     let mut i = self.counter.lock().unwrap();
