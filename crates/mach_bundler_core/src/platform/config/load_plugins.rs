@@ -41,13 +41,21 @@ pub fn load_plugins(
         ));
       };
 
+      println!("1");
+
       adapter.init()?;
+
+      println!("2");
+
 
       plugins.resolvers.push(Box::new(ResolverAdapter::new(
         &*config,
         specifier,
         adapter.clone(),
       )?));
+
+      println!("3");
+
       continue;
     }
   }

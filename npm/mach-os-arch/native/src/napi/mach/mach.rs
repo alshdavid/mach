@@ -1,4 +1,5 @@
 use napi::Env;
+use napi::JsFunction;
 use napi::JsObject;
 use napi::JsUnknown;
 use napi_derive::napi;
