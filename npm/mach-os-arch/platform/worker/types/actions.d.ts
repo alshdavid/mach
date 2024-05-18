@@ -1,73 +1,40 @@
 export type Action =
-  | PingAction
-  | ResolverRegisterAction
-  | ResolverLoadConfigAction
-  | ResolverResolveAction
-  | TransformerRegisterAction
-  | TransformerLoadConfigAction
-  | TransformerTransformAction
+  | RequestContext<0, { 'Ping':  PingAction }>
+  | RequestContext<1, { 'ResolverRegister':  ResolverRegisterAction }>
+  | RequestContext<2, { 'ResolverLoadConfig':  ResolverLoadConfigAction }>
+  | RequestContext<3, { 'ResolverResolve':  ResolverResolveAction }>
+  | RequestContext<4, { 'TransformerRegister':  TransformerRegisterAction }>
+  | RequestContext<5, { 'TransformerLoadConfig':  TransformerLoadConfigAction }>
+  | RequestContext<6, { 'TransformerTransform':  TransformerTransformAction }>
 
-export type PingAction = [
-  0,
-  {
-    Ping: {}
-  },
-]
+export type RequestContext<T extends number, U> = [T,U,]
 
-export type ResolverRegisterAction = [
-  1,
-  {
-    ResolverRegister: {
-      specifier: string
-    }
-  },
-]
+export type PingAction = {}
 
-export type ResolverLoadConfigAction = [
-  2,
-  {
-    ResolverLoadConfig: {
-      specifier: string
-    }
-  },
-]
+export type ResolverRegisterAction = {
+  specifier: string
+}
 
-export type ResolverResolveAction = [
-  3,
-  {
-    ResolverResolve: {
-      specifier: string
-      dependency: any
-    }
-  },
-]
+export type ResolverLoadConfigAction = {
+  specifier: string
+}
 
-export type TransformerRegisterAction = [
-  4,
-  {
-    TransformerRegister: {
-      specifier: string
-    }
-  },
-]
+export type ResolverResolveAction = {
+  specifier: string
+  dependency: any
+}
 
-export type TransformerLoadConfigAction = [
-  5,
-  {
-    TransformerLoadConfig: {
-      specifier: string
-    }
-  },
-]
+export type TransformerRegisterAction = {
+  specifier: string
+}
 
-export type TransformerTransformAction = [
-  6,
-  {
-    TransformerTransform: {
-      specifier: string
-      file_path: string
-      kind: string
-      content: Array<any>
-    }
-  },
-]
+export type TransformerLoadConfigAction = {
+  specifier: string
+}
+
+export type TransformerTransformAction = {
+  specifier: string
+  file_path: string
+  kind: string
+  content: Array<any>
+}
