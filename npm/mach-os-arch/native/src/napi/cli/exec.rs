@@ -1,11 +1,8 @@
-use std::sync::Arc;
 use std::thread;
 use std::time::SystemTime;
 
-use mach_bundler_core::adapters::nodejs_napi::NodejsNapiAdapter;
 use mach_bundler_core::cli::parse_options;
 use mach_bundler_core::cli::CommandType;
-use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
@@ -13,8 +10,7 @@ use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
 use napi_derive::napi;
 
-use crate::shared::REGISTER_WORKER;
-use crate::shared::START_WORKER;
+use crate::shared::mach_build_command;
 
 #[napi]
 pub fn exec(args: Vec<String>) {
@@ -25,18 +21,7 @@ pub fn exec(args: Vec<String>) {
 
     match command.command {
       CommandType::Build(command) => {
-        let mut adapter_map = AdapterMap::new();
-
-        // Setup Nodejs Plugin Runtime
-        let tx_start_worker = START_WORKER.0.lock().unwrap().take().unwrap();
-        let rx_register_worker = REGISTER_WORKER.1.lock().unwrap().take().unwrap();
-        let worker_threads = command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
-
-        let nodejs_adapter =
-          NodejsNapiAdapter::new(tx_start_worker, rx_register_worker, worker_threads);
-        adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
-
-        if let Err(msg) = mach.build(BuildOptions {
+        if let Err(msg) = mach_build_command(BuildOptions {
           entries: command.entries,
           out_folder: command.out_folder,
           clean: command.clean,
@@ -44,8 +29,8 @@ pub fn exec(args: Vec<String>) {
           bundle_splitting: command.bundle_splitting,
           threads: command.threads,
           node_workers: command.node_workers,
-          project_root: None,
-          adapter_map: Some(adapter_map),
+          project_root: command.project_root,
+          adapter_map: None,
         }) {
           println!("❌ Build Failure\n{}", msg);
           return;

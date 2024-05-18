@@ -2,6 +2,9 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 use super::build_parse_config::parse_config;
 use super::create_result::create_build_result;
 use crate::platform::bundling::bundle;
@@ -57,7 +60,7 @@ impl Default for BuildOptions {
   }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BuildResult {
   pub bundle_manifest: HashMap<String, String>,
   pub entries: HashMap<String, String>,

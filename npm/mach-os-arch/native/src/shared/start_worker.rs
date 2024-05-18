@@ -1,4 +1,3 @@
-use std::cell::RefCell;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
@@ -42,7 +41,6 @@ pub fn start_worker(
 
   thread::spawn(move || {
     while let Ok(id) = rx_napi.recv() {
-      println!("recv");
       tsfn.call(Ok(id), ThreadsafeFunctionCallMode::Blocking);
     }
   });

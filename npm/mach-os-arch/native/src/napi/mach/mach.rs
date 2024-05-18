@@ -1,7 +1,7 @@
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
-use napi::JsUnknown;
+use napi::JsUndefined;
 use napi_derive::napi;
 
 use super::build::build;
@@ -21,7 +21,8 @@ impl Mach {
     &self,
     env: Env,
     options: JsObject,
-  ) -> napi::Result<JsUnknown> {
-    build(env, options)
+    callback: JsFunction,
+  ) -> napi::Result<JsUndefined> {
+    build(env, options, callback)
   }
 }
