@@ -1,6 +1,8 @@
-export function buffer_bytes(callback) {
+export function buffer_bytes(/** @type {(value: string) => (any | Promise<any>)} */ callback) {
+  /** @type {Array<any>} */
   let buffer = []
-  return (bytes) => {
+
+  return (/** @type {Array<any>} */ bytes) => {
     for (const byte of bytes) {
       // Characters
       if (byte !== 10) {
