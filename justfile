@@ -112,7 +112,7 @@ build:
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
 
   # Clean dir
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -153,8 +153,8 @@ example cmd fixture *ARGS:
 serve:
   npx http-server -p 3000 ./examples
 
-integration-tests:
-  cd testing && node --import tsx setup.ts
+integration-tests *ARGS:
+  node --import ./testing/node_modules/tsx/dist/loader.mjs ./testing/setup.ts {{ARGS}}
 
 test:
   cargo test

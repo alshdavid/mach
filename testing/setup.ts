@@ -27,10 +27,23 @@ void (async function () {
 
   process.env.PUPPETEER_WS_ENDPOINT = browser.wsEndpoint()
 
-  const files = fs
-    .readdirSync(path.join(__dirname, 'tests'))
-    .filter((test) => !test.startsWith('_'))
-    .map((test) => path.join(__dirname, 'tests', test))
+  let files = []
+  if (process.argv.slice(2).length) {
+    for (const option of process.argv.slice(2)) {
+      if (option.startsWith('.')) {
+        files.push(path.join(process.cwd(), option))
+      } else if (option.startsWith(path.sep)) {
+        files.push(option)
+      } else {
+        files.push(path.join(__dirname, 'tests', option))
+      }
+    }
+  } else {
+    files = fs
+      .readdirSync(path.join(__dirname, 'tests'))
+      .filter((test) => !test.startsWith('_'))
+      .map((test) => path.join(__dirname, 'tests', test))
+  }
 
   const test_stream = run({
     files,
@@ -45,3 +58,11 @@ void (async function () {
   await new Promise((res) => finished(test_stream, res))
   await browser.close()
 })()
+
+/*
+ if (option.endsWith('.ts')) {
+          files.push(option.slice(0, option.length - 3) + '.js')
+        } else {
+          files.push(option)
+        }
+*/
