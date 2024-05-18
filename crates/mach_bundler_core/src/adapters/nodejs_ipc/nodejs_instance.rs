@@ -45,7 +45,8 @@ impl NodejsInstance {
         .parent()
         .unwrap()
         .join("nodejs")
-        .join("worker")
+        .join("cmd")
+        .join("ipc")
         .join("main.js");
 
       if local_path.exists() {
@@ -54,7 +55,7 @@ impl NodejsInstance {
 
       if let Ok(resolved) = resolve_oxc(
         exe_dir,
-        "@alshdavid/mach/cmd/nodejs/worker/main.js",
+        "@alshdavid/mach/cmd/nodejs/cmd/ipc/main.js",
         ResolveOptions {
           symlinks: false,
           ..Default::default()

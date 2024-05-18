@@ -10,7 +10,7 @@ export class MutableAsset {
   #dependencies
 
   constructor(
-    /** @type {Omit<types.TransformerTransformAction['TransformerTransform'], 'specifier'>} */ internal,
+    /** @type {Omit<types.TransformerTransformAction[1]['TransformerTransform'], 'specifier'>} */ internal,
     /** @type {Array<any>} */ dependencies,
   ) {
     this.#internal = internal

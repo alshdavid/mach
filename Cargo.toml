@@ -2,8 +2,9 @@
 resolver = "2"
 
 members = [
-  "./crates/*",
-  "./npm/mach-os-arch"
+  "./crates/mach_bundler_cli",
+  "./crates/mach_bundler_core",
+  "./npm/mach-os-arch/native"
 ]
 
 [profile.release]

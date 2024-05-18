@@ -87,16 +87,22 @@ build:
   
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_nodejs_adapter.{{dylib}} ./crates/mach_bundler_nodejs_adapter/lib/napi/index.node
   @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}} "./npm/mach-os-arch/platform/native/index.node"
 
-  # Copy output to target
+  # Clean dir
   @rm -rf {{out_dir}}
   @rm -rf {{out_dir_link}}
   @mkdir -p {{out_dir}}
+  
+  # Copy binary
   @mkdir -p {{out_dir}}/bin
   @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
-  @cp -r ./crates/mach_bundler_nodejs_adapter/lib {{out_dir}}/nodejs
+
+  # Copy Nodejs adapter
+  @mkdir -p "{{out_dir}}/nodejs"
+  @cp -r "./npm/mach-os-arch/cmd" "{{out_dir}}/nodejs"
+  @cp -r "./npm/mach-os-arch/platform" "{{out_dir}}/nodejs"
+  @cp -r "./npm/mach-os-arch/package.json" "{{out_dir}}/nodejs"
   @ln -s {{out_dir}} {{out_dir_link}}
 
 [windows]

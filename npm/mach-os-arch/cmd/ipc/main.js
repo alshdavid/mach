@@ -7,7 +7,7 @@
 import { Worker } from 'node:worker_threads'
 import * as path from 'node:path'
 import * as url from 'node:url'
-import { buffer_bytes } from '../../platform/buffer_bytes/buffer_bytes'
+import { buffer_bytes } from '../../platform/buffer_bytes/index.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 

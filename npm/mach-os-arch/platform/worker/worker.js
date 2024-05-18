@@ -4,11 +4,8 @@
 */
 import { workerData } from 'node:worker_threads'
 import * as types from './types/index.js'
-import napi from '../napi/index.cjs'
-import { Resolver } from './plugins/resolver.js'
-import { Transformer } from './plugins/transformer.js'
-import { Dependency } from './plugins/dependency.js'
-import { MutableAsset } from './plugins/mutable_asset.js'
+import napi from '../native/index.cjs'
+import { Resolver, Transformer, Dependency, MutableAsset } from './plugins/index.js'
 
 globalThis.Mach = {}
 globalThis.Mach.Resolver = Resolver

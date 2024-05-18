@@ -1,4 +1,3 @@
-build.rs
-Cargo.toml
-src
-jsconfig.jsconfig
+native
+jsconfig.json
+node_modules
