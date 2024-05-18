@@ -11,21 +11,23 @@ use crate::public::Adapter;
 use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingResponse;
 
+pub type NapiOutgoingData = (AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>);
+
 #[derive(Clone)]
 pub struct NodejsNapiAdapter {
   counter: Arc<Mutex<u8>>,
   worker_count: u8,
-  tx_to_worker: Vec<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>,
+  tx_to_worker: Vec<Sender<NapiOutgoingData>>,
   rx_to_worker:
-    Arc<Mutex<Option<Vec<Receiver<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>>>>,
+    Arc<Mutex<Option<Vec<Receiver<NapiOutgoingData>>>>>,
   tx_start_worker: Sender<usize>,
-  rx_worker_connected: Arc<Mutex<Option<Receiver<()>>>>,
+  rx_worker_connected: Arc<Mutex<Option<Receiver<Sender<NapiOutgoingData>>>>>,
 }
 
 impl NodejsNapiAdapter {
   pub fn new(
     tx_start_worker: Sender<usize>,
-    rx_worker_connected: Receiver<()>,
+    rx_worker_connected: Receiver<Sender<NapiOutgoingData>>,
     worker_count: u8,
   ) -> Self {
     let mut tx_to_worker = vec![];
@@ -55,35 +57,40 @@ impl Adapter for NodejsNapiAdapter {
   }
 
   fn init(&self) -> Result<(), String> {
-    thread::spawn({
-      let worker_count = self.worker_count.clone();
-      let rx_worker_connected = self.rx_worker_connected.lock().unwrap().take().unwrap();
-      let tx_start_worker = self.tx_start_worker.clone();
-
+    let worker_count = self.worker_count.clone();
+    let rx_worker_connected = self.rx_worker_connected.lock().unwrap().take().unwrap();
+    let tx_start_worker = self.tx_start_worker.clone();
+    let mut rx_to_workers = self.rx_to_worker.lock().unwrap().take().unwrap();
+    
+    let handle = thread::spawn({
+      let worker_count = worker_count.clone();
       move || {
-        let (tx_ready, rx_ready) = channel::<()>();
-        thread::spawn({
-          let worker_count = worker_count.clone();
-          move || {
-            for _ in 0..worker_count {
-              rx_worker_connected.recv().unwrap();
-              println!("Connected");
-            }
-
-            tx_ready.send(()).unwrap();
-          }
-        });
-
-        for i in 0..worker_count {
-          println!("sent");
-          tx_start_worker.send(i as usize).unwrap();
+        let mut tx_workers = vec![];
+        
+        for _ in 0..worker_count {
+          tx_workers.push(rx_worker_connected.recv().unwrap());
         }
 
-        rx_ready.recv().unwrap();
+        tx_workers
       }
-    })
-    .join()
-    .unwrap();
+    });
+
+    for i in 0..worker_count {
+      tx_start_worker.send(i as usize).unwrap();
+    }
+
+    let mut tx_workers = handle.join().unwrap();
+
+    while let Some(tx_worker) = tx_workers.pop() {
+      let rx_to_worker = rx_to_workers.pop().unwrap();
+      
+      thread::spawn(move || {
+        while let Ok(msg) = rx_to_worker.recv() {
+          tx_worker.send(msg).unwrap();
+        }
+      });
+    }
+
     Ok(())
   }
 

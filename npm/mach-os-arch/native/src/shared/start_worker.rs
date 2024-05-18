@@ -41,13 +41,10 @@ pub fn start_worker(
     })?;
 
   thread::spawn(move || {
-    println!("listening");
-
     while let Ok(id) = rx_napi.recv() {
       println!("recv");
       tsfn.call(Ok(id), ThreadsafeFunctionCallMode::Blocking);
     }
-    println!("end");
   });
 
   env.get_undefined()
