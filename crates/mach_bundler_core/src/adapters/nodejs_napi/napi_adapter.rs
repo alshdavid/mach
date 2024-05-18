@@ -11,7 +11,7 @@ pub struct NodejsNapiAdapter {}
 
 impl NodejsNapiAdapter {
   pub fn new(_workers: u8) -> Self {
-    todo!()
+    Self {}
   }
 }
 

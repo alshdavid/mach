@@ -5,8 +5,6 @@ class MachInitError extends Error {
   }
 }
 
-let exports = undefined
-
 const OS = {
   win32: 'windows',
   darwin: 'macos',
@@ -17,6 +15,8 @@ const ARCH = {
   arm64: 'arm64',
   x64: 'amd64',
 }[process.arch]
+
+let exports = undefined
 
 try {
   exports = await import(`@alshdavid/mach-${OS}-${ARCH}`)

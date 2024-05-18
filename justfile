@@ -87,23 +87,23 @@ build:
   
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp ./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}} "./npm/mach-os-arch/platform/native/index.node"
+  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./npm/mach-os-arch/platform/native/index.node"
 
   # Clean dir
-  @rm -rf {{out_dir}}
-  @rm -rf {{out_dir_link}}
-  @mkdir -p {{out_dir}}
+  @rm -rf "{{out_dir}}"
+  @rm -rf "{{out_dir_link}}"
+  @mkdir -p "{{out_dir}}"
   
   # Copy binary
-  @mkdir -p {{out_dir}}/bin
-  @cp ./target/.cargo/{{target}}/{{profile}}/mach {{out_dir}}/bin
+  @mkdir -p "{{out_dir}}/bin"
+  @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
   # Copy Nodejs adapter
   @mkdir -p "{{out_dir}}/nodejs"
   @cp -r "./npm/mach-os-arch/cmd" "{{out_dir}}/nodejs"
   @cp -r "./npm/mach-os-arch/platform" "{{out_dir}}/nodejs"
   @cp -r "./npm/mach-os-arch/package.json" "{{out_dir}}/nodejs"
-  @ln -s {{out_dir}} {{out_dir_link}}
+  @ln -s "{{out_dir}}" "{{out_dir_link}}"
 
 [windows]
 build:
@@ -112,15 +112,22 @@ build:
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_nodejs_adapter.{{dylib}}" -Destination ".\crates\mach_bundler_nodejs_adapter\lib\napi\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\libmach_bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
 
-  # Copy output to target
+  # Clean dir
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
+
+  # Copy binary
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\crates\mach_bundler_nodejs_adapter\lib" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+
+  # Copy Nodejs adapter
+  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\nodejs" | Out-Null
+  @Copy-Item ".\npm\mach-os-arch\cmd" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\npm\mach-os-arch\platform" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\npm\mach-os-arch\package.json" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
 [unix]
@@ -154,7 +161,6 @@ test:
 
 fmt:
   cargo +nightly fmt
-  ./.github/scripts/node_modules/.bin/prettier ./crates/mach_bundler_nodejs_adapter --write
   ./.github/scripts/node_modules/.bin/prettier ./npm --write
   ./.github/scripts/node_modules/.bin/prettier ./examples --write
   ./.github/scripts/node_modules/.bin/prettier "./testing/tests" --write

@@ -8,5 +8,5 @@
     "noEmit": true
   },
   "include": ["types", "lib"],
-  "exclude": ["node_modules", "_parcel"]
+  "exclude": ["node_modules", "types/_parcel"]
 }
