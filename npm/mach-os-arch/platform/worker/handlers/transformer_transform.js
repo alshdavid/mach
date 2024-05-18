@@ -1,10 +1,9 @@
-import { Transformer } from '../plugins/index.js'
 import { MutableAsset } from '../plugins/mutable_asset.js'
+import { WorkerState } from '../state.js'
 import * as types from '../types/index.js'
 
 export async function transformer_transform(
-  /** @type {Record<string, Transformer<unknown>>} */ transformers,
-  /** @type {Record<string, unknown>} */ transformers_config,
+  /** @type {WorkerState} */ { transformers, transformers_config },
   /** @type {types.TransformerTransformAction} */ { specifier, ...internalMutableAsset },
 ) {
   const dependencies = /** @type {Array<any>} */ ([])

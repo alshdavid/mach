@@ -1,8 +1,8 @@
+import { WorkerState } from '../state.js'
 import * as types from '../types/index.js'
 
 export async function transformer_load_config(
-  /** @type {Record<string, types.Transformer<unknown>>} */ transformers,
-  /** @type {Record<string, unknown>} */ transformers_config,
+  /** @type {WorkerState} */ { transformers, transformers_config },
   /** @type {types.TransformerLoadConfigAction} */ { specifier },
 ) {
   const result = await transformers[specifier].triggerLoadConfig?.({

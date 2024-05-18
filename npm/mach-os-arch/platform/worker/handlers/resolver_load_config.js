@@ -1,8 +1,8 @@
+import { WorkerState } from '../state.js'
 import * as types from '../types/index.js'
 
 export async function resolver_load_config(
-  /** @type {Record<string, types.Resolver<unknown>>} */ resolvers,
-  /** @type {Record<string, unknown>} */ resolver_config,
+  /** @type {WorkerState} */ { resolvers, resolver_config },
   /** @type {types.ResolverLoadConfigAction} */ { specifier }
 ) {
     const result = await resolvers[specifier].triggerLoadConfig?.({

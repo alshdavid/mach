@@ -1,9 +1,9 @@
 import { Dependency } from '../plugins/dependency.js'
+import { WorkerState } from '../state.js'
 import * as types from '../types/index.js'
 
 export async function resolver_resolve(
-  /** @type {Record<string, types.Resolver<unknown>>} */ resolvers,
-  /** @type {Record<string, unknown>} */ resolver_config,
+  /** @type {WorkerState} */ { resolvers, resolver_config },
     /** @type {types.ResolverResolveAction} */ { specifier, dependency: internalDependency }
 ) {
     const dependency = new Dependency(internalDependency)
