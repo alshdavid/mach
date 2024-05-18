@@ -2,8 +2,7 @@
 resolver = "2"
 
 members = [
-  "./crates/mach_bundler_cli",
-  "./crates/mach_bundler_core",
+  "./crates/*",
   "./npm/mach-os-arch/native"
 ]
 
