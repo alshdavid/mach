@@ -112,7 +112,7 @@ build:
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\libmach_bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
 
   # Clean dir
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }

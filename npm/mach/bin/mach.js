@@ -24,11 +24,12 @@ if (!OS && !ARCH) {
 }
 
 try {
-  await import(`@alshdavid/mach-${OS}-${ARCH}/bin/mach.js`)
+  await import(`@alshdavid/mach-${OS}-${ARCH}/cmd/napi/main.js`)
 } catch (error) {
   try {
-    await import(`@alshdavid/mach-os-arch/bin/mach.js`)
+    await import(`@alshdavid/mach-os-arch/cmd/napi/main.js`)
   } catch (err) {
+    console.log(err)
     throw error
   }
 }

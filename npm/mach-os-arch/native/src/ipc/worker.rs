@@ -11,10 +11,5 @@ pub fn worker(
   child_receiver: String,
   callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
-  worker_ipc(
-    env,
-    child_sender,
-    child_receiver,
-    callback,
-  )
+  worker_ipc(env, child_sender, child_receiver, callback)
 }

@@ -39,7 +39,6 @@ pub struct NodejsIpcAdapter {
 
 impl NodejsIpcAdapter {
   pub fn new(workers: u8) -> Self {
-
     let mut tx_to_workers =
       Vec::<Sender<(AdapterOutgoingRequest, Sender<AdapterOutgoingResponse>)>>::new();
     let mut rx_from_workers =

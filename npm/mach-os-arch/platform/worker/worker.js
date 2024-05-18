@@ -1,165 +1,35 @@
-/*
-  This worker communicates with the host process using
-  an IPC channel provided from the Rust napi module
-*/
-import { workerData } from 'node:worker_threads'
 import * as types from './types/index.js'
-import napi from '../native/index.cjs'
-import { Resolver, Transformer, Dependency, MutableAsset } from './plugins/index.js'
+import * as handlers from './handlers/index.js'
+import { WorkerState } from './state.js'
 
-globalThis.Mach = {}
-globalThis.Mach.Resolver = Resolver
-globalThis.Mach.Transformer = Transformer
-globalThis.Mach.Dependency = Dependency
-globalThis.Mach.MutableAsset = MutableAsset
+const state = new WorkerState()
 
-/** @type {Record<string, Resolver<unknown>>} */
-const resolvers = {}
+export async function worker_callback(/** @type {types.Action} */ payload) {
+  const [n, action] = payload
+  let result = undefined
 
-/** @type {Record<string, unknown>} */
-const resolver_config = {}
+  if (n === 0) {
+    const d = action.Ping
+    result = await handlers.ping(state, d)
+  } else if (n === 1) {
+    const d = action.ResolverRegister
+    result = await handlers.resolver_register(state, d)
+  } else if (n === 2) {
+    const d = action.ResolverLoadConfig
+    result = await handlers.resolver_load_config(state, d)
+  } else if (n === 3) {
+    const d = action.ResolverResolve
+    result = await handlers.resolver_resolve(state, d)
+  } else if (n === 4) {
+    const d = action.TransformerRegister
+    result = await handlers.transformer_register(state, d)
+  } else if (n === 5) {
+    const d = action.TransformerLoadConfig
+    result = await handlers.transformer_load_config(state, d)
+  } else if (n === 6) {
+    const d = action.TransformerTransform
+    result = await handlers.transformer_transform(state, d)
+  }
 
-/** @type {Record<string, Transformer<unknown>>} */
-const transformers = {}
-
-/** @type {Record<string, unknown>} */
-const transformers_config = {}
-
-napi.worker(
-  workerData.child_sender,
-  workerData.child_receiver,
-  async (/** @type {any} */ err, /** @type {types.Action} */ payload) => {
-    try {
-      const [action, data] = payload
-      if (err) {
-        console.log('JS ------------ has error')
-        console.error(err)
-        process.exit(1)
-      }
-
-      if (action === 0) {
-        return [action, {}]
-      }
-
-      if (action === 1) {
-        const { specifier } = data.ResolverRegister
-        resolvers[specifier] = (await import(specifier)).default
-        return [action, {}]
-      }
-
-      if (action === 2) {
-        const { specifier } = data.ResolverLoadConfig
-        const result = await resolvers[specifier].triggerLoadConfig?.({
-          get config() {
-            throw new Error('Not implemented')
-          },
-          get options() {
-            throw new Error('Not implemented')
-          },
-          get logger() {
-            throw new Error('Not implemented')
-          },
-        })
-        resolver_config[specifier] = result
-        return [action, {}]
-      }
-
-      if (action === 3) {
-        const { specifier, dependency: internalDependency } =
-          data.ResolverResolve
-        const dependency = new Dependency(internalDependency)
-        const result = await resolvers[specifier].triggerResolve({
-          dependency,
-          specifier: dependency.specifier,
-          config: resolver_config[specifier],
-          get options() {
-            throw new Error('Not implemented')
-          },
-          get logger() {
-            throw new Error('Not implemented')
-          },
-          // @ts-expect-error
-          get pipeline() {
-            throw new Error('Not implemented')
-          },
-        })
-        return [action, { resolve_result: result }]
-      }
-
-      if (action === 4) {
-        const { specifier } = data.TransformerRegister
-        transformers[specifier] = (await import(specifier)).default
-        return [action, {}]
-      }
-
-      if (action === 5) {
-        const { specifier } = data.TransformerLoadConfig
-        const result = await transformers[specifier].triggerLoadConfig?.({
-          get config() {
-            throw new Error('Not implemented')
-          },
-          get options() {
-            throw new Error('Not implemented')
-          },
-          get logger() {
-            throw new Error('Not implemented')
-          },
-          get tracer() {
-            throw new Error('Not implemented')
-          },
-        })
-        transformers_config[specifier] = result
-        return [action, {}]
-      }
-
-      if (action === 6) {
-        const { specifier, ...internalMutableAsset } = data.TransformerTransform
-
-        const dependencies = /** @type {Array<any>} */ ([])
-        const mutable_asset = new MutableAsset(
-          internalMutableAsset,
-          dependencies,
-        )
-        const result = await transformers[specifier].triggerTransform({
-          asset: mutable_asset,
-          config: transformers_config[specifier],
-          get resolve() {
-            throw new Error('Not implemented')
-          },
-          get options() {
-            throw new Error('Not implemented')
-          },
-          get logger() {
-            throw new Error('Not implemented')
-          },
-          get tracer() {
-            throw new Error('Not implemented')
-          },
-        })
-
-        if (!result || (Array.isArray(result) && result.length === 0)) {
-          return [action, {}]
-        }
-
-        return [
-          action,
-          {
-            content: internalMutableAsset.content,
-            kind: internalMutableAsset.kind,
-            dependencies,
-          },
-        ]
-      }
-
-      throw new Error('No action')
-    } catch (/** @type {any} */ error) {
-      if (error instanceof Error) {
-        throw `\n${error.stack}\n`
-      }
-      if (typeof error === 'string') {
-        throw error
-      }
-      throw 'An error occurred in JavaScript worker'
-    }
-  },
-)
+  return [n, result || {}]
+}

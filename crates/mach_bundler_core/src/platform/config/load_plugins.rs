@@ -48,6 +48,7 @@ pub fn load_plugins(
         specifier,
         adapter.clone(),
       )?));
+
       continue;
     }
   }

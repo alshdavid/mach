@@ -1,16 +1,18 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::thread;
 
-use mach_bundler_core::adapters::nodejs_napi::NodejsNapiAdapter;
-use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions as BuildOptionsCore;
-use mach_bundler_core::Mach as MachCore;
+use mach_bundler_core::BuildResult as BuildResultCore;
+use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
+use napi::JsFunction;
 use napi::JsObject;
-use napi::JsUnknown;
+use napi::JsUndefined;
 use serde::Deserialize;
 use serde::Serialize;
+
+use crate::shared::mach_build_command;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -35,7 +37,8 @@ pub struct BuildResult {
 pub fn build(
   env: Env,
   options: JsObject,
-) -> napi::Result<JsUnknown> {
+  callback: JsFunction,
+) -> napi::Result<JsUndefined> {
   let options_napi = env.from_js_value::<MachBuildOptions, JsObject>(options)?;
   let mut options = BuildOptionsCore::default();
 
@@ -67,26 +70,24 @@ pub fn build(
     options.project_root = Some(project_root);
   }
 
-  let mut adapter_map = AdapterMap::new();
+  let tsfn = env.create_threadsafe_function(
+    &callback,
+    0,
+    |ctx: napi::threadsafe_function::ThreadSafeCallContext<BuildResultCore>| {
+      let value = ctx.env.to_js_value(&ctx.value);
+      Ok(vec![value])
+    },
+  )?;
 
-  // Setup Nodejs Plugin Runtime
-  let worker_threads = options_napi.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
-  let nodejs_adapter = NodejsNapiAdapter::new(worker_threads);
-  adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
+  thread::spawn(move || {
+    match mach_build_command(options) {
+      Ok(result) => tsfn.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking),
+      Err(error) => tsfn.call(
+        Err(napi::Error::from_reason(error)),
+        ThreadsafeFunctionCallMode::NonBlocking,
+      ),
+    };
+  });
 
-  options.adapter_map = Some(adapter_map);
-
-  match MachCore::new().build(options) {
-    Ok(report) => {
-      let js_result = env.to_js_value(&BuildResult {
-        bundle_manifest: report.bundle_manifest,
-        entries: report.entries,
-      })?;
-
-      return Ok(js_result);
-    }
-    Err(error) => {
-      return Err(napi::Error::from_reason(error));
-    }
-  };
+  env.get_undefined()
 }

@@ -13,6 +13,7 @@ napi = { version = "2.*", default-features = false, features = ["napi8", "tokio_
 napi-derive = "2.*"
 serde = { version = "1.*", features = ["derive"] }
 num_cpus = "1.*"
+once_cell = "1.*"
 
 [build-dependencies]
 napi-build = "2.*"
