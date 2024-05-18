@@ -1,7 +1,9 @@
+use std::sync::Arc;
 use std::time::SystemTime;
 
 use mach_bundler_core::cli::parse_options;
 use mach_bundler_core::cli::CommandType;
+use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
@@ -9,14 +11,22 @@ use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
 use napi_derive::napi;
 
+use crate::adapters::nodejs_napi::NodejsNapiAdapter;
+
 #[napi]
 pub fn run(args: Vec<String>) {
+  let start_time = SystemTime::now();
   let command = parse_options(&args).unwrap();
   let mach = Mach::new();
 
   match command.command {
     CommandType::Build(command) => {
-      let start_time = SystemTime::now();
+      let mut adapter_map = AdapterMap::new();
+
+      // Setup Nodejs Plugin Runtime
+      let worker_threads = command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
+      let nodejs_adapter = NodejsNapiAdapter::new(worker_threads);
+      adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
 
       if let Err(msg) = mach.build(BuildOptions {
         entries: command.entries,
@@ -27,7 +37,7 @@ pub fn run(args: Vec<String>) {
         threads: command.threads,
         node_workers: command.node_workers,
         project_root: None,
-        adapter_map: None,
+        adapter_map: Some(adapter_map),
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;
@@ -40,12 +50,12 @@ pub fn run(args: Vec<String>) {
     }
     CommandType::Dev(_command) => {
       if let Err(msg) = mach.dev(DevOptions {}) {
-        println!("Dev Error\n{}", msg);
+        println!("❌ Dev Error\n{}", msg);
       };
     }
     CommandType::Watch(_command) => {
       if let Err(msg) = mach.watch(WatchOptions {}) {
-        println!("Watch Error\n{}", msg);
+        println!("❌ Watch Error\n{}", msg);
       };
     }
     CommandType::Version(_command) => {

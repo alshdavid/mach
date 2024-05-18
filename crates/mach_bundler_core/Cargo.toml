@@ -22,6 +22,5 @@ sha2 = { version = "0.*", features = [] }
 serde = "1.*"
 html5ever = "0.*"
 markup5ever_rcdom = "0.*"
-ipc_channel_adapter = { version = "0.*"}
 clap = { version = "4.*", features = ["derive", "env"], optional = true }
 num_cpus = "1.*"

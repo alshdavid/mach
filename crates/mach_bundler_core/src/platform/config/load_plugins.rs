@@ -36,8 +36,8 @@ pub fn load_plugins(
 
       let Some(adapter) = adapter_map.get(engine) else {
         return Err(format!(
-          "Unable to load plugin: {}:{}",
-          engine, plugin_string
+          "No plugin runtime for engine: {}\nCannot load plugin: {}",
+          engine, specifier
         ));
       };
 
@@ -89,7 +89,10 @@ pub fn load_plugins(
         }
 
         let Some(adapter) = adapter_map.get(engine) else {
-          return Err(format!("Unable to load plugin: {}:{}", engine, specifier));
+          return Err(format!(
+            "No plugin runtime for engine: {}\nCannot load plugin: {}",
+            engine, specifier
+          ));
         };
 
         adapter.init()?;

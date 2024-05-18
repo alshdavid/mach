@@ -55,9 +55,6 @@ import { Mach } from '@alshdavid/mach'
 // Create a Mach instance
 const mach = new Mach()
 
-// Listen to build events
-mach.subscribe('build_event', event => console.log(event))
-
 // Build a target
 const report = await mach.build({
   projectRoot: process.cwd(),
@@ -98,16 +95,6 @@ Import the plugin API from the `@alshdavid/mach` npm package
 ```javascript
 import { Transformer } from '@alshdavid/mach'
 ```
-
-#### Performance
-
-It goes without saying that JavaScript plugins are not as fast plugins written in Rust. While JavaScript itself is fast, there is additional overhead associated with talking to Nodejs from an external process.
-
-To mitigate this, Mach uses low level APIs provided by the operating system to share memory and communicate with a Nodejs child process/workers.
-
-On an M1 MacBook Pro; In addition to the time taken for the plugin code to run, a project with 1000 files will see 100ms added to the build time for each JavaScript plugin added.
-
-This can add up quickly, especially when considering the endless void that is node_modules. It's recommended that performance sensitive projects migrate JavaScript plugins to Rust.
 
 ## Benchmark
 

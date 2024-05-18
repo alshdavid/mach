@@ -1,6 +1,5 @@
 #![deny(unused_crate_dependencies)]
 
-pub mod adapters;
 #[cfg(feature = "cli_parser")]
 pub mod cli;
 pub mod kit;

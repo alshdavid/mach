@@ -1,9 +1,12 @@
 #![deny(unused_crate_dependencies)]
+mod adapters;
+
 use std::sync::Arc;
 use std::time::SystemTime;
+use mach_napi as _;
 
-use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapter;
-use mach_bundler_core::adapters::nodejs_ipc::NodejsIpcAdapterOptions;
+use self::adapters::nodejs_ipc::NodejsIpcAdapter;
+use self::adapters::nodejs_ipc::NodejsIpcAdapterOptions;
 use mach_bundler_core::cli::parse_options_from_cli;
 use mach_bundler_core::cli::CommandType;
 use mach_bundler_core::public::AdapterMap;

@@ -13,11 +13,11 @@ use ipc_channel_adapter::host::sync::ChildSender;
 use oxc_resolver::ResolveOptions;
 
 use super::NodejsWorker;
-use crate::plugins::resolver_javascript::resolve_oxc;
-use crate::public::AdapterIncomingRequest;
-use crate::public::AdapterIncomingResponse;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingResponse;
+use mach_bundler_core::plugins::resolver_javascript::resolve_oxc;
+use mach_bundler_core::public::AdapterIncomingRequest;
+use mach_bundler_core::public::AdapterIncomingResponse;
+use mach_bundler_core::public::AdapterOutgoingRequest;
+use mach_bundler_core::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsInstance {

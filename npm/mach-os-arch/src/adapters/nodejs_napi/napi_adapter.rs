@@ -2,12 +2,18 @@ use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::sync::mpsc::Receiver;
 
-use crate::public::Adapter;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingResponse;
+use mach_bundler_core::public::Adapter;
+use mach_bundler_core::public::AdapterOutgoingRequest;
+use mach_bundler_core::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsNapiAdapter {}
+
+impl NodejsNapiAdapter {
+  pub fn new(workers: u8) -> Self {
+    todo!()
+  }
+}
 
 impl Adapter for NodejsNapiAdapter {
   fn is_running(&self) -> bool {

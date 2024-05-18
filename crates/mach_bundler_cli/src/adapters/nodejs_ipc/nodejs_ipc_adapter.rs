@@ -8,11 +8,11 @@ use std::sync::Mutex;
 use std::thread;
 
 use super::NodejsInstance;
-use crate::public::Adapter;
-use crate::public::AdapterIncomingRequest;
-use crate::public::AdapterIncomingResponse;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingResponse;
+use mach_bundler_core::public::Adapter;
+use mach_bundler_core::public::AdapterIncomingRequest;
+use mach_bundler_core::public::AdapterIncomingResponse;
+use mach_bundler_core::public::AdapterOutgoingRequest;
+use mach_bundler_core::public::AdapterOutgoingResponse;
 
 #[derive(Clone)]
 pub struct NodejsIpcAdapterOptions {
