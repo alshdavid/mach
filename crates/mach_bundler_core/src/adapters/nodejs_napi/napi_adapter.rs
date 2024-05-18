@@ -18,8 +18,7 @@ pub struct NodejsNapiAdapter {
   counter: Arc<Mutex<u8>>,
   worker_count: u8,
   tx_to_worker: Vec<Sender<NapiOutgoingData>>,
-  rx_to_worker:
-    Arc<Mutex<Option<Vec<Receiver<NapiOutgoingData>>>>>,
+  rx_to_worker: Arc<Mutex<Option<Vec<Receiver<NapiOutgoingData>>>>>,
   tx_start_worker: Sender<usize>,
   rx_worker_connected: Arc<Mutex<Option<Receiver<Sender<NapiOutgoingData>>>>>,
 }
@@ -61,12 +60,12 @@ impl Adapter for NodejsNapiAdapter {
     let rx_worker_connected = self.rx_worker_connected.lock().unwrap().take().unwrap();
     let tx_start_worker = self.tx_start_worker.clone();
     let mut rx_to_workers = self.rx_to_worker.lock().unwrap().take().unwrap();
-    
+
     let handle = thread::spawn({
       let worker_count = worker_count.clone();
       move || {
         let mut tx_workers = vec![];
-        
+
         for _ in 0..worker_count {
           tx_workers.push(rx_worker_connected.recv().unwrap());
         }
@@ -83,7 +82,7 @@ impl Adapter for NodejsNapiAdapter {
 
     while let Some(tx_worker) = tx_workers.pop() {
       let rx_to_worker = rx_to_workers.pop().unwrap();
-      
+
       thread::spawn(move || {
         while let Ok(msg) = rx_to_worker.recv() {
           tx_worker.send(msg).unwrap();

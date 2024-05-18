@@ -41,7 +41,6 @@ pub fn load_plugins(
         ));
       };
 
-
       adapter.init()?;
 
       plugins.resolvers.push(Box::new(ResolverAdapter::new(
