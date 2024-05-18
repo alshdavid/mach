@@ -24,8 +24,8 @@ pub static REGISTER_WORKER: Lazy<(RegisterWorkerSender, RegisterWorkerReceiver)>
 
 #[napi]
 pub fn register_worker(
-  env: Env, 
-  callback: JsFunction
+  env: Env,
+  callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
   let (tx_outgoing, rx_outgoing) = channel::<NapiOutgoingData>();
   REGISTER_WORKER.0.send(tx_outgoing).unwrap();

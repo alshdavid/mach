@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
 
-use mach_bundler_core::BuildResult as BuildResultCore;
 use mach_bundler_core::BuildOptions as BuildOptionsCore;
+use mach_bundler_core::BuildResult as BuildResultCore;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
@@ -70,16 +70,22 @@ pub fn build(
     options.project_root = Some(project_root);
   }
 
-  let tsfn = env.create_threadsafe_function(&callback, 0, 
+  let tsfn = env.create_threadsafe_function(
+    &callback,
+    0,
     |ctx: napi::threadsafe_function::ThreadSafeCallContext<BuildResultCore>| {
-    let value = ctx.env.to_js_value(&ctx.value);
-    Ok(vec![value])
-  })?;
+      let value = ctx.env.to_js_value(&ctx.value);
+      Ok(vec![value])
+    },
+  )?;
 
   thread::spawn(move || {
     match mach_build_command(options) {
       Ok(result) => tsfn.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking),
-      Err(error) => tsfn.call(Err(napi::Error::from_reason(error)), ThreadsafeFunctionCallMode::NonBlocking),
+      Err(error) => tsfn.call(
+        Err(napi::Error::from_reason(error)),
+        ThreadsafeFunctionCallMode::NonBlocking,
+      ),
     };
   });
 

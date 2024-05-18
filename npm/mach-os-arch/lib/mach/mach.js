@@ -15,7 +15,7 @@ export class Mach {
   /** @return {Promise<types.BuildReport>} */
   build(/** @type {types.BuildOptions} */ options) {
     napi.startWorker(() => {
-      new Worker(path.join(__dirname, '..', '..', 'cmd','napi', 'worker.js'))
+      new Worker(path.join(__dirname, '..', '..', 'cmd', 'napi', 'worker.js'))
     })
 
     return new Promise((res, rej) => {

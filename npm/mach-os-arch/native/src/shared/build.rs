@@ -19,8 +19,7 @@ pub fn mach_build_command(mut options: BuildOptions) -> Result<BuildResult, Stri
   let rx_register_worker = REGISTER_WORKER.1.lock().unwrap().take().unwrap();
   let worker_threads = options.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
 
-  let nodejs_adapter =
-    NodejsNapiAdapter::new(tx_start_worker, rx_register_worker, worker_threads);
+  let nodejs_adapter = NodejsNapiAdapter::new(tx_start_worker, rx_register_worker, worker_threads);
   adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
 
   options.adapter_map = Some(adapter_map);
