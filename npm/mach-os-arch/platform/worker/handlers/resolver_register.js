@@ -1,11 +1,8 @@
 import * as types from '../types/index.js'
 
-export function resolver_register(
+export async function resolver_register(
   /** @type {Record<string, types.Resolver<unknown>>} */ resolvers,
+  /** @type {types.ResolverRegisterAction} */ { specifier }
 ) {
-  return async function(
-    /** @type {types.ResolverRegisterAction} */ { specifier }
-  ) {
-    resolvers[specifier] = (await import(specifier)).default
-  }
+  resolvers[specifier] = (await import(specifier)).default
 }
