@@ -1,6 +1,6 @@
 export default class {
   data
   constructor() {
-    data = 'function_anon_default'
+    this.data = 'function_anon_default'
   }
 }

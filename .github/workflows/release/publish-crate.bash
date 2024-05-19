@@ -7,7 +7,5 @@ ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 source $ROOT_DIR/.github/workflows/platform/unix/setup.bash
 
-sudo apt-get update
-rustup target add x86_64-unknown-linux-gnu
-
+just build-publish
 cargo publish --package mach_bundler_core --token $CRATES_IO_API_TOKEN
