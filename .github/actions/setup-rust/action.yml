@@ -5,5 +5,15 @@ runs:
   using: 'composite'
   steps:
     - name: "Install Rust" 
+      if: ${{ runner.os != 'Windows' }}
       shell: bash
-      run: "bash .github/workflows/platform/unix/install-rust.bash"
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+      run: "bash .github/actions/setup-rust/install-rust.bash"
+
+    - name: "Install Rust" 
+      if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
+      shell: powershell
+      env:
+        NODE_VERSION: ${{ inputs.version }}
+      run: . .github/actions/setup-rust/install-rust.ps1

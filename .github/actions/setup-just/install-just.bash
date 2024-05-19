@@ -3,7 +3,7 @@
 # Default to current latest
 JUST_VERSION="$1"
 if [ "$JUST_VERSION" = "" ]; then
-  JUST_VERSION="1.25.2"
+  JUST_VERSION="1.26.0"
 fi 
 
 # Default to home directory

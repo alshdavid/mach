@@ -18,14 +18,14 @@ runs:
 
     - name: "Install Nodejs" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
-      shell: bash
+      shell: powershell
       env:
         NODE_VERSION: ${{ inputs.version }}
-      run: \& .github\actions\setup-nodejs\install-nodejs.ps1
+      run: . .github/actions/setup-nodejs/install-nodejs.ps1
 
     - name: "Install Nodejs" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'ARM64' }}
-      shell: bash
+      shell: powershell
       env:
         NODE_VERSION: ${{ inputs.version }}
       run: exit 1
