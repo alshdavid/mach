@@ -23,9 +23,8 @@ if (!OS && !ARCH) {
   process.exit(0)
 }
 
-
 try {
-  exports = await import(`@alshdavid/mach-${OS}-${ARCH}/cmd/napi/main.js`)
+  await import(`@alshdavid/mach-${OS}-${ARCH}/cmd/napi/main.js`)
 } catch (error) {
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
@@ -34,10 +33,10 @@ try {
   const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
   /** @type {any} */
-  const package_json = await fs.readFile(path.join(__dirname, '..', 'package.json'))
+  const package_json = JSON.parse(await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf8'))
   if (package_json.version !== '0.0.0-local') {
     throw error
   }
 
-  exports = await import('@alshdavid/mach-os-arch/cmd/napi/main.js')
+  await import('@alshdavid/mach-os-arch/cmd/napi/main.js')
 }

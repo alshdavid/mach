@@ -5,7 +5,7 @@ ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 ls -l $ROOT_DIR
 ls -l $ROOT_DIR/artifacts
-ls -l $ROOT_DIR/artifacts/mach-linux-amd64.tar.gz
+ls -l $ROOT_DIR/artifacts/linux-amd64
 
 # gh release create $MACH_VERSION --draft --notes "Automatically built binaries"
 
