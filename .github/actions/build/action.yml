@@ -4,7 +4,7 @@ description: "Build Project"
 inputs:
   os:
     description: 'target operating system'
-    default: ${{ runner.os == 'Linux' && 'linux' || runner.os == 'macOS' && 'macos' || runner.os == 'Window' && 'windows' }}
+    default: ${{ runner.os == 'Linux' && 'linux' || runner.os == 'macOS' && 'macos' || runner.os == 'Windows' && 'windows' }}
   arch:
     description: 'target CPU architecture'
     default: ${{ runner.arch == 'ARM64' && 'arm64' || runner.arch == 'X64' && 'amd64' }}
