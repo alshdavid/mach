@@ -13,19 +13,19 @@ runs:
       if: ${{ runner.os != 'Windows' }}
       shell: bash
       env:
-        NODE_VERSION: ${{ inputs.version }}
+        JUST_VERSION: ${{ inputs.version }}
       run: "bash .github/workflows/platform/unix/install-just.bash"
 
     - name: "Install Just" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
       shell: powershell
       env:
-        NODE_VERSION: ${{ inputs.version }}
+        JUST_VERSION: ${{ inputs.version }}
       run: . .github/actions/setup-just/install-just.ps1
 
     - name: "Install Just" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'ARM64' }}
       shell: powershell
       env:
-        NODE_VERSION: ${{ inputs.version }}
+        JUST_VERSION: ${{ inputs.version }}
       run: exit 1
