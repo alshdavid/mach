@@ -30,8 +30,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Environment
         run: |
-          bash .github/workflows/platform/unix/setup.bash
-          profile=release os=linux arch=amd64 just build
+          source .github/workflows/platform/unix/setup.bash
+          profile=release just build
       - name: Integration tests
         run: |
           source .github/workflows/platform/unix/setup-env.bash
