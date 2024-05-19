@@ -4,22 +4,26 @@ description: "Build Project"
 inputs:
   os:
     description: 'target operating system'
+    default: ${{ runner.os == 'Linux' && 'linux' || runner.os == 'macOS' && 'macos' || runner.os == 'Window' && 'windows' }}
   arch:
     description: 'target CPU architecture'
   profile:
     description: 'Build profile'
     default: "release"
+  mach_version:
+    description: 'prepare packages for publishing'
 
 runs:
   using: 'composite'
   steps:
     - name: "Build Project" 
-      if: ${{ runner.os == 'Linux' && runner.arch == 'X64' }}
+      if: ${{ inputs.os == 'linux' && inputs.arch == 'amd64' }}
       shell: bash
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
-        source .github/workflows/platform/unix/setup-env.bash
-        just build
+        echo $os
+        

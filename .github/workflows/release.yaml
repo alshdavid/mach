@@ -32,7 +32,6 @@ jobs:
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
       - uses: ./.github/actions/build
-        with: { os: linux, arch: amd64, profile: release }
       - name: "Integration tests"
         run: "source .github/workflows/platform/unix/setup-env.bash && just integration-tests" 
 
