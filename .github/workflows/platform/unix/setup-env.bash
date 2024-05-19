@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ev
+set -e
 
 # Just
 export PATH="${HOME}/.local/just:$PATH"
