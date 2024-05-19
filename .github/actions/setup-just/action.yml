@@ -11,10 +11,10 @@ runs:
 
     - name: "Install Just" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
-      shell: bash
+      shell: powershell
       run: . .github/actions/setup-just/install-just.ps1
 
     - name: "Install Just" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'ARM64' }}
-      shell: bash
+      shell: powershell
       run: exit 1
