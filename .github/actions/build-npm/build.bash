@@ -4,14 +4,15 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 source $ROOT_DIR/.github/workflows/platform/unix/setup-env.bash
-export MACH_SKIP_POST_INSTALL="true"
+
+if ![ "$mach_version" = "" ]; then
+  export MACH_VERSION="${mach_version}"
+  just build-publish
+else
+  just build
+fi
 
 mkdir $ROOT_DIR/artifacts
-sudo apt-get update
-rustup target add x86_64-unknown-linux-gnu
-
-profile=release os=linux arch=amd64 just build-publish
-
 cd npm/mach
 npm pack
 mv *.tgz npm-mach.tgz
