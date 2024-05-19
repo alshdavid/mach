@@ -124,7 +124,7 @@ runs:
 
     - name: "Copy Files"
       if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
-      shell: bash
+      shell: powershell
       env:
         job: ''
       run: |
