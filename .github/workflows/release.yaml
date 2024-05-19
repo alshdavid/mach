@@ -31,8 +31,8 @@ jobs:
       - { name: "Install Just", run: "bash .github/workflows/platform/unix/install-just.bash" }
       - { name: "Install Nodejs", run: "bash .github/workflows/platform/unix/install-nodejs.bash" }
       - { name: "Install Rust", run: "bash .github/workflows/platform/unix/install-rust.bash" }
-      - { name: "Build", run: "source .github/workflows/platform/unix/setup.bash && profile=release just build" }
-      - { name: "Integration tests", run: "source .github/workflows/platform/unix/setup.bash && just integration-tests" }
+      - { name: "Build", run: "source .github/workflows/platform/unix/setup-env.bash && profile=release just build" }
+      - { name: "Integration tests", run: "source .github/workflows/platform/unix/setup-env.bash && just integration-tests" }
 
   linux-amd64:
     name: "🐥 Linux AMD64"
