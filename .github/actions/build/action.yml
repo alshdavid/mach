@@ -104,7 +104,7 @@ runs:
         arch: "${{inputs.arch}}"
         mach_version: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
-      run: "ech windows arm64"
+      run: "ech0 windows arm64"
 
     - name: "Build Project" 
       if: ${{ inputs.os == 'windows' && inputs.arch == 'amd64' }}
@@ -114,8 +114,26 @@ runs:
         arch: "${{inputs.arch}}"
         mach_version: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
-      run: "ech windows amd64"
-        
+      run: "ech0 windows amd64"
 
+    - name: "Copy Files"
+      if: ${{ runner.os != 'Windows' }}
+      shell: bash
+      env:
+        job: ''
+      run: |
+        export ROOT_DIR="$(pwd)"
 
-    
+        mkdir $ROOT_DIR/artifacts
+        cd $ROOT_DIR/target/$JOB_NAME
+
+        mv release mach
+        tar -czvf mach-$JOB_NAME.tar.gz mach
+        mv mach-$JOB_NAME.tar.gz $ROOT_DIR/artifacts
+
+        cd $ROOT_DIR/npm/mach-os-arch
+        npm pack
+        mv *.tgz npm-mach-$JOB_NAME.tgz
+        mv *.tgz $ROOT_DIR/artifacts/npm-mach-$JOB_NAME.tgz
+
+        ls -l $ROOT_DIR/artifacts     
