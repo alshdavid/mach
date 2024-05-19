@@ -1,0 +1,9 @@
+name: 'alshdavid/setup-nodejs'
+description: "Install Nodejs"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Install Nodejs" 
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-nodejs.bash"

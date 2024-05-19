@@ -1,0 +1,9 @@
+name: 'alshdavid/setup-just'
+description: "Install Just"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Install Just" 
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-just.bash"

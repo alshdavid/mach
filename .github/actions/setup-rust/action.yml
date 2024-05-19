@@ -1,0 +1,9 @@
+name: 'alshdavid/setup-rust'
+description: "Install Rust"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Install Rust" 
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-rust.bash"
