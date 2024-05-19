@@ -26,8 +26,13 @@ runs:
         mach_version: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
-        echo $os
-        
+        source .github/workflows/platform/unix/setup-env.bash
+        if ![ "$mach_version" = "" ]; then
+          export MACH_VERSION="${mach_version}"
+          just build-publish
+        else
+          just build
+        fi
     
     # - name: "Build Project" 
     #   if: ${{ runner.os == 'Linux' && runner.arch == 'ARM64' }}
