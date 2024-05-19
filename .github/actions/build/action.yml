@@ -132,7 +132,7 @@ runs:
         arch: "${{inputs.arch}}"
       run: |
         $env:RootPath = (Get-Location).Path
-        $env:Job = "${env:os}-${env:arch}"
+        $env:Job = "${os}-${arch}"
 
         echo "${env:RootPath}/target/${env:Job}"
         cd "${env:RootPath}/target/${env:Job}"
