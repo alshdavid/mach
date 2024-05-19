@@ -1,0 +1,17 @@
+name: 'alshdavid/setup'
+description: "Setup workspace dependencies"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Install Just"
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-just.bash"
+    
+    - name: "Install Nodejs" 
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-nodejs.bash"
+
+    - name: "Install Rust"
+      shell: bash
+      run: "bash .github/workflows/platform/unix/install-rust.bash"

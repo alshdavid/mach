@@ -28,9 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - { name: "Install Just", run: "bash .github/workflows/platform/unix/install-just.bash" }
-      - { name: "Install Nodejs", run: "bash .github/workflows/platform/unix/install-nodejs.bash" }
-      - { name: "Install Rust", run: "bash .github/workflows/platform/unix/install-rust.bash" }
+      - uses: ./.github/actions/setup
       - { name: "Build", run: "source .github/workflows/platform/unix/setup-env.bash && profile=release just build" }
       - { name: "Integration tests", run: "source .github/workflows/platform/unix/setup-env.bash && just integration-tests" }
 
