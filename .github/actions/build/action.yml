@@ -103,8 +103,12 @@ runs:
     - name: "Copy Files"
       if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
       shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
       run: |
         export ROOT_DIR="$(pwd)"
+        export JOB_NAME="${os}-${arch}"
 
         mkdir $ROOT_DIR/artifacts
         cd $ROOT_DIR/target/$JOB_NAME
@@ -123,8 +127,12 @@ runs:
     - name: "Copy Files"
       if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
       shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
       run: |
         $env:RootPath = (Get-Location).Path
+        $env:Job = "${env:os}-${env:arch}"
 
         echo "${env:RootPath}/target/${Job}"
         cd "${env:RootPath}/target/${Job}"
