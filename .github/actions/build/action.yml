@@ -1,0 +1,25 @@
+name: 'alshdavid/build'
+description: "Build Project"
+
+inputs:
+  os:
+    description: 'target operating system'
+  arch:
+    description: 'target CPU architecture'
+  profile:
+    description: 'Build profile'
+    default: "release"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Build Project" 
+      if: runner.os == "Linux" && runner.arch == 'X64'
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        "bash .github/workflows/platform/unix/setup-env.bash"
+        just build
