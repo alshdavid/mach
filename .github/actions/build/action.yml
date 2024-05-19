@@ -134,13 +134,13 @@ runs:
         $env:RootPath = (Get-Location).Path
         $env:Job = "${env:os}-${env:arch}"
 
-        echo "${env:RootPath}/target/${Job}"
-        cd "${env:RootPath}/target/${Job}"
+        echo "${env:RootPath}/target/${env:Job}"
+        cd "${env:RootPath}/target/${env:Job}"
         mv release mach
-        tar -czvf "mach-${Job}.tar.gz" mach
-        Move-Item "mach-${Job}.tar.gz" -Destination "${env:RootPath}/artifacts" | Out-Null
+        tar -czvf "mach-${env:Job}.tar.gz" mach
+        Move-Item "mach-${env:Job}.tar.gz" -Destination "${env:RootPath}/artifacts" | Out-Null
 
         cd "${env:RootPath}/npm/mach-os-arch"
         npm pack
-        Move-Item *.tgz -Destination "npm-mach-${Job}.tgz"
-        Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${Job}.tgz"
+        Move-Item *.tgz -Destination "npm-mach-${env:Job}.tgz"
+        Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${env:Job}.tgz"
