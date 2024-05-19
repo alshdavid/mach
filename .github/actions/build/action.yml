@@ -14,7 +14,7 @@ runs:
   using: 'composite'
   steps:
     - name: "Build Project" 
-      if: runner.os == "Linux" && runner.arch == 'X64'
+      if: ${{ runner.os == "Linux" && runner.arch == 'X64' }}
       shell: bash
       env:
         os: "${{inputs.os}}"
