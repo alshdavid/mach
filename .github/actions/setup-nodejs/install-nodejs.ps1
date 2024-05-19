@@ -4,10 +4,10 @@ New-Item -ItemType "directory" -Force -Path "$HOME\.local\nodejs\prefix" | Out-N
 New-Item -ItemType "directory" -Force -Path "$HOME\.local\nodejs\cache" | Out-Null
 New-Item -ItemType "directory" -Force -Path "$HOME\.local\nodejs\pnpm-store" | Out-Null
 
-Invoke-WebRequest "https://nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-win-x64.zip" -OutFile $HOME\.local\nodejs\node.zip
+Invoke-WebRequest "https://nodejs.org/download/release/v${env:NODE_VERSION}/node-v${env:NODE_VERSION}-win-x64.zip" -OutFile $HOME\.local\nodejs\node.zip
 
 Expand-Archive $HOME\.local\nodejs\node.zip -DestinationPath $HOME\.local\nodejs
-Move-Item "$HOME\.local\nodejs\node-v${NODE_VERSION}-win-x64\*" $HOME\.local\nodejs
+Move-Item "$HOME\.local\nodejs\node-v${env:NODE_VERSION}-win-x64\*" $HOME\.local\nodejs
 
 $env:Path = $HOME + '\.local\nodejs;' + $env:Path
 $env:Path = $HOME + '\.local\nodejs\prefix;' + $env:Path
