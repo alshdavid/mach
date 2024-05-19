@@ -32,8 +32,9 @@ jobs:
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
       - uses: ./.github/actions/build
+        with: { profile: debug }
       - name: "Integration tests"
-        run: "source .github/workflows/platform/unix/setup-env.bash && just integration-tests" 
+        run: just integration-tests
 
   # linux-amd64:
   #   name: "🐥 Linux AMD64"
