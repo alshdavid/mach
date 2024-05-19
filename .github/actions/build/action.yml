@@ -28,12 +28,7 @@ runs:
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
-        if ![ "$mach_version" = "" ]; then
-          export MACH_VERSION="${mach_version}"
-          just build-publish
-        else
-          just build
-        fi
+        bash .github/actions/build/build.bash
     
     - name: "Build Project" 
       if: ${{ inputs.os == 'linux' && inputs.arch == 'arm64' }}
@@ -52,13 +47,7 @@ runs:
         sudo apt-get install gcc-aarch64-linux-gnu build-essential
         rustup target add aarch64-unknown-linux-gnu
         aarch64-linux-gnu-gcc --version
-
-        if ![ "$mach_version" = "" ]; then
-          export MACH_VERSION="${mach_version}"
-          just build-publish
-        else
-          just build
-        fi
+        bash .github/actions/build/build.bash
     
     - name: "Build Project" 
       if: ${{ inputs.os == 'macos' && inputs.arch == 'amd64' }}
@@ -71,13 +60,8 @@ runs:
       run: |
         source .github/workflows/platform/unix/setup-env.bash
         rustup target add x86_64-apple-darwin
-        
-        if ![ "$mach_version" = "" ]; then
-          export MACH_VERSION="${mach_version}"
-          just build-publish
-        else
-          just build
-        fi
+        bash .github/actions/build/build.bash
+
 
     - name: "Build Project" 
       if: ${{ inputs.os == 'macos' && inputs.arch == 'arm64' }}
@@ -89,23 +73,7 @@ runs:
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
-        
-        if ![ "$mach_version" = "" ]; then
-          export MACH_VERSION="${mach_version}"
-          just build-publish
-        else
-          just build
-        fi
-
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'windows' && inputs.arch == 'arm64' }}
-      shell: powershell
-      env:
-        os: "${{inputs.os}}"
-        arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
-        profile: "${{inputs.profile}}"
-      run: "ech0 windows arm64"
+        bash .github/actions/build/build.bash    
 
     - name: "Build Project" 
       if: ${{ inputs.os == 'windows' && inputs.arch == 'amd64' }}
@@ -115,7 +83,22 @@ runs:
         arch: "${{inputs.arch}}"
         mach_version: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
-      run: "ech0 windows amd64"
+      run: |
+        . .github/workflows/platform/windows/setup-env.ps1
+        . .github/actions/build/build.ps1
+
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'windows' && inputs.arch == 'arm64' }}
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        . .github/workflows/platform/windows/setup-env.ps1
+        rustup target add aarch64-pc-windows-msvc
+        . .github/actions/build/build.ps1
 
     - name: "Copy Files"
       if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
@@ -137,4 +120,22 @@ runs:
         mv *.tgz npm-mach-$JOB_NAME.tgz
         mv *.tgz $ROOT_DIR/artifacts/npm-mach-$JOB_NAME.tgz
 
-        ls -l $ROOT_DIR/artifacts     
+        ls -l $ROOT_DIR/artifacts 
+
+    - name: "Copy Files"
+      if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
+      shell: bash
+      env:
+        job: ''
+      run: |
+        export ROOT_DIR="$(Get-Location).path"
+
+        cd "${RootPath}/target/${Job}"
+        mv release mach
+        tar -czvf "mach-${Job}.tar.gz" mach
+        Move-Item "mach-${Job}.tar.gz" -Destination "${RootPath}/artifacts" | Out-Null
+
+        cd "${RootPath}/npm/mach-os-arch"
+        npm pack
+        Move-Item *.tgz -Destination "npm-mach-${Job}.tgz"
+        Move-Item *.tgz -Destination "${RootPath}/artifacts/npm-mach-${Job}.tgz"
