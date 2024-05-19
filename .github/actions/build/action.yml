@@ -13,6 +13,7 @@ inputs:
     default: "release"
   mach_version:
     description: 'prepare packages for publishing'
+    default: ''
 
 runs:
   using: 'composite'
@@ -117,7 +118,7 @@ runs:
       run: "ech0 windows amd64"
 
     - name: "Copy Files"
-      if: ${{ runner.os != 'Windows' }}
+      if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
       shell: bash
       env:
         job: ''
