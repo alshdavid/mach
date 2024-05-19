@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: .github/actions/setup
+      - uses: ./.github/actions/setup
       - { name: "Build", run: "source .github/workflows/platform/unix/setup-env.bash && profile=release just build" }
       - { name: "Integration tests", run: "source .github/workflows/platform/unix/setup-env.bash && just integration-tests" }
 
