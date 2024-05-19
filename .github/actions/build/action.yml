@@ -128,14 +128,14 @@ runs:
       env:
         job: ''
       run: |
-        export ROOT_DIR="$(Get-Location).path"
+        $env:RootPath = (Get-Location).Path
 
-        cd "${RootPath}/target/${Job}"
+        cd "${env:RootPath}/target/${Job}"
         mv release mach
         tar -czvf "mach-${Job}.tar.gz" mach
-        Move-Item "mach-${Job}.tar.gz" -Destination "${RootPath}/artifacts" | Out-Null
+        Move-Item "mach-${Job}.tar.gz" -Destination "${env:RootPath}/artifacts" | Out-Null
 
-        cd "${RootPath}/npm/mach-os-arch"
+        cd "${env:RootPath}/npm/mach-os-arch"
         npm pack
         Move-Item *.tgz -Destination "npm-mach-${Job}.tgz"
-        Move-Item *.tgz -Destination "${RootPath}/artifacts/npm-mach-${Job}.tgz"
+        Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${Job}.tgz"
