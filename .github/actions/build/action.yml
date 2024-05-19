@@ -134,6 +134,8 @@ runs:
         $env:RootPath = (Get-Location).Path
         $env:Job = "${env:os}-${env:arch}"
 
+        New-Item -ItemType "directory" -Force -Path "${env:RootPath}/artifacts" | Out-Null
+
         echo "${env:RootPath}/target/${env:Job}"
         cd "${env:RootPath}/target/${env:Job}"
         mv release mach
