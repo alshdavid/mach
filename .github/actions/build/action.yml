@@ -103,8 +103,6 @@ runs:
     - name: "Copy Files"
       if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
       shell: bash
-      env:
-        job: ''
       run: |
         export ROOT_DIR="$(pwd)"
 
@@ -125,11 +123,10 @@ runs:
     - name: "Copy Files"
       if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
       shell: powershell
-      env:
-        job: ''
       run: |
         $env:RootPath = (Get-Location).Path
 
+        echo "${env:RootPath}/target/${Job}"
         cd "${env:RootPath}/target/${Job}"
         mv release mach
         tar -czvf "mach-${Job}.tar.gz" mach
