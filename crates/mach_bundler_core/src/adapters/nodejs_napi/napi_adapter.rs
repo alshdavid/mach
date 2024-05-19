@@ -7,6 +7,7 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::RwLock;
 use std::thread;
 
 use crate::public::Adapter;
@@ -23,7 +24,7 @@ pub struct NodejsNapiAdapter {
   rx_to_worker: Arc<Mutex<Option<Vec<Receiver<NapiOutgoingData>>>>>,
   tx_start_worker: Sender<usize>,
   rx_worker_connected: Arc<Mutex<Option<Receiver<Sender<NapiOutgoingData>>>>>,
-  initialized: Arc<AtomicBool>
+  initialized: Arc<RwLock<Option<()>>>
 }
 
 impl NodejsNapiAdapter {
@@ -49,21 +50,22 @@ impl NodejsNapiAdapter {
       tx_to_worker,
       rx_to_worker: Arc::new(Mutex::new(Some(rx_to_worker))),
       rx_worker_connected: Arc::new(Mutex::new(Some(rx_worker_connected))),
-      initialized: Arc::new(AtomicBool::new(false)),
+      initialized: Arc::new(RwLock::new(Some(()))),
     }
   }
 }
 
 impl Adapter for NodejsNapiAdapter {
   fn is_running(&self) -> bool {
-    self.initialized.load(Ordering::Relaxed)
+    self.initialized.read().unwrap().is_some()
   }
 
   fn init(&self) -> Result<(), String> {
-    if self.is_running() {
+    let mut is_running = self.initialized.write().unwrap();
+    if is_running.is_some() {
       return Ok(());
     }
-    self.initialized.fetch_and(true, Ordering::Relaxed);
+    is_running.replace(());
     let worker_count = self.worker_count.clone();
     let rx_worker_connected = self.rx_worker_connected.lock().unwrap().take().unwrap();
     let tx_start_worker = self.tx_start_worker.clone();
