@@ -17,7 +17,6 @@ runs:
   using: 'composite'
   steps:
     - name: "Build Project" 
-      if: ${{ inputs.os == 'linux' && inputs.arch == 'amd64' }}
       shell: bash
       env:
         os: "${{inputs.os}}"
