@@ -1,6 +1,3 @@
-#!/bin/bash
-set -e
-
 # Just
 $env:Path = $HOME + '\.local\just;' + $env:Path
 
