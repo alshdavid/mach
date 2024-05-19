@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 use std::fmt::Formatter;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
@@ -21,6 +23,7 @@ pub struct NodejsNapiAdapter {
   rx_to_worker: Arc<Mutex<Option<Vec<Receiver<NapiOutgoingData>>>>>,
   tx_start_worker: Sender<usize>,
   rx_worker_connected: Arc<Mutex<Option<Receiver<Sender<NapiOutgoingData>>>>>,
+  initialized: Arc<AtomicBool>
 }
 
 impl NodejsNapiAdapter {
@@ -46,16 +49,21 @@ impl NodejsNapiAdapter {
       tx_to_worker,
       rx_to_worker: Arc::new(Mutex::new(Some(rx_to_worker))),
       rx_worker_connected: Arc::new(Mutex::new(Some(rx_worker_connected))),
+      initialized: Arc::new(AtomicBool::new(false)),
     }
   }
 }
 
 impl Adapter for NodejsNapiAdapter {
   fn is_running(&self) -> bool {
-    todo!()
+    self.initialized.load(Ordering::Relaxed)
   }
 
   fn init(&self) -> Result<(), String> {
+    if self.is_running() {
+      return Ok(());
+    }
+    self.initialized.fetch_and(true, Ordering::Relaxed);
     let worker_count = self.worker_count.clone();
     let rx_worker_connected = self.rx_worker_connected.lock().unwrap().take().unwrap();
     let tx_start_worker = self.tx_start_worker.clone();
