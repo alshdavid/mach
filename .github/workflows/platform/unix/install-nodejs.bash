@@ -3,7 +3,7 @@
 # Default to LTS
 NODE_VERSION="$1"
 if [ "$NODE_VERSION" = "" ]; then
-  NODE_VERSION="20"
+  NODE_VERSION="22.2.0"
 fi 
 
 # Default to home directory
