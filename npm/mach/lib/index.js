@@ -1,10 +1,3 @@
-class MachInitError extends Error {
-  constructor() {
-    super('Mach is not initialized')
-    throw this
-  }
-}
-
 const OS = {
   win32: 'windows',
   darwin: 'macos',
@@ -19,12 +12,26 @@ const ARCH = {
 let exports = undefined
 
 try {
-  exports = await import(`@alshdavid/mach-${OS}-${ARCH}`)
+  exports = await import(`@alshdavid/mach-${OS}-${ARCH}/lib/index.js`)
 } catch (error) {
-  try {
-    exports = await import(`@alshdavid/mach-os-arch`)
-  } catch (err) {
+  const fs = await import('node:fs/promises')
+  const path = await import('node:path')
+  const url = await import('node:url')
+  
+  const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
+  const package_json = JSON.parse(await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf-8'))
+  if (package_json.version !== '0.0.0-local') {
     throw error
+  }
+
+  exports = await import('@alshdavid/mach-os-arch/lib/index.js')
+}
+
+class MachInitError extends Error {
+  constructor() {
+    super('Mach is not initialized')
+    throw this
   }
 }
 
