@@ -1,13 +1,14 @@
 import { test, describe, before } from 'node:test'
 import * as assert from 'node:assert'
 import { BuildReport, Mach } from '@alshdavid/mach'
-import { FIXTURES_FN } from '../utils/mach/index.js'
+import { FIXTURES_PATH_FN } from '../utils/mach/index.js'
 import { NodejsContext } from '../utils/nodejs/index.js'
 import { install_npm } from '../utils/npm.js'
 
-const FIXTURE = FIXTURES_FN('commonjs-basic')
+const FIXTURE_NAME = 'commonjs-basic'
+const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe('commonjs-basic', { concurrency: true }, () => {
+describe(FIXTURE_NAME, { concurrency: true }, () => {
   let report: BuildReport
 
   before(async () => {

@@ -212,5 +212,6 @@ jobs:
       - name: Publish NPM Package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
           CRATES_IO_API_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
         run: bash .github/workflows/release/publish-crate.bash

@@ -1,13 +1,14 @@
 import { test, describe, before } from 'node:test'
 import * as assert from 'node:assert'
 import { BuildReport, Mach } from '@alshdavid/mach'
-import { FIXTURES_FN } from '../utils/mach/index.js'
+import { FIXTURES_PATH_FN } from '../utils/mach/index.js'
 import { NodejsContext } from '../utils/nodejs/index.js'
 import { install_npm } from '../utils/npm.js'
 
-const FIXTURE = FIXTURES_FN('plugins-nodejs-transformer-txt')
+const FIXTURE_NAME = 'plugins-nodejs-transformer-txt'
+const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe.skip('plugins-nodejs-transformer-txt', { concurrency: true, todo: 'Determinism issues' }, () => {
+describe.skip(FIXTURE_NAME, { concurrency: true, todo: 'Determinism issues' }, () => {
   let report: BuildReport
 
   before(async () => {

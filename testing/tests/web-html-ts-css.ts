@@ -6,9 +6,10 @@ import { ClientContext } from '../utils/browser/index.js'
 import { install_npm } from '../utils/npm/index.js'
 import * as puppeteer from 'puppeteer-core'
 
-const FIXTURE = FIXTURES_FN('web-html-ts-css')
+const FIXTURE_NAME = 'web-html-ts-css'
+const FIXTURE = FIXTURES_FN(FIXTURE_NAME)
 
-describe('web-html-ts-css', { concurrency: true }, async () => {
+describe(FIXTURE_NAME, { concurrency: true }, async () => {
   let browser: puppeteer.Browser
   let client: ClientContext
   let report: BuildReport
