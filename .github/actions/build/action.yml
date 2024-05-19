@@ -34,67 +34,88 @@ runs:
           just build
         fi
     
-    # - name: "Build Project" 
-    #   if: ${{ runner.os == 'Linux' && runner.arch == 'ARM64' }}
-    #   shell: bash
-    #   env:
-    #     os: "linux"
-    #     arch: "arm64"
-    #     mach_version: "${{inputs.mach_version}}"
-    #     profile: "${{inputs.profile}}"
-    #   run: |
-    #     source .github/workflows/platform/unix/setup-env.bash
-    #     export CC=aarch64-linux-gnu-gcc
-    #     export MACH_SKIP_POST_INSTALL="true"
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'linux' && inputs.arch == 'arm64' }}
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/workflows/platform/unix/setup-env.bash
+        export CC=aarch64-linux-gnu-gcc
+        export MACH_SKIP_POST_INSTALL="true"
 
-    #     sudo apt-get update
-    #     sudo apt-get install gcc-aarch64-linux-gnu build-essential
-    #     rustup target add aarch64-unknown-linux-gnu
-    #     aarch64-linux-gnu-gcc --version
+        sudo apt-get update
+        sudo apt-get install gcc-aarch64-linux-gnu build-essential
+        rustup target add aarch64-unknown-linux-gnu
+        aarch64-linux-gnu-gcc --version
 
-    #     if ![ "$mach_version" = "" ]; then
-    #       export MACH_VERSION="${mach_version}"
-    #       just build-publish
-    #     else
-    #       just build
-    #     fi
+        if ![ "$mach_version" = "" ]; then
+          export MACH_VERSION="${mach_version}"
+          just build-publish
+        else
+          just build
+        fi
     
-    # - name: "Build Project" 
-    #   if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
-    #   shell: bash
-    #   env:
-    #     os: macos
-    #     arch: amd64
-    #     mach_version: "${{inputs.mach_version}}"
-    #     profile: "${{inputs.profile}}"
-    #   run: |
-    #     source .github/workflows/platform/unix/setup-env.bash
-    #     rustup target add x86_64-apple-darwin
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'macos' && inputs.arch == 'amd64' }}
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/workflows/platform/unix/setup-env.bash
+        rustup target add x86_64-apple-darwin
         
-    #     if ![ "$mach_version" = "" ]; then
-    #       export MACH_VERSION="${mach_version}"
-    #       just build-publish
-    #     else
-    #       just build
-    #     fi
+        if ![ "$mach_version" = "" ]; then
+          export MACH_VERSION="${mach_version}"
+          just build-publish
+        else
+          just build
+        fi
 
-    # - name: "Build Project" 
-    #   if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
-    #   shell: bash
-    #   env:
-    #     os: macos
-    #     arch: amd64
-    #     mach_version: "${{inputs.mach_version}}"
-    #     profile: "${{inputs.profile}}"
-    #   run: |
-    #     source .github/workflows/platform/unix/setup-env.bash
-    #     rustup target add x86_64-apple-darwin
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'macos' && inputs.arch == 'arm64' }}
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/workflows/platform/unix/setup-env.bash
         
-    #     if ![ "$mach_version" = "" ]; then
-    #       export MACH_VERSION="${mach_version}"
-    #       just build-publish
-    #     else
-    #       just build
-    #     fi
+        if ![ "$mach_version" = "" ]; then
+          export MACH_VERSION="${mach_version}"
+          just build-publish
+        else
+          just build
+        fi
+
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'windows' && inputs.arch == 'arm64' }}
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: "ech windows arm64"
+
+    - name: "Build Project" 
+      if: ${{ inputs.os == 'windows' && inputs.arch == 'amd64' }}
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        mach_version: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: "ech windows amd64"
+        
+
 
     
