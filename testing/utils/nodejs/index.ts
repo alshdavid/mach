@@ -88,13 +88,24 @@ export class NodejsContext {
     }
   }
 
-  async get_global(key: string): Promise<JSONObject | undefined> {
+  async get_global(...keys: string[]): Promise<JSONObject | undefined> {
     return this.eval(
-      async (key) => {
-        // @ts-expect-error
-        return await globalThis[key]
+      async (keys = []) => {
+        try {
+          let curr = globalThis 
+          for (const key of keys) {
+            if (!(key in curr)) {
+              return undefined
+            }
+            // @ts-expect-error
+            curr = await curr[key]
+          }
+          return await curr
+        } catch (error) {
+          return undefined
+        }
       },
-      [key],
+      [keys],
     )
   }
 

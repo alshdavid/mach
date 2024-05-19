@@ -1,3 +1,7 @@
 import content from './content.txt'
 
-globalThis.foo = content
+globalThis.content_key = undefined
+
+if (typeof content !== 'undefined') {
+  globalThis.content_key = content
+}

@@ -4,11 +4,12 @@ import { BuildReport, Mach } from '@alshdavid/mach'
 import { FIXTURES_PATH_FN } from '../utils/mach/index.js'
 import { NodejsContext } from '../utils/nodejs/index.js'
 import { install_npm } from '../utils/npm.js'
+import { equal_unsafe } from '../utils/asset/index.js'
 
 const FIXTURE_NAME = 'plugins-nodejs-transformer-txt'
 const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe.skip(FIXTURE_NAME, { concurrency: true, todo: 'Determinism issues' }, () => {
+describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
   let report: BuildReport
 
   before(async () => {
@@ -28,11 +29,17 @@ describe.skip(FIXTURE_NAME, { concurrency: true, todo: 'Determinism issues' }, (
       entry: FIXTURE('dist', report.entries['src/index.js']),
     })
 
-    const result = await nodejs.get_global('foo')
-    // assert.equal(
-    //   result,
-    //   'content',
-    //   `Expect global key "Foo" to be "foo", got "${result}"`,
-    // )
+    let result: string | undefined = undefined
+    try {
+      result = await nodejs.get_global('content_key') as any
+    } catch (error) {
+      
+    }
+    equal_unsafe(
+      t,
+      result,
+      'content',
+      `Expect "Foo" to be "foo", got "${result}"`,
+    )
   })
 })

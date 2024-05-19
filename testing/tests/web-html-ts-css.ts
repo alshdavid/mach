@@ -9,7 +9,7 @@ import * as puppeteer from 'puppeteer-core'
 const FIXTURE_NAME = 'web-html-ts-css'
 const FIXTURE = FIXTURES_FN(FIXTURE_NAME)
 
-describe(FIXTURE_NAME, { concurrency: true }, async () => {
+describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, async () => {
   let browser: puppeteer.Browser
   let client: ClientContext
   let report: BuildReport
