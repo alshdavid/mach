@@ -7,8 +7,11 @@ source $ROOT_DIR/.github/workflows/platform/unix/install-nodejs.bash
 
 echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
+ls -l $ROOT_DIR/artifacts
+ls -l $ROOT_DIR/artifacts/npm-package
+
 PACKAGES=(
-  "$ROOT_DIR/artifacts/npm-mach/npm-mach.tgz"
+  "$ROOT_DIR/artifacts/npm-package/npm-mach.tgz"
   "$ROOT_DIR/artifacts/linux-amd64/npm-mach-linux-amd64.tgz"
   "$ROOT_DIR/artifacts/linux-arm64/npm-mach-linux-arm64.tgz"
   "$ROOT_DIR/artifacts/macos-amd64/npm-mach-macos-amd64.tgz"
