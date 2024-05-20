@@ -23,18 +23,18 @@ jobs:
       - id: step1
         run: bash .github/workflows/release/generate-variables.bash
 
-  # test-integration:
-  #   name: "🧪 Integration Tests"
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { profile: debug }
-  #     - name: "Integration tests"
-  #       run: just integration-tests
+  test-integration:
+    name: "🧪 Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { profile: debug }
+      - name: "Integration tests"
+        run: just integration-tests
 
   linux-amd64:
     name: "🐥 Linux AMD64"
@@ -49,100 +49,100 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: ${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
 
-  # linux-arm64:
-  #   name: "🐥 Linux ARM64"
-  #   runs-on: ubuntu-latest
-  #   needs: [vars]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: ${{ github.workspace }}/artifacts/**/*
-  #         if-no-files-found: error
-  #         retention-days: 1
+  linux-arm64:
+    name: "🐥 Linux ARM64"
+    runs-on: ubuntu-latest
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
 
-  # macos-amd64:
-  #   name: "🍎 MacOS AMD64"
-  #   runs-on: macos-13
-  #   needs: [vars]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: ${{ github.workspace }}/artifacts/**/*
-  #         if-no-files-found: error
-  #         retention-days: 1
+  macos-amd64:
+    name: "🍎 MacOS AMD64"
+    runs-on: macos-13
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
       
-  # macos-arm64:
-  #   name: "🍎 MacOS ARM64"
-  #   runs-on: macos-14
-  #   needs: [vars]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: ${{ github.workspace }}/artifacts/**/*
-  #         if-no-files-found: error
-  #         retention-days: 1
+  macos-arm64:
+    name: "🍎 MacOS ARM64"
+    runs-on: macos-14
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
 
-  # windows-amd64:
-  #   name: "🟦 Windows AMD64"
-  #   runs-on: windows-latest
-  #   needs: [vars]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: ${{ github.workspace }}/artifacts/**/*
-  #         if-no-files-found: error
-  #         retention-days: 1
+  windows-amd64:
+    name: "🟦 Windows AMD64"
+    runs-on: windows-latest
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
 
-  # windows-arm64:
-  #   name: "🟦 Windows ARM64"
-  #   runs-on: windows-latest
-  #   needs: [vars]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ./.github/actions/setup-just
-  #     - uses: ./.github/actions/setup-nodejs
-  #     - uses: ./.github/actions/setup-rust
-  #     - uses: ./.github/actions/build
-  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ github.job }}.tar.gz
-  #         path: ${{ github.workspace }}/artifacts/**/*
-  #         if-no-files-found: error
-  #         retention-days: 1
+  windows-arm64:
+    name: "🟦 Windows ARM64"
+    runs-on: windows-latest
+    needs: [vars]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build
+        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}
+          path: ${{ github.workspace }}/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 1
 
   npm-package:
     name: "📦 NPM"
@@ -157,7 +157,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: ${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -165,8 +165,7 @@ jobs:
   publish-github-release:
     name: "🔁 Github Release"
     runs-on: ubuntu-latest
-    needs: [vars, npm-package, linux-amd64]
-    # needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -182,8 +181,7 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    # needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-    needs: [vars, npm-package, linux-amd64]
+    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -196,18 +194,18 @@ jobs:
           BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
         run: bash .github/workflows/release/publish-npm-package.bash
 
-  # publish-crate:
-  #   name: "🔁 Publish: Crates.io"
-  #   runs-on: ubuntu-latest
-  #   needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         path: ${{ github.workspace }}/artifacts
-  #     - name: Publish Crate
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
-  #         CRATES_IO_API_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
-  #       run: bash .github/workflows/release/publish-crate.bash
+  publish-crate:
+    name: "🔁 Publish: Crates.io"
+    runs-on: ubuntu-latest
+    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/artifacts
+      - name: Publish Crate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MACH_VERSION: ${{ needs.vars.outputs.NEXT_MACH_VERSION }}
+          CRATES_IO_API_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
+        run: bash .github/workflows/release/publish-crate.bash
