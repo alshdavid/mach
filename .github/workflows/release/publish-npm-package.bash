@@ -3,8 +3,8 @@ set -ev
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
-echo $ROOT_DIR/artifacts
-echo $ROOT_DIR/artifacts/artifacts
+ls -l $ROOT_DIR/artifacts
+ls -l $ROOT_DIR/artifacts/artifacts
 
 exit 0
 
