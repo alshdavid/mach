@@ -1,7 +1,5 @@
 use std::fmt::Debug;
 use std::fmt::Formatter;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
@@ -50,7 +48,7 @@ impl NodejsNapiAdapter {
       tx_to_worker,
       rx_to_worker: Arc::new(Mutex::new(Some(rx_to_worker))),
       rx_worker_connected: Arc::new(Mutex::new(Some(rx_worker_connected))),
-      initialized: Arc::new(RwLock::new(Some(()))),
+      initialized: Arc::new(RwLock::new(None)),
     }
   }
 }

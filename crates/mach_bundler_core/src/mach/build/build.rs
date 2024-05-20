@@ -103,10 +103,6 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     dependency_map.clone(),
   )?;
 
-  println!("{}", config.start_time.elapsed().unwrap().as_nanos() as f64 / 1_000_000 as f64 / 1000 as f64);
-  println!("{}", asset_map.read().unwrap().len());
-
-  return Ok(BuildResult::default());
   /*
     bundle() will take the asset graph and organize related assets
     into groupings. Each grouping will be emitted as a "bundle"
