@@ -14,7 +14,7 @@ runs:
       shell: bash
       env:
         JUST_VERSION: ${{ inputs.version }}
-      run: "bash .github/workflows/platform/unix/install-just.bash"
+      run: "bash .github/actions/setup-just/install-just.bash"
 
     - name: "Install Just" 
       if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
