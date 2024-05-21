@@ -125,7 +125,7 @@ runs:
       run: |
         . .github/actions/setup-env/setup-env.ps1
         rustup target add aarch64-pc-windows-msvc
-        . .github/actions/build/build.ps1
+        . .github/actions/build-mach/build.ps1
 
     # Copy Artifacts
     - name: "Copy Artifacts (Unix)"
