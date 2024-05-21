@@ -113,6 +113,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-env
       - uses: actions/download-artifact@v4
         with:
           path: ${{ github.workspace }}/artifacts
@@ -120,8 +121,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          BRANCH_NAME: ${{ needs.vars.outputs.BRANCH_NAME }}
-        run: bash .github/workflows/release/publish-npm-package.bash
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          bash .github/workflows/release/publish-npm-package.bash
 
   # publish-crate:
   #   name: "🔁 Publish: Crates.io"
