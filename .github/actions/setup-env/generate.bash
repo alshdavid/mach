@@ -16,11 +16,11 @@ NEXT_MACH_VERSION="$(node $ROOT_DIR/.github/scripts/ci/next-npm-version.mjs)"
 
 touch "$ROOT_DIR/.env"
 
-echo "NEXT_MACH_VERSION=$NEXT_MACH_VERSION" >> "$ROOT_DIR/.env"
+echo "MACH_VERSION=$NEXT_MACH_VERSION" >> "$ROOT_DIR/.env"
 echo "BRANCH_NAME=$BRANCH_NAME" >> "$ROOT_DIR/.env"
 echo "NPM_TAG=$NPM_TAG" >> "$ROOT_DIR/.env"
 
-echo NEXT_MACH_VERSION = $NEXT_MACH_VERSION
+echo MACH_VERSION = $NEXT_MACH_VERSION
 echo NPM_TAG = $NPM_TAG
 echo BRANCH_NAME = $BRANCH_NAME
 
