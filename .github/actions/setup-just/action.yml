@@ -1,0 +1,31 @@
+name: 'alshdavid/setup-just'
+description: "Install Just"
+
+inputs:
+  version:
+    description: 'Just version'
+    default: "1.26.0"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Install Just" 
+      if: ${{ runner.os != 'Windows' }}
+      shell: bash
+      env:
+        JUST_VERSION: ${{ inputs.version }}
+      run: "bash .github/actions/setup-just/install-just.bash"
+
+    - name: "Install Just" 
+      if: ${{ runner.os == 'Windows' && runner.arch == 'X64' }}
+      shell: powershell
+      env:
+        JUST_VERSION: ${{ inputs.version }}
+      run: . .github/actions/setup-just/install-just.ps1
+
+    - name: "Install Just" 
+      if: ${{ runner.os == 'Windows' && runner.arch == 'ARM64' }}
+      shell: powershell
+      env:
+        JUST_VERSION: ${{ inputs.version }}
+      run: exit 1

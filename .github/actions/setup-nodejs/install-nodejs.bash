@@ -1,9 +1,10 @@
 #!/bin/bash
+set -e
 
 # Default to LTS
 NODE_VERSION="$1"
 if [ "$NODE_VERSION" = "" ]; then
-  NODE_VERSION="22.2.0"
+  NODE_VERSION="20"
 fi 
 
 # Default to home directory

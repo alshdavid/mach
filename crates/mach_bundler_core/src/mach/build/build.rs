@@ -60,7 +60,7 @@ impl Default for BuildOptions {
   }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct BuildResult {
   pub bundle_manifest: HashMap<String, String>,
   pub entries: HashMap<String, String>,

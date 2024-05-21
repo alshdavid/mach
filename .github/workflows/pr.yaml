@@ -15,11 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: bash .github/workflows/pr/linux-amd64.bash
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
 
-  test-integration:
+  integration-tests:
     name: "🧪 Integration Tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: bash .github/workflows/pr/test-integration.bash
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
+      - name: "Integration tests"
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just integration-tests

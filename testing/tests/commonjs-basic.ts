@@ -41,7 +41,7 @@ describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
         entry: FIXTURE('src', 'index.js'),
       })
 
-      await nodejs.get_global('ready')
+      await nodejs.get_global('onready')
   
       for (const [key, expect] of Object.entries(VALUES)) {
         const result = await nodejs.get_global('output', key)
@@ -75,7 +75,7 @@ describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
           entry: FIXTURE('dist', report.entries['src/index.js']),
         })
 
-        await nodejs.get_global('ready')
+        await nodejs.get_global('onready')
   
         const result = await nodejs.get_global('output', key)
         equal_unsafe(

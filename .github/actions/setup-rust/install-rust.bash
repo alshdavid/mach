@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 export RUSTUP_HOME="${HOME}/.local/rust/rustup"
 export CARGO_HOME="${HOME}/.local/rust/cargo"
