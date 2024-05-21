@@ -5,10 +5,10 @@ use super::DependencyMap;
 
 #[derive(Default)]
 pub struct Compilation {
-  asset_map: AssetMap,
-  asset_contents: AssetContents,
-  asset_graph: AssetGraph,
-  dependency_map: DependencyMap,
+  pub asset_map: AssetMap,
+  pub asset_contents: AssetContents,
+  pub asset_graph: AssetGraph,
+  pub dependency_map: DependencyMap,
 }
 
 impl Compilation {

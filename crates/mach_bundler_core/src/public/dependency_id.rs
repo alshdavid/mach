@@ -9,6 +9,12 @@ use super::InternalId;
 #[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DependencyId(pub InternalId, String);
 
+impl DependencyId {
+  pub fn new(specifier: &str) -> Self {
+    Self(Default::default(), specifier.to_string())
+  }
+}
+
 impl Debug for DependencyId {
   fn fmt(
     &self,

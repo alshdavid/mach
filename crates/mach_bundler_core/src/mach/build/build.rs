@@ -76,7 +76,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     the bundling phases with read or write permissions
     depending on how that phase uses them
   */
-  let mut compilation = Compilation::new();
+  let compilation = Compilation::new();
   let adapter_map = options.adapter_map.unwrap_or_default();
 
   /*

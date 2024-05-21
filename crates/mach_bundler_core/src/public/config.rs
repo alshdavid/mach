@@ -16,7 +16,7 @@ pub type MachConfigSync = Arc<MachConfig>;
 #[derive(Clone, Debug)]
 pub struct MachConfig {
   pub start_time: SystemTime,
-  pub entry_point: PathBuf,
+  pub entries: Vec<PathBuf>,
   pub dist_dir: PathBuf,
   pub clean_dist_dir: bool,
   pub project_root: PathBuf,

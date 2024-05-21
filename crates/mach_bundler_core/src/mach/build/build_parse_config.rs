@@ -59,21 +59,19 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
     return Err("Could not find project root".to_string());
   };
 
-  let entry = 'block: {
+  let entries = 'block: {
     if let Some(args) = &command.entries {
-      break 'block args[0].clone();
+      break 'block args.clone();
     }
     if let Some(entry) = find_entry(&project_root) {
-      break 'block entry;
+      break 'block vec![entry];
     }
     return Err("Cannot find entry".to_string());
   };
 
-  let entry = get_absolute_path(Some(project_root.clone()), &entry);
-
   return Ok(Arc::new(MachConfig {
     start_time,
-    entry_point: entry.clone(),
+    entries,
     dist_dir: get_dist_dir(&command, &project_root),
     clean_dist_dir: command.clean,
     bundle_splitting: command.bundle_splitting,
