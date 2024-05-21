@@ -3,7 +3,7 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $SCRIPT_DIR))
 
-ll -l $ROOT_DIR
+ls -l $ROOT_DIR
 cd $ROOT_DIR
 
 pnpm install
