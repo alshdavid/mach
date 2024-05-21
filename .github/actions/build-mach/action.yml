@@ -97,7 +97,7 @@ runs:
         rustup target add x86_64-apple-darwin
         bash .github/actions/build-mach/build.bash
 
-      - name: "Build Mach (cross build - MacOS arm64 on amd64)" 
+    - name: "Build Mach (cross build - MacOS arm64 on amd64)" 
       if: |
         (runner.os == 'macOS' && runner.arch == 'ARM64' && 
           inputs.os == 'macos' && inputs.arch == 'amd64')
