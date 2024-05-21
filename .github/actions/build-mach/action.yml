@@ -114,7 +114,7 @@ runs:
 
     - name: "Build Mach (cross build - Windows arm64 on amd64)" 
       if: |
-        (runner.os == 'Windows' && runner.arch == 'X86' && 
+        (runner.os == 'Windows' && runner.arch == 'X64' && 
           inputs.os == 'windows' && inputs.arch == 'arm64')
       shell: powershell
       env:
