@@ -31,7 +31,6 @@ runs:
 
     - name: "Copy Artifacts" 
       shell: bash
-      if: inputs.mach_version != ''
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
