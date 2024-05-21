@@ -26,7 +26,7 @@ runs:
         MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
-        source .github/workflows/platform/unix/setup-env.bash
+        source .github/actions/setup-env/setup-env.bash
         bash .github/actions/build-npm/build.bash
 
     - name: "Copy Artifacts" 
@@ -38,7 +38,7 @@ runs:
         MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
-        source .github/workflows/platform/unix/setup-env.bash
+        source .github/actions/setup-env/setup-env.bash
         bash .github/actions/build-npm/copy.bash
     
     

@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash .github/workflows/pr/linux-amd64.bash
 
-  test-integration:
+  integration-tests:
     name: "🧪 Integration Tests"
     runs-on: ubuntu-latest
     steps:

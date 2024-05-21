@@ -1,3 +1,5 @@
+set -e
+
 if ! [ "$MACH_VERSION" = "" ]; then
   echo "Building with version $MACH_VERSION"
   just build-publish

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Default to current latest
 JUST_VERSION="$1"

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Default to LTS
 NODE_VERSION="$1"

@@ -1,3 +1,9 @@
+# Project Root
+$env:RootPath = "$PSScriptRoot\..\..\.."
+
+cd "${env:RootPath}"
+pwd
+
 # Just
 $env:Path = $HOME + '\.local\just;' + $env:Path
 
@@ -11,3 +17,11 @@ $env:Path = $HOME + '\.local\nodejs;' + $env:Path
 $env:Path = $HOME + '\.local\nodejs\prefix\bin;' + $env:Path
 $env:NPM_CONFIG_PREFIX = $HOME + '\.local\nodejs\prefix'
 pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
+
+Get-Content "${env:RootPath}\.env" | foreach {
+  $name, $value = $_.split('=')
+  if ([string]::IsNullOrWhiteSpace($name) || $name.Contains('#')) {
+    continue
+  }
+  Set-Item "env:$name" "$value"
+}
