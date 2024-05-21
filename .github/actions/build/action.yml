@@ -24,7 +24,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
@@ -36,7 +36,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
@@ -55,7 +55,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
@@ -69,7 +69,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
@@ -81,7 +81,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         . .github/workflows/platform/windows/setup-env.ps1
@@ -93,7 +93,7 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         . .github/workflows/platform/windows/setup-env.ps1

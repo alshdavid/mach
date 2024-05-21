@@ -1,5 +1,4 @@
-if ("${env:mach_version}" -ne "") {
-  $env:MACH_VERSION = "${env:mach_version}"
+if ("${env:MACH_VERSION}" -ne "") {
   just build-publish
 } else {
   just build
