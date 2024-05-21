@@ -18,8 +18,20 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'linux' && inputs.arch == 'amd64' }}
+    # Builds for Native Hosts
+    - name: "Build Mach (native host - Unix)"
+      if: |
+        (runner.os == 'Linux' && runner.arch == 'X64' && 
+          inputs.os == 'linux' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'Linux' && runner.arch == 'ARM64' && 
+          inputs.os == 'linux' && inputs.arch == 'arm64') ||
+        
+        (runner.os == 'macOS' && runner.arch == 'X64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'arm64')
       shell: bash
       env:
         os: "${{inputs.os}}"
@@ -28,10 +40,30 @@ runs:
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
-        bash .github/actions/build/build.bash
+        bash .github/actions/build-mach/build.bash
     
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'linux' && inputs.arch == 'arm64' }}
+    - name: "Build Mach (native host - Windows)"
+      if: |
+        (runner.os == 'Windows' && runner.arch == 'X64' && 
+          inputs.os == 'windows' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'Windows' && runner.arch == 'ARM64' && 
+          inputs.os == 'windows' && inputs.arch == 'arm64')
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        . .github/workflows/platform/windows/setup-env.ps1
+        . .github/actions/build-mach/build.ps1
+
+    # Cross Compilation
+    - name: "Build Mach (cross build - Linux arm64 on amd64)" 
+      if: |
+        (runner.os == 'Linux' && runner.arch == 'X64' && 
+          inputs.os == 'linux' && inputs.arch == 'arm64')
       shell: bash
       env:
         os: "${{inputs.os}}"
@@ -47,10 +79,13 @@ runs:
         sudo apt-get install gcc-aarch64-linux-gnu build-essential
         rustup target add aarch64-unknown-linux-gnu
         aarch64-linux-gnu-gcc --version
-        bash .github/actions/build/build.bash
+
+        bash .github/actions/build-mach/build.bash
     
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'macos' && inputs.arch == 'amd64' }}
+    - name: "Build Mach (cross build - MacOS amd64 on arm64)" 
+      if: |
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64')
       shell: bash
       env:
         os: "${{inputs.os}}"
@@ -60,11 +95,12 @@ runs:
       run: |
         source .github/workflows/platform/unix/setup-env.bash
         rustup target add x86_64-apple-darwin
-        bash .github/actions/build/build.bash
+        bash .github/actions/build-mach/build.bash
 
-
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'macos' && inputs.arch == 'arm64' }}
+      - name: "Build Mach (cross build - MacOS arm64 on amd64)" 
+      if: |
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64')
       shell: bash
       env:
         os: "${{inputs.os}}"
@@ -73,22 +109,13 @@ runs:
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
-        bash .github/actions/build/build.bash    
+        rustup aarch64-apple-darwin
+        bash .github/actions/build-mach/build.bash  
 
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'windows' && inputs.arch == 'amd64' }}
-      shell: powershell
-      env:
-        os: "${{inputs.os}}"
-        arch: "${{inputs.arch}}"
-        MACH_VERSION: "${{inputs.mach_version}}"
-        profile: "${{inputs.profile}}"
-      run: |
-        . .github/workflows/platform/windows/setup-env.ps1
-        . .github/actions/build/build.ps1
-
-    - name: "Build Project" 
-      if: ${{ inputs.os == 'windows' && inputs.arch == 'arm64' }}
+    - name: "Build Mach (cross build - Windows arm64 on amd64)" 
+      if: |
+        (runner.os == 'Windows' && runner.arch == 'AMD64' && 
+          inputs.os == 'windows' && inputs.arch == 'arm64')
       shell: powershell
       env:
         os: "${{inputs.os}}"
@@ -100,7 +127,8 @@ runs:
         rustup target add aarch64-pc-windows-msvc
         . .github/actions/build/build.ps1
 
-    - name: "Copy Files"
+    # Copy Artifacts
+    - name: "Copy Artifacts (Unix)"
       if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
       shell: bash
       env:
@@ -124,7 +152,7 @@ runs:
 
         ls -l $ROOT_DIR/artifacts 
 
-    - name: "Copy Files"
+    - name: "Copy Files (Windows)"
       if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
       shell: powershell
       env:
