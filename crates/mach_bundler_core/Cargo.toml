@@ -27,5 +27,8 @@ html5ever = "0.*"
 markup5ever_rcdom = "0.*"
 clap = { version = "4.*", features = ["derive", "env"], optional = true }
 num_cpus = "1.*"
+petgraph = "0.*"
+parking_lot = "0.*"
 ipc_channel_adapter = { version = "0.*", optional = true }
 napi = { version = "2.*", default-features = false,  optional = true, features = ["napi8", "tokio_rt", "serde-json", "async"] }
+rayon = "1.*"

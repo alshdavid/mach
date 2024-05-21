@@ -6,18 +6,20 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::build_parse_config::parse_config;
-use super::create_result::create_build_result;
-use crate::platform::bundling::bundle;
+// use super::create_result::create_build_result;
+// use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
-use crate::platform::emit::emit;
-use crate::platform::packaging::package;
+// use crate::platform::emit::emit;
+// use crate::platform::packaging::package;
 use crate::platform::transformation::resolve_and_transform;
 use crate::public::Adapter;
 use crate::public::AssetGraphSync;
-use crate::public::AssetMapSync;
+use crate::public::AssetMap;
+// use crate::public::AssetMapSync;
 use crate::public::BundleGraphSync;
 use crate::public::BundleManifestSync;
 use crate::public::BundleMapSync;
+use crate::public::Compilation;
 use crate::public::DependencyMapSync;
 use crate::public::Engine;
 use crate::public::OutputsSync;
@@ -74,13 +76,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     the bundling phases with read or write permissions
     depending on how that phase uses them
   */
-  let asset_map = AssetMapSync::default();
-  let dependency_map = DependencyMapSync::default();
-  let asset_graph = AssetGraphSync::default();
-  let bundles = BundleMapSync::default();
-  let bundle_graph = BundleGraphSync::default();
-  let bundle_manifest = BundleManifestSync::default();
-  let outputs = OutputsSync::default();
+  let mut compilation = Compilation::new();
   let adapter_map = options.adapter_map.unwrap_or_default();
 
   /*
@@ -90,18 +86,16 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   let plugins = load_plugins(&config, &config.machrc, &adapter_map)?;
 
   /*
-    resolve_and_transform() will read source files, identify import statements
-    before modifying their contents (like removing TypeScript types).
+    resolve_and_transform() build the AssetGraph.
 
-    This will loop until there are no more import statements to resolve
+    It does this by crawling the source files, identify import statements, modifying their contents
+    (like removing TypeScript types) and looping until there are no more import statements to resolve.
   */
-  resolve_and_transform(
-    config.clone(),
-    plugins.clone(),
-    asset_map.clone(),
-    asset_graph.clone(),
-    dependency_map.clone(),
-  )?;
+  resolve_and_transform(config.clone(), plugins.clone(), compilation)?;
+
+  Ok(BuildResult::default())
+
+  /*
 
   /*
     bundle() will take the asset graph and organize related assets
@@ -141,4 +135,5 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
   emit(config.clone(), outputs)?;
 
   return Ok(create_build_result(asset_map, bundles, bundle_manifest));
+  */
 }

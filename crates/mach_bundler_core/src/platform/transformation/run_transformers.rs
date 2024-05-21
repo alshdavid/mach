@@ -1,76 +1,76 @@
-use std::fs;
+// use std::fs;
 
-use crate::platform::config::PluginContainerSync;
-use crate::platform::config::TransformerTarget;
-use crate::public::AssetId;
-use crate::public::AssetMapSync;
-use crate::public::DependencyOptions;
-use crate::public::MachConfig;
-use crate::public::MutableAsset;
-use crate::public::ResolveResult;
+// use crate::platform::config::PluginContainerSync;
+// use crate::platform::config::TransformerTarget;
+// use crate::public::AssetId;
+// use crate::public::AssetMapSync;
+// use crate::public::DependencyOptions;
+// use crate::public::MachConfig;
+// use crate::public::MutableAsset;
+// use crate::public::ResolveResult;
 
-pub fn run_transformers(
-  config: &MachConfig,
-  plugins: &PluginContainerSync,
-  asset_map: &AssetMapSync,
-  resolve_result: ResolveResult,
-  asset_id: AssetId,
-) -> Result<Vec<DependencyOptions>, String> {
-  // Replicating Parcel's filename parse logic. Might just remove this
-  let mut file_target = TransformerTarget::new(&resolve_result.file_path);
+// pub fn run_transformers(
+//   config: &MachConfig,
+//   plugins: &PluginContainerSync,
+//   asset_map: &AssetMapSync,
+//   resolve_result: ResolveResult,
+//   asset_id: AssetId,
+// ) -> Result<Vec<DependencyOptions>, String> {
+//   // Replicating Parcel's filename parse logic. Might just remove this
+//   let mut file_target = TransformerTarget::new(&resolve_result.file_path);
 
-  let file_path = resolve_result.file_path.clone();
-  let mut asset_kind = file_target.file_extension.clone();
-  let Ok(mut content) = fs::read(&resolve_result.file_path) else {
-    return Err(format!(
-      "Unable to read file: {:?}",
-      resolve_result.file_path
-    ));
-  };
-  let mut asset_dependencies = Vec::<DependencyOptions>::new();
+//   let file_path = resolve_result.file_path.clone();
+//   let mut asset_kind = file_target.file_extension.clone();
+//   let Ok(mut content) = fs::read(&resolve_result.file_path) else {
+//     return Err(format!(
+//       "Unable to read file: {:?}",
+//       resolve_result.file_path
+//     ));
+//   };
+//   let mut asset_dependencies = Vec::<DependencyOptions>::new();
 
-  let mut mutable_asset = MutableAsset::new(
-    &file_path,
-    &mut asset_kind,
-    &mut content,
-    &mut asset_dependencies,
-  );
+//   let mut mutable_asset = MutableAsset::new(
+//     &file_path,
+//     &mut asset_kind,
+//     &mut content,
+//     &mut asset_dependencies,
+//   );
 
-  let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
+//   let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
 
-  let mut i = 0;
-  while i != transformers.len() {
-    let Some(transformer) = transformers.get(i) else {
-      break;
-    };
+//   let mut i = 0;
+//   while i != transformers.len() {
+//     let Some(transformer) = transformers.get(i) else {
+//       break;
+//     };
 
-    transformer.transform(&mut mutable_asset, &config)?;
+//     transformer.transform(&mut mutable_asset, &config)?;
 
-    // If the file type and pattern changes restart transformers
-    if *mutable_asset.kind != file_target.file_extension {
-      file_target.update(mutable_asset.kind);
+//     // If the file type and pattern changes restart transformers
+//     if *mutable_asset.kind != file_target.file_extension {
+//       file_target.update(mutable_asset.kind);
 
-      let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
-      // Use new transformers if they are different to current ones
-      if new_pattern != pattern {
-        transformers = new_transformers;
-        pattern = new_pattern;
-        i = 0;
-        continue;
-      }
-    }
+//       let (new_pattern, new_transformers) = plugins.transformers.get(&file_target)?;
+//       // Use new transformers if they are different to current ones
+//       if new_pattern != pattern {
+//         transformers = new_transformers;
+//         pattern = new_pattern;
+//         i = 0;
+//         continue;
+//       }
+//     }
 
-    i += 1;
-  }
+//     i += 1;
+//   }
 
-  // Update existing Asset with new data
-  let mut asset_map = asset_map.write().unwrap();
-  let asset = asset_map.get_mut(&asset_id).unwrap();
-  asset.name = file_target.file_stem.clone();
-  asset.content = content;
-  asset.kind = asset_kind;
-  asset.file_path_relative =
-    pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
+//   // Update existing Asset with new data
+//   let mut asset_map = asset_map.write().unwrap();
+//   let asset = asset_map.get_mut(&asset_id).unwrap();
+//   asset.name = file_target.file_stem.clone();
+//   asset.content = content;
+//   asset.kind = asset_kind;
+//   asset.file_path_relative =
+//     pathdiff::diff_paths(&resolve_result.file_path, &config.project_root).unwrap();
 
-  Ok(asset_dependencies)
-}
+//   Ok(asset_dependencies)
+// }

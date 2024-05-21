@@ -7,7 +7,7 @@ use serde::Serialize;
 use super::InternalId;
 
 #[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct AssetId(pub InternalId);
+pub struct AssetId(pub InternalId, String);
 
 impl Debug for AssetId {
   fn fmt(
@@ -23,6 +23,6 @@ impl Display for AssetId {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    write!(f, "AssetId({})", &self.0.to_string())
+    write!(f, "AssetId({})", &self.1.to_string())
   }
 }
