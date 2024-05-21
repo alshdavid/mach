@@ -156,7 +156,7 @@ serve:
 integration-tests *ARGS:
   node --import ./testing/node_modules/tsx/dist/loader.mjs ./testing/setup.ts {{ARGS}}
 
-test:
+unit-tests:
   cargo test
 
 fmt:

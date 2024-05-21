@@ -26,6 +26,21 @@ jobs:
           source .github/actions/setup-env/setup-env.bash
           just integration-tests
 
+  unit-tests:
+    name: "🧪 Unit Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
+      - name: "Integration tests"
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just unit-tests
+
   build:
     strategy:
       matrix:
@@ -93,7 +108,7 @@ jobs:
   publish-github-release:
     name: "🔁 Github Release"
     runs-on: ubuntu-latest
-    needs: [integration-tests, npm-package, build]
+    needs: [unit-tests,integration-tests, npm-package, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-nodejs
@@ -111,7 +126,7 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [integration-tests, npm-package, build]
+    needs: [unit-tests, integration-tests, npm-package, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-nodejs
@@ -130,7 +145,7 @@ jobs:
   publish-crate:
     name: "🔁 Publish: Crates.io"
     runs-on: ubuntu-latest
-    needs: [integration-tests, npm-package, build]
+    needs: [unit-tests, integration-tests, npm-package, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-just
