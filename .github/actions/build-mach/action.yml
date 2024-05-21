@@ -135,6 +135,12 @@ runs:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
       run: |
+        source .github/actions/setup-env/setup-env.bash
+
+        if [ "$MACH_VERSION" = "" ]; then
+          exit 0
+        fi
+
         export ROOT_DIR="$(pwd)"
         export JOB_NAME="${os}-${arch}"
 
@@ -159,6 +165,12 @@ runs:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
       run: |
+        . .github/actions/setup-env/setup-env.ps1
+
+        if ("$env:MACH_VERSION" -eq "") {
+          exit 0
+        }
+
         $env:RootPath = (Get-Location).Path
         $env:Job = "${env:os}-${env:arch}"
 
