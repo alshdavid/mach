@@ -29,6 +29,7 @@ if [ -f "$ENV_PATH" ]; then
     CLEANED_LINE=$(echo "$LINE" | awk '{$1=$1};1' | tr -d '\r')
 
     if [[ $CLEANED_LINE != '#'* ]] && [[ $CLEANED_LINE == *'='* ]]; then
+      echo "Setting: $CLEANED_LINE"
       export "$CLEANED_LINE"
     fi
   done < "$ENV_PATH"
