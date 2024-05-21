@@ -31,7 +31,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { profile: debug }
       - name: "Integration tests"
         run: just integration-tests
@@ -45,7 +45,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
@@ -63,7 +63,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
@@ -81,7 +81,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
@@ -99,7 +99,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
@@ -117,7 +117,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
@@ -135,7 +135,7 @@ jobs:
       - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build
+      - uses: ./.github/actions/build-mach
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:

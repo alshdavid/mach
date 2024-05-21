@@ -5,10 +5,11 @@ ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 source $ROOT_DIR/.github/workflows/platform/unix/setup-env.bash
 
-if ![ "$mach_version" = "" ]; then
-  export MACH_VERSION="${mach_version}"
+if ! [ "$MACH_VERSION" = "" ]; then
+  echo "Building with version $MACH_VERSION"
   just build-publish
 else
+  echo "Building untagged local version"
   just build
 fi
 
