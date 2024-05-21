@@ -39,6 +39,6 @@ runs:
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
-        bash .github/actions/build-npm/build.bash
+        bash .github/actions/build-npm/copy.bash
     
     
