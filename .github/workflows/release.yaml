@@ -23,7 +23,7 @@ jobs:
       - id: step1
         run: bash .github/workflows/release/generate-variables.bash
 
-  test-integration:
+  integration-tests:
     name: "🧪 Integration Tests"
     runs-on: ubuntu-latest
     steps:
@@ -36,9 +36,16 @@ jobs:
       - name: "Integration tests"
         run: just integration-tests
 
-  linux-amd64:
+  build:
+    strategy:
+      matrix:
+        config:
+          - name: 🐥 Linux AMD64
+            os: linux
+            arch: amd64
+            runner: ubuntu-latest
     name: "🐥 Linux AMD64"
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.runner }}
     needs: [vars]
     steps:
       - uses: actions/checkout@v4
@@ -46,100 +53,13 @@ jobs:
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
       - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+        with: 
+          os: "${{ matrix.config.os }}"
+          arch: "${{ matrix.config.arch }}"
+          mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}"
       - uses: actions/upload-artifact@v4
         with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-
-  linux-arm64:
-    name: "🐥 Linux ARM64"
-    runs-on: ubuntu-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-
-  macos-amd64:
-    name: "🍎 MacOS AMD64"
-    runs-on: macos-13
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-      
-  macos-arm64:
-    name: "🍎 MacOS ARM64"
-    runs-on: macos-14
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-
-  windows-amd64:
-    name: "🟦 Windows AMD64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-
-  windows-arm64:
-    name: "🟦 Windows ARM64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
+          name: mach-${{ matrix.config.os }}-${{ matrix.config.arch }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -181,9 +101,10 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [test-integration, vars, npm-package, linux-amd64, linux-arm64, macos-amd64, macos-arm64, windows-amd64, windows-arm64]
+    needs: [integration-tests, vars, npm-package, build]
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-nodejs
       - uses: actions/download-artifact@v4
         with:
           path: ${{ github.workspace }}/artifacts

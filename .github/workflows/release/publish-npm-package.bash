@@ -3,8 +3,6 @@ set -ev
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
-source $ROOT_DIR/.github/workflows/platform/unix/install-nodejs.bash
-
 echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
 
 PACKAGES=(
