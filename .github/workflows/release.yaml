@@ -44,7 +44,27 @@ jobs:
             os: linux
             arch: amd64
             runner: ubuntu-latest
-    name: "🐥 Linux AMD64"
+          - name: 🐥 Linux ARM64
+            os: linux
+            arch: arm64
+            runner: ubuntu-latest
+          - name: 🍎 MacOS AMD64
+            os: macos
+            arch: amd64
+            runner: macos-13
+          - name: 🍎 MacOS AMD64
+            os: macos
+            arch: arm64
+            runner: macos-14
+          - name: 🟦 Windows AMD64
+            os: windows
+            arch: amd64
+            runner: windows-latest
+          - name: 🟦 Windows ARM64
+            os: windows
+            arch: arm64
+            runner: windows-latest
+    name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.runner }}
     needs: [vars]
     steps:
