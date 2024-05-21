@@ -129,7 +129,7 @@ runs:
 
     # Copy Artifacts
     - name: "Copy Artifacts (Unix)"
-      if: ${{ runner.os != 'Windows' && inputs.mach_version != '' }}
+      if: inputs.mach_version != '' && runner.os != 'Windows' && inputs.mach_version != ''
       shell: bash
       env:
         os: "${{inputs.os}}"
@@ -153,7 +153,7 @@ runs:
         ls -l $ROOT_DIR/artifacts 
 
     - name: "Copy Files (Windows)"
-      if: ${{ runner.os == 'Windows' && inputs.mach_version != '' }}
+      if: inputs.mach_version != '' && runner.os == 'Windows' && inputs.mach_version != ''
       shell: powershell
       env:
         os: "${{inputs.os}}"

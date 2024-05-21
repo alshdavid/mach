@@ -23,7 +23,19 @@ runs:
       env:
         os: "${{inputs.os}}"
         arch: "${{inputs.arch}}"
-        mach_version: "${{inputs.mach_version}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/workflows/platform/unix/setup-env.bash
+        bash .github/actions/build-npm/build.bash
+
+  - name: "Copy Artifacts" 
+      shell: bash
+      if: inputs.mach_version != ''
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
         profile: "${{inputs.profile}}"
       run: |
         source .github/workflows/platform/unix/setup-env.bash
