@@ -54,95 +54,95 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  linux-arm64:
-    name: "🐥 Linux ARM64"
-    runs-on: ubuntu-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  # linux-arm64:
+  #   name: "🐥 Linux ARM64"
+  #   runs-on: ubuntu-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/build-mach
+  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mach-${{ github.job }}
+  #         path: ${{ github.workspace }}/artifacts/**/*
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-  macos-amd64:
-    name: "🍎 MacOS AMD64"
-    runs-on: macos-13
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  # macos-amd64:
+  #   name: "🍎 MacOS AMD64"
+  #   runs-on: macos-13
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/build-mach
+  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mach-${{ github.job }}
+  #         path: ${{ github.workspace }}/artifacts/**/*
+  #         if-no-files-found: error
+  #         retention-days: 1
       
-  macos-arm64:
-    name: "🍎 MacOS ARM64"
-    runs-on: macos-14
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  # macos-arm64:
+  #   name: "🍎 MacOS ARM64"
+  #   runs-on: macos-14
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/build-mach
+  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mach-${{ github.job }}
+  #         path: ${{ github.workspace }}/artifacts/**/*
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-  windows-amd64:
-    name: "🟦 Windows AMD64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  # windows-amd64:
+  #   name: "🟦 Windows AMD64"
+  #   runs-on: windows-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/build-mach
+  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mach-${{ github.job }}
+  #         path: ${{ github.workspace }}/artifacts/**/*
+  #         if-no-files-found: error
+  #         retention-days: 1
 
-  windows-arm64:
-    name: "🟦 Windows ARM64"
-    runs-on: windows-latest
-    needs: [vars]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mach-${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
+  # windows-arm64:
+  #   name: "🟦 Windows ARM64"
+  #   runs-on: windows-latest
+  #   needs: [vars]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/build-mach
+  #       with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: mach-${{ github.job }}
+  #         path: ${{ github.workspace }}/artifacts/**/*
+  #         if-no-files-found: error
+  #         retention-days: 1
 
   npm-package:
     name: "📦 NPM"
