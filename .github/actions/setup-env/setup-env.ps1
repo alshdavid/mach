@@ -18,10 +18,15 @@ $env:Path = $HOME + '\.local\nodejs\prefix\bin;' + $env:Path
 $env:NPM_CONFIG_PREFIX = $HOME + '\.local\nodejs\prefix'
 pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
 
-Get-Content "${env:RootPath}\.env" | foreach {
-  $name, $value = $_.split('=')
-  if ([string]::IsNullOrWhiteSpace($name) || $name.Contains('#')) {
-    continue
+if (Test-Path "${env:RootPath}\.env") {
+  echo "Loading .env"
+  Get-Content "${env:RootPath}\.env" | foreach {
+    $name, $value = $_.split('=')
+    if ([string]::IsNullOrWhiteSpace($name) || $name.Contains('#')) {
+      continue
+    }
+    echo "Setting $name = $value"
+    Set-Item "env:$name" "$value"
   }
-  Set-Item "env:$name" "$value"
 }
+

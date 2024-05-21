@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-ROOT_DIR=$(dirname $(dirname $SCRIPT_DIR))
+ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
 cd $ROOT_DIR
 
@@ -24,7 +24,7 @@ ENV_PATH="${ROOT_DIR}/.env"
 
 if [ ! -f "$ENV_PATH" ]; then
   echo "missing ${ENV_PATH}"
-  exit 1
+  exit 0
 fi
 
 echo "Reading $ENV_PATH"
