@@ -29,7 +29,7 @@ runs:
         source .github/workflows/platform/unix/setup-env.bash
         bash .github/actions/build-npm/build.bash
 
-  - name: "Copy Artifacts" 
+    - name: "Copy Artifacts" 
       shell: bash
       if: inputs.mach_version != ''
       env:
