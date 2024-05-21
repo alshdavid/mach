@@ -22,17 +22,15 @@ pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
 
 ENV_PATH="${ROOT_DIR}/.env"
 
-if [ ! -f "$ENV_PATH" ]; then
-  echo "Not setting from .env"
-  exit 0
+if [ -f "$ENV_PATH" ]; then
+  echo "Reading $ENV_PATH"
+  while read -r LINE; do
+    # Remove leading and trailing whitespaces, and carriage return
+    CLEANED_LINE=$(echo "$LINE" | awk '{$1=$1};1' | tr -d '\r')
+
+    if [[ $CLEANED_LINE != '#'* ]] && [[ $CLEANED_LINE == *'='* ]]; then
+      export "$CLEANED_LINE"
+    fi
+  done < "$ENV_PATH"
 fi
 
-echo "Reading $ENV_PATH"
-while read -r LINE; do
-  # Remove leading and trailing whitespaces, and carriage return
-  CLEANED_LINE=$(echo "$LINE" | awk '{$1=$1};1' | tr -d '\r')
-
-  if [[ $CLEANED_LINE != '#'* ]] && [[ $CLEANED_LINE == *'='* ]]; then
-    export "$CLEANED_LINE"
-  fi
-done < "$ENV_PATH"
