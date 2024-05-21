@@ -23,7 +23,7 @@ pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
 ENV_PATH="${ROOT_DIR}/.env"
 
 if [ ! -f "$ENV_PATH" ]; then
-  echo "missing ${ENV_PATH}"
+  echo "Not setting from .env"
   exit 0
 fi
 

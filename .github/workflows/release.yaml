@@ -22,7 +22,9 @@ jobs:
       - uses: ./.github/actions/build-mach
         with: { profile: debug }
       - name: "Integration tests"
-        run: just integration-tests
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just integration-tests
 
   build:
     strategy:
