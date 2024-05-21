@@ -49,7 +49,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -67,7 +67,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -85,7 +85,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -103,7 +103,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -121,7 +121,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -139,7 +139,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: mach-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
@@ -157,7 +157,7 @@ jobs:
         with: { mach_version: "${{ needs.vars.outputs.NEXT_MACH_VERSION }}" }
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.job }}
+          name: npm-${{ github.job }}
           path: ${{ github.workspace }}/artifacts/**/*
           if-no-files-found: error
           retention-days: 1
