@@ -133,12 +133,11 @@ jobs:
     needs: [integration-tests, npm-package, build]
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
       - uses: ./.github/actions/setup-nodejs
       - uses: ./.github/actions/setup-rust
       - uses: ./.github/actions/setup-env
-      - uses: actions/download-artifact@v4
-        with:
-          path: ${{ github.workspace }}/artifacts
+      - uses: ./.github/actions/build-mach
       - name: Publish Crate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
