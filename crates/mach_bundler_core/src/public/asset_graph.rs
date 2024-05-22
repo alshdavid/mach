@@ -21,7 +21,7 @@ use crate::public::DependencyPriority;
 
 pub type AssetGraphSync = Arc<RwLock<AssetGraph>>;
 
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct AssetGraph {
   asset_map: HashMap<AssetId, Asset>,
   dependency_map: HashMap<DependencyId, Dependency>,

@@ -16,11 +16,11 @@ use crate::public::MachConfigSync;
 pub fn resolve_and_transform(
   config: MachConfigSync,
   plugins: PluginContainerSync,
-  mut compilation: Compilation,
+  mut c: Compilation,
 ) -> Result<(), String> {
   let mut queue = vec![];
 
-  compilation.asset_graph.add_asset(ROOT_ASSET.clone());
+  c.asset_graph.add_asset(ROOT_ASSET.clone());
 
   for entry in config.entries.iter() {
     queue.push(Dependency {
@@ -40,11 +40,8 @@ pub fn resolve_and_transform(
     let resolve_result = run_resolvers(&config, &plugins, &dependency)?;
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
-      compilation.asset_graph.add_dependency(
-        &dependency.source_asset_id.clone(),
-        &asset_id,
-        dependency,
-      )?;
+      c.asset_graph
+        .add_dependency(&dependency.source_asset_id.clone(), &asset_id, dependency)?;
       continue;
     };
 
@@ -79,16 +76,16 @@ pub fn resolve_and_transform(
       queue.push(new_dependency);
     }
 
-    compilation.asset_graph.add_asset(new_asset);
+    c.asset_graph.add_asset(new_asset);
 
-    compilation.asset_graph.add_dependency(
+    c.asset_graph.add_dependency(
       &dependency.source_asset_id.clone(),
       &new_asset_id.clone(),
       dependency,
     )?;
   }
 
-  println!("{}", compilation.asset_graph.into_dot(&config));
+  // println!("{}", c.asset_graph.into_dot(&config));
 
   Ok(())
 }

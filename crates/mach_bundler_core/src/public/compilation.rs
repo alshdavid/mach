@@ -5,6 +5,7 @@ use vfs::FileSystem;
 use super::AssetContents;
 use super::AssetGraph;
 
+#[derive(Clone, Debug)]
 pub struct Compilation {
   pub asset_contents: AssetContents,
   pub asset_graph: AssetGraph,

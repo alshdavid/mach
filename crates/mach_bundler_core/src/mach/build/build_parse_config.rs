@@ -2,6 +2,7 @@
   TODO rewrite this
 */
 use std::collections::HashMap;
+use std::env;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -23,7 +24,7 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
     if let Some(project_root) = &command.project_root {
       break 'block get_absolute_path(None, &project_root);
     };
-    return Err("Could not find project root".to_string());
+    env::current_dir().unwrap()
   };
 
   let entries = 'block: {

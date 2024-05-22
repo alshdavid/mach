@@ -8,7 +8,7 @@ edition = "2021"
 license = "MIT"
 
 [[bench]]
-name = "rust-analyzer-no-bench-prompt_benchmarks"
+name = "mach_bundler_core_benchmarks"
 harness = false
 path = "src/bench.rs"
 
