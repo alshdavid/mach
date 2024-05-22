@@ -1,7 +1,4 @@
-use std::collections::BTreeMap;
 use std::collections::HashMap;
-use std::collections::HashSet;
-use std::fmt::Debug;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::RwLock;
@@ -12,23 +9,22 @@ use petgraph::graph::DiGraph;
 use petgraph::graph::EdgeIndex;
 use petgraph::graph::EdgeReference;
 use petgraph::graph::NodeIndex;
-use petgraph::graph::NodeReferences;
 use petgraph::Graph;
 
+use super::Asset;
 use super::AssetId;
-use super::AssetMap;
+use super::Dependency;
 use super::DependencyId;
-use super::DependencyMap;
 use super::MachConfig;
 use crate::platform::config::ROOT_ASSET;
-use crate::public::dependency;
-use crate::public::dependency_id;
 use crate::public::DependencyPriority;
 
 pub type AssetGraphSync = Arc<RwLock<AssetGraph>>;
 
 #[derive(Default)]
 pub struct AssetGraph {
+  asset_map: HashMap<AssetId, Asset>,
+  dependency_map: HashMap<DependencyId, Dependency>,
   node_index: HashMap<AssetId, NodeIndex>,
   edge_index: HashMap<DependencyId, EdgeIndex>,
   graph: DiGraph<AssetId, DependencyId>,
@@ -37,37 +33,46 @@ pub struct AssetGraph {
 impl AssetGraph {
   pub fn add_asset(
     &mut self,
-    asset_id: AssetId,
+    asset: Asset,
   ) {
-    let node_id = self.graph.add_node(asset_id.clone());
-    self.node_index.insert(asset_id, node_id);
+    let node_id = self.graph.add_node(asset.id.clone());
+    self.node_index.insert(asset.id.clone(), node_id);
+    self.asset_map.insert(asset.id.clone(), asset);
   }
 
   pub fn add_dependency(
     &mut self,
     src: &AssetId,
     dest: &AssetId,
-    dependency_id: DependencyId,
-  ) {
-    let src_id = self.node_index.get(&src).unwrap();
-    let dest_id = self.node_index.get(&dest).unwrap();
+    dependency: Dependency,
+  ) -> Result<bool, String> {
+    let Some(src_id) = self.node_index.get(&src) else {
+      return Err(format!("Unable to find Source Asset with ID: {}", src));
+    };
+    let Some(dest_id) = self.node_index.get(&dest) else {
+      return Err(format!("Unable to find Dest Asset with ID: {}", dest));
+    };
     let edge_id = self
       .graph
-      .add_edge(src_id.clone(), dest_id.clone(), dependency_id.clone());
+      .add_edge(src_id.clone(), dest_id.clone(), dependency.id.clone());
 
-    self.edge_index.insert(dependency_id, edge_id);
+    self.edge_index.insert(dependency.id.clone(), edge_id);
+    Ok(
+      self
+        .dependency_map
+        .insert(dependency.id.clone(), dependency)
+        .is_none(),
+    )
   }
 
   pub fn into_dot(
     &self,
     config: &MachConfig,
-    asset_map: &AssetMap,
-    dependency_map: &DependencyMap,
   ) -> String {
     let get_node_attribute = |_: &Graph<AssetId, DependencyId>,
                               (_, asset_id): (NodeIndex, &AssetId)| {
       let mut label = String::from("ROOT");
-      let asset = asset_map.get(asset_id).unwrap();
+      let asset = self.asset_map.get(asset_id).unwrap();
 
       if asset.id == ROOT_ASSET.id {
         return format!("label = \"{}\" ", label);
@@ -78,7 +83,7 @@ impl AssetGraph {
 
     let get_edge_attribute =
       |_: &Graph<AssetId, DependencyId>, edge_ref: EdgeReference<DependencyId>| -> String {
-        let dependency = dependency_map.get(edge_ref.weight()).unwrap();
+        let dependency = self.dependency_map.get(edge_ref.weight()).unwrap();
         let mut label = String::new();
 
         let mut specifier = dependency.specifier.clone();

@@ -20,9 +20,10 @@ pub struct Dependency {
   pub is_entry: bool,
   /// When the dependency should be loaded
   pub priority: DependencyPriority,
-  /// Path to the file that imported this dependency
-  pub source_path: PathBuf,
-  pub source_asset: AssetId,
+  /// Path to the file that created this dependency
+  pub source_asset_path: PathBuf,
+  /// Id of the Asset that created this dependency
+  pub source_asset_id: AssetId,
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this path
@@ -38,8 +39,8 @@ impl std::fmt::Debug for Dependency {
   ) -> std::fmt::Result {
     f.debug_struct("Dependency")
       .field("id", &self.id.0)
-      .field("source_asset", &self.source_asset.0)
-      .field("source_path", &self.source_path)
+      .field("source_asset", &self.source_asset_id.0)
+      .field("source_path", &self.source_asset_path)
       .field("resolve_from", &self.resolve_from)
       .field("specifier", &self.specifier)
       .field("specifier_type", &self.specifier_type)

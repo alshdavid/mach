@@ -20,20 +20,16 @@ pub fn resolve_and_transform(
 ) -> Result<(), String> {
   let mut queue = vec![];
 
-  compilation
-    .asset_map
-    .insert(ROOT_ASSET.id.clone(), ROOT_ASSET.clone());
-
-  compilation.asset_graph.add_asset(ROOT_ASSET.id.clone());
+  compilation.asset_graph.add_asset(ROOT_ASSET.clone());
 
   for entry in config.entries.iter() {
     queue.push(Dependency {
       id: DependencyId::new(entry.to_str().unwrap()),
       specifier: entry.to_str().unwrap().to_string(),
       is_entry: true,
-      source_path: config.project_root.clone(),
+      source_asset_path: config.project_root.clone(),
       resolve_from: config.project_root.clone(),
-      source_asset: ROOT_ASSET.id.clone(),
+      source_asset_id: ROOT_ASSET.id.clone(),
       ..Dependency::default()
     });
   }
@@ -41,36 +37,26 @@ pub fn resolve_and_transform(
   let mut completed_assets = HashMap::<PathBuf, AssetId>::new();
 
   while let Some(dependency) = queue.pop() {
-    dbg!(&dependency);
-    compilation
-      .dependency_map
-      .insert(dependency.id.clone(), dependency.clone());
-
     let resolve_result = run_resolvers(&config, &plugins, &dependency)?;
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
       compilation.asset_graph.add_dependency(
-        &dependency.source_asset,
+        &dependency.source_asset_id.clone(),
         &asset_id,
-        dependency.id.clone(),
-      );
+        dependency,
+      )?;
       continue;
     };
 
+    let new_asset_id = AssetId::new(resolve_result.file_path_relative.to_str().unwrap());
     let mut new_asset = Asset {
-      id: AssetId::new(resolve_result.file_path_relative.to_str().unwrap()),
+      id: new_asset_id.clone(),
       file_path_absolute: resolve_result.file_path.clone(),
       file_path_relative: resolve_result.file_path_relative.clone(),
       bundle_behavior: dependency.bundle_behavior.clone(),
       ..Asset::default()
     };
-    completed_assets.insert(resolve_result.file_path.clone(), new_asset.id.clone());
-
-    compilation.asset_graph.add_asset(new_asset.id.clone());
-
-    compilation
-      .asset_graph
-      .add_dependency(&dependency.source_asset, &new_asset.id, dependency.id);
+    completed_assets.insert(resolve_result.file_path.clone(), new_asset_id.clone());
 
     let mut asset_dependencies =
       run_transformers(&config, &plugins, &mut new_asset, &resolve_result)?;
@@ -81,8 +67,8 @@ pub fn resolve_and_transform(
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,
         is_entry: false,
-        source_path: resolve_result.file_path.clone(),
-        source_asset: new_asset.id.clone(),
+        source_asset_path: resolve_result.file_path.clone(),
+        source_asset_id: new_asset.id.clone(),
         resolve_from: resolve_result.file_path.clone(),
         priority: dependency_options.priority,
         imported_symbols: dependency_options.imported_symbols,
@@ -93,17 +79,16 @@ pub fn resolve_and_transform(
       queue.push(new_dependency);
     }
 
-    compilation
-      .asset_map
-      .insert(new_asset.id.clone(), new_asset);
+    compilation.asset_graph.add_asset(new_asset);
+
+    compilation.asset_graph.add_dependency(
+      &dependency.source_asset_id.clone(),
+      &new_asset_id.clone(),
+      dependency,
+    )?;
   }
 
-  println!(
-    "{}",
-    compilation
-      .asset_graph
-      .into_dot(&config, &compilation.asset_map, &compilation.dependency_map)
-  );
+  println!("{}", compilation.asset_graph.into_dot(&config));
 
   Ok(())
 }
