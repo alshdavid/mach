@@ -1,3 +1,4 @@
+use std::collections::hash_map::Iter;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -9,6 +10,11 @@ use petgraph::graph::DiGraph;
 use petgraph::graph::EdgeIndex;
 use petgraph::graph::EdgeReference;
 use petgraph::graph::NodeIndex;
+use petgraph::visit::Dfs;
+use petgraph::visit::NodeRef;
+use petgraph::visit::VisitMap;
+use petgraph::visit::Visitable;
+use petgraph::visit::Walker;
 use petgraph::Graph;
 
 use super::Asset;
@@ -63,6 +69,36 @@ impl AssetGraph {
         .insert(dependency.id.clone(), dependency)
         .is_none(),
     )
+  }
+
+  pub fn get_dependencies_for(
+    &self,
+    asset_id: &AssetId,
+  ) -> impl Iterator<Item = &Dependency> {
+    let node_id = self.node_index.get(asset_id).unwrap();
+    self
+      .graph
+      .edges(node_id.clone())
+      .map(|e| self.dependency_map.get(e.weight()).unwrap())
+  }
+
+  pub fn traverse_from_asset(
+    &self,
+    asset_id: &AssetId,
+  ) {
+    let node_id = self.node_index.get(asset_id).unwrap();
+    let mut dfs = Dfs::new(&self.graph, *node_id);
+
+    while let Some(visited) = dfs.next(&self.graph) {
+      let node_id = visited.id();
+      let asset_id = self.graph.node_weight(node_id).unwrap();
+      let dependencies = self.get_dependencies_for(asset_id);
+      println!(
+        "{:?}\n{:#?}\n----------\n",
+        asset_id,
+        dependencies.collect::<Vec<&Dependency>>()
+      );
+    }
   }
 
   pub fn into_dot(

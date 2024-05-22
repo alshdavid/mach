@@ -9,9 +9,9 @@ use super::build_parse_config::parse_config;
 // use super::create_result::create_build_result;
 // use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;
+use crate::platform::transformation::build_asset_graph;
 // use crate::platform::emit::emit;
 // use crate::platform::packaging::package;
-use crate::platform::transformation::resolve_and_transform;
 use crate::public::Adapter;
 use crate::public::AssetGraphSync;
 use crate::public::AssetMap;
@@ -76,7 +76,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     the bundling phases with read or write permissions
     depending on how that phase uses them
   */
-  let compilation = Compilation::new();
+  let mut compilation = Compilation::new();
   let adapter_map = options.adapter_map.unwrap_or_default();
 
   /*
@@ -91,7 +91,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     It does this by crawling the source files, identify import statements, modifying their contents
     (like removing TypeScript types) and looping until there are no more import statements to resolve.
   */
-  resolve_and_transform(config.clone(), plugins.clone(), compilation)?;
+  build_asset_graph(config.clone(), plugins.clone(), &mut compilation)?;
 
   Ok(BuildResult::default())
 

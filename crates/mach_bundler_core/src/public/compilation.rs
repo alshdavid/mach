@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use vfs::FileSystem;
+use vfs::PhysicalFS;
 
 use super::AssetContents;
 use super::AssetGraph;
@@ -9,7 +10,7 @@ use super::AssetGraph;
 pub struct Compilation {
   pub asset_contents: AssetContents,
   pub asset_graph: AssetGraph,
-  // pub file_system: Rc<dyn FileSystem>,
+  pub file_system: Rc<dyn FileSystem>,
 }
 
 impl Default for Compilation {
@@ -17,7 +18,7 @@ impl Default for Compilation {
     Self {
       asset_contents: Default::default(),
       asset_graph: Default::default(),
-      // file_system: Default::default(),
+      file_system: Rc::new(PhysicalFS::new("/")),
     }
   }
 }

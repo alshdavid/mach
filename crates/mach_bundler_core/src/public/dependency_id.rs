@@ -7,11 +7,11 @@ use serde::Serialize;
 use super::InternalId;
 
 #[derive(Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct DependencyId(pub InternalId, String);
+pub struct DependencyId(pub InternalId);
 
 impl DependencyId {
-  pub fn new(specifier: &str) -> Self {
-    Self(Default::default(), specifier.to_string())
+  pub fn new() -> Self {
+    Self(Default::default())
   }
 }
 
@@ -20,7 +20,7 @@ impl Debug for DependencyId {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    write!(f, "DependencyId({})", &self.0.to_string())
+    write!(f, "DependencyId({})", &self.0)
   }
 }
 
@@ -29,6 +29,6 @@ impl Display for DependencyId {
     &self,
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
-    write!(f, "Dependency({})", &self.1)
+    write!(f, "Dependency({})", &self.0)
   }
 }

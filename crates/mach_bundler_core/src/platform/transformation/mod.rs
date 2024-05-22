@@ -1,9 +1,7 @@
+mod build_asset_graph;
 #[cfg(test)]
-mod build_asset_graph_bench;
-mod resolve_and_transform;
-mod resolve_and_transform_worker;
-mod run_graph_update;
+mod build_asset_graph_test;
 mod run_resolvers;
 mod run_transformers;
 
-pub use self::resolve_and_transform::*;
+pub use self::build_asset_graph::*;

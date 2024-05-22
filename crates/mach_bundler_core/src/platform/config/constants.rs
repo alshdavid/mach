@@ -8,9 +8,11 @@ use crate::public::AssetId;
 pub static ROOT_NODE: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(""));
 
 pub static ROOT_ASSET: Lazy<Asset> = Lazy::new(|| Asset {
-  id: AssetId::new("ROOT_ASSET"),
-  name: "ROOT_ASSET".to_string(),
+  id: AssetId::new(),
+  name: "ROOT".to_string(),
   file_path_absolute: ROOT_NODE.clone(),
   file_path_relative: ROOT_NODE.clone(),
-  ..Default::default()
+  kind: Default::default(),
+  content: Default::default(),
+  bundle_behavior: Default::default(),
 });
