@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod build_asset_graph_bench;
 mod resolve_and_transform;
 mod resolve_and_transform_worker;
 mod run_graph_update;

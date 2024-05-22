@@ -10,7 +10,7 @@ license = "MIT"
 [[bench]]
 name = "rust-analyzer-no-bench-prompt_benchmarks"
 harness = false
-path = "bench.rs"
+path = "src/bench.rs"
 
 [features]
 cli_parser = ["clap"]

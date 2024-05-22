@@ -27,7 +27,7 @@ use crate::public::OutputsSync;
 #[derive(Debug)]
 pub struct BuildOptions {
   /// Input file to build
-  pub entries: Option<Vec<PathBuf>>,
+  pub entries: Option<Vec<String>>,
   /// Output folder
   pub out_folder: PathBuf,
   /// Root directory of project

@@ -17,7 +17,7 @@ use crate::shared::mach_build_command;
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MachBuildOptions {
-  pub entries: Option<Vec<PathBuf>>,
+  pub entries: Option<Vec<String>>,
   pub project_root: Option<PathBuf>,
   pub out_folder: Option<PathBuf>,
   pub clean: Option<bool>,

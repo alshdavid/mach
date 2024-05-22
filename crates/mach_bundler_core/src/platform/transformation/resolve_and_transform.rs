@@ -24,8 +24,8 @@ pub fn resolve_and_transform(
 
   for entry in config.entries.iter() {
     queue.push(Dependency {
-      id: DependencyId::new(entry.to_str().unwrap()),
-      specifier: entry.to_str().unwrap().to_string(),
+      id: DependencyId::new(&entry),
+      specifier: entry.clone(),
       is_entry: true,
       source_asset_path: config.project_root.clone(),
       resolve_from: config.project_root.clone(),

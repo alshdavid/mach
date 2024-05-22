@@ -5,7 +5,7 @@ use clap::Parser;
 #[derive(Debug, Parser)]
 pub struct BuildCommand {
   /// Input file to build
-  pub entries: Option<Vec<PathBuf>>,
+  pub entries: Option<Vec<String>>,
 
   /// Output folder
   #[arg(short = 'o', long = "dist", default_value = "dist")]

@@ -18,53 +18,17 @@ use crate::BuildOptions;
 pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();
 
-  let entry_start = 'block: {
-    if let Some(args) = &command.entries {
-      break 'block args[0].clone();
-    }
-    std::env::current_dir().unwrap()
-  };
-
   // Auto detect project root
   let project_root = 'block: {
     if let Some(project_root) = &command.project_root {
       break 'block get_absolute_path(None, &project_root);
     };
-
-    if let Some((project_root, _)) =
-      find_crawl_up(&get_absolute_path(None, &entry_start), &["package.json"])
-    {
-      break 'block project_root;
-    };
-
-    if let Some((project_root, _)) = find_crawl_up(
-      &std::env::current_dir().unwrap(),
-      &[
-        ".machrc",
-        "yarn.lock",
-        "package-lock.json",
-        "pnpm-lock.yaml",
-        "pnpm-workspace.yaml",
-      ],
-    ) {
-      break 'block project_root;
-    };
-
-    if let Some((project_root, _)) =
-      find_crawl_up(&std::env::current_dir().unwrap(), &["package.json"])
-    {
-      break 'block project_root;
-    };
-
     return Err("Could not find project root".to_string());
   };
 
   let entries = 'block: {
     if let Some(args) = &command.entries {
       break 'block args.clone();
-    }
-    if let Some(entry) = find_entry(&project_root) {
-      break 'block vec![entry];
     }
     return Err("Cannot find entry".to_string());
   };
