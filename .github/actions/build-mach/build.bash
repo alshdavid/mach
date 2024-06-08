@@ -8,5 +8,5 @@ else
   just build
 fi
 
-ll -l packages/mach_nodejs
-ll -l packages/mach_nodejs/_napi
+ls -l packages/mach_nodejs
+ls -l packages/mach_nodejs/_napi
