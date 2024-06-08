@@ -57,7 +57,7 @@ jobs:
             os: macos
             arch: amd64
             runner: macos-13
-          - name: 🍎 MacOS AMD64
+          - name: 🍎 MacOS ARM64
             os: macos
             arch: arm64
             runner: macos-14
