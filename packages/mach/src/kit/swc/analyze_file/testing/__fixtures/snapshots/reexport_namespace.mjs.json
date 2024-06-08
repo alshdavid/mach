@@ -1,0 +1,8 @@
+[
+  {
+    "ReexportNamespace": {
+      "sym_as": "foo",
+      "specifier": "./foo"
+    }
+  }
+]

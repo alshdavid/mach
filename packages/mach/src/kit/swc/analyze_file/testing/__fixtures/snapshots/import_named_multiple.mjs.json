@@ -1,0 +1,14 @@
+[
+  {
+    "ImportNamed": {
+      "sym": "foo",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportNamed": {
+      "sym": "bar",
+      "specifier": "./foo"
+    }
+  }
+]

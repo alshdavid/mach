@@ -1,0 +1,14 @@
+[
+  {
+    "ExportDestructured": {
+      "sym": "bar",
+      "sym_source": "foo"
+    }
+  },
+  {
+    "ExportDestructured": {
+      "sym": "bar_2",
+      "sym_source": "foo"
+    }
+  }
+]

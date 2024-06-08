@@ -1,0 +1,2 @@
+const foo = ''
+exports = { foo }

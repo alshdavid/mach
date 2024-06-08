@@ -1,0 +1,8 @@
+[
+  {
+    "ReexportNamed": {
+      "sym": "foo",
+      "specifier": "./foo"
+    }
+  }
+]

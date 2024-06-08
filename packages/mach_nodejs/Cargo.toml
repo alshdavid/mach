@@ -1,0 +1,19 @@
+[package]
+name = "mach_bundler_npm_os_arch"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+path = "./native/lib.rs"
+
+[dependencies]
+mach_bundler_core = { path = "../mach", features = ["cli_parser", "adapters_nodejs_napi", "adapters_nodejs_ipc_client"] }
+napi = { version = "2.*", default-features = false, features = ["napi8", "tokio_rt", "serde-json", "async"] }
+napi-derive = "2.*"
+serde = { version = "1.*", features = ["derive"] }
+num_cpus = "1.*"
+once_cell = "1.*"
+
+[build-dependencies]
+napi-build = "2.*"

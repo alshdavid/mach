@@ -1,0 +1,9 @@
+[
+  {
+    "ReexportRenamed": {
+      "sym": "foo",
+      "sym_as": "foo_renamed",
+      "specifier": "./foo"
+    }
+  }
+]

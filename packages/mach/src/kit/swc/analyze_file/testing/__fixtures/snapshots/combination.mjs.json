@@ -1,0 +1,139 @@
+[
+  {
+    "ImportDirect": {
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportDefault": {
+      "sym_as": "import_foo_default",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportNamed": {
+      "sym": "import_foo_1",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportNamed": {
+      "sym": "import_bar_1",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportRenamed": {
+      "sym": "import_foo_2",
+      "sym_as": "import_foo_2_renamed",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ImportNamespace": {
+      "sym_as": "import_foo_namespace",
+      "specifier": "./foo"
+    }
+  },
+  "ExportDefault",
+  {
+    "ExportDestructured": {
+      "sym": "foo_1_1",
+      "sym_source": "foo_1"
+    }
+  },
+  {
+    "ExportDestructured": {
+      "sym": "foo_1_2",
+      "sym_source": "foo_1"
+    }
+  },
+  {
+    "ExportDestructured": {
+      "sym": "foo_2_1",
+      "sym_source": "foo_2"
+    }
+  },
+  {
+    "ExportDestructuredRenamed": {
+      "sym": "1",
+      "sym_as": "foo_3_1",
+      "sym_source": "foo_3"
+    }
+  },
+  {
+    "ExportDestructuredRenamed": {
+      "sym": "foo_4_1",
+      "sym_as": "foo_4_1_renamed",
+      "sym_source": "foo_4"
+    }
+  },
+  {
+    "ExportDestructuredRenamed": {
+      "sym": "foo_5_1",
+      "sym_as": "foo_5_1_renamed",
+      "sym_source": "foo_5"
+    }
+  },
+  {
+    "ExportDestructured": {
+      "sym": "foo_6_1",
+      "sym_source": "foo_6"
+    }
+  },
+  {
+    "ExportNamed": {
+      "sym": "Foo"
+    }
+  },
+  {
+    "ExportNamed": {
+      "sym": "foo"
+    }
+  },
+  {
+    "ExportNamed": {
+      "sym": "foo"
+    }
+  },
+  {
+    "ExportNamed": {
+      "sym": "foo_7"
+    }
+  },
+  {
+    "ExportNamed": {
+      "sym": "foo_8"
+    }
+  },
+  {
+    "ExportRenamed": {
+      "sym": "foo_7",
+      "sym_as": "foo_7_renamed"
+    }
+  },
+  {
+    "ReexportAll": {
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ReexportNamed": {
+      "sym": "reexport_foo_1",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ReexportNamespace": {
+      "sym_as": "reexport_foo_2",
+      "specifier": "./foo"
+    }
+  },
+  {
+    "ReexportRenamed": {
+      "sym": "reexport_foo_3",
+      "sym_as": "reexport_foo_3_renamed",
+      "specifier": "./foo"
+    }
+  }
+]

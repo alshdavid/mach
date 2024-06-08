@@ -1,0 +1,8 @@
+[
+  {
+    "ImportDefault": {
+      "sym_as": "foo",
+      "specifier": "./foo"
+    }
+  }
+]

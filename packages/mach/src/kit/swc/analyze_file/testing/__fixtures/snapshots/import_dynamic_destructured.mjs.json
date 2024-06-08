@@ -1,0 +1,8 @@
+[
+  {
+    "ImportDynamicNamed": {
+      "specifier": "./foo",
+      "sym": "foo"
+    }
+  }
+]

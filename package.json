@@ -1,0 +1,8 @@
+{
+  "name": "@alshdavid/workspace",
+  "private": true,
+  "workspaces": [
+    "./packages/mach_nodejs",
+    "./packages/mach_npm"
+  ]
+}
