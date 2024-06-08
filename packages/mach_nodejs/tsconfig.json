@@ -8,5 +8,5 @@
     "declaration": true
   },
   "include": ["bin", "lib", "platform"],
-  "exclude": ["bin/index.js"]
+  "exclude": ["bin/index.js", "lib/index.js"]
 }
