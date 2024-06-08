@@ -114,7 +114,6 @@ build:
   cargo build {{profile_cargo}} {{target_cargo}}
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\_napi\index.node" | Out-Null  
 
-
   # Copy binary
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
@@ -158,7 +157,7 @@ fmt:
 
 [unix]
 build-publish:
-  pnpm i
+  npm i
   just build-publish-common
   just build
   cp "./README.md" "./packages/mach_npm"
@@ -166,7 +165,7 @@ build-publish:
 
 [windows]
 build-publish:
-  pnpm i 
+  npm i 
   just build-publish-common
   just build
   Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
