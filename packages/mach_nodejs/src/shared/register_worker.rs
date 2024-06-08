@@ -4,8 +4,8 @@ use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use mach_bundler_core::adapters::nodejs_napi::NapiOutgoingData;
-use mach_bundler_core::adapters::nodejs_napi::worker_callback::worker_callback;
+use mach_bundler_core::rpc::nodejs_napi::NapiOutgoingData;
+use mach_bundler_core::rpc::nodejs_napi::worker_callback::worker_callback;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsUndefined;

@@ -1,4 +1,4 @@
-use mach_bundler_core::adapters::nodejs_ipc::worker_ipc::worker_ipc;
+use mach_bundler_core::rpc::nodejs_ipc::worker_ipc::worker_ipc;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsUndefined;

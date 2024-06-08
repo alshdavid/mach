@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-pub mod adapters;
+pub mod rpc;
 #[cfg(feature = "cli_parser")]
 pub mod cli;
 pub mod kit;

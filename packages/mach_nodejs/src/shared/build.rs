@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use mach_bundler_core::adapters::nodejs_napi::NodejsNapiAdapter;
+use mach_bundler_core::rpc::nodejs_napi::NodejsNapiAdapter;
 use mach_bundler_core::public::AdapterMap;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::BuildResult;
