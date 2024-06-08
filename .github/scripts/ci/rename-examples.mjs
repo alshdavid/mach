@@ -59,7 +59,7 @@ for (const example_name of fs.readdirSync(Paths.TestingFixtures)) {
 
   json.devDependencies = json.devDependencies || {}
   delete json.devDependencies['http-server']
-  json.devDependencies['@alshdavid/mach'] = "../../../npm/mach"
+  json.devDependencies['@alshdavid/mach'] = "../../../packages/mach_npm"
   json.devDependencies = sort_object(json.devDependencies)
   
   fs.writeFileSync(json_path, JSON.stringify(json, null, 2))

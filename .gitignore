@@ -11,8 +11,8 @@ target/
 /benchmarks
 *.node
 
-npm/mach/cmd
-npm/mach/README.md
+packages/mach_npm/cmd
+packages/mach_npm/README.md
 
 # dependencies
 node_modules/
