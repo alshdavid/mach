@@ -3,6 +3,7 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "bin": "./bin/index.js",
+  "types": "./types/index.d.ts",
   "type": "module",
   "repository": {
     "type": "git",

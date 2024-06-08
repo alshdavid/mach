@@ -17,9 +17,6 @@ if (!OS && !ARCH) {
   console.warn(
     'Could not find Mach binary for your system. Please compile from source',
   )
-  console.warn(
-    'Override the built in binary by setting the $MACH_BIN_OVERRIDE environment variable',
-  )
   process.exit(0)
 }
 
@@ -31,11 +28,9 @@ try {
   const url = await import('node:url')
 
   const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+  const package_json_path = path.join(__dirname, '..', 'package.json')
+  const package_json = JSON.parse(await fs.readFile(package_json_path, 'utf8'))
 
-  /** @type {any} */
-  const package_json = JSON.parse(
-    await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf8'),
-  )
   if (package_json.version !== '0.0.0-local') {
     throw error
   }

@@ -7,6 +7,6 @@
     "checkJs": true,
     "noEmit": true
   },
-  "include": ["types", "lib"],
-  "exclude": ["node_modules", "types/_parcel"]
+  "include": ["*.js"],
+  "exclude": ["node_modules"]
 }
