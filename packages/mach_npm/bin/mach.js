@@ -24,7 +24,7 @@ if (!OS && !ARCH) {
 }
 
 try {
-  await import(`@alshdavid/mach-${OS}-${ARCH}/cmd/napi/main.js`)
+  await import(`@alshdavid/mach-${OS}-${ARCH}/bin/index.js`)
 } catch (error) {
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
@@ -40,5 +40,5 @@ try {
     throw error
   }
 
-  await import('@alshdavid/mach-os-arch/cmd/napi/main.js')
+  await import('@alshdavid/mach-os-arch/bin/index.js')
 }

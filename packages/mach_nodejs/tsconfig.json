@@ -6,5 +6,6 @@
     "strict": true,
     "checkJs": true,
   },
-  "include": ["bin", "cjs", "mjs"]
+  "include": ["bin", "cjs", "mjs"],
+  "exclude": ["bin/index.js"]
 }

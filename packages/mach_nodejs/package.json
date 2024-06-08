@@ -4,11 +4,6 @@
   "license": "MIT",
   "bin": "./bin/index.js",
   "type": "module",
-  "exports": {
-    "require": "./cjs/index.js",
-    "import": "./mjs/index.js",
-    "default": "./cjs/index.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"
