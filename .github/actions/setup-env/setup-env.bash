@@ -18,7 +18,7 @@ export PATH="${HOME}/.local/rust/cargo/bin:$PATH"
 export PATH="${HOME}/.local/nodejs/bin:$PATH"
 export PATH="${HOME}/.local/nodejs/prefix/bin:$PATH"
 export NPM_CONFIG_PREFIX="${HOME}/.local/nodejs/prefix"
-pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
+# pnpm config set store-dir $HOME/.local/nodejs/pnpm-store
 
 ENV_PATH="${ROOT_DIR}/.env"
 
