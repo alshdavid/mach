@@ -13,10 +13,9 @@ harness = false
 path = "src/bench.rs"
 
 [features]
-cli_parser = ["clap"]
-adapters_nodejs_ipc_host = ["ipc_channel_adapter"]
-adapters_nodejs_ipc_client = ["napi", "ipc_channel_adapter"]
-adapters_nodejs_napi = ["napi"]
+cli_parser = ["dep:clap"]
+rpc_ipc = ["dep:ipc_channel_adapter"]
+rpc_nodejs = ["dep:napi"]
 
 [dependencies]
 swc_core = { version = "=0.90.23", features = [

@@ -12,5 +12,5 @@ name = "mach"
 path = "src/main.rs"
 
 [dependencies]
-mach_bundler_core = { path = "../mach", features = ["cli_parser", "adapters_nodejs_ipc_host"]}
+mach_bundler_core = { path = "../mach", features = ["cli_parser", "rpc_ipc"]}
 num_cpus = "1.*"
