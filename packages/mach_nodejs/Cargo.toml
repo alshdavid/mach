@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-path = "./napi/lib.rs"
+path = "./src/lib.rs"
 
 [dependencies]
 mach_bundler_core = { path = "../mach", features = ["cli_parser", "adapters_nodejs_napi", "adapters_nodejs_ipc_client"] }

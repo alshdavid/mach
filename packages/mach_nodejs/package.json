@@ -3,6 +3,7 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "bin": "./bin/index.js",
+  "type": "module",
   "exports": {
     "require": "./cjs/index.js",
     "import": "./mjs/index.js",
