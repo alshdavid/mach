@@ -64,7 +64,7 @@ if (!fs.existsSync(Paths.Output())) {
 
   fs.writeFileSync(Paths.OutputSrc('index.js'), index, 'utf8')
 
-  $('pnpm install', Paths.Output())
+  $('npm install', Paths.Output())
 }
 
 console.log('Complete')

@@ -102,7 +102,7 @@ build:
 [windows]
 build:
   # Install npm
-  if (!(Test-Path 'node_modules')) { pnpm install }
+  if (!(Test-Path 'node_modules')) { npm install }
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
