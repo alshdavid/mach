@@ -84,15 +84,16 @@ _default:
 build:
   # Install npm
   test -d node_modules || npm install
-  
-  # Build crates
-  cargo build {{profile_cargo}} {{target_cargo}}
-  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/index.node"
 
   # Clean dir
   @rm -rf "{{out_dir}}"
   @rm -rf "{{out_dir_link}}"
   @mkdir -p "{{out_dir}}"
+  @rm -rf "./packages/mach_nodejs/_napi/index.node"
+  
+  # Build crates
+  cargo build {{profile_cargo}} {{target_cargo}}
+  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
   
   # Copy binary
   @mkdir -p "{{out_dir}}/bin"
