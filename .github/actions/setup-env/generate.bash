@@ -3,8 +3,6 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 ROOT_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
 
-pnpm install
-          
 export BRANCH_NAME=${GITHUB_REF##*/}
 
 export NPM_TAG=$BRANCH_NAME
