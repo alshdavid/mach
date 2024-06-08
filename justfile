@@ -104,25 +104,20 @@ build:
   # Install npm
   if (!(Test-Path 'node_modules')) { npm install }
 
-  # Build mach and napi
-  cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\platform\native\index.node" | Out-Null  
-
   # Clean dir
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
+  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force ".\packages\mach_nodejs\_napi\index.node" | Out-Null }
+
+  # Build mach and napi
+  cargo build {{profile_cargo}} {{target_cargo}}
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\_napi\index.node" | Out-Null  
+
 
   # Copy binary
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
-
-  # Copy Nodejs adapter
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\nodejs" | Out-Null
-  @Copy-Item ".\packages\mach_nodejs\cmd" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
-  @Copy-Item ".\packages\mach_nodejs\platform" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
-  @Copy-Item ".\packages\mach_nodejs\package.json" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
-  @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
 [unix]
 run *ARGS:
