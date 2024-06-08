@@ -9,5 +9,5 @@
       "@alshdavid/mach": ["../mach_nodejs/types/index.d.ts"]
     }
   },
-  "include": ["bin", "js"]
+  "include": ["bin", "cjs", "mjs"]
 }

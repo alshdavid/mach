@@ -2,9 +2,12 @@
   "name": "@alshdavid/mach-os-arch",
   "version": "0.0.0-local",
   "license": "MIT",
-  "type": "module",
   "bin": "./cmd/napi/main.js",
-  "main": "./lib/index.js",
+  "exports": {
+    "require": "./cjs/index.js",
+    "import": "./mjs/index.js",
+    "default": "./cjs/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"

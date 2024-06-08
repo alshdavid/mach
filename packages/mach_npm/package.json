@@ -3,10 +3,14 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "main": "./lib/index.js",
-  "types": "./types/index.d.ts",
   "bin": {
     "mach": "./bin/mach.js"
+  },
+  "exports": {
+    "require": "./cjs/index.js",
+    "import": "./mjs/index.js",
+    "default": "./cjs/index.js",
+    "types": "./types/index.d.ts"
   },
   "repository": {
     "type": "git",
