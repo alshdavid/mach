@@ -3,7 +3,7 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "types": "./types.d.ts",
+  "types": "./lib.d.ts",
   "main": "./lib.js",
   "bin": {
     "mach": "./bin.js"
