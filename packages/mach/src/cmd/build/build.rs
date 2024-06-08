@@ -12,7 +12,7 @@ use crate::platform::config::load_plugins;
 use crate::platform::transformation::build_asset_graph;
 // use crate::platform::emit::emit;
 // use crate::platform::packaging::package;
-use crate::public::Adapter;
+use crate::public::RpcHost;
 // use crate::public::AssetGraphSync;
 // use crate::public::AssetMap;
 // use crate::public::AssetMapSync;
@@ -43,7 +43,7 @@ pub struct BuildOptions {
   /// How many Node.js workers to spawn for plugins
   pub node_workers: Option<usize>,
   /// Map of adapters used to communicate with plugin contexts
-  pub adapter_map: Option<HashMap<Engine, Arc<dyn Adapter>>>,
+  pub adapter_map: Option<HashMap<Engine, Arc<dyn RpcHost>>>,
 }
 
 impl Default for BuildOptions {

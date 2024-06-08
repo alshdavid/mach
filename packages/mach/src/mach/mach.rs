@@ -1,3 +1,7 @@
+/*
+  This is a nice wrapper for Mach's public API
+*/
+
 use crate::cmd::build;
 use crate::cmd::dev;
 use crate::cmd::version;

@@ -1,11 +1,8 @@
-#![deny(unused_crate_dependencies)]
-use std::sync::Arc;
 use std::time::SystemTime;
 
-use mach_bundler_core::rpc::nodejs_ipc::NodejsIpcAdapter;
 use mach_bundler_core::cli::parse_options_from_cli;
 use mach_bundler_core::cli::CommandType;
-use mach_bundler_core::public::AdapterMap;
+// use mach_bundler_core::public::RpcHosts;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
@@ -20,12 +17,12 @@ fn main() {
     CommandType::Build(command) => {
       let start_time = SystemTime::now();
 
-      let mut adapter_map = AdapterMap::new();
+      // let adapter_map = RpcHosts::new();
 
       // Setup Nodejs Plugin Runtime
-      let workers = command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
-      let nodejs_adapter = NodejsIpcAdapter::new(workers);
-      adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
+      // let workers = command.node_workers.unwrap_or(num_cpus::get_physical()) as u8;
+      // let nodejs_adapter = NodejsIpcAdapter::new(workers);
+      // adapter_map.insert("node".to_string(), Arc::new(nodejs_adapter));
 
       if let Err(msg) = mach.build(BuildOptions {
         entries: command.entries,
@@ -36,7 +33,8 @@ fn main() {
         threads: command.threads,
         node_workers: command.node_workers,
         project_root: command.project_root,
-        adapter_map: Some(adapter_map),
+        // adapter_map: Some(adapter_map),
+        adapter_map: None,
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;

@@ -8,7 +8,7 @@ use std::sync::Mutex;
 use std::sync::RwLock;
 use std::thread;
 
-use crate::public::Adapter;
+use crate::public::RpcHost;
 use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingResponse;
 
@@ -53,7 +53,7 @@ impl NodejsNapiAdapter {
   }
 }
 
-impl Adapter for NodejsNapiAdapter {
+impl RpcHost for NodejsNapiAdapter {
   fn is_running(&self) -> bool {
     self.initialized.read().unwrap().is_some()
   }

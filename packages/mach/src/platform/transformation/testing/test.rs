@@ -14,7 +14,7 @@ use crate::platform::transformation::testing::fixtures::GraphSnapshotAsset;
 use crate::platform::transformation::testing::fixtures::GraphSnapshotConfig;
 use crate::platform::transformation::testing::fixtures::GraphSnapshotImport;
 use crate::platform::transformation::testing::fixtures::SNAPSHOT_FILENAME;
-use crate::public::AdapterMap;
+use crate::public::RpcHosts;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::MachConfigSync;
@@ -33,7 +33,7 @@ fn setup_root<T: AsRef<str>>(
     ..Default::default()
   });
 
-  let plugins = load_plugins(&mach_config, &Machrc::default(), &AdapterMap::new()).unwrap();
+  let plugins = load_plugins(&mach_config, &Machrc::default(), &RpcHosts::new()).unwrap();
   let compilation = Compilation::new();
   (mach_config, plugins, compilation)
 }

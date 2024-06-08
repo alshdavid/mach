@@ -6,7 +6,7 @@ use divan::Bencher;
 
 use super::super::build_asset_graph;
 use crate::platform::config::load_plugins;
-use crate::public::AdapterMap;
+use crate::public::RpcHosts;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::Machrc;
@@ -21,7 +21,7 @@ fn bench_build_asset_graph(b: Bencher) {
     ..Default::default()
   });
 
-  let plugins = load_plugins(&mach_config, &Machrc::default(), &AdapterMap::new()).unwrap();
+  let plugins = load_plugins(&mach_config, &Machrc::default(), &RpcHosts::new()).unwrap();
   let compilation = Compilation::new();
 
   b.bench_local(move || {

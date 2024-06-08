@@ -18,7 +18,7 @@ use std::sync::Mutex;
 use std::thread;
 
 use super::NodejsInstance;
-use crate::public::Adapter;
+use crate::public::RpcHost;
 use crate::public::AdapterIncomingRequest;
 use crate::public::AdapterIncomingResponse;
 use crate::public::AdapterOutgoingRequest;
@@ -65,7 +65,7 @@ impl NodejsIpcAdapter {
   }
 }
 
-impl Adapter for NodejsIpcAdapter {
+impl RpcHost for NodejsIpcAdapter {
   fn is_running(&self) -> bool {
     self.nodejs_instance.lock().unwrap().is_some()
   }

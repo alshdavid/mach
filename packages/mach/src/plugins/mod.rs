@@ -1,7 +1,7 @@
-pub mod resolver_adapter;
+pub mod resolver_rpc;
 pub mod resolver_javascript;
 // pub mod resolver_nodejs;
-pub mod transformer_adapter;
+pub mod transformer_rpc;
 pub mod transformer_css;
 pub mod transformer_drop;
 pub mod transformer_html;

@@ -1,14 +1,14 @@
 use super::PluginContainer;
 use super::PluginContainerSync;
-use crate::plugins::resolver_adapter::ResolverAdapter;
+use crate::plugins::resolver_rpc::ResolverAdapter;
 use crate::plugins::resolver_javascript::ResolverJavaScript;
-use crate::plugins::transformer_adapter::TransformerAdapter;
+use crate::plugins::transformer_rpc::TransformerAdapter;
 use crate::plugins::transformer_css::TransformerCSS;
 use crate::plugins::transformer_drop::TransformerDrop;
 use crate::plugins::transformer_html::TransformerHtml;
 use crate::plugins::transformer_javascript::TransformerJavaScript;
 use crate::plugins::transformer_json::TransformerJson;
-use crate::public::AdapterMap;
+use crate::public::RpcHosts;
 use crate::public::MachConfig;
 use crate::public::Machrc;
 use crate::public::Transformer;
@@ -16,7 +16,7 @@ use crate::public::Transformer;
 pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
-  adapter_map: &AdapterMap,
+  adapter_map: &RpcHosts,
 ) -> Result<PluginContainerSync, String> {
   let mut plugins = PluginContainer::default();
 
