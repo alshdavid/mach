@@ -1,0 +1,5 @@
+!bin/index.js
+!_napi/index.d.ts
+!_napi/index.cjs
+**/*.js
+**/*.d.ts
