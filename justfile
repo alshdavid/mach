@@ -174,7 +174,7 @@ build-publish:
   pnpm i 
   just build-publish-common
   just build
-  Copy-Item ".\README.md" -Destination "npm\mach" | Out-Null
+  Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
 
 [private]
 build-publish-common:
