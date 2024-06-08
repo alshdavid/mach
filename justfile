@@ -108,7 +108,7 @@ build:
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
-  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force ".\packages\mach_nodejs\_napi\index.node" | Out-Null }
+  @if (Test-Path ".\packages\mach_nodejs\_napi\index.node") { Remove-Item -Recurse -Force ".\packages\mach_nodejs\_napi\index.node" | Out-Null }
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
