@@ -5,6 +5,7 @@
     "./.github/scripts",
     "./packages/mach_nodejs",
     "./packages/mach_npm",
+    "./packages/mach_playground",
     "./packages/testing"
   ]
 }
