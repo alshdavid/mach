@@ -166,7 +166,8 @@ build-publish:
   pnpm i
   just build-publish-common
   just build
-  cp "./README.md" "npm/mach"
+  cp "./README.md" "./packages/mach_npm"
+  cp "./README.md" "./packages/mach_nodejs"
 
 [windows]
 build-publish:
