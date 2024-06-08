@@ -160,6 +160,7 @@ build-publish:
   npm i
   just build-publish-common
   just build
+  cd "./packages/mach_nodejs" && npx tsc
   cp "./README.md" "./packages/mach_npm"
   cp "./README.md" "./packages/mach_nodejs"
 
@@ -168,6 +169,7 @@ build-publish:
   npm i 
   just build-publish-common
   just build
+  cd ".\packages\mach_nodejs" && npx tsc
   Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
 
 [private]
