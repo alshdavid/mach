@@ -5,6 +5,7 @@ members = [
   "./packages/mach",
   "./packages/mach_cli",
   "./packages/mach_nodejs",
+  "./packages/mach_wasm",
 ]
 
 [profile.release]

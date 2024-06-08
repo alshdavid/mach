@@ -813,6 +813,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "mach_bundler_wasm"
+version = "0.0.0-local"
+dependencies = [
+ "mach_bundler_core",
+ "num_cpus",
+]
+
+[[package]]
 name = "markup5ever"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
