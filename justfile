@@ -178,37 +178,32 @@ build-publish:
 [private]
 build-publish-common:
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./crates/mach_bundler_cli/Cargo.toml" \
+    "./packages/mach/Cargo.toml" \
     "0.0.0-local" \
     {{MACH_VERSION}}
 
   node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./crates/mach_bundler_core/Cargo.toml" \
-    "0.0.0-local" \
-    {{MACH_VERSION}}
-
-  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./npm/mach/package.json" \
+    "./packages/mach_npm/package.json" \
     "0.0.0-local" \
     "{{MACH_VERSION}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./npm/mach-os-arch/package.json" \
+    "./packages/mach_nodejs/package.json" \
     "name" \
     "@alshdavid/mach-{{os}}-{{arch}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./npm/mach-os-arch/package.json" \
+    "./packages/mach_nodejs/package.json" \
     "version" \
     "{{MACH_VERSION}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./npm/mach-os-arch/package.json" \
+    "./packages/mach_nodejs/package.json" \
     "os.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "os" {{os}})
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./npm/mach-os-arch/package.json" \
+    "./packages/mach_nodejs/package.json" \
     "cpu.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "arch" {{arch}})
 
