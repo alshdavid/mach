@@ -6,11 +6,3 @@ repository = "https://github.com/alshdavid/mach"
 description = "Bundler For The Modern Web"
 edition = "2021"
 license = "MIT"
-
-[[bin]]
-name = "mach"
-path = "src/main.rs"
-
-[dependencies]
-mach_bundler_core = { path = "../mach", features = ["cli_parser", "adapters_nodejs_ipc_host"]}
-num_cpus = "1.*"

@@ -815,10 +815,6 @@ dependencies = [
 [[package]]
 name = "mach_bundler_wasm"
 version = "0.0.0-local"
-dependencies = [
- "mach_bundler_core",
- "num_cpus",
-]
 
 [[package]]
 name = "markup5ever"
