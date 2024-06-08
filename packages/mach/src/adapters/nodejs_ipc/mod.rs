@@ -23,5 +23,6 @@ pub use nodejs_instance::*;
 pub use nodejs_ipc_adapter::*;
 pub use nodejs_worker::*;
 
+pub mod worker_callback;
 #[cfg(feature = "adapters_nodejs_ipc_client")]
-pub use super::nodejs_shared_lib::worker_ipc::*;
+pub mod worker_ipc;

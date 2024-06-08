@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use mach_bundler_core::adapters::nodejs_napi::NapiOutgoingData;
-use mach_bundler_core::adapters::nodejs_shared_lib::worker_callback::worker_callback;
+use mach_bundler_core::adapters::nodejs_napi::worker_callback::worker_callback;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsUndefined;
