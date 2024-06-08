@@ -6,8 +6,8 @@
     "strict": true,
     "checkJs": true,
     "paths": {
-      "@alshdavid/mach": ["../mach/types/index.d.ts"]
+      "@alshdavid/mach": ["../mach_nodejs/types/index.d.ts"]
     }
   },
-  "include": ["lib", "cmd", "platform", "types"]
+  "include": ["bin", "js"]
 }
