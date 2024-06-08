@@ -1,10 +1,11 @@
 import { Worker } from 'node:worker_threads'
 import * as path from 'node:path'
 import * as url from 'node:url'
-import * as types from '../../types/index.js'
-import napi from '../../platform/native/index.cjs'
+import * as types from '../types/index.js'
+import napi from '../_napi/index.cjs'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 export class Mach {
   /** @type {any} */
   #internal
