@@ -1,0 +1,188 @@
+name: 'alshdavid/build'
+description: "Build Project"
+
+inputs:
+  os:
+    description: 'target operating system'
+    default: ${{ runner.os == 'Linux' && 'linux' || runner.os == 'macOS' && 'macos' || runner.os == 'Windows' && 'windows' }}
+  arch:
+    description: 'target CPU architecture'
+    default: ${{ runner.arch == 'ARM64' && 'arm64' || runner.arch == 'X64' && 'amd64' }}
+  profile:
+    description: 'Build profile'
+    default: "release"
+  mach_version:
+    description: 'prepare packages for publishing'
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    # Builds for Native Hosts
+    - name: "Build Mach (native host - Unix)"
+      if: |
+        (runner.os == 'Linux' && runner.arch == 'X64' && 
+          inputs.os == 'linux' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'Linux' && runner.arch == 'ARM64' && 
+          inputs.os == 'linux' && inputs.arch == 'arm64') ||
+        
+        (runner.os == 'macOS' && runner.arch == 'X64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'arm64')
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/actions/setup-env/setup-env.bash
+        bash .github/actions/build-mach/build.bash
+    
+    - name: "Build Mach (native host - Windows)"
+      if: |
+        (runner.os == 'Windows' && runner.arch == 'X64' && 
+          inputs.os == 'windows' && inputs.arch == 'amd64') ||
+        
+        (runner.os == 'Windows' && runner.arch == 'ARM64' && 
+          inputs.os == 'windows' && inputs.arch == 'arm64')
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        . .github/actions/setup-env/setup-env.ps1
+        . .github/actions/build-mach/build.ps1
+
+    # Cross Compilation
+    - name: "Build Mach (cross build - Linux arm64 on amd64)" 
+      if: |
+        (runner.os == 'Linux' && runner.arch == 'X64' && 
+          inputs.os == 'linux' && inputs.arch == 'arm64')
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/actions/setup-env/setup-env.bash
+        export CC=aarch64-linux-gnu-gcc
+        export MACH_SKIP_POST_INSTALL="true"
+
+        sudo apt-get update
+        sudo apt-get install gcc-aarch64-linux-gnu build-essential
+        rustup target add aarch64-unknown-linux-gnu
+        aarch64-linux-gnu-gcc --version
+
+        bash .github/actions/build-mach/build.bash
+    
+    - name: "Build Mach (cross build - MacOS amd64 on arm64)" 
+      if: |
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64')
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/actions/setup-env/setup-env.bash
+        rustup target add x86_64-apple-darwin
+        bash .github/actions/build-mach/build.bash
+
+    - name: "Build Mach (cross build - MacOS arm64 on amd64)" 
+      if: |
+        (runner.os == 'macOS' && runner.arch == 'ARM64' && 
+          inputs.os == 'macos' && inputs.arch == 'amd64')
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        source .github/actions/setup-env/setup-env.bash
+        rustup aarch64-apple-darwin
+        bash .github/actions/build-mach/build.bash  
+
+    - name: "Build Mach (cross build - Windows arm64 on amd64)" 
+      if: |
+        (runner.os == 'Windows' && runner.arch == 'X64' && 
+          inputs.os == 'windows' && inputs.arch == 'arm64')
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+        MACH_VERSION: "${{inputs.mach_version}}"
+        profile: "${{inputs.profile}}"
+      run: |
+        . .github/actions/setup-env/setup-env.ps1
+        rustup target add aarch64-pc-windows-msvc
+        . .github/actions/build-mach/build.ps1
+
+    # Copy Artifacts
+    - name: "Copy Artifacts (Unix)"
+      if: runner.os != 'Windows'
+      shell: bash
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+      run: |
+        source .github/actions/setup-env/setup-env.bash
+
+        if [ "$MACH_VERSION" = "" ]; then
+          exit 0
+        fi
+
+        export ROOT_DIR="$(pwd)"
+        export JOB_NAME="${os}-${arch}"
+
+        mkdir $ROOT_DIR/artifacts
+        cd $ROOT_DIR/target/$JOB_NAME
+
+        mv release mach
+        tar -czvf mach-$JOB_NAME.tar.gz mach
+        mv mach-$JOB_NAME.tar.gz $ROOT_DIR/artifacts
+
+        cd $ROOT_DIR/npm/mach-os-arch
+        npm pack
+        mv *.tgz npm-mach-$JOB_NAME.tgz
+        mv *.tgz $ROOT_DIR/artifacts/npm-mach-$JOB_NAME.tgz
+
+        ls -l $ROOT_DIR/artifacts 
+
+    - name: "Copy Files (Windows)"
+      if: runner.os == 'Windows'
+      shell: powershell
+      env:
+        os: "${{inputs.os}}"
+        arch: "${{inputs.arch}}"
+      run: |
+        . .github/actions/setup-env/setup-env.ps1
+
+        if ("$env:MACH_VERSION" -eq "") {
+          exit 0
+        }
+
+        $env:RootPath = (Get-Location).Path
+        $env:Job = "${env:os}-${env:arch}"
+
+        New-Item -ItemType "directory" -Force -Path "${env:RootPath}/artifacts"
+
+        echo "${env:RootPath}/target/${env:Job}"
+        cd "${env:RootPath}/target/${env:Job}"
+        mv release mach
+        tar -czvf "mach-${env:Job}.tar.gz" mach
+        Move-Item "mach-${env:Job}.tar.gz" -Destination "${env:RootPath}/artifacts"
+
+        cd "${env:RootPath}/npm/mach-os-arch"
+        npm pack
+        Move-Item *.tgz -Destination "npm-mach-${env:Job}.tgz"
+        Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${env:Job}.tgz"

@@ -1,0 +1,52 @@
+name: Pull Request
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  linux-amd64:
+    name: "🐥 Linux AMD64"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
+
+  integration-tests:
+    name: "🧪 Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
+      - name: "Integration tests"
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just integration-tests
+
+  unit-tests:
+    name: "🧪 Unit Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+        with: { profile: debug }
+      - name: "Unit tests"
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just unit-tests

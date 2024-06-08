@@ -2,7 +2,9 @@
   "name": "@alshdavid/workspace",
   "private": true,
   "workspaces": [
+    "./.github/scripts",
     "./packages/mach_nodejs",
-    "./packages/mach_npm"
+    "./packages/mach_npm",
+    "./packages/testing"
   ]
 }
