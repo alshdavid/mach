@@ -93,11 +93,11 @@ build:
   
   # Build crates
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
+  cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
   
   # Copy binary
-  @mkdir -p "{{out_dir}}/bin"
-  @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
+  mkdir -p "{{out_dir}}/bin"
+  cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
 [windows]
 build:
@@ -112,11 +112,11 @@ build:
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\_napi\index.node" | Out-Null  
+  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\_napi\index.node" | Out-Null  
 
   # Copy binary
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
+  New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
+  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
 
 [unix]
 run *ARGS:

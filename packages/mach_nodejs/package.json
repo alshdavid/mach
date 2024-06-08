@@ -2,7 +2,7 @@
   "name": "@alshdavid/mach-os-arch",
   "version": "0.0.0-local",
   "license": "MIT",
-  "bin": "./cmd/napi/main.js",
+  "bin": "./bin/index.js",
   "exports": {
     "require": "./cjs/index.js",
     "import": "./mjs/index.js",
