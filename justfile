@@ -106,7 +106,7 @@ build:
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\npm\mach-os-arch\platform\native\index.node" | Out-Null  
+  @Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\platform\native\index.node" | Out-Null  
 
   # Clean dir
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
@@ -119,9 +119,9 @@ build:
 
   # Copy Nodejs adapter
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}\nodejs" | Out-Null
-  @Copy-Item ".\npm\mach-os-arch\cmd" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
-  @Copy-Item ".\npm\mach-os-arch\platform" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
-  @Copy-Item ".\npm\mach-os-arch\package.json" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\packages\mach_nodejs\cmd" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\packages\mach_nodejs\platform" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
+  @Copy-Item ".\packages\mach_nodejs\package.json" -Destination "{{out_dir}}\nodejs" -Recurse | Out-Null
   @New-Item -ItemType SymbolicLink -Path "{{out_dir_link}}" -Target "{{out_dir}}" | Out-Null
 
 [unix]

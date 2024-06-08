@@ -151,7 +151,7 @@ runs:
         tar -czvf mach-$JOB_NAME.tar.gz mach
         mv mach-$JOB_NAME.tar.gz $ROOT_DIR/artifacts
 
-        cd $ROOT_DIR/npm/mach-os-arch
+        cd $ROOT_DIR/packages/mach_nodejs
         npm pack
         mv *.tgz npm-mach-$JOB_NAME.tgz
         mv *.tgz $ROOT_DIR/artifacts/npm-mach-$JOB_NAME.tgz
@@ -182,7 +182,7 @@ runs:
         tar -czvf "mach-${env:Job}.tar.gz" mach
         Move-Item "mach-${env:Job}.tar.gz" -Destination "${env:RootPath}/artifacts"
 
-        cd "${env:RootPath}/npm/mach-os-arch"
+        cd "${env:RootPath}/packages/mach_nodejs"
         npm pack
         Move-Item *.tgz -Destination "npm-mach-${env:Job}.tgz"
         Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${env:Job}.tgz"
