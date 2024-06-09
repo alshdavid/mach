@@ -27,33 +27,18 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
     env::current_dir().unwrap()
   };
 
-  let entries = 'block: {
-    if let Some(args) = &command.entries {
-      break 'block args.clone();
-    }
-    return Err("Cannot find entry".to_string());
-  };
-
   return Ok(Arc::new(MachConfig {
     start_time,
-    entries,
+    entries: command.entries.clone(),
     dist_dir: get_dist_dir(&command, &project_root),
     clean_dist_dir: command.clean,
     bundle_splitting: command.bundle_splitting,
     project_root: project_root.clone(),
     machrc: parse_machrc(project_root.join(".machrc"))?,
-    threads: get_threads(&command),
+    // threads: get_threads(&command),
     optimize: command.optimize,
     env: get_env(),
   }));
-}
-
-fn get_threads(options: &BuildOptions) -> usize {
-  if let Some(threads) = options.threads {
-    threads
-  } else {
-    num_cpus::get()
-  }
 }
 
 fn get_dist_dir(

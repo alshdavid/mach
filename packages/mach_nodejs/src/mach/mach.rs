@@ -54,7 +54,7 @@ impl MachNapi {
     Ok(Self {
       mach: Arc::new(Mach::new(MachOptions {
         threads: Some(threads),
-        rpc_hosts: Some(rpc_hosts),
+        rpc_hosts,
       }))
     })
   }

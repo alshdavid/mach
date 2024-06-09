@@ -18,20 +18,23 @@ use crate::cmd::WatchOptions;
 use crate::cmd::WatchResult;
 use crate::public::RpcHosts;
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct MachOptions {
-  pub rpc_hosts: Option<RpcHosts>,
+  /// Map of adapters used to communicate with plugin contexts
+  pub rpc_hosts: RpcHosts,
+  /// How many threads to use for compilation
   pub threads: Option<usize>
 }
 
 pub struct Mach {
-  rpc_hosts: RpcHosts
+  options: MachOptions
 }
 
 impl Mach {
-  pub fn new(mach_options: MachOptions) -> Self {
+  pub fn new(options: MachOptions) -> Self {
+
     Self {
-      rpc_hosts: mach_options.rpc_hosts.unwrap_or_default(),
+      options,
     }
   }
 
@@ -39,7 +42,7 @@ impl Mach {
     &self,
     options: BuildOptions,
   ) -> anyhow::Result<BuildResult> {
-    build(options)
+    build(self.options.clone(), options)
   }
 
   pub fn watch(

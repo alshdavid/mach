@@ -22,10 +22,11 @@ pub struct RpcHostNodejs {
 }
 
 impl RpcHostNodejs {
-  pub fn new(_node_workers: usize, env: &Env, callback: JsFunction) -> napi::Result<Self> {
+  pub fn new(_node_workers: usize, env: &Env, mut callback: JsFunction) -> napi::Result<Self> {
     // Create a threadsafe function that casts the incoming message data to something
     // accessible in JavaScript. The function accepts a return value from a JS callback
-    let threadsafe_function: ThreadsafeFunction<RpcMessage> = env.create_threadsafe_function(
+
+    let mut threadsafe_function: ThreadsafeFunction<RpcMessage> = env.create_threadsafe_function(
       &callback,
       0,
       |ctx: ThreadSafeCallContext<RpcMessage>| {
@@ -42,17 +43,23 @@ impl RpcHostNodejs {
     )?;
 
     // Forward RPC events to the threadsafe function from a new thread
+
+    threadsafe_function.unref(&env);
     let (tx_rpc, rx_rpc) = channel();
-    thread::spawn(move || {
+
+    thread::spawn({
+      let threadsafe_function = threadsafe_function.clone();
+
+      move || {
       while let Ok(msg) = rx_rpc.recv() {
         if !matches!(
-          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::NonBlocking),
+          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::Blocking),
           Status::Ok
         ) {
           return;
         };
       }
-    });
+    }});
 
     Ok(Self { tx_rpc })
   }

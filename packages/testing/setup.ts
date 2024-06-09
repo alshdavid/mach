@@ -1,9 +1,9 @@
-// import '@alshdavid/mach'
 import { Mach } from '@alshdavid/mach'
 
-console.log(Mach)
-// const mach = new Mach()
+const mach = new Mach()
 
-// await mach.build({
-//   entries: ['./index.js']
-// })
+const result = await mach.build({
+  entries: ['./index.js']
+})
+
+// console.log({ result })

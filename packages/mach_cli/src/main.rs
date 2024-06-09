@@ -31,10 +31,9 @@ fn main() {
         clean: command.clean,
         optimize: !command.no_optimize,
         bundle_splitting: command.bundle_splitting,
-        threads: command.threads,
+        // threads: command.threads,
         project_root: command.project_root,
-        // adapter_map: Some(adapter_map),
-        adapter_map: None,
+        // rpc_hosts: Default::default(),
       }) {
         println!("❌ Build Failure\n{}", msg);
         return;

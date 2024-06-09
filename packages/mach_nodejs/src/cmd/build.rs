@@ -47,7 +47,7 @@ pub fn build(
   let mut options = BuildOptions::default();
 
   if let Some(entries) = options_napi.entries {
-    options.entries = Some(entries);
+    options.entries = entries;
   }
 
   if let Some(out_folder) = options_napi.out_folder {
@@ -66,16 +66,12 @@ pub fn build(
     options.bundle_splitting = bundle_splitting;
   }
 
-  if let Some(threads) = options_napi.threads {
-    options.threads = Some(threads);
-  }
-
   if let Some(project_root) = options_napi.project_root {
     options.project_root = Some(project_root);
   }
 
-  let thread_safe_callback: ThreadsafeFunction<()> =
-    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<()>| {
+  let thread_safe_callback: ThreadsafeFunction<usize> =
+    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<usize>| {
       let message = ctx.env.to_js_value(&())?;
       Ok(vec![message])
     })?;
@@ -83,7 +79,7 @@ pub fn build(
   thread::spawn(move || {
     match mach.build(options) {
       Ok(_result) => {
-        thread_safe_callback.call(Ok(()), ThreadsafeFunctionCallMode::NonBlocking);
+        thread_safe_callback.call(Ok(42), ThreadsafeFunctionCallMode::Blocking);
       }
       Err(err) => {
         thread_safe_callback.call(
