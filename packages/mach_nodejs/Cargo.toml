@@ -9,6 +9,7 @@ path = "./src/lib.rs"
 
 [dependencies]
 mach_bundler_core = { path = "../mach", features = ["cli_parser", "rpc_nodejs"] }
+anyhow = "1"
 napi = { version = "2.*", default-features = false, features = ["napi8", "tokio_rt", "serde-json", "async"] }
 napi-derive = "2.*"
 serde = { version = "1.*", features = ["derive"] }

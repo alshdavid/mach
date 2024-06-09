@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use anyhow;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -68,8 +69,8 @@ pub struct BuildResult {
   pub entries: HashMap<String, String>,
 }
 
-pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
-  let config = parse_config(&options)?;
+pub fn build(options: BuildOptions) -> anyhow::Result<BuildResult> {
+  let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
 
   /*
     This is the bundler state. It is passed into
@@ -91,7 +92,7 @@ pub fn build(options: BuildOptions) -> Result<BuildResult, String> {
     It does this by crawling the source files, identify import statements, modifying their contents
     (like removing TypeScript types) and looping until there are no more import statements to resolve.
   */
-  build_asset_graph(config.clone(), plugins.clone(), &mut compilation)?;
+  build_asset_graph(config.clone(), plugins.clone(), &mut compilation).map_err(|e| anyhow::anyhow!(e));
 
   Ok(BuildResult::default())
 

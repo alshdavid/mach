@@ -804,6 +804,7 @@ dependencies = [
 name = "mach_bundler_npm_os_arch"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "mach_bundler_core",
  "napi",
  "napi-build",

@@ -1,5 +1,7 @@
 // use std::sync::Arc;
 
+use anyhow;
+
 // use mach_bundler_core::rpc::nodejs_napi::NodejsNapiAdapter;
 // use mach_bundler_core::public::RpcHosts;
 use mach_bundler_core::BuildOptions;
@@ -9,7 +11,7 @@ use mach_bundler_core::Mach;
 // use crate::shared::REGISTER_WORKER;
 // use crate::shared::START_WORKER;
 
-pub fn mach_build_command(options: BuildOptions) -> Result<BuildResult, String> {
+pub fn mach_build_command(options: BuildOptions) -> anyhow::Result<BuildResult> {
   let mach = Mach::new();
 
   // let mut adapter_map = RpcHosts::new();

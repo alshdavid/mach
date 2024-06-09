@@ -83,7 +83,7 @@ pub fn build(
     match mach_build_command(options) {
       Ok(result) => tsfn.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking),
       Err(error) => tsfn.call(
-        Err(napi::Error::from_reason(error)),
+        Err(napi::Error::from_reason(format!("{}", error))),
         ThreadsafeFunctionCallMode::NonBlocking,
       ),
     };

@@ -2,6 +2,8 @@
   This is a nice wrapper for Mach's public API
 */
 
+use anyhow;
+
 use crate::cmd::build;
 use crate::cmd::dev;
 use crate::cmd::version;
@@ -25,7 +27,7 @@ impl Mach {
   pub fn build(
     &self,
     options: BuildOptions,
-  ) -> Result<BuildResult, String> {
+  ) -> anyhow::Result<BuildResult> {
     build(options)
   }
 
