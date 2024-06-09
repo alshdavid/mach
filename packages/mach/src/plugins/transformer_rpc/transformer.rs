@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 use std::sync::Arc;
 
+use anyhow;
+
 use crate::plugins::resolver_javascript::resolve;
 use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingRequestTransformerLoadConfig;
@@ -23,7 +25,7 @@ impl TransformerAdapter {
     config: &MachConfig,
     initial_specifier: &str,
     adapter: Arc<dyn RpcHost>,
-  ) -> Result<Self, String> {
+  ) -> anyhow::Result<Self> {
     // let specifier = resolve(&config.project_root, initial_specifier)?;
     // if !specifier.exists() {
     //   return Err(format!(

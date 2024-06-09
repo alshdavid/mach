@@ -1,4 +1,4 @@
-mod rpc;
+mod rpc_host;
 mod rpc_message;
 mod adapter_incoming;
 mod adapter_outgoing;
@@ -33,7 +33,7 @@ mod resolver;
 mod specifier_type;
 mod transformer;
 
-pub use self::rpc::*;
+pub use self::rpc_host::*;
 pub use self::rpc_message::*;
 pub use self::adapter_incoming::*;
 pub use self::adapter_outgoing::*;

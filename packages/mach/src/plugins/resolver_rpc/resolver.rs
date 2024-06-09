@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use anyhow;
+
 use crate::plugins::resolver_javascript::resolve;
 use crate::public::RpcHost;
 use crate::public::AdapterOutgoingRequest;
@@ -23,13 +25,13 @@ impl ResolverAdapter {
     config: &MachConfig,
     initial_specifier: &str,
     adapter: Arc<dyn RpcHost>,
-  ) -> Result<Self, String> {
-    let specifier = resolve(&config.project_root, initial_specifier)?;
+  ) -> anyhow::Result<Self> {
+    let specifier = resolve(&config.project_root, initial_specifier).map_err(|e| anyhow::anyhow!(e))?;
     if !specifier.exists() {
-      return Err(format!(
+      return Err(anyhow::anyhow!(format!(
         "Plugin not found for specifier: {:?}",
         initial_specifier
-      ));
+      )));
     }
     let specifier = specifier.to_str().unwrap().to_string();
 

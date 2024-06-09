@@ -776,6 +776,7 @@ dependencies = [
 name = "mach_bundler_core"
 version = "0.0.0-local"
 dependencies = [
+ "anyhow",
  "clap",
  "divan",
  "glob-match",

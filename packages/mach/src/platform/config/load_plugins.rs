@@ -1,3 +1,5 @@
+use anyhow;
+
 use super::PluginContainer;
 use super::PluginContainerSync;
 use crate::plugins::resolver_rpc::ResolverAdapter;
@@ -17,16 +19,16 @@ pub fn load_plugins(
   config: &MachConfig,
   machrc: &Machrc,
   adapter_map: &RpcHosts,
-) -> Result<PluginContainerSync, String> {
+) -> anyhow::Result<PluginContainerSync> {
   let mut plugins = PluginContainer::default();
 
   if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
       let Some((engine, specifier)) = plugin_string.split_once(':') else {
-        return Err(format!(
+        return Err(anyhow::anyhow!(format!(
           "Unable to parse engine:specifier for {}",
           plugin_string
-        ));
+        )));
       };
 
       if engine == "mach" && specifier == "resolver" {
@@ -35,10 +37,10 @@ pub fn load_plugins(
       }
 
       let Some(adapter) = adapter_map.get(engine) else {
-        return Err(format!(
+        return Err(anyhow::anyhow!(format!(
           "No plugin runtime for engine: {}\nCannot load plugin: {}",
           engine, specifier
-        ));
+        )));
       };
 
       adapter.init()?;
@@ -59,10 +61,10 @@ pub fn load_plugins(
 
       for plugin_string in specifiers {
         let Some((engine, specifier)) = plugin_string.split_once(':') else {
-          return Err(format!(
+          return Err(anyhow::anyhow!(format!(
             "Unable to parse engine:specifier for {}",
             plugin_string
-          ));
+          )));
         };
         if engine == "mach" && specifier == "transformer/javascript" {
           transformers.push(Box::new(TransformerJavaScript {}));
@@ -90,10 +92,10 @@ pub fn load_plugins(
         }
 
         let Some(adapter) = adapter_map.get(engine) else {
-          return Err(format!(
+          return Err(anyhow::anyhow!(format!(
             "No plugin runtime for engine: {}\nCannot load plugin: {}",
             engine, specifier
-          ));
+          )));
         };
 
         adapter.init()?;
