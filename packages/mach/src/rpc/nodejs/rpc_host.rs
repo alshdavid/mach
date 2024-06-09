@@ -18,22 +18,28 @@ use crate::public::RpcMessage;
 
 #[derive(Debug)]
 pub struct RpcHostNodejs {
+  node_workers: usize,
   tx_rpc: Sender<RpcMessage>,
 }
 
 impl RpcHostNodejs {
-  pub fn new(_node_workers: usize, env: &Env, mut callback: JsFunction) -> napi::Result<Self> {
+  pub fn new(node_workers: usize, env: &Env, mut callback: JsFunction) -> napi::Result<Self> {
     // Create a threadsafe function that casts the incoming message data to something
     // accessible in JavaScript. The function accepts a return value from a JS callback
-
     let mut threadsafe_function: ThreadsafeFunction<RpcMessage> = env.create_threadsafe_function(
       &callback,
       0,
       |ctx: ThreadSafeCallContext<RpcMessage>| {
         let id = Self::get_message_id(&ctx.value);
         match ctx.value {
-          RpcMessage::Ping { response: reply } => {
-            let callback = Self::create_callback(&ctx.env, reply)?;
+          RpcMessage::Ping { response } => {
+            let callback = Self::create_callback(&ctx.env, response)?;
+            let id = ctx.env.create_uint32(id)?.into_unknown();
+            let message = ctx.env.to_js_value(&())?;
+            Ok(vec![id, message, callback])
+          }
+          RpcMessage::Init { response } => {
+            let callback = Self::create_callback(&ctx.env, response)?;
             let id = ctx.env.create_uint32(id)?.into_unknown();
             let message = ctx.env.to_js_value(&())?;
             Ok(vec![id, message, callback])
@@ -53,7 +59,7 @@ impl RpcHostNodejs {
       move || {
       while let Ok(msg) = rx_rpc.recv() {
         if !matches!(
-          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::Blocking),
+          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::NonBlocking),
           Status::Ok
         ) {
           return;
@@ -61,7 +67,10 @@ impl RpcHostNodejs {
       }
     }});
 
-    Ok(Self { tx_rpc })
+    Ok(Self { 
+      tx_rpc,
+      node_workers,
+    })
   }
 
   // Generic method to create a "resolve" javascript function to
@@ -92,6 +101,7 @@ impl RpcHostNodejs {
   fn get_message_id(message: &RpcMessage) -> u32 {
     match message {
       RpcMessage::Ping { response: _ } => 0,
+      RpcMessage::Init{ response: _ } => 1,
     }
   }
 }
@@ -99,6 +109,15 @@ impl RpcHostNodejs {
 // Forward events to Nodejs
 impl RpcHost for RpcHostNodejs {
   fn init(&self) -> anyhow::Result<()> {
+    let tx_rpc = self.tx_rpc.clone();
+    let node_workers = self.node_workers.clone();
+
+    for _ in 0..node_workers {
+      let (tx, rx) = channel();
+      tx_rpc.send(RpcMessage::Init {response: tx }).unwrap();
+      rx.recv().unwrap();
+    }
+
     Ok(())
   }
 

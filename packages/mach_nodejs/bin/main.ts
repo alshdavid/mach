@@ -3,5 +3,4 @@ const path = await import('node:path')
 const url = await import('node:url')
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-console.log('hi from main' as string)
 new Worker(path.join(__dirname, './index.js'))

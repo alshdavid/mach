@@ -1,4 +1,6 @@
-import { MachNapi, RpcCallback } from '../_napi/index.js'
+import { Worker } from 'node:worker_threads'
+import path from 'node:path'
+import { ROOT, MachNapi, RpcCallbackData } from '../_napi/index.js'
 
 export type MachOptions = {
   threads?: number
@@ -16,10 +18,12 @@ export type MachBuildOptions = {
 
 export class Mach {
   #internal: MachNapi
+  #workers: Worker[]
 
   constructor(options: MachOptions = {}) {
+    this.#workers = []
     this.#internal = new MachNapi({
-      rpc: this.#rpc,
+      rpc: (...args: any) => this.#rpc(args),
       ...options,
     })
   }
@@ -29,16 +33,22 @@ export class Mach {
       .build(options, (err, data) => err ? rej(err) : res(data)))
   }
 
-  #rpc: RpcCallback = async (err, id, data, done) => {
-    console.log([err, id, data, done])
+  async #rpc([err, id, data, done]: RpcCallbackData) {
     if (err) {
       return done({ Err: err })
     }
     switch (id) {
       case 0:
         done({ Ok: null })
+        break
+      case 1:
+        console.log('okok')
+        // this.#workers.push(new Worker(path.join(ROOT, 'bin', 'index.js')))
+        done({ Ok: null })
+        break
       default:
-        return done({ Err: "No handler specified" })
+        // @ts-expect-error
+        done({ Err: "No handler specified" })
     }
   }
 }

@@ -30,7 +30,7 @@ impl MachNapi {
     let threads;
     if options.has_named_property("threads")? {
       let js_threads = options.get_named_property::<JsNumber>("threads")?;
-      threads = env.from_js_value(js_threads)?;
+      threads = env.from_js_value::<usize, JsNumber>(js_threads)?;
     } else {
       threads = num_cpus::get_physical()
     }
@@ -39,7 +39,7 @@ impl MachNapi {
 
     let node_workers;
     if options.has_named_property("nodeWorkers")? {
-      let js_threads = options.get_named_property::<JsNumber>("threads")?;
+      let js_threads = options.get_named_property::<JsNumber>("nodeWorkers")?;
       node_workers = env.from_js_value(js_threads)?;
     } else {
       node_workers = threads.clone();
