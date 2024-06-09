@@ -6,10 +6,10 @@ use divan::Bencher;
 
 use super::super::build_asset_graph;
 use crate::platform::config::load_plugins;
-use crate::public::RpcHosts;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::Machrc;
+use crate::public::RpcHosts;
 
 #[bench]
 fn bench_build_asset_graph(b: Bencher) {

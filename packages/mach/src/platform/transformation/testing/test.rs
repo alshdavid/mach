@@ -14,11 +14,11 @@ use crate::platform::transformation::testing::fixtures::GraphSnapshotAsset;
 use crate::platform::transformation::testing::fixtures::GraphSnapshotConfig;
 use crate::platform::transformation::testing::fixtures::GraphSnapshotImport;
 use crate::platform::transformation::testing::fixtures::SNAPSHOT_FILENAME;
-use crate::public::RpcHosts;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::MachConfigSync;
 use crate::public::Machrc;
+use crate::public::RpcHosts;
 
 fn setup_root<T: AsRef<str>>(
   project_root: &Path,

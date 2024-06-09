@@ -23,19 +23,16 @@ pub struct MachOptions {
   /// Map of adapters used to communicate with plugin contexts
   pub rpc_hosts: RpcHosts,
   /// How many threads to use for compilation
-  pub threads: Option<usize>
+  pub threads: Option<usize>,
 }
 
 pub struct Mach {
-  options: MachOptions
+  options: MachOptions,
 }
 
 impl Mach {
   pub fn new(options: MachOptions) -> Self {
-
-    Self {
-      options,
-    }
+    Self { options }
   }
 
   pub fn build(

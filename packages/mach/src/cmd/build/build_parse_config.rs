@@ -11,10 +11,10 @@ use std::time::SystemTime;
 
 use normalize_path::NormalizePath;
 
+use super::BuildOptions;
 use crate::public::MachConfig;
 use crate::public::MachConfigSync;
 use crate::public::Machrc;
-use super::BuildOptions;
 
 pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
   let start_time = SystemTime::now();

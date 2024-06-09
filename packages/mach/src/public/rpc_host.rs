@@ -2,10 +2,11 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::mpsc::Receiver;
 use std::sync::Arc;
+
 use anyhow;
 
-use super::RpcMessage;
 use super::AdapterOutgoingResponse;
+use super::RpcMessage;
 
 pub type Engine = String;
 pub type RpcHosts = HashMap<Engine, Arc<dyn RpcHost>>;

@@ -17,7 +17,7 @@ use crate::cmd::build;
 
 #[napi]
 pub struct MachNapi {
-  mach: Arc<Mach>
+  mach: Arc<Mach>,
 }
 
 #[napi]
@@ -55,7 +55,7 @@ impl MachNapi {
       mach: Arc::new(Mach::new(MachOptions {
         threads: Some(threads),
         rpc_hosts,
-      }))
+      })),
     })
   }
 

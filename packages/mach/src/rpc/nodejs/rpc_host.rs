@@ -2,6 +2,7 @@ use std::sync::mpsc::channel;
 use std::sync::mpsc::Sender;
 use std::thread;
 
+use anyhow::anyhow;
 use napi;
 use napi::threadsafe_function::ThreadSafeCallContext;
 use napi::threadsafe_function::ThreadsafeFunction;
@@ -11,7 +12,6 @@ use napi::JsFunction;
 use napi::JsUnknown;
 use napi::Status;
 use serde::de::DeserializeOwned;
-use anyhow::anyhow;
 
 use crate::public::RpcHost;
 use crate::public::RpcMessage;
@@ -23,13 +23,15 @@ pub struct RpcHostNodejs {
 }
 
 impl RpcHostNodejs {
-  pub fn new(node_workers: usize, env: &Env, mut callback: JsFunction) -> napi::Result<Self> {
+  pub fn new(
+    node_workers: usize,
+    env: &Env,
+    mut callback: JsFunction,
+  ) -> napi::Result<Self> {
     // Create a threadsafe function that casts the incoming message data to something
     // accessible in JavaScript. The function accepts a return value from a JS callback
-    let mut threadsafe_function: ThreadsafeFunction<RpcMessage> = env.create_threadsafe_function(
-      &callback,
-      0,
-      |ctx: ThreadSafeCallContext<RpcMessage>| {
+    let mut threadsafe_function: ThreadsafeFunction<RpcMessage> =
+      env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<RpcMessage>| {
         let id = Self::get_message_id(&ctx.value);
         match ctx.value {
           RpcMessage::Ping { response } => {
@@ -45,8 +47,7 @@ impl RpcHostNodejs {
             Ok(vec![id, message, callback])
           }
         }
-      },
-    )?;
+      })?;
 
     // Forward RPC events to the threadsafe function from a new thread
 
@@ -57,17 +58,18 @@ impl RpcHostNodejs {
       let threadsafe_function = threadsafe_function.clone();
 
       move || {
-      while let Ok(msg) = rx_rpc.recv() {
-        if !matches!(
-          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::NonBlocking),
-          Status::Ok
-        ) {
-          return;
-        };
+        while let Ok(msg) = rx_rpc.recv() {
+          if !matches!(
+            threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::NonBlocking),
+            Status::Ok
+          ) {
+            return;
+          };
+        }
       }
-    }});
+    });
 
-    Ok(Self { 
+    Ok(Self {
       tx_rpc,
       node_workers,
     })
@@ -101,7 +103,7 @@ impl RpcHostNodejs {
   fn get_message_id(message: &RpcMessage) -> u32 {
     match message {
       RpcMessage::Ping { response: _ } => 0,
-      RpcMessage::Init{ response: _ } => 1,
+      RpcMessage::Init { response: _ } => 1,
     }
   }
 }
@@ -114,7 +116,7 @@ impl RpcHost for RpcHostNodejs {
 
     for _ in 0..node_workers {
       let (tx, rx) = channel();
-      tx_rpc.send(RpcMessage::Init {response: tx }).unwrap();
+      tx_rpc.send(RpcMessage::Init { response: tx }).unwrap();
       rx.recv().unwrap();
     }
 

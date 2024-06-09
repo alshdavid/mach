@@ -3,7 +3,6 @@ use std::sync::Arc;
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
-use crate::public::RpcHost;
 use crate::public::AdapterOutgoingRequest;
 use crate::public::AdapterOutgoingRequestResolverLoadConfig;
 use crate::public::AdapterOutgoingRequestResolverRegister;
@@ -13,6 +12,7 @@ use crate::public::Dependency;
 use crate::public::MachConfig;
 use crate::public::ResolveResult;
 use crate::public::Resolver;
+use crate::public::RpcHost;
 
 #[derive(Debug)]
 pub struct ResolverAdapter {
@@ -26,7 +26,8 @@ impl ResolverAdapter {
     initial_specifier: &str,
     adapter: Arc<dyn RpcHost>,
   ) -> anyhow::Result<Self> {
-    let specifier = resolve(&config.project_root, initial_specifier).map_err(|e| anyhow::anyhow!(e))?;
+    let specifier =
+      resolve(&config.project_root, initial_specifier).map_err(|e| anyhow::anyhow!(e))?;
     if !specifier.exists() {
       return Err(anyhow::anyhow!(format!(
         "Plugin not found for specifier: {:?}",
