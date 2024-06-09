@@ -67,6 +67,8 @@ pub struct BuildResult {
 }
 
 pub fn build(options: BuildOptions) -> anyhow::Result<BuildResult> {
+  dbg!(&options);
+  return Ok(BuildResult::default());
   let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
 
   /*

@@ -1,6 +1,8 @@
 export declare const ROOT: string;
 
-export type RpcCallback = () => any | Promise<any>
+export type NapiCallback<T extends Array<any>> = (error: any | undefined, ...args: T) => any | Promise<any>
+export type RpcCallback = NapiCallback<[any]>
+export type BuildCallback = NapiCallback<[any]>
 
 export type MachNapiOptions = {
   nodeWorkers?: number
@@ -19,5 +21,5 @@ export type MachNapiBuildOptions = {
 
 export declare class MachNapi {
   constructor(options: MachNapiOptions)
-  build(options: MachNapiBuildOptions): any
+  build(options: MachNapiBuildOptions, callback: BuildCallback): any
 }

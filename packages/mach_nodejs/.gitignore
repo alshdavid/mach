@@ -1,7 +1,6 @@
 **/*.d.ts
 **/*.js
-
 !bin/index.js
 !lib/index.js
 !_napi/index.d.ts
-!_napi/index.cjs
+!_napi/index.js

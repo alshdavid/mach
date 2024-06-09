@@ -1,3 +1,9 @@
+export let Mach
+export let Resolver
+export let Transformer
+export let Dependency
+export let MutableAsset
+
 const OS = {
   win32: 'windows',
   darwin: 'macos',
@@ -9,10 +15,8 @@ const ARCH = {
   x64: 'amd64',
 }[process.arch]
 
-let to_export = undefined
-
 try {
-  to_export = await import(`@alshdavid/mach-${OS}-${ARCH}/lib/index.js`)
+  _apply_exports(await import(`@alshdavid/mach-${OS}-${ARCH}/lib/index.js`))
 } catch (error) {
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
@@ -26,7 +30,7 @@ try {
     throw error
   }
 
-  to_export = await import('@alshdavid/mach-os-arch')
+  _apply_exports(await import('@alshdavid/mach-os-arch'))
 }
 
 class MachInitError extends Error {
@@ -36,8 +40,6 @@ class MachInitError extends Error {
   }
 }
 
-export const Mach = (to_export.Mach || globalThis.Mach?.Mach || MachInitError)
-export const Resolver = (to_export.Resolver || globalThis.Mach?.Resolver || MachInitError)
-export const Transformer = (to_export.Transformer || globalThis.Mach?.Transformer || MachInitError)
-export const Dependency = (to_export.Dependency || globalThis.Mach?.Dependency || MachInitError)
-export const MutableAsset = (to_export.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError)
+export function _apply_exports(mach) {
+  Mach = (mach.Mach || globalThis.Mach?.Mach || MachInitError)
+}

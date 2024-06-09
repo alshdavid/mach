@@ -1,5 +1,4 @@
-// import '@alshdavid/mach'
-import { Mach } from '@alshdavid/mach'
+import {Mach} from  '@alshdavid/mach'
 
 console.log(Mach)
 // const mach = new Mach()

@@ -6,7 +6,7 @@ export type MachOptions = {
 }
 
 export type MachBuildOptions = {
-  entries?: string[]
+  entries: string[]
   projectRoot?: string
   outFolder?: string
   clean?: boolean
@@ -17,7 +17,7 @@ export type MachBuildOptions = {
 export class Mach {
   #internal: MachNapi
 
-  constructor(options: MachOptions) {
+  constructor(options: MachOptions = {}) {
     this.#internal = new MachNapi({
       rpc: (...args: any[]) => this.#rpc(...args),
       ...options,
@@ -25,7 +25,8 @@ export class Mach {
   }
 
   async build(options: MachBuildOptions) {
-    return this.#internal.build(options)
+    return new Promise((res, rej) => this.#internal
+      .build(options, (err, data) => err ? rej(err) : res(data)))
   }
 
   #rpc(...args: any[]) {

@@ -1,5 +1,7 @@
+export let Mach
+
 try {
-  await import('./lib.js')
+  _apply_exports(await import('./lib.js'))
 } catch (error) {
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
@@ -13,8 +15,10 @@ try {
     throw error
   }
 
-  const { register } = await import('tsx/esm/api')
-  register()
-  // @ts-expect-error
-  await import('./lib.ts')
+  (await import('tsx/esm/api')).register()
+  _apply_exports(await import('./lib.ts'))
+}
+
+export function _apply_exports(mach) {
+  Mach = mach.Mach
 }

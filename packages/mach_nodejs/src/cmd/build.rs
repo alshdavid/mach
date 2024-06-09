@@ -5,6 +5,9 @@ use std::thread;
 
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::Mach;
+use napi::threadsafe_function::ThreadSafeCallContext;
+use napi::threadsafe_function::ThreadsafeFunction;
+use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
@@ -38,6 +41,7 @@ pub fn build(
   mach: Arc<Mach>,
   env: Env,
   options: JsObject,
+  callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
   let options_napi = env.from_js_value::<BuildOptionsNapi, JsObject>(options)?;
   let mut options = BuildOptions::default();
@@ -70,8 +74,24 @@ pub fn build(
     options.project_root = Some(project_root);
   }
 
+  let thread_safe_callback: ThreadsafeFunction<()> =
+    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<()>| {
+      let message = ctx.env.to_js_value(&())?;
+      Ok(vec![message])
+    })?;
+
   thread::spawn(move || {
-    mach.build(options);
+    match mach.build(options) {
+      Ok(_result) => {
+        thread_safe_callback.call(Ok(()), ThreadsafeFunctionCallMode::NonBlocking);
+      }
+      Err(err) => {
+        thread_safe_callback.call(
+          Err(napi::Error::from_reason(format!("{}", err))),
+          ThreadsafeFunctionCallMode::NonBlocking,
+        );
+      }
+    };
   });
 
   env.get_undefined()

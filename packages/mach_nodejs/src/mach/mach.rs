@@ -27,23 +27,33 @@ impl MachNapi {
     env: Env,
     options: JsObject,
   ) -> napi::Result<Self> {
+    let threads;
+    if options.has_named_property("threads")? {
+      let js_threads = options.get_named_property::<JsNumber>("threads")?;
+      threads = env.from_js_value(js_threads)?;
+    } else {
+      threads = num_cpus::get_physical()
+    }
+
     let mut rpc_hosts = RpcHosts::default();
+
+    let node_workers;
+    if options.has_named_property("nodeWorkers")? {
+      let js_threads = options.get_named_property::<JsNumber>("threads")?;
+      node_workers = env.from_js_value(js_threads)?;
+    } else {
+      node_workers = threads.clone();
+    }
 
     if options.has_named_property("rpc")? {
       let callback = options.get_named_property::<JsFunction>("rpc")?;
-      let nodejs_rpc_host = RpcHostNodejs::new(&env, callback)?;
+      let nodejs_rpc_host = RpcHostNodejs::new(node_workers, &env, callback)?;
       rpc_hosts.insert("nodejs".to_string(), Arc::new(nodejs_rpc_host));
-    }
-
-    let mut threads = None::<usize>;
-    if options.has_named_property("threads")? {
-      let js_threads = options.get_named_property::<JsNumber>("threads")?;
-      threads = Some(env.from_js_value(js_threads)?);
     }
 
     Ok(Self {
       mach: Arc::new(Mach::new(MachOptions {
-        threads,
+        threads: Some(threads),
         rpc_hosts: Some(rpc_hosts),
       }))
     })
@@ -54,7 +64,8 @@ impl MachNapi {
     &self,
     env: Env,
     options: JsObject,
+    callback: JsFunction,
   ) -> napi::Result<JsUndefined> {
-    build(self.mach.clone(), env, options)
+    build(self.mach.clone(), env, options, callback)
   }
 }
