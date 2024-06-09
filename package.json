@@ -7,5 +7,16 @@
     "./packages/mach_npm",
     "./packages/mach_playground",
     "./packages/testing"
-  ]
+  ],
+  "nodemonConfig": {
+    "ignore": ["**/node_modules/**", "**/.git/**", "**/target/**"],
+    "ext": "rs,ts,js,json",
+    "delay": 250,
+    "signal" : "SIGTERM",
+    "exec": "clear && just build && just integration-tests"
+  },
+  "devDependencies": {
+    "nodemon": "*",
+    "prettier": "*"
+  }
 }

@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 
+use mach_bundler_core::rpc::nodejs::RpcHostNodejs;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::Mach;
 use napi::threadsafe_function::ThreadSafeCallContext;
@@ -38,6 +39,7 @@ pub struct BuildResult {
 }
 
 pub fn build(
+  rpc_host_nodejs: Arc<RpcHostNodejs>,
   mach: Arc<Mach>,
   env: Env,
   options: JsObject,
@@ -79,7 +81,7 @@ pub fn build(
   thread::spawn(move || {
     match mach.build(options) {
       Ok(_result) => {
-        thread_safe_callback.call(Ok(42), ThreadsafeFunctionCallMode::Blocking);
+        thread_safe_callback.call(Ok(42), ThreadsafeFunctionCallMode::NonBlocking);
       }
       Err(err) => {
         thread_safe_callback.call(

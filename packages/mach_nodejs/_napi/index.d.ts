@@ -11,6 +11,11 @@ export type RpcCallbackData = (
   RpcCallbackBase<1, null, null>
 )
 
+export type RpcWorkerCallbackData = (
+  // Ping
+  RpcCallbackBase<0, null, null>
+)
+
 export type BuildCallback = NapiCallback<[error: any, data: any]>
 
 export type MachNapiOptions = {
@@ -31,4 +36,8 @@ export type MachNapiBuildOptions = {
 export declare class MachNapi {
   constructor(options: MachNapiOptions)
   build(options: MachNapiBuildOptions, callback: BuildCallback): any
+}
+
+export declare class MachWorkerNapi {
+  constructor(options: any)
 }

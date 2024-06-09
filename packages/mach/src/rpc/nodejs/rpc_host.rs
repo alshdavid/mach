@@ -11,6 +11,7 @@ use napi::Env;
 use napi::JsFunction;
 use napi::JsUnknown;
 use napi::Status;
+use parking_lot::Mutex;
 use serde::de::DeserializeOwned;
 
 use crate::public::RpcHost;
@@ -18,13 +19,13 @@ use crate::public::RpcMessage;
 
 #[derive(Debug)]
 pub struct RpcHostNodejs {
-  node_workers: usize,
+  node_workers: Vec<Sender<RpcMessage>>,
   tx_rpc: Sender<RpcMessage>,
 }
 
 impl RpcHostNodejs {
   pub fn new(
-    node_workers: usize,
+    node_workers: Vec<Sender<RpcMessage>>,
     env: &Env,
     mut callback: JsFunction,
   ) -> napi::Result<Self> {
@@ -49,44 +50,43 @@ impl RpcHostNodejs {
         }
       })?;
 
-    // Forward RPC events to the threadsafe function from a new thread
+    threadsafe_function.unref(&env)?;
 
-    threadsafe_function.unref(&env);
+    // Forward RPC events to the threadsafe function from a new thread
     let (tx_rpc, rx_rpc) = channel();
 
-    thread::spawn({
-      let threadsafe_function = threadsafe_function.clone();
-
-      move || {
-        while let Ok(msg) = rx_rpc.recv() {
-          if !matches!(
-            threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::NonBlocking),
-            Status::Ok
-          ) {
-            return;
-          };
-        }
+    thread::spawn(move || {
+      while let Ok(msg) = rx_rpc.recv() {
+        if !matches!(
+          threadsafe_function.call(Ok(msg), ThreadsafeFunctionCallMode::Blocking),
+          Status::Ok
+        ) {
+          return;
+        };
       }
     });
 
     Ok(Self {
       tx_rpc,
       node_workers,
-    })
+    }) 
   }
 
   // Generic method to create a "resolve" javascript function to
   // return the value from the thread safe function
-  fn create_callback<Returns: DeserializeOwned + 'static>(
+  pub fn create_callback<Returns: DeserializeOwned + 'static>(
     env: &Env,
     reply: Sender<Returns>,
   ) -> napi::Result<JsUnknown> {
-    let callback = env
+      println!("0");
+        let callback = env
       .create_function_from_closure("callback", move |ctx| {
+        println!("2");
         let response = ctx
           .env
           .from_js_value::<Returns, JsUnknown>(ctx.get::<JsUnknown>(0)?)?;
 
+        println!("3");
         if reply.send(response).is_err() {
           return Err(napi::Error::from_reason("Unable to send rpc response"));
         }
@@ -95,12 +95,14 @@ impl RpcHostNodejs {
       })?
       .into_unknown();
 
+      println!("1");
+
     Ok(callback)
   }
 
   // Map the RPC messages to numerical values to make matching
   // easier from within JavaScript
-  fn get_message_id(message: &RpcMessage) -> u32 {
+  pub fn get_message_id(message: &RpcMessage) -> u32 {
     match message {
       RpcMessage::Ping { response: _ } => 0,
       RpcMessage::Init { response: _ } => 1,
@@ -112,9 +114,8 @@ impl RpcHostNodejs {
 impl RpcHost for RpcHostNodejs {
   fn init(&self) -> anyhow::Result<()> {
     let tx_rpc = self.tx_rpc.clone();
-    let node_workers = self.node_workers.clone();
 
-    for _ in 0..node_workers {
+    for _ in self.node_workers.iter() {
       let (tx, rx) = channel();
       tx_rpc.send(RpcMessage::Init { response: tx }).unwrap();
       rx.recv().unwrap();
@@ -130,6 +131,13 @@ impl RpcHost for RpcHostNodejs {
   fn ping(&self) -> anyhow::Result<()> {
     let (tx, rx) = channel();
     self.tx_rpc.send(RpcMessage::Ping { response: tx })?;
+
+    for sender in self.node_workers.iter() {
+      let (tx, rx) = channel();
+      sender.send(RpcMessage::Ping { response: tx })?;
+      rx.recv()?;
+    }
+
     Ok(rx.recv()?.map_err(|e| anyhow!(e))?)
   }
 }

@@ -82,22 +82,22 @@ _default:
 
 [unix]
 build:
-  # Install npm
-  test -d node_modules || npm install
+  @# Install npm
+  @test -d node_modules || npm install
 
-  # Clean dir
+  @# Clean dir
   @rm -rf "{{out_dir}}"
   @rm -rf "{{out_dir_link}}"
   @mkdir -p "{{out_dir}}"
   @rm -rf "./packages/mach_nodejs/_napi/index.node"
   
-  # Build crates
+  @# Build crates
   cargo build {{profile_cargo}} {{target_cargo}}
-  cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
+  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
   
-  # Copy binary
-  mkdir -p "{{out_dir}}/bin"
-  cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
+  @# Copy binary
+  @mkdir -p "{{out_dir}}/bin"
+  @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
 [windows]
 build:
@@ -147,13 +147,16 @@ integration-tests *ARGS:
 unit-tests:
   cargo test
 
+watch:
+  npx nodemon
+
 fmt:
   cargo +nightly fmt
-  ./.github/scripts/node_modules/.bin/prettier ./npm --write
-  ./.github/scripts/node_modules/.bin/prettier ./examples --write
-  ./.github/scripts/node_modules/.bin/prettier "./testing/tests" --write
-  ./.github/scripts/node_modules/.bin/prettier "./testing/setup.ts" --write
-  ./.github/scripts/node_modules/.bin/prettier "./testing/utils" --write
+  node_modules/.bin/prettier ./npm --write
+  node_modules/.bin/prettier ./examples --write
+  node_modules/.bin/prettier "./testing/tests" --write
+  node_modules/.bin/prettier "./testing/setup.ts" --write
+  node_modules/.bin/prettier "./testing/utils" --write
 
 [unix]
 build-publish:

@@ -1,1 +1,3 @@
-console.log('hi from worker' as string)
+import { MachWorker } from '../lib/mach_worker.js'
+
+new MachWorker()

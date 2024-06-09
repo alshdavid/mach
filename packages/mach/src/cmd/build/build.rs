@@ -68,6 +68,7 @@ pub fn build(
   let nodejs = mach_options.rpc_hosts.get("nodejs").unwrap().clone();
 
   nodejs.init()?;
+  nodejs.ping()?;
 
   return Ok(BuildResult::default());
   //   let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
