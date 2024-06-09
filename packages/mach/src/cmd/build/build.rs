@@ -41,8 +41,6 @@ pub struct BuildOptions {
   pub bundle_splitting: bool,
   /// How many threads to use for compilation
   pub threads: Option<usize>,
-  /// How many Node.js workers to spawn for plugins
-  pub node_workers: Option<usize>,
   /// Map of adapters used to communicate with plugin contexts
   pub adapter_map: Option<HashMap<Engine, Arc<dyn RpcHost>>>,
 }
@@ -57,7 +55,6 @@ impl Default for BuildOptions {
       bundle_splitting: false,
       project_root: None,
       threads: Some(num_cpus::get_physical()),
-      node_workers: Some(num_cpus::get_physical()),
       adapter_map: None,
     }
   }

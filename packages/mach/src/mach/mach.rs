@@ -16,12 +16,23 @@ use crate::cmd::VersionOptions;
 use crate::cmd::VersionResult;
 use crate::cmd::WatchOptions;
 use crate::cmd::WatchResult;
+use crate::public::RpcHosts;
 
-pub struct Mach {}
+#[derive(Default)]
+pub struct MachOptions {
+  pub rpc_hosts: Option<RpcHosts>,
+  pub threads: Option<usize>
+}
+
+pub struct Mach {
+  rpc_hosts: RpcHosts
+}
 
 impl Mach {
-  pub fn new() -> Self {
-    Self {}
+  pub fn new(mach_options: MachOptions) -> Self {
+    Self {
+      rpc_hosts: mach_options.rpc_hosts.unwrap_or_default(),
+    }
   }
 
   pub fn build(

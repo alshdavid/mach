@@ -6,12 +6,13 @@ use mach_bundler_core::cli::CommandType;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
+use mach_bundler_core::MachOptions;
 use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
 
 fn main() {
   let command = parse_options_from_cli();
-  let mach = Mach::new();
+  let mach = Mach::new(MachOptions::default());
 
   match command.command {
     CommandType::Build(command) => {
@@ -31,7 +32,6 @@ fn main() {
         optimize: !command.no_optimize,
         bundle_splitting: command.bundle_splitting,
         threads: command.threads,
-        node_workers: command.node_workers,
         project_root: command.project_root,
         // adapter_map: Some(adapter_map),
         adapter_map: None,

@@ -1,3 +1,4 @@
 pub mod cli;
 pub mod mach;
-pub mod shared;
+pub mod rpc;
+pub mod cmd;

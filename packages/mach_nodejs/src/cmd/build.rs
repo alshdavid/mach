@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::thread;
 
-use mach_bundler_core::BuildOptions as BuildOptionsCore;
-use mach_bundler_core::BuildResult as BuildResultCore;
-use napi::threadsafe_function::ThreadsafeFunctionCallMode;
+use mach_bundler_core::BuildOptions;
+use mach_bundler_core::Mach;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
@@ -12,11 +12,11 @@ use napi::JsUndefined;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::shared::mach_build_command;
+// use crate::shared::mach_build_command;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MachBuildOptions {
+pub struct BuildOptionsNapi {
   pub entries: Option<Vec<String>>,
   pub project_root: Option<PathBuf>,
   pub out_folder: Option<PathBuf>,
@@ -35,12 +35,12 @@ pub struct BuildResult {
 }
 
 pub fn build(
+  mach: Arc<Mach>,
   env: Env,
   options: JsObject,
-  callback: JsFunction,
 ) -> napi::Result<JsUndefined> {
-  let options_napi = env.from_js_value::<MachBuildOptions, JsObject>(options)?;
-  let mut options = BuildOptionsCore::default();
+  let options_napi = env.from_js_value::<BuildOptionsNapi, JsObject>(options)?;
+  let mut options = BuildOptions::default();
 
   if let Some(entries) = options_napi.entries {
     options.entries = Some(entries);
@@ -70,23 +70,8 @@ pub fn build(
     options.project_root = Some(project_root);
   }
 
-  let tsfn = env.create_threadsafe_function(
-    &callback,
-    0,
-    |ctx: napi::threadsafe_function::ThreadSafeCallContext<BuildResultCore>| {
-      let value = ctx.env.to_js_value(&ctx.value);
-      Ok(vec![value])
-    },
-  )?;
-
   thread::spawn(move || {
-    match mach_build_command(options) {
-      Ok(result) => tsfn.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking),
-      Err(error) => tsfn.call(
-        Err(napi::Error::from_reason(format!("{}", error))),
-        ThreadsafeFunctionCallMode::NonBlocking,
-      ),
-    };
+    mach.build(options);
   });
 
   env.get_undefined()

@@ -43,14 +43,9 @@ pub fn parse_config(command: &BuildOptions) -> Result<MachConfigSync, String> {
     project_root: project_root.clone(),
     machrc: parse_machrc(project_root.join(".machrc"))?,
     threads: get_threads(&command),
-    node_workers: get_node_workers(&command),
     optimize: command.optimize,
     env: get_env(),
   }));
-}
-
-fn get_node_workers(options: &BuildOptions) -> usize {
-  options.node_workers.unwrap_or(get_threads(options))
 }
 
 fn get_threads(options: &BuildOptions) -> usize {

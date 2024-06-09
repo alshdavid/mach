@@ -92,11 +92,11 @@ impl RpcHostNodejs {
 // Forward events to Nodejs
 impl RpcHost for RpcHostNodejs {
   fn init(&self) -> anyhow::Result<()> {
-      todo!()
+    Ok(())
   }
 
   fn is_running(&self) -> bool {
-      todo!()
+    true
   }
 
   fn ping(&self) -> anyhow::Result<()> {
