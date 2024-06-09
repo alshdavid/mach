@@ -9,6 +9,7 @@ use napi::threadsafe_function::ThreadsafeFunction;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
+use napi::JsNumber;
 use napi::JsUnknown;
 use napi::Status;
 use parking_lot::Mutex;
@@ -29,32 +30,42 @@ impl RpcHostNodejs {
     env: &Env,
     mut callback: JsFunction,
   ) -> napi::Result<Self> {
+    Ok(Self {
+      tx_rpc: Self::init_callback(&env, callback)?,
+      node_workers,
+    })
+  }
+
+  pub fn init_callback(
+    env: &Env,
+    callback: JsFunction,
+  ) -> napi::Result<Sender<RpcMessage>> {
     // Create a threadsafe function that casts the incoming message data to something
     // accessible in JavaScript. The function accepts a return value from a JS callback
     let mut threadsafe_function: ThreadsafeFunction<RpcMessage> =
       env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<RpcMessage>| {
-        let id = Self::get_message_id(&ctx.value);
-        match ctx.value {
-          RpcMessage::Ping { response } => {
-            let callback = Self::create_callback(&ctx.env, response)?;
-            let id = ctx.env.create_uint32(id)?.into_unknown();
-            let message = ctx.env.to_js_value(&())?;
-            Ok(vec![id, message, callback])
-          }
-          RpcMessage::Init { response } => {
-            let callback = Self::create_callback(&ctx.env, response)?;
-            let id = ctx.env.create_uint32(id)?.into_unknown();
-            let message = ctx.env.to_js_value(&())?;
-            Ok(vec![id, message, callback])
-          }
-        }
+        let id = ctx
+          .env
+          .to_js_value::<u32>(&Self::get_message_id(&ctx.value))?;
+
+        let (message, callback) = match ctx.value {
+          RpcMessage::Ping { response } => (
+            ctx.env.to_js_value(&())?,
+            Self::create_callback(&ctx.env, response)?,
+          ),
+          RpcMessage::Init { response } => (
+            ctx.env.to_js_value(&())?,
+            Self::create_callback(&ctx.env, response)?,
+          ),
+        };
+
+        Ok(vec![id, message, callback])
       })?;
 
     threadsafe_function.unref(&env)?;
 
     // Forward RPC events to the threadsafe function from a new thread
     let (tx_rpc, rx_rpc) = channel();
-
     thread::spawn(move || {
       while let Ok(msg) = rx_rpc.recv() {
         if !matches!(
@@ -66,10 +77,7 @@ impl RpcHostNodejs {
       }
     });
 
-    Ok(Self {
-      tx_rpc,
-      node_workers,
-    })
+    Ok(tx_rpc)
   }
 
   // Generic method to create a "resolve" javascript function to

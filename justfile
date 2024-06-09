@@ -99,6 +99,9 @@ build:
   @mkdir -p "{{out_dir}}/bin"
   @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
+build-tsc:
+  cd "./packages/mach_nodejs" && npx tsc
+
 [windows]
 build:
   # Install npm
@@ -160,7 +163,7 @@ build-publish:
   npm i
   just build-publish-common
   just build
-  cd "./packages/mach_nodejs" && npx tsc
+  just build-tsc
   cp "./README.md" "./packages/mach_npm"
   cp "./README.md" "./packages/mach_nodejs"
 
@@ -169,6 +172,7 @@ build-publish:
   npm i 
   just build-publish-common
   just build
+  just build-tsc
   cd ".\packages\mach_nodejs" && npx tsc
   Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
 

@@ -1,6 +1,7 @@
 import { Worker } from 'node:worker_threads'
 import path from 'node:path'
 import { ROOT, MachNapi, RpcCallbackData } from '../_napi/index.js'
+import { MachWorker } from './mach_worker.js'
 
 export type MachOptions = {
   threads?: number
@@ -37,6 +38,7 @@ export class Mach {
   }
 
   async #rpc([err, id, data, done]: RpcCallbackData) {
+    console.log(["M", err, id, data])
     if (err) {
       return done({ Err: err })
     }
@@ -45,7 +47,7 @@ export class Mach {
         done({ Ok: null })
         break
       case 1:
-        this.#workers.push(new Worker(path.join(ROOT, 'bin', 'index.js')))
+        this.#workers.push(await MachWorker.init())
         done({ Ok: null })
         break
       default:
