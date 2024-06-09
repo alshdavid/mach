@@ -15,7 +15,7 @@ try {
     throw error
   }
 
-  (await import('tsx/esm/api')).register()
+  ;(await import('tsx/esm/api')).register()
   _apply_exports(await import('./lib.ts'))
 }
 

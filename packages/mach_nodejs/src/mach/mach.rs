@@ -25,7 +25,7 @@ pub static WORKER_CHANNELS: Lazy<Mutex<Vec<Receiver<RpcMessage>>>> =
 #[napi]
 pub struct MachNapi {
   mach: Arc<Mach>,
-  nodejs_rpc_host: Arc<RpcHostNodejs>
+  nodejs_rpc_host: Arc<RpcHostNodejs>,
 }
 
 #[napi]
@@ -54,7 +54,7 @@ impl MachNapi {
     }
 
     if !options.has_named_property("rpc")? {
-      return Err(napi::Error::from_reason("Missing RPC callback"))
+      return Err(napi::Error::from_reason("Missing RPC callback"));
     }
 
     let callback = options.get_named_property::<JsFunction>("rpc")?;
@@ -83,12 +83,18 @@ impl MachNapi {
     options: JsObject,
     callback: JsFunction,
   ) -> napi::Result<JsUndefined> {
-    build(self.nodejs_rpc_host.clone(), self.mach.clone(), env, options, callback)
+    build(
+      self.nodejs_rpc_host.clone(),
+      self.mach.clone(),
+      env,
+      options,
+      callback,
+    )
   }
 }
 
 impl Drop for MachNapi {
-    fn drop(&mut self) {
-        println!("MachNapi.drop()")
-    }
+  fn drop(&mut self) {
+    println!("MachNapi.drop()")
+  }
 }

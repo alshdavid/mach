@@ -152,11 +152,8 @@ watch:
 
 fmt:
   cargo +nightly fmt
-  node_modules/.bin/prettier ./npm --write
+  node_modules/.bin/prettier ./packages --write
   node_modules/.bin/prettier ./examples --write
-  node_modules/.bin/prettier "./testing/tests" --write
-  node_modules/.bin/prettier "./testing/setup.ts" --write
-  node_modules/.bin/prettier "./testing/utils" --write
 
 [unix]
 build-publish:

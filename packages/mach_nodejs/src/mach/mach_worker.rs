@@ -34,7 +34,7 @@ impl MachWorkerNapi {
       return Err(napi::Error::from_reason("Unable to initialize worker"));
     }
     let callback = options.get_named_property::<JsFunction>("rpc")?;
-    
+
     let mut threadsafe_function: ThreadsafeFunction<RpcMessage> =
       env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<RpcMessage>| {
         println!("um {:?}", ctx.value);

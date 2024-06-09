@@ -29,8 +29,11 @@ export class Mach {
   }
 
   async build(options: MachBuildOptions) {
-    return new Promise((res, rej) => this.#internal
-      .build(options, (err, data) => err ? rej(err) : res(data)))
+    return new Promise((res, rej) =>
+      this.#internal.build(options, (err, data) =>
+        err ? rej(err) : res(data),
+      ),
+    )
   }
 
   async #rpc([err, id, data, done]: RpcCallbackData) {
@@ -47,8 +50,7 @@ export class Mach {
         break
       default:
         // @ts-expect-error
-        done({ Err: "No handler specified" })
+        done({ Err: 'No handler specified' })
     }
   }
 }
-

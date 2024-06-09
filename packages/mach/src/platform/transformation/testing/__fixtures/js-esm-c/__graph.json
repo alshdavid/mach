@@ -18,9 +18,7 @@
         "specifier_type": "ESM",
         "is_entry": false,
         "priority": "Sync",
-        "imported_symbols": [
-          "Unnamed"
-        ],
+        "imported_symbols": ["Unnamed"],
         "bundle_behavior": "Default"
       }
     }
@@ -37,9 +35,7 @@
         "specifier_type": "ESM",
         "is_entry": false,
         "priority": "Sync",
-        "imported_symbols": [
-          "Unnamed"
-        ],
+        "imported_symbols": ["Unnamed"],
         "bundle_behavior": "Default"
       }
     }
@@ -73,9 +69,7 @@
         "specifier_type": "ESM",
         "is_entry": false,
         "priority": "Sync",
-        "imported_symbols": [
-          "Unnamed"
-        ],
+        "imported_symbols": ["Unnamed"],
         "bundle_behavior": "Default"
       },
       "./a.js": {
@@ -84,9 +78,7 @@
         "specifier_type": "ESM",
         "is_entry": false,
         "priority": "Sync",
-        "imported_symbols": [
-          "Unnamed"
-        ],
+        "imported_symbols": ["Unnamed"],
         "bundle_behavior": "Default"
       }
     }

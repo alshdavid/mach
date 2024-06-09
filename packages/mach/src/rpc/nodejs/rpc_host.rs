@@ -69,7 +69,7 @@ impl RpcHostNodejs {
     Ok(Self {
       tx_rpc,
       node_workers,
-    }) 
+    })
   }
 
   // Generic method to create a "resolve" javascript function to
@@ -78,8 +78,8 @@ impl RpcHostNodejs {
     env: &Env,
     reply: Sender<Returns>,
   ) -> napi::Result<JsUnknown> {
-      println!("0");
-        let callback = env
+    println!("0");
+    let callback = env
       .create_function_from_closure("callback", move |ctx| {
         println!("2");
         let response = ctx
@@ -95,7 +95,7 @@ impl RpcHostNodejs {
       })?
       .into_unknown();
 
-      println!("1");
+    println!("1");
 
     Ok(callback)
   }

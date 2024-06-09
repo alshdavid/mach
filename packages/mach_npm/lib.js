@@ -25,7 +25,7 @@ try {
   const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
   const package_json_path = path.join(__dirname, 'package.json')
   const package_json = JSON.parse(await fs.readFile(package_json_path, 'utf8'))
-  
+
   if (package_json.version !== '0.0.0-local') {
     throw error
   }
@@ -41,5 +41,5 @@ class MachInitError extends Error {
 }
 
 export function _apply_exports(mach) {
-  Mach = (mach.Mach || globalThis.Mach?.Mach || MachInitError)
+  Mach = mach.Mach || globalThis.Mach?.Mach || MachInitError
 }

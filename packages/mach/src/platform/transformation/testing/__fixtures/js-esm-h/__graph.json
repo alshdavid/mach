@@ -44,9 +44,7 @@
         "specifier_type": "ESM",
         "is_entry": false,
         "priority": "Sync",
-        "imported_symbols": [
-          "Default"
-        ],
+        "imported_symbols": ["Default"],
         "bundle_behavior": "Default"
       }
     }

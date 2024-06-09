@@ -19,8 +19,7 @@ export class MachWorker {
         done({ Ok: null })
         break
       default:
-        done({ Err: "No handler specified" })
+        done({ Err: 'No handler specified' })
     }
   }
 }
-
