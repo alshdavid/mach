@@ -1,4 +1,4 @@
-import { MachNapi } from '../_napi/index.js'
+import { MachNapi, RpcCallback } from '../_napi/index.js'
 
 export type MachOptions = {
   threads?: number
@@ -19,7 +19,7 @@ export class Mach {
 
   constructor(options: MachOptions = {}) {
     this.#internal = new MachNapi({
-      rpc: (...args: any[]) => this.#rpc(...args),
+      rpc: this.#rpc,
       ...options,
     })
   }
@@ -29,7 +29,17 @@ export class Mach {
       .build(options, (err, data) => err ? rej(err) : res(data)))
   }
 
-  #rpc(...args: any[]) {
-    console.log(args)
+  #rpc: RpcCallback = async (err, id, data, done) => {
+    console.log([err, id, data, done])
+    if (err) {
+      return done({ Err: err })
+    }
+    switch (id) {
+      case 0:
+        done({ Ok: null })
+      default:
+        return done({ Err: "No handler specified" })
+    }
   }
 }
+

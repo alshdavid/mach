@@ -1,8 +1,13 @@
 export declare const ROOT: string;
 
-export type NapiCallback<T extends Array<any>> = (error: any | undefined, ...args: T) => any | Promise<any>
-export type RpcCallback = NapiCallback<[any]>
-export type BuildCallback = NapiCallback<[any]>
+export type NapiCallback<T extends Array<any>> = (...args: T) => any | Promise<any>
+
+export type RpcCallbackDoneFunc<T> = (value: { Ok: T } | { Err: any }) => any | Promise<any>
+export type RpcCallback = (
+  NapiCallback<[error: any | null, id: 0, data: null, done: RpcCallbackDoneFunc<null>]>
+)
+
+export type BuildCallback = NapiCallback<[error: any, data: any]>
 
 export type MachNapiOptions = {
   nodeWorkers?: number
