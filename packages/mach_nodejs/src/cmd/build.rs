@@ -39,7 +39,7 @@ pub struct BuildResult {
 }
 
 pub fn build(
-  rpc_host_nodejs: Arc<RpcHostNodejs>,
+  _rpc_host_nodejs: Arc<RpcHostNodejs>,
   mach: Arc<Mach>,
   env: Env,
   options: JsObject,

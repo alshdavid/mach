@@ -28,8 +28,6 @@ mod mutable_asset;
 mod package_json;
 mod packages;
 mod resolver;
-mod rpc_host;
-mod rpc_message;
 mod specifier_type;
 mod transformer;
 
@@ -61,7 +59,5 @@ pub use self::machrc::*;
 pub use self::mutable_asset::*;
 pub use self::packages::*;
 pub use self::resolver::*;
-pub use self::rpc_host::*;
-pub use self::rpc_message::*;
 pub use self::specifier_type::*;
 pub use self::transformer::*;

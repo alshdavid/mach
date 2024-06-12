@@ -12,7 +12,7 @@ use crate::plugins::transformer_json::TransformerJson;
 use crate::plugins::transformer_rpc::TransformerAdapter;
 use crate::public::MachConfig;
 use crate::public::Machrc;
-use crate::public::RpcHosts;
+use crate::rpc::RpcHosts;
 use crate::public::Transformer;
 
 pub fn load_plugins(
@@ -43,7 +43,7 @@ pub fn load_plugins(
         )));
       };
 
-      adapter.init()?;
+      adapter.start()?;
 
       plugins.resolvers.push(Box::new(ResolverAdapter::new(
         &*config,
@@ -98,7 +98,7 @@ pub fn load_plugins(
           )));
         };
 
-        adapter.init()?;
+        adapter.start()?;
 
         transformers.push(Box::new(TransformerAdapter::new(
           &*config,

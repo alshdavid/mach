@@ -1,30 +1,29 @@
 import { Worker, parentPort } from 'node:worker_threads'
 import path from 'node:path'
-import { RpcWorkerCallbackData, MachWorkerNapi } from '../_napi/index.js'
+import { RpcCallbackMain, RpcCallbackWorker, workerCallback } from '../_napi/index.js'
 import { ROOT } from '../_napi/index.js'
 
 export class MachWorker {
-  #internal: MachWorkerNapi
+  #rpcCallback: any
 
   constructor() {
+    this.#rpcCallback = (...args: any) => {this.#rpc(args)}
+    workerCallback(this.#rpcCallback)
     parentPort?.postMessage(null);
-    this.#internal = new MachWorkerNapi({
-      rpc: (...args: any) => this.#rpc(args),
-    })
   }
 
-  async #rpc([err, id, data, done]: RpcWorkerCallbackData) {
-    console.log(["W", err, id, data])
+  async #rpc([err, id, data, done]: RpcCallbackWorker) {
+    console.log(["W", err, id, data, done])
     if (err) {
       return done({ Err: err })
     }
     switch (id) {
       case 0:
-        done({ Ok: null })
+        done({ Ok: undefined })
         break
       default:
         done({ Err: 'No handler specified' })
-    }
+      }
   }
 
   // Start a Nodejs worker thread

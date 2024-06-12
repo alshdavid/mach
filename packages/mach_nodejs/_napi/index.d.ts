@@ -1,29 +1,24 @@
 export declare const ROOT: string
 
-export type NapiCallback<T extends Array<any>> = (
+export type Callback<T extends Array<any>, R = (any | Promise<any>)> = (
   ...args: T
-) => any | Promise<any>
+) => R
 
-export type RpcCallbackDoneFunc<T> = (
-  value: { Ok: T } | { Err: any },
-) => any | Promise<any>
 export type RpcCallbackBase<I extends number, D, R> = [
   err: any | null,
   id: I,
   data: D,
-  RpcCallbackDoneFunc<R>,
+  done: (value: { Ok: R } | { Err: any }) => any | Promise<any>,
 ]
-export type RpcCallbackData =
+export type RpcCallbackMain =
   // Ping
-  | RpcCallbackBase<0, null, null>
+  | RpcCallbackBase<0, null, undefined>
   // Start worker
-  | RpcCallbackBase<1, null, null>
+  | RpcCallbackBase<1, null, undefined>
 
-export type RpcWorkerCallbackData =
+export type RpcCallbackWorker =
   // Ping
-  RpcCallbackBase<0, null, null>
-
-export type BuildCallback = NapiCallback<[error: any, data: any]>
+  | RpcCallbackBase<0, null, undefined>
 
 export type MachNapiOptions = {
   nodeWorkers?: number
@@ -40,11 +35,8 @@ export type MachNapiBuildOptions = {
   bundleSplitting?: boolean
 }
 
-export declare class MachNapi {
-  constructor(options: MachNapiOptions)
-  build(options: MachNapiBuildOptions, callback: BuildCallback): any
-}
+export type MachNapi = {}
 
-export declare class MachWorkerNapi {
-  constructor(options: any)
-}
+export function machNapiNew(options: MachNapiOptions): MachNapi
+export function machNapiBuild(mach: MachNapi, options: MachNapiBuildOptions, callback: Callback<[error: any, data: any]>): any
+export function workerCallback(callback: any): any

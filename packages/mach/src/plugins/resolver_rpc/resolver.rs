@@ -12,19 +12,19 @@ use crate::public::Dependency;
 use crate::public::MachConfig;
 use crate::public::ResolveResult;
 use crate::public::Resolver;
-use crate::public::RpcHost;
+use crate::rpc::RpcHostRef;
 
 #[derive(Debug)]
 pub struct ResolverAdapter {
   pub resolver_specifier: String,
-  pub adapter: Arc<dyn RpcHost>,
+  pub adapter: RpcHostRef,
 }
 
 impl ResolverAdapter {
   pub fn new(
     config: &MachConfig,
     initial_specifier: &str,
-    adapter: Arc<dyn RpcHost>,
+    adapter: RpcHostRef,
   ) -> anyhow::Result<Self> {
     let specifier =
       resolve(&config.project_root, initial_specifier).map_err(|e| anyhow::anyhow!(e))?;

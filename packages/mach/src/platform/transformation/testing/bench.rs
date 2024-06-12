@@ -9,7 +9,7 @@ use crate::platform::config::load_plugins;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::Machrc;
-use crate::public::RpcHosts;
+use crate::rpc::RpcHosts;
 
 #[bench]
 fn bench_build_asset_graph(b: Bencher) {

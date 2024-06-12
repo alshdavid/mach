@@ -16,7 +16,7 @@ use crate::cmd::VersionOptions;
 use crate::cmd::VersionResult;
 use crate::cmd::WatchOptions;
 use crate::cmd::WatchResult;
-use crate::public::RpcHosts;
+use crate::rpc::RpcHosts;
 
 #[derive(Clone, Default)]
 pub struct MachOptions {

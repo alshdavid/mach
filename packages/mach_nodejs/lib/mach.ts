@@ -1,6 +1,6 @@
 import { Worker } from 'node:worker_threads'
 import path from 'node:path'
-import { ROOT, MachNapi, RpcCallbackData } from '../_napi/index.js'
+import { ROOT, machNapiNew, machNapiBuild, RpcCallbackMain, MachNapi } from '../_napi/index.js'
 import { MachWorker } from './mach_worker.js'
 
 export type MachOptions = {
@@ -20,39 +20,41 @@ export type MachBuildOptions = {
 export class Mach {
   #internal: MachNapi
   #workers: Worker[]
+  #rpcCallback: any
 
   constructor(options: MachOptions = {}) {
     this.#workers = []
-    this.#internal = new MachNapi({
-      rpc: (...args: any) => this.#rpc(args),
+    this.#rpcCallback = (...args: any) => {this.#rpc(args)}
+    this.#internal = machNapiNew({
+      rpc: this.#rpcCallback,
       ...options,
     })
   }
 
   async build(options: MachBuildOptions) {
     return new Promise((res, rej) =>
-      this.#internal.build(options, (err, data) =>
+      machNapiBuild(this.#internal, options, (err, data) =>
         err ? rej(err) : res(data),
       ),
     )
   }
 
-  async #rpc([err, id, data, done]: RpcCallbackData) {
-    console.log(["M", err, id, data])
+  async #rpc([err, id, data, done]: RpcCallbackMain) {
+    console.log(["M", err, id, data, done])
     if (err) {
       return done({ Err: err })
     }
     switch (id) {
       case 0:
-        done({ Ok: null })
+        done({ Ok: undefined })
         break
       case 1:
         this.#workers.push(await MachWorker.init())
-        done({ Ok: null })
+        done({ Ok: undefined })
         break
       default:
         // @ts-expect-error
         done({ Err: 'No handler specified' })
-    }
+      }
   }
 }

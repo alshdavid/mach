@@ -18,7 +18,7 @@ use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::MachConfigSync;
 use crate::public::Machrc;
-use crate::public::RpcHosts;
+use crate::rpc::RpcHosts;
 
 fn setup_root<T: AsRef<str>>(
   project_root: &Path,

@@ -20,10 +20,10 @@ use crate::platform::transformation::build_asset_graph;
 // use crate::public::BundleMapSync;
 use crate::public::Compilation;
 // use crate::public::DependencyMapSync;
-use crate::public::Engine;
+use crate::rpc::Engine;
 // use crate::platform::emit::emit;
 // use crate::platform::packaging::package;
-use crate::public::RpcHost;
+use crate::rpc::RpcHost;
 // use crate::public::OutputsSync;
 
 #[derive(Debug)]
@@ -67,8 +67,10 @@ pub fn build(
 ) -> anyhow::Result<BuildResult> {
   let nodejs = mach_options.rpc_hosts.get("nodejs").unwrap().clone();
 
-  nodejs.init()?;
+  nodejs.start()?;
   nodejs.ping()?;
+
+  // nodejs.shutdown()?;
 
   return Ok(BuildResult::default());
   //   let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;

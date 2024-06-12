@@ -12,7 +12,7 @@ use crate::public::AdapterOutgoingResponse;
 use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
-use crate::public::RpcHost;
+use crate::rpc::RpcHost;
 use crate::public::Transformer;
 
 pub struct TransformerAdapter {
