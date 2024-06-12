@@ -71,3 +71,10 @@ pub fn mach_napi_build(
     callback,
   )
 }
+
+#[napi]
+pub fn default_thread_count(env: Env) -> napi::Result<JsNumber> {
+  let cpus = num_cpus::get();
+  let cpus = env.create_int32(cpus as i32)?;
+  Ok(cpus)
+}

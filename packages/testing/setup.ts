@@ -8,4 +8,6 @@ const result = await mach.build({
   entries: ['./index.js'],
 })
 
+
+await new Promise(res => setTimeout(res, 2000))
 // console.log({ result })

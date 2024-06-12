@@ -67,8 +67,8 @@ pub fn build(
 ) -> anyhow::Result<BuildResult> {
   let nodejs = mach_options.rpc_hosts.get("nodejs").unwrap().clone();
 
-  nodejs.start()?;
-  nodejs.ping()?;
+  let workers = nodejs.start()?;
+  workers.ping()?;
 
   // nodejs.shutdown()?;
 

@@ -13,8 +13,6 @@ export type RpcCallbackBase<I extends number, D, R> = [
 export type RpcCallbackMain =
   // Ping
   | RpcCallbackBase<0, null, undefined>
-  // Start worker
-  | RpcCallbackBase<1, null, undefined>
 
 export type RpcCallbackWorker =
   // Ping
@@ -40,3 +38,4 @@ export type MachNapi = {}
 export function machNapiNew(options: MachNapiOptions): MachNapi
 export function machNapiBuild(mach: MachNapi, options: MachNapiBuildOptions, callback: Callback<[error: any, data: any]>): any
 export function workerCallback(callback: any): any
+export function defaultThreadCount(): number
