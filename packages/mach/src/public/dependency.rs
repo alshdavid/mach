@@ -18,8 +18,6 @@ pub struct Dependency {
   /// Identifier of the import
   pub specifier: String,
   pub specifier_type: SpecifierType,
-  /// Whether the dependency is an entry
-  pub is_entry: bool,
   /// When the dependency should be loaded
   pub priority: DependencyPriority,
   /// Path to the file that created this dependency
@@ -29,7 +27,7 @@ pub struct Dependency {
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this target
-  pub linking_symbols: Vec<ModuleSymbol>,
+  pub linking_symbol: ModuleSymbol,
   /// Where to place the dependency within the bundle
   pub bundle_behavior: BundleBehavior,
 }
@@ -46,9 +44,8 @@ impl std::fmt::Debug for Dependency {
       .field("resolve_from", &self.resolve_from)
       .field("specifier", &self.specifier)
       .field("specifier_type", &self.specifier_type)
-      .field("is_entry", &self.is_entry)
       .field("priority", &self.priority)
-      .field("linking_symbols", &self.linking_symbols)
+      .field("linking_symbol", &self.linking_symbol)
       .field("bundle_behavior", &self.bundle_behavior)
       .finish()
   }

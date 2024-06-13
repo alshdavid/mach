@@ -8,8 +8,6 @@ use swc_core::ecma::transforms::react::{self as react_transforms};
 use swc_core::ecma::transforms::typescript::{self as typescript_transforms};
 use swc_core::ecma::visit::FoldWith;
 
-use super::read_imports_exports;
-use super::NodeEnvReplacer;
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
 use crate::public::BundleBehavior;
@@ -17,6 +15,10 @@ use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
+
+use super::create_dependencies::create_dependencies;
+use super::extract_imports_exports::extract_imports_exports;
+use super::replace_node_env::replace_node_env;
 
 #[derive(Debug)]
 pub struct TransformerJavaScript {}
@@ -44,7 +46,7 @@ impl Transformer for TransformerJavaScript {
       let unresolved_mark = Mark::fresh(Mark::root());
 
       program = program.fold_with(&mut resolver(unresolved_mark, top_level_mark, false));
-      program = program.fold_with(&mut NodeEnvReplacer { env: &config.env });
+      program = replace_node_env(program, &config.env);
 
       // Strip Types
       if *asset.kind == "tsx" {
@@ -88,21 +90,17 @@ impl Transformer for TransformerJavaScript {
 
       *asset.kind = "js".to_string();
 
-      let (dependencies, exported_symbols) = read_imports_exports(&program, &asset.file_path);
+      let linking_symbols = extract_imports_exports(&program);
+      let dependencies = create_dependencies(&linking_symbols);
 
       for dependency in dependencies {
         asset.add_dependency(DependencyOptions {
-          specifier: dependency.specifier,
-          specifier_type: dependency.specifier_type,
-          priority: dependency.priority,
           resolve_from: asset.file_path.to_path_buf(),
-          // imported_symbols: dependency.imported_symbols,
-          linking_symbols: Default::default(),//dependency.linking_symbols,
-          bundle_behavior: BundleBehavior::Default,
+          ..dependency
         });
       }
 
-      // *asset.export_symbols = exported_symbols;
+      // *asset.export_symbols = linking_symbols;
 
       asset.set_code(&render_program(&program, source_map_og.clone()));
 

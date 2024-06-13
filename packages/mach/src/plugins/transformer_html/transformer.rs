@@ -36,7 +36,7 @@ impl Transformer for TransformerHtml {
         // imported_symbols: vec![ImportSymbol::Namespace {
         //   sym_as: "".to_string(),
         // }],
-        linking_symbols: Default::default(),
+        linking_symbol: Default::default(),
         bundle_behavior: BundleBehavior::Default,
       });
     }

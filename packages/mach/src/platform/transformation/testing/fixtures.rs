@@ -50,9 +50,8 @@ pub struct DependencySnapshot {
   pub resolves_to: PathBuf,
   pub specifier: String,
   pub specifier_type: SpecifierType,
-  pub is_entry: bool,
   pub priority: DependencyPriority,
-  pub linking_symbols: Vec<ModuleSymbol>,
+  pub linking_symbol: ModuleSymbol,
   pub bundle_behavior: BundleBehavior,
 }
 

@@ -25,13 +25,12 @@ pub fn build_asset_graph(
     queue.push(Dependency {
       id: DependencyId::new(),
       specifier: entry.clone(),
-      is_entry: true,
       source_asset_path: config.project_root.clone(),
       resolve_from: config.project_root.clone(),
       source_asset_id: ROOT_ASSET.id.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
-      linking_symbols: Default::default(),
+      linking_symbol: Default::default(),
       bundle_behavior: Default::default(),
     });
   }
@@ -68,12 +67,11 @@ pub fn build_asset_graph(
         id: DependencyId::new(),
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,
-        is_entry: false,
         source_asset_path: resolve_result.file_path.clone(),
         source_asset_id: new_asset.id.clone(),
         resolve_from: resolve_result.file_path.clone(),
         priority: dependency_options.priority,
-        linking_symbols: dependency_options.linking_symbols,
+        linking_symbol: dependency_options.linking_symbol,
         bundle_behavior: dependency_options.bundle_behavior,
       };
 

@@ -1,3 +1,5 @@
+use std::default;
+
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -110,4 +112,10 @@ pub enum ModuleSymbol {
   },
   // module.exports = ''
   ExportCommonjs,
+}
+
+impl Default for ModuleSymbol {
+    fn default() -> Self {
+      Self::ExportDefault
+    }
 }

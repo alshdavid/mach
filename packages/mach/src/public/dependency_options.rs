@@ -16,6 +16,6 @@ pub struct DependencyOptions {
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
-  pub linking_symbols: Vec<ModuleSymbol>,
+  pub linking_symbol: ModuleSymbol,
   pub bundle_behavior: BundleBehavior,
 }
