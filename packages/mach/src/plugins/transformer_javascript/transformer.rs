@@ -99,7 +99,7 @@ impl Transformer for TransformerJavaScript {
         });
       }
 
-      // *asset.export_symbols = linking_symbols;
+      *asset.linking_symbols = linking_symbols;
 
       asset.set_code(&render_program(&program, source_map_og.clone()));
 

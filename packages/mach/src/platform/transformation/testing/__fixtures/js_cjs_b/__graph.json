@@ -1,24 +1,4 @@
 {
-  "index.js": {
-    "file_path": "index.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {
-      "./a": {
-        "resolves_to": "a.js",
-        "specifier": "./a",
-        "specifier_type": "ESM",
-        "priority": "Sync",
-        "linking_symbol": {
-          "ImportDirect": {
-            "specifier": "./a"
-          }
-        },
-        "bundle_behavior": "Default"
-      }
-    }
-  },
   "": {
     "file_path": "",
     "kind": "",
@@ -39,18 +19,43 @@
       }
     }
   },
-  "b.js": {
-    "file_path": "b.js",
+  "index.js": {
+    "file_path": "index.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {}
+    "linking_symbols": [
+      {
+        "ImportDirect": {
+          "specifier": "./a"
+        }
+      }
+    ],
+    "imports": {
+      "./a": {
+        "resolves_to": "a.js",
+        "specifier": "./a",
+        "specifier_type": "ESM",
+        "priority": "Sync",
+        "linking_symbol": {
+          "ImportDirect": {
+            "specifier": "./a"
+          }
+        },
+        "bundle_behavior": "Default"
+      }
+    }
   },
   "a.js": {
     "file_path": "a.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ImportCommonjs": {
+          "specifier": "./b"
+        }
+      }
+    ],
     "imports": {
       "./b": {
         "resolves_to": "b.js",
@@ -65,5 +70,12 @@
         "bundle_behavior": "Default"
       }
     }
+  },
+  "b.js": {
+    "file_path": "b.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [],
+    "imports": {}
   }
 }

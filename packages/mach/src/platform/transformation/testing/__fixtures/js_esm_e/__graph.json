@@ -3,8 +3,42 @@
     "file_path": "a.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ExportNamed": {
+          "sym": "foo"
+        }
+      }
+    ],
     "imports": {}
+  },
+  "index.js": {
+    "file_path": "index.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [
+      {
+        "ImportNamed": {
+          "sym": "foo",
+          "specifier": "./a.js"
+        }
+      }
+    ],
+    "imports": {
+      "./a.js": {
+        "resolves_to": "a.js",
+        "specifier": "./a.js",
+        "specifier_type": "ESM",
+        "priority": "Sync",
+        "linking_symbol": {
+          "ImportNamed": {
+            "sym": "foo",
+            "specifier": "./a.js"
+          }
+        },
+        "bundle_behavior": "Default"
+      }
+    }
   },
   "": {
     "file_path": "",
@@ -20,27 +54,6 @@
         "linking_symbol": {
           "ImportDirect": {
             "specifier": "./index.js"
-          }
-        },
-        "bundle_behavior": "Default"
-      }
-    }
-  },
-  "index.js": {
-    "file_path": "index.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {
-      "./a.js": {
-        "resolves_to": "a.js",
-        "specifier": "./a.js",
-        "specifier_type": "ESM",
-        "priority": "Sync",
-        "linking_symbol": {
-          "ImportNamed": {
-            "sym": "foo",
-            "specifier": "./a.js"
           }
         },
         "bundle_behavior": "Default"

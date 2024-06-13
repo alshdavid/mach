@@ -19,11 +19,24 @@
       }
     }
   },
+  "c.js": {
+    "file_path": "c.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [],
+    "imports": {}
+  },
   "a.js": {
     "file_path": "a.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ImportDirect": {
+          "specifier": "./b.js"
+        }
+      }
+    ],
     "imports": {
       "./b.js": {
         "resolves_to": "b.js",
@@ -39,38 +52,17 @@
       }
     }
   },
-  "c.js": {
-    "file_path": "c.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {}
-  },
-  "index.js": {
-    "file_path": "index.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {
-      "./a.js": {
-        "resolves_to": "a.js",
-        "specifier": "./a.js",
-        "specifier_type": "ESM",
-        "priority": "Sync",
-        "linking_symbol": {
-          "ImportDirect": {
-            "specifier": "./a.js"
-          }
-        },
-        "bundle_behavior": "Default"
-      }
-    }
-  },
   "b.js": {
     "file_path": "b.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ImportDirect": {
+          "specifier": "./c.js"
+        }
+      }
+    ],
     "imports": {
       "./c.js": {
         "resolves_to": "c.js",
@@ -80,6 +72,32 @@
         "linking_symbol": {
           "ImportDirect": {
             "specifier": "./c.js"
+          }
+        },
+        "bundle_behavior": "Default"
+      }
+    }
+  },
+  "index.js": {
+    "file_path": "index.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [
+      {
+        "ImportDirect": {
+          "specifier": "./a.js"
+        }
+      }
+    ],
+    "imports": {
+      "./a.js": {
+        "resolves_to": "a.js",
+        "specifier": "./a.js",
+        "specifier_type": "ESM",
+        "priority": "Sync",
+        "linking_symbol": {
+          "ImportDirect": {
+            "specifier": "./a.js"
           }
         },
         "bundle_behavior": "Default"

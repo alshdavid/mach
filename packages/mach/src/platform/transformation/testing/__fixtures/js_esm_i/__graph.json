@@ -1,31 +1,22 @@
 {
-  "a.js": {
-    "file_path": "a.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {
-      "./b.js": {
-        "resolves_to": "b.js",
-        "specifier": "./b.js",
-        "specifier_type": "ESM",
-        "priority": "Sync",
-        "linking_symbol": {
-          "ReexportRenamed": {
-            "sym": "foo",
-            "sym_as": "foo_a",
-            "specifier": "./b.js"
-          }
-        },
-        "bundle_behavior": "Default"
-      }
-    }
-  },
   "index.js": {
     "file_path": "index.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ImportNamed": {
+          "sym": "foo_a",
+          "specifier": "./a.js"
+        }
+      },
+      {
+        "ImportNamed": {
+          "sym": "bar_a",
+          "specifier": "./a.js"
+        }
+      }
+    ],
     "imports": {
       "./a.js": {
         "resolves_to": "a.js",
@@ -41,13 +32,6 @@
         "bundle_behavior": "Default"
       }
     }
-  },
-  "b.js": {
-    "file_path": "b.js",
-    "kind": "js",
-    "bundle_behavior": "Default",
-    "linking_symbols": [],
-    "imports": {}
   },
   "": {
     "file_path": "",
@@ -68,5 +52,61 @@
         "bundle_behavior": "Default"
       }
     }
+  },
+  "a.js": {
+    "file_path": "a.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [
+      {
+        "ReexportRenamed": {
+          "sym": "foo",
+          "sym_as": "foo_a",
+          "specifier": "./b.js"
+        }
+      },
+      {
+        "ReexportRenamed": {
+          "sym": "bar",
+          "sym_as": "bar_a",
+          "specifier": "./b.js"
+        }
+      }
+    ],
+    "imports": {
+      "./b.js": {
+        "resolves_to": "b.js",
+        "specifier": "./b.js",
+        "specifier_type": "ESM",
+        "priority": "Sync",
+        "linking_symbol": {
+          "ReexportRenamed": {
+            "sym": "foo",
+            "sym_as": "foo_a",
+            "specifier": "./b.js"
+          }
+        },
+        "bundle_behavior": "Default"
+      }
+    }
+  },
+  "b.js": {
+    "file_path": "b.js",
+    "kind": "js",
+    "bundle_behavior": "Default",
+    "linking_symbols": [
+      {
+        "ExportNamed": {
+          "sym": "foo"
+        }
+      },
+      {
+        "ExportNamed": {
+          "sym": "bar"
+        }
+      },
+      "ExportDefault"
+    ],
+    "imports": {}
   }
 }

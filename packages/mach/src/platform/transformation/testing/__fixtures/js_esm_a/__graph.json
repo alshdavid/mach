@@ -3,7 +3,13 @@
     "file_path": "index.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [],
+    "linking_symbols": [
+      {
+        "ImportDirect": {
+          "specifier": "./a.js"
+        }
+      }
+    ],
     "imports": {
       "./a.js": {
         "resolves_to": "a.js",
