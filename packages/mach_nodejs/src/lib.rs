@@ -1,3 +1,3 @@
-pub mod cli;
-pub mod cmd;
+pub mod bin;
 pub mod mach;
+pub mod mach_worker;

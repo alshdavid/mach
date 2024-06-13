@@ -1,23 +1,83 @@
+//
+// This contains the bindings for the public API for Mach
+//
+use std::sync::Arc;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
 use std::thread;
 
 use mach_bundler_core::rpc::nodejs::RpcHostNodejs;
+use mach_bundler_core::rpc::RpcHost;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::BuildResult;
 use mach_bundler_core::Mach;
-use napi::threadsafe_function::ThreadSafeCallContext;
-use napi::threadsafe_function::ThreadsafeFunction;
-use napi::threadsafe_function::ThreadsafeFunctionCallMode;
+use mach_bundler_core::MachOptions;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
+use napi_derive::napi;
 use serde::Deserialize;
 use serde::Serialize;
+use napi::threadsafe_function::ThreadSafeCallContext;
+use napi::threadsafe_function::ThreadsafeFunction;
+use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 
-// use crate::shared::mach_build_command;
+#[napi]
+pub struct MachNapi {
+  pub node_worker_count: u32,
+  mach: Arc<Mach>,
+}
 
+//
+// NEW
+//
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NewNapiOptions {
+  pub threads: Option<usize>,
+  pub node_workers: Option<usize>,
+}
+
+#[napi]
+pub fn mach_napi_new(
+  env: Env,
+  options: JsObject,
+  callback: JsFunction,
+) -> napi::Result<MachNapi> {
+  let js_options = env.from_js_value::<NewNapiOptions, JsObject>(options)?;
+  let mut mach_options = MachOptions::default();
+
+  if let Some(threads) = js_options.threads {
+    mach_options.threads = threads
+  }
+
+  let node_workers: usize;
+  if let Some(nw) = js_options.node_workers {
+    node_workers = nw
+  } else {
+    node_workers = mach_options.threads;
+  }
+
+  let rpc_host_nodejs = Arc::new(RpcHostNodejs::new(
+    &env,
+    callback,
+    node_workers,
+  )?);
+
+  mach_options.rpc_hosts.insert(
+    rpc_host_nodejs.engine(),
+    rpc_host_nodejs.clone(),
+  );
+
+  Ok(MachNapi {
+    node_worker_count: node_workers as u32,
+    mach: Arc::new(Mach::new(mach_options)),
+  })
+}
+
+//
+// BUILD
+//
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BuildOptionsNapi {
@@ -38,9 +98,9 @@ pub struct BuildResultNapi {
   pub entries: HashMap<String, String>,
 }
 
-pub fn build(
-  _rpc_host_nodejs: Arc<RpcHostNodejs>,
-  mach: Arc<Mach>,
+#[napi]
+pub fn mach_napi_build(
+  this: &MachNapi,
   env: Env,
   options: JsObject,
   callback: JsFunction,
@@ -74,11 +134,18 @@ pub fn build(
 
   let (tx, rx) = tokio::sync::oneshot::channel::<anyhow::Result<BuildResult>>();
 
-  thread::spawn(move || tx.send(mach.build(options)));
+  thread::spawn({
+    let mach = this.mach.clone();
+    move || tx.send(mach.build(options))
+  });
 
   let thread_safe_callback: ThreadsafeFunction<BuildResult> =
     env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<BuildResult>| {
-      let message = ctx.env.to_js_value(&ctx.value)?;
+      let result = BuildResultNapi {
+        bundle_manifest: ctx.value.bundle_manifest,
+        entries: ctx.value.entries,
+      };
+      let message = ctx.env.to_js_value(&result)?;
       Ok(vec![message])
     })?;
 

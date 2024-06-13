@@ -3,7 +3,7 @@ use std::time::SystemTime;
 
 use mach_bundler_core::cli::parse_options;
 use mach_bundler_core::cli::CommandType;
-use mach_bundler_core::BuildOptions;
+// use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;
 use mach_bundler_core::MachOptions;
@@ -11,7 +11,7 @@ use mach_bundler_core::VersionOptions;
 use mach_bundler_core::WatchOptions;
 use napi_derive::napi;
 
-use crate::cmd;
+// use crate::cmd;
 
 // use crate::shared::mach_build_command;
 
@@ -23,7 +23,7 @@ pub fn exec(args: Vec<String>) {
     let mach = Mach::new(MachOptions::default());
 
     match command.command {
-      CommandType::Build(command) => {
+      CommandType::Build(_command) => {
         // if let Err(msg) = cmd::build(BuildOptions {
         //   entries: command.entries,
         //   out_folder: command.out_folder,

@@ -1,8 +1,8 @@
-export let Mach
-export let Resolver
-export let Transformer
-export let Dependency
-export let MutableAsset
+/** @type {any} */ export let Mach
+/** @type {any} */ export let Resolver
+/** @type {any} */ export let Transformer
+/** @type {any} */ export let Dependency
+/** @type {any} */ export let MutableAsset
 
 const OS = {
   win32: 'windows',
@@ -40,6 +40,10 @@ class MachInitError extends Error {
   }
 }
 
-export function _apply_exports(mach) {
+export function _apply_exports(/** @type {any} */ mach) {
   Mach = mach.Mach || globalThis.Mach?.Mach || MachInitError
+  Mach = mach.Resolver || globalThis.Mach?.Resolver || MachInitError
+  Mach = mach.Transformer || globalThis.Mach?.Transformer || MachInitError
+  Mach = mach.Dependency || globalThis.Mach?.Dependency || MachInitError
+  Mach = mach.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError
 }

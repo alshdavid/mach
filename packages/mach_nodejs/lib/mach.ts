@@ -1,6 +1,6 @@
 import { Worker } from 'node:worker_threads'
 import path from 'node:path'
-import { ROOT, machNapiNew, machNapiBuild, RpcCallbackMain, MachNapi, defaultThreadCount } from '../_napi/index.js'
+import { ROOT, machNapiNew, machNapiBuild, RpcCallbackMain, MachNapi } from '../_napi/index.js'
 
 export type MachOptions = {
   threads?: number
@@ -18,15 +18,12 @@ export type MachBuildOptions = {
 
 export class Mach {
   #internal: MachNapi
-  #nodeWorkerCount: number;
 
   constructor(options: MachOptions = {}) {
-    options.threads = options.threads || defaultThreadCount()
-    this.#nodeWorkerCount = options.nodeWorkers || options.threads || defaultThreadCount()
-    this.#internal = machNapiNew({
-      rpc: (...args: any) => this.#rpc(args),
-      ...options,
-    })
+    this.#internal = machNapiNew(
+      options,
+      (...args: any) => this.#rpc(args)
+    )
   }
 
   async #rpc([err, id, data, done]: RpcCallbackMain) {
@@ -62,7 +59,7 @@ export class Mach {
     const workersOnLoad = [];
     const workers = [];
 
-    for (let i = 0; i < this.#nodeWorkerCount; i++) {
+    for (let i = 0; i < this.#internal.nodeWorkerCount; i++) {
       let worker = new Worker(path.join(ROOT, 'bin', 'index.js'));
       workers.push(worker);
       workersOnLoad.push(

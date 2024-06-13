@@ -19,7 +19,7 @@ use super::RpcConnectionNodejsMulti;
 
 pub struct RpcHostNodejs {
   threadsafe_function: ThreadsafeFunction<RpcHostMessage>,
-  node_workers: u32,
+  node_workers: usize,
 }
 
 impl std::fmt::Debug for RpcHostNodejs {
@@ -32,7 +32,7 @@ impl std::fmt::Debug for RpcHostNodejs {
 }
 
 impl RpcHostNodejs {
-  pub fn new(env: &Env, callback: JsFunction, node_workers: u32) -> napi::Result<Self> {
+  pub fn new(env: &Env, callback: JsFunction, node_workers: usize) -> napi::Result<Self> {
     let mut threadsafe_function: ThreadsafeFunction<RpcHostMessage> = env
       .create_threadsafe_function(
         &callback,
@@ -75,6 +75,10 @@ impl RpcHostNodejs {
 }
 
 impl RpcHost for RpcHostNodejs {
+  fn engine(&self) -> String {
+    "nodejs".into()    
+  }
+
   fn ping(&self) -> anyhow::Result<()> {
     let (tx, rx) = channel();
     self.call_rpc(RpcHostMessage::Ping { response: tx });

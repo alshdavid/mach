@@ -7,7 +7,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::build_parse_config::parse_config;
-use crate::mach::MachOptions;
+use super::super::MachOptions;
 // use super::create_result::create_build_result;
 // use crate::platform::bundling::bundle;
 use crate::platform::config::load_plugins;

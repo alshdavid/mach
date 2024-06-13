@@ -21,7 +21,6 @@ export type RpcCallbackWorker =
 export type MachNapiOptions = {
   nodeWorkers?: number
   threads?: number
-  rpc?: any
 }
 
 export type MachNapiBuildOptions = {
@@ -33,9 +32,10 @@ export type MachNapiBuildOptions = {
   bundleSplitting?: boolean
 }
 
-export type MachNapi = {}
+export type MachNapi = {
+  nodeWorkerCount: number
+}
 
-export function machNapiNew(options: MachNapiOptions): MachNapi
+export function machNapiNew(options: MachNapiOptions, callback: any): MachNapi
 export function machNapiBuild(mach: MachNapi, options: MachNapiBuildOptions, callback: Callback<[error: any, data: any]>): any
 export function workerCallback(callback: any): any
-export function defaultThreadCount(): number

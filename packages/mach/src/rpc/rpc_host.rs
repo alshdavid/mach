@@ -10,6 +10,7 @@ pub type RpcHostRef = Arc<dyn RpcHost>;
 pub type RpcConnectionRef = Arc<dyn RpcConnection>;
 
 pub trait RpcHost: Debug + Send + Sync {
+  fn engine(&self) -> String;
   fn ping(&self) -> anyhow::Result<()>;
   fn start(&self) -> anyhow::Result<RpcConnectionRef>;
 }
