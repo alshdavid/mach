@@ -62,7 +62,7 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
         sym_source,
       } => continue,
       LinkingSymbol::ExportRenamed { sym, sym_as } => continue,
-      LinkingSymbol::ExportDefault => {}
+      LinkingSymbol::ExportDefault => continue,
       LinkingSymbol::ReexportAll { specifier } => dependency.specifier = specifier,
       LinkingSymbol::ReexportNamed { sym, specifier } => dependency.specifier = specifier,
       LinkingSymbol::ReexportRenamed {

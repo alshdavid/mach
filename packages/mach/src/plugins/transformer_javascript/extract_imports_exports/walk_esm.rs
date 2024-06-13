@@ -180,10 +180,6 @@ impl Visit for WalkerEsm {
                       }
                       //
                       // export const [ foo ] = foo
-                      // TODO
-                      //    export const [{ foo }] = obj
-                      //    export const [[{ foo }]] = obj
-                      //    export const [[ foo ]] = obj
                       Pat::Array(decl) => {
                         let Some(sym_source) = &var_decl.init else {
                           panic!();
@@ -203,6 +199,10 @@ impl Visit for WalkerEsm {
                                 sym_source: sym_source.sym.to_string(),
                               });
                             }
+                            // TODO
+                            //    export const [{ foo }] = obj
+                            //    export const [[{ foo }]] = obj
+                            //    export const [[ foo ]] = obj
                             Pat::Array(_) => todo!(),
                             Pat::Rest(_) => todo!(),
                             Pat::Object(_) => todo!(),

@@ -78,7 +78,6 @@ impl GraphSnapshot {
 
 pub fn generate_project_snapshot(project_root: &Path) {
   let snapshot_path = project_root.join(SNAPSHOT_FILENAME);
-  println!("{:?}", snapshot_path);
 
   let (mach_config, plugins, mut c) = setup_root(&project_root, &["./index.js"]);
 
