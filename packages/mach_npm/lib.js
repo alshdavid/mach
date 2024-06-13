@@ -33,17 +33,18 @@ try {
   _apply_exports(await import('@alshdavid/mach-os-arch'))
 }
 
-class MachInitError extends Error {
-  constructor() {
-    super('Mach is not initialized')
-    throw this
-  }
-}
 
 export function _apply_exports(/** @type {any} */ mach) {
+  class MachInitError extends Error {
+    constructor() {
+      super('Mach is not initialized')
+      throw this
+    }
+  }
+
   Mach = mach.Mach || globalThis.Mach?.Mach || MachInitError
-  Mach = mach.Resolver || globalThis.Mach?.Resolver || MachInitError
-  Mach = mach.Transformer || globalThis.Mach?.Transformer || MachInitError
-  Mach = mach.Dependency || globalThis.Mach?.Dependency || MachInitError
-  Mach = mach.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError
+  Resolver = mach.Resolver || globalThis.Mach?.Resolver || MachInitError
+  Transformer = mach.Transformer || globalThis.Mach?.Transformer || MachInitError
+  Dependency = mach.Dependency || globalThis.Mach?.Dependency || MachInitError
+  MutableAsset = mach.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError
 }
