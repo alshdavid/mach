@@ -65,34 +65,34 @@ pub fn build(
   mach_options: MachOptions,
   options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  dbg!(&options);
 
-  return Ok(BuildResult::default());
-  //   let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
+    let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
 
-  //   /*
-  //     This is the bundler state. It is passed into
-  //     the bundling phases with read or write permissions
-  //     depending on how that phase uses them
-  //   */
-  //   let mut compilation = Compilation::new();
-  //   let adapter_map = options.rpc_hosts;
+    /*
+      This is the bundler state. It is passed into
+      the bundling phases with read or write permissions
+      depending on how that phase uses them
+    */
+    let mut compilation = Compilation::new();
+    let adapter_map = mach_options.rpc_hosts;
 
-  //   /*
-  //     load_plugins() will read source the .machrc and will
-  //     fetch then initialize the referenced plugins
-  //   */
-  //   let plugins = load_plugins(&config, &config.machrc, &adapter_map)?;
+    /*
+      load_plugins() will read source the .machrc and will
+      fetch then initialize the referenced plugins
+    */
+    let plugins = load_plugins(&config, &config.machrc, &adapter_map)?;
 
-  //   /*
-  //     resolve_and_transform() build the AssetGraph.
+    /*
+      resolve_and_transform() build the AssetGraph.
 
-  //     It does this by crawling the source files, identify import statements, modifying their contents
-  //     (like removing TypeScript types) and looping until there are no more import statements to resolve.
-  //   */
-  //   build_asset_graph(config.clone(), plugins.clone(), &mut compilation).map_err(|e| anyhow::anyhow!(e));
+      It does this by crawling the source files, identify import statements, modifying their contents
+      (like removing TypeScript types) and looping until there are no more import statements to resolve.
+    */
+    build_asset_graph(config.clone(), plugins.clone(), &mut compilation).map_err(|e| anyhow::anyhow!(e))?;
 
-  //   Ok(BuildResult::default())
+    println!("{}", &compilation.asset_graph.into_dot(&config));
+
+    Ok(BuildResult::default())
 
   //   /*
 

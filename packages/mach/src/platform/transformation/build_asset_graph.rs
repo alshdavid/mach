@@ -10,6 +10,7 @@ use crate::public::AssetId;
 use crate::public::Compilation;
 use crate::public::Dependency;
 use crate::public::DependencyId;
+use crate::public::LinkingSymbol;
 use crate::public::MachConfigSync;
 
 pub fn build_asset_graph(
@@ -30,7 +31,7 @@ pub fn build_asset_graph(
       source_asset_id: ROOT_ASSET.id.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
-      linking_symbol: Default::default(),
+      linking_symbol: LinkingSymbol::ImportDirect { specifier: entry.clone() },
       bundle_behavior: Default::default(),
     });
   }
@@ -39,6 +40,8 @@ pub fn build_asset_graph(
 
   while let Some(dependency) = queue.pop() {
     let resolve_result = run_resolvers(&config, &plugins, &dependency)?;
+    println!("{:?}", dependency);
+
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
       c.asset_graph

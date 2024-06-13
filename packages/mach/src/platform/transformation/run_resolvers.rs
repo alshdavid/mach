@@ -4,6 +4,7 @@ use crate::platform::config::PluginContainerSync;
 use crate::public::Dependency;
 use crate::public::MachConfig;
 
+#[derive(Debug)]
 pub struct RunResolversResult {
   pub file_path: PathBuf,
   pub file_path_relative: PathBuf,

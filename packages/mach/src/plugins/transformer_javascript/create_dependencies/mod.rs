@@ -14,7 +14,7 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       specifier_type: SpecifierType::ESM,
       priority: DependencyPriority::Sync,
       resolve_from: Default::default(),
-      linking_symbol: Default::default(),
+      linking_symbol: linking_symbol.clone(),
       bundle_behavior: BundleBehavior::Default,
     };
 
@@ -23,44 +23,84 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
         dependency.specifier = specifier;
       }
       LinkingSymbol::ImportNamed { sym, specifier } => {
-        dependency.specifier_type = SpecifierType::ESM;
         dependency.specifier = specifier;
       }
       LinkingSymbol::ImportRenamed {
         sym,
         sym_as,
         specifier,
-      } => {}
-      LinkingSymbol::ImportDefault { sym_as, specifier } => todo!(),
-      LinkingSymbol::ImportNamespace { sym_as, specifier } => todo!(),
-      LinkingSymbol::ImportDynamic { specifier } => todo!(),
-      LinkingSymbol::ImportDynamicNamed { specifier, sym } => todo!(),
+      } => {
+        dependency.specifier = specifier;
+      }
+      LinkingSymbol::ImportDefault { sym_as, specifier } => {
+        dependency.specifier = specifier;
+      },
+      LinkingSymbol::ImportNamespace { sym_as, specifier } => {
+        dependency.specifier = specifier;
+      },
+      LinkingSymbol::ImportDynamic { specifier } => {
+        dependency.specifier = specifier;
+        dependency.priority = DependencyPriority::Lazy;
+      },
+      LinkingSymbol::ImportDynamicNamed { specifier, sym } => {
+        dependency.specifier = specifier;
+        dependency.priority = DependencyPriority::Lazy;
+      },
       LinkingSymbol::ImportDynamicRenamed {
         specifier,
         sym,
         sym_as,
-      } => todo!(),
-      LinkingSymbol::ExportNamed { sym } => todo!(),
-      LinkingSymbol::ExportDestructured { sym, sym_source } => todo!(),
+      } => {
+        dependency.specifier = specifier;
+        dependency.priority = DependencyPriority::Lazy;
+      },
+      LinkingSymbol::ExportNamed { sym } => {
+        continue
+      },
+      LinkingSymbol::ExportDestructured { sym, sym_source } => {
+        continue
+      },
       LinkingSymbol::ExportDestructuredRenamed {
         sym,
         sym_as,
         sym_source,
-      } => todo!(),
-      LinkingSymbol::ExportRenamed { sym, sym_as } => todo!(),
-      LinkingSymbol::ExportDefault => todo!(),
-      LinkingSymbol::ReexportAll { specifier } => todo!(),
-      LinkingSymbol::ReexportNamed { sym, specifier } => todo!(),
+      } => {
+        continue
+      },
+      LinkingSymbol::ExportRenamed { sym, sym_as } => {
+        continue
+      },
+      LinkingSymbol::ExportDefault => {},
+      LinkingSymbol::ReexportAll { specifier } => {
+        dependency.specifier = specifier
+      },
+      LinkingSymbol::ReexportNamed { sym, specifier } => {
+        dependency.specifier = specifier
+      },
       LinkingSymbol::ReexportRenamed {
         sym,
         sym_as,
         specifier,
-      } => todo!(),
-      LinkingSymbol::ReexportNamespace { sym_as, specifier } => todo!(),
-      LinkingSymbol::ImportCommonjs { specifier } => todo!(),
-      LinkingSymbol::ImportCommonjsNamed { specifier, sym } => todo!(),
-      LinkingSymbol::ExportCommonjsNamed { sym } => todo!(),
-      LinkingSymbol::ExportCommonjs => todo!(),
+      } => {
+        dependency.specifier = specifier
+      },
+      LinkingSymbol::ReexportNamespace { sym_as, specifier } => {
+        dependency.specifier = specifier
+      },
+      LinkingSymbol::ImportCommonjs { specifier } => {
+        dependency.specifier = specifier;
+        dependency.specifier_type = SpecifierType::Commonjs;
+      },
+      LinkingSymbol::ImportCommonjsNamed { specifier, sym } => {
+        dependency.specifier = specifier;
+        dependency.specifier_type = SpecifierType::Commonjs;
+      },
+      LinkingSymbol::ExportCommonjsNamed { sym } => {
+        continue
+      },
+      LinkingSymbol::ExportCommonjs => {
+        continue
+      },
     }
 
     dependencies.push(dependency);
