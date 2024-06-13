@@ -1,4 +1,4 @@
-mod analyze_file;
+mod extract_imports_exports;
 mod convert;
 mod lookup_property_access;
 mod parse_module;

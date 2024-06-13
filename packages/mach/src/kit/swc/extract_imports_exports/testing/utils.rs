@@ -5,8 +5,8 @@ use std::path::PathBuf;
 use once_cell::sync::Lazy;
 
 use super::super::super::parse_program;
-use super::super::analyze_js_file;
-use crate::kit::swc::analyze_file::AnalyzeFileResult;
+use super::super::extract_imports_exports;
+use crate::kit::swc::extract_imports_exports::AnalyzeFileResult;
 
 pub static CARGO_DIR: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
 pub static FIXTURES: Lazy<PathBuf> = Lazy::new(|| {
@@ -39,7 +39,7 @@ fn test_analyze_file(fixture_filepath: &Path) -> AnalyzeFileResult {
   let fixture_name = get_fixture_name(&fixture_filepath);
   let contents = fs::read_to_string(&fixture_filepath).unwrap();
   let module = parse_program(&fixture_filepath, &contents, Default::default()).unwrap();
-  let results = analyze_js_file(&module.program);
+  let results = extract_imports_exports(&module.program);
 
   println!("{}", fixture_name);
 
@@ -84,7 +84,7 @@ pub fn _update_snapshot(fixture_filepath: &Path) {
   let fixture_name = get_fixture_name(&fixture_filepath);
   let contents = fs::read_to_string(&fixture_filepath).unwrap();
   let module = parse_program(&fixture_filepath, &contents, Default::default()).unwrap();
-  let result = analyze_js_file(&module.program);
+  let result = extract_imports_exports(&module.program);
 
   let snapshot = serde_json::to_string_pretty(&result).unwrap();
 

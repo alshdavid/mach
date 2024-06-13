@@ -8,7 +8,7 @@ pub type AnalyzeFileResult = Vec<ModuleSymbol>;
 
 /// This will look through a JavaScript file and find/label the
 /// import/exports within it
-pub fn analyze_js_file(module: &Program) -> AnalyzeFileResult {
+pub fn extract_imports_exports(module: &Program) -> AnalyzeFileResult {
   let mut results = analyze_js_file_esm(module);
 
   if results.len() == 0 {
