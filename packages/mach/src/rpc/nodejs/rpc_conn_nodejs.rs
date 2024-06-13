@@ -11,7 +11,6 @@ use napi::JsUnknown;
 use napi::Status;
 
 use super::super::RpcConnection;
-
 use super::napi::create_done_callback;
 use super::rpc_conn_message::RpcConnectionMessage;
 use super::worker_init::get_worker_rx;
@@ -29,7 +28,10 @@ impl RpcConnectionNodejs {
     }
   }
 
-  pub fn create_worker_callback(env: &Env, callback: JsFunction) -> napi::Result<()> {
+  pub fn create_worker_callback(
+    env: &Env,
+    callback: JsFunction,
+  ) -> napi::Result<()> {
     let threadsafe_function: ThreadsafeFunction<RpcConnectionMessage> = env
       .create_threadsafe_function(
         &callback,
@@ -56,7 +58,10 @@ impl RpcConnectionNodejs {
   }
 
   // Map the RPC message to a JavaScript type
-  fn map_rpc_message(env: &Env, msg: RpcConnectionMessage) -> napi::Result<(JsUnknown, JsUnknown)> {
+  fn map_rpc_message(
+    env: &Env,
+    msg: RpcConnectionMessage,
+  ) -> napi::Result<(JsUnknown, JsUnknown)> {
     Ok(match msg {
       RpcConnectionMessage::Ping { response: reply } => {
         let message = env.to_js_value(&())?;

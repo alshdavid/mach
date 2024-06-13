@@ -31,7 +31,9 @@ pub fn build_asset_graph(
       source_asset_id: ROOT_ASSET.id.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
-      linking_symbol: LinkingSymbol::ImportDirect { specifier: entry.clone() },
+      linking_symbol: LinkingSymbol::ImportDirect {
+        specifier: entry.clone(),
+      },
       bundle_behavior: Default::default(),
     });
   }

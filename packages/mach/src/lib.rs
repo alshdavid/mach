@@ -17,11 +17,11 @@ pub use self::cmd::BuildOptions;
 pub use self::cmd::BuildResult;
 pub use self::cmd::DevOptions;
 pub use self::cmd::DevResult;
+pub use self::cmd::MachOptions;
 pub use self::cmd::VersionOptions;
 pub use self::cmd::VersionResult;
 pub use self::cmd::WatchOptions;
 pub use self::cmd::WatchResult;
-pub use self::cmd::MachOptions;
 
 pub struct Mach {
   options: cmd::MachOptions,

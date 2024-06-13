@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use swc_core::ecma::visit::FoldWith;
 use swc_core::ecma::ast::Program;
+use swc_core::ecma::visit::FoldWith;
 
 use super::replace_node_env_fold::NodeEnvReplacer;
 

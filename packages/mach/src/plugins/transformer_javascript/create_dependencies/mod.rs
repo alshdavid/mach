@@ -34,18 +34,18 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       }
       LinkingSymbol::ImportDefault { sym_as, specifier } => {
         dependency.specifier = specifier;
-      },
+      }
       LinkingSymbol::ImportNamespace { sym_as, specifier } => {
         dependency.specifier = specifier;
-      },
+      }
       LinkingSymbol::ImportDynamic { specifier } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
-      },
+      }
       LinkingSymbol::ImportDynamicNamed { specifier, sym } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
-      },
+      }
       LinkingSymbol::ImportDynamicRenamed {
         specifier,
         sym,
@@ -53,54 +53,34 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
-      },
-      LinkingSymbol::ExportNamed { sym } => {
-        continue
-      },
-      LinkingSymbol::ExportDestructured { sym, sym_source } => {
-        continue
-      },
+      }
+      LinkingSymbol::ExportNamed { sym } => continue,
+      LinkingSymbol::ExportDestructured { sym, sym_source } => continue,
       LinkingSymbol::ExportDestructuredRenamed {
         sym,
         sym_as,
         sym_source,
-      } => {
-        continue
-      },
-      LinkingSymbol::ExportRenamed { sym, sym_as } => {
-        continue
-      },
-      LinkingSymbol::ExportDefault => {},
-      LinkingSymbol::ReexportAll { specifier } => {
-        dependency.specifier = specifier
-      },
-      LinkingSymbol::ReexportNamed { sym, specifier } => {
-        dependency.specifier = specifier
-      },
+      } => continue,
+      LinkingSymbol::ExportRenamed { sym, sym_as } => continue,
+      LinkingSymbol::ExportDefault => {}
+      LinkingSymbol::ReexportAll { specifier } => dependency.specifier = specifier,
+      LinkingSymbol::ReexportNamed { sym, specifier } => dependency.specifier = specifier,
       LinkingSymbol::ReexportRenamed {
         sym,
         sym_as,
         specifier,
-      } => {
-        dependency.specifier = specifier
-      },
-      LinkingSymbol::ReexportNamespace { sym_as, specifier } => {
-        dependency.specifier = specifier
-      },
+      } => dependency.specifier = specifier,
+      LinkingSymbol::ReexportNamespace { sym_as, specifier } => dependency.specifier = specifier,
       LinkingSymbol::ImportCommonjs { specifier } => {
         dependency.specifier = specifier;
         dependency.specifier_type = SpecifierType::Commonjs;
-      },
+      }
       LinkingSymbol::ImportCommonjsNamed { specifier, sym } => {
         dependency.specifier = specifier;
         dependency.specifier_type = SpecifierType::Commonjs;
-      },
-      LinkingSymbol::ExportCommonjsNamed { sym } => {
-        continue
-      },
-      LinkingSymbol::ExportCommonjs => {
-        continue
-      },
+      }
+      LinkingSymbol::ExportCommonjsNamed { sym } => continue,
+      LinkingSymbol::ExportCommonjs => continue,
     }
 
     dependencies.push(dependency);

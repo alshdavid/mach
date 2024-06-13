@@ -33,7 +33,6 @@ try {
   _apply_exports(await import('@alshdavid/mach-os-arch'))
 }
 
-
 export function _apply_exports(/** @type {any} */ mach) {
   class MachInitError extends Error {
     constructor() {
@@ -44,7 +43,9 @@ export function _apply_exports(/** @type {any} */ mach) {
 
   Mach = mach.Mach || globalThis.Mach?.Mach || MachInitError
   Resolver = mach.Resolver || globalThis.Mach?.Resolver || MachInitError
-  Transformer = mach.Transformer || globalThis.Mach?.Transformer || MachInitError
+  Transformer =
+    mach.Transformer || globalThis.Mach?.Transformer || MachInitError
   Dependency = mach.Dependency || globalThis.Mach?.Dependency || MachInitError
-  MutableAsset = mach.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError
+  MutableAsset =
+    mach.MutableAsset || globalThis.Mach?.MutableAsset || MachInitError
 }

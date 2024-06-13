@@ -1,9 +1,9 @@
 //
 // This contains the bindings for the public API for Mach
 //
-use std::sync::Arc;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::thread;
 
 use mach_bundler_core::rpc::nodejs::RpcHostNodejs;
@@ -12,15 +12,15 @@ use mach_bundler_core::BuildOptions;
 use mach_bundler_core::BuildResult;
 use mach_bundler_core::Mach;
 use mach_bundler_core::MachOptions;
+use napi::threadsafe_function::ThreadSafeCallContext;
+use napi::threadsafe_function::ThreadsafeFunction;
+use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
 use napi_derive::napi;
 use serde::Deserialize;
 use serde::Serialize;
-use napi::threadsafe_function::ThreadSafeCallContext;
-use napi::threadsafe_function::ThreadsafeFunction;
-use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 
 #[napi]
 pub struct MachNapi {
@@ -58,16 +58,11 @@ pub fn mach_napi_new(
     node_workers = mach_options.threads;
   }
 
-  let rpc_host_nodejs = Arc::new(RpcHostNodejs::new(
-    &env,
-    callback,
-    node_workers,
-  )?);
+  let rpc_host_nodejs = Arc::new(RpcHostNodejs::new(&env, callback, node_workers)?);
 
-  mach_options.rpc_hosts.insert(
-    rpc_host_nodejs.engine(),
-    rpc_host_nodejs.clone(),
-  );
+  mach_options
+    .rpc_hosts
+    .insert(rpc_host_nodejs.engine(), rpc_host_nodejs.clone());
 
   Ok(MachNapi {
     node_worker_count: node_workers as u32,

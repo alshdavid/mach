@@ -1,6 +1,12 @@
 import { Worker } from 'node:worker_threads'
 import path from 'node:path'
-import { ROOT, machNapiNew, machNapiBuild, RpcCallbackMain, MachNapi } from '../_napi/index.js'
+import {
+  ROOT,
+  machNapiNew,
+  machNapiBuild,
+  RpcCallbackMain,
+  MachNapi,
+} from '../_napi/index.js'
 
 export type MachOptions = {
   threads?: number
@@ -20,10 +26,7 @@ export class Mach {
   #internal: MachNapi
 
   constructor(options: MachOptions = {}) {
-    this.#internal = machNapiNew(
-      options,
-      (...args: any) => this.#rpc(args)
-    )
+    this.#internal = machNapiNew(options, (...args: any) => this.#rpc(args))
   }
 
   async #rpc([err, id, data, done]: RpcCallbackMain) {
@@ -37,43 +40,41 @@ export class Mach {
         break
       default:
         done({ Err: 'No handler specified' })
-      }
+    }
   }
 
   async build(options: MachBuildOptions) {
     return new Promise(async (res, rej) => {
-      const workers = this.#startWorkers();
+      const workers = this.#startWorkers()
 
-      let result = await machNapiBuild(
-        this.#internal,
-        options,
-        (err, data) => err ? rej(err) : res(data),
-      );
+      let result = await machNapiBuild(this.#internal, options, (err, data) =>
+        err ? rej(err) : res(data),
+      )
 
-      this.#stopWorkers(await workers);
-      return result;
+      this.#stopWorkers(await workers)
+      return result
     })
   }
 
   async #startWorkers() {
-    const workersOnLoad = [];
-    const workers = [];
+    const workersOnLoad = []
+    const workers = []
 
     for (let i = 0; i < this.#internal.nodeWorkerCount; i++) {
-      let worker = new Worker(path.join(ROOT, 'bin', 'index.js'));
-      workers.push(worker);
+      let worker = new Worker(path.join(ROOT, 'bin', 'index.js'))
+      workers.push(worker)
       workersOnLoad.push(
-        new Promise(resolve => worker.once('message', resolve)),
-      );
+        new Promise((resolve) => worker.once('message', resolve)),
+      )
     }
 
-    await Promise.all(workersOnLoad);
-    return workers;
+    await Promise.all(workersOnLoad)
+    return workers
   }
 
   #stopWorkers(workers: Worker[]) {
     for (const worker of workers) {
-      worker.terminate();
+      worker.terminate()
     }
   }
 }

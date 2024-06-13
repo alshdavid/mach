@@ -1,6 +1,6 @@
 export declare const ROOT: string
 
-export type Callback<T extends Array<any>, R = (any | Promise<any>)> = (
+export type Callback<T extends Array<any>, R = any | Promise<any>> = (
   ...args: T
 ) => R
 
@@ -12,11 +12,11 @@ export type RpcCallbackBase<I extends number, D, R> = [
 ]
 export type RpcCallbackMain =
   // Ping
-  | RpcCallbackBase<0, null, undefined>
+  RpcCallbackBase<0, null, undefined>
 
 export type RpcCallbackWorker =
   // Ping
-  | RpcCallbackBase<0, null, undefined>
+  RpcCallbackBase<0, null, undefined>
 
 export type MachNapiOptions = {
   nodeWorkers?: number
@@ -37,5 +37,9 @@ export type MachNapi = {
 }
 
 export function machNapiNew(options: MachNapiOptions, callback: any): MachNapi
-export function machNapiBuild(mach: MachNapi, options: MachNapiBuildOptions, callback: Callback<[error: any, data: any]>): any
+export function machNapiBuild(
+  mach: MachNapi,
+  options: MachNapiBuildOptions,
+  callback: Callback<[error: any, data: any]>,
+): any
 export function workerCallback(callback: any): any

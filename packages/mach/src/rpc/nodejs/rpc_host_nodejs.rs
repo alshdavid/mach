@@ -11,7 +11,6 @@ use napi::Status;
 
 use super::super::RpcConnectionRef;
 use super::super::RpcHost;
-
 use super::napi::create_done_callback;
 use super::rpc_host_message::RpcHostMessage;
 use super::RpcConnectionNodejs;
@@ -23,16 +22,22 @@ pub struct RpcHostNodejs {
 }
 
 impl std::fmt::Debug for RpcHostNodejs {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f
-          .debug_struct("RpcHostNodejs")
-          .field("node_workers", &self.node_workers)
-          .finish()
-    }
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    f.debug_struct("RpcHostNodejs")
+      .field("node_workers", &self.node_workers)
+      .finish()
+  }
 }
 
 impl RpcHostNodejs {
-  pub fn new(env: &Env, callback: JsFunction, node_workers: usize) -> napi::Result<Self> {
+  pub fn new(
+    env: &Env,
+    callback: JsFunction,
+    node_workers: usize,
+  ) -> napi::Result<Self> {
     let mut threadsafe_function: ThreadsafeFunction<RpcHostMessage> = env
       .create_threadsafe_function(
         &callback,
@@ -52,7 +57,10 @@ impl RpcHostNodejs {
     })
   }
 
-  fn call_rpc(&self, msg: RpcHostMessage) {
+  fn call_rpc(
+    &self,
+    msg: RpcHostMessage,
+  ) {
     if !matches!(
       self
         .threadsafe_function
@@ -63,7 +71,10 @@ impl RpcHostNodejs {
     };
   }
 
-  fn map_rpc_message(env: &Env, msg: RpcHostMessage) -> napi::Result<(JsUnknown, JsUnknown)> {
+  fn map_rpc_message(
+    env: &Env,
+    msg: RpcHostMessage,
+  ) -> napi::Result<(JsUnknown, JsUnknown)> {
     Ok(match msg {
       RpcHostMessage::Ping { response: reply } => {
         let message = env.to_js_value(&())?;
@@ -76,7 +87,7 @@ impl RpcHostNodejs {
 
 impl RpcHost for RpcHostNodejs {
   fn engine(&self) -> String {
-    "nodejs".into()    
+    "nodejs".into()
   }
 
   fn ping(&self) -> anyhow::Result<()> {

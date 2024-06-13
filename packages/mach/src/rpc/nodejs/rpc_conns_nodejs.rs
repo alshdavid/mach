@@ -1,8 +1,7 @@
 use parking_lot::Mutex;
 
-use super::RpcConnectionNodejs;
-
 use super::super::RpcConnection;
+use super::RpcConnectionNodejs;
 
 #[derive(Debug)]
 pub struct RpcConnectionNodejsMulti {

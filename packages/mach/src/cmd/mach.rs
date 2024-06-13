@@ -8,10 +8,10 @@ pub struct MachOptions {
 }
 
 impl Default for MachOptions {
-    fn default() -> Self {
-        Self { 
-          rpc_hosts: Default::default(), 
-          threads: num_cpus::get(), 
-        }
+  fn default() -> Self {
+    Self {
+      rpc_hosts: Default::default(),
+      threads: num_cpus::get(),
     }
+  }
 }

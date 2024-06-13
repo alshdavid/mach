@@ -12,8 +12,8 @@ use crate::plugins::transformer_json::TransformerJson;
 use crate::plugins::transformer_rpc::TransformerAdapter;
 use crate::public::MachConfig;
 use crate::public::Machrc;
-use crate::rpc::RpcHosts;
 use crate::public::Transformer;
+use crate::rpc::RpcHosts;
 
 pub fn load_plugins(
   config: &MachConfig,

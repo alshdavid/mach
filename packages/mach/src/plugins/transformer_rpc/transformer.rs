@@ -7,8 +7,8 @@ use crate::plugins::resolver_javascript::resolve;
 use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
-use crate::rpc::RpcHost;
 use crate::public::Transformer;
+use crate::rpc::RpcHost;
 
 pub struct TransformerAdapter {
   transformer_specifier: String,

@@ -4,7 +4,7 @@ import { RpcCallbackWorker, workerCallback } from '../_napi/index.js'
 export class MachWorker {
   constructor() {
     workerCallback((...args: any) => this.#rpc(args))
-    parentPort?.postMessage(null);
+    parentPort?.postMessage(null)
   }
 
   async #rpc([err, id, data, done]: RpcCallbackWorker) {
@@ -18,6 +18,6 @@ export class MachWorker {
         break
       default:
         done({ Err: 'No handler specified' })
-      }
+    }
   }
 }

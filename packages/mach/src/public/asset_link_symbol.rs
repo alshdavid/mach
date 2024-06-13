@@ -115,7 +115,7 @@ pub enum LinkingSymbol {
 }
 
 impl Default for LinkingSymbol {
-    fn default() -> Self {
-      Self::ExportDefault
-    }
+  fn default() -> Self {
+    Self::ExportDefault
+  }
 }

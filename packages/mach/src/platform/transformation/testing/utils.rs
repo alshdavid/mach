@@ -49,7 +49,6 @@ pub fn setup_root<T: AsRef<str>>(
   (mach_config, plugins, compilation)
 }
 
-
 pub fn test_project_snapshot(
   project_name: &str,
   project_root: &Path,
@@ -203,4 +202,3 @@ pub fn test_project_snapshot(
     }
   }
 }
-

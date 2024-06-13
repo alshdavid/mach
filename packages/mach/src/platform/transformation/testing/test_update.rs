@@ -1,5 +1,5 @@
-use super::utils::FIXTURES;
 use super::snapshot::generate_project_snapshot;
+use super::utils::FIXTURES;
 
 // Uncomment this and run it to update snapshots
 // #[test]

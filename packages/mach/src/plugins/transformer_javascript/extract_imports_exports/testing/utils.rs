@@ -4,9 +4,9 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::kit::swc::parse_program;
-use super::super::AnalyzeFileResult;
 use super::super::extract_imports_exports;
+use super::super::AnalyzeFileResult;
+use crate::kit::swc::parse_program;
 
 pub static CARGO_DIR: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
 pub static FIXTURES: Lazy<PathBuf> = Lazy::new(|| {

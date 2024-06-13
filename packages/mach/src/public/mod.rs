@@ -2,6 +2,7 @@ mod asset;
 mod asset_contents;
 mod asset_graph;
 mod asset_id;
+mod asset_link_symbol;
 mod asset_map;
 mod bundle;
 mod bundle_behavior;
@@ -28,7 +29,6 @@ mod packages;
 mod resolver;
 mod specifier_type;
 mod transformer;
-mod asset_link_symbol;
 
 pub use self::asset::*;
 pub use self::asset_contents::*;
