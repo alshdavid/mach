@@ -4,11 +4,6 @@ use std::sync::Arc;
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingRequestTransformerLoadConfig;
-use crate::public::AdapterOutgoingRequestTransformerRegister;
-use crate::public::AdapterOutgoingRequestTransformerTransform;
-use crate::public::AdapterOutgoingResponse;
 use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;

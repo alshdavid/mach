@@ -3,11 +3,6 @@ use std::sync::Arc;
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
-use crate::public::AdapterOutgoingRequest;
-use crate::public::AdapterOutgoingRequestResolverLoadConfig;
-use crate::public::AdapterOutgoingRequestResolverRegister;
-use crate::public::AdapterOutgoingRequestResolverResolve;
-use crate::public::AdapterOutgoingResponse;
 use crate::public::Dependency;
 use crate::public::MachConfig;
 use crate::public::ResolveResult;

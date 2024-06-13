@@ -65,15 +65,7 @@ pub fn build(
   mach_options: MachOptions,
   options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  let nodejs = mach_options.rpc_hosts.get("nodejs").unwrap().clone();
-
-  let workers = nodejs.start()?;
-  workers.ping()?;
-  workers.ping()?;
-  workers.ping()?;
-  workers.ping()?;
-
-  // nodejs.shutdown()?;
+  dbg!(&options);
 
   return Ok(BuildResult::default());
   //   let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
