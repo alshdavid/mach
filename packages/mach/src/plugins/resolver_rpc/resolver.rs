@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
@@ -19,7 +17,7 @@ impl ResolverAdapter {
   pub fn new(
     config: &MachConfig,
     initial_specifier: &str,
-    adapter: RpcHostRef,
+    _rpc_host: RpcHostRef,
   ) -> anyhow::Result<Self> {
     let specifier =
       resolve(&config.project_root, initial_specifier).map_err(|e| anyhow::anyhow!(e))?;
@@ -29,7 +27,7 @@ impl ResolverAdapter {
         initial_specifier
       )));
     }
-    let specifier = specifier.to_str().unwrap().to_string();
+    let _specifier = specifier.to_str().unwrap().to_string();
 
     // adapter.send_all(AdapterOutgoingRequest::ResolverRegister(
     //   AdapterOutgoingRequestResolverRegister {
@@ -54,7 +52,7 @@ impl ResolverAdapter {
 impl Resolver for ResolverAdapter {
   fn resolve(
     &self,
-    dependency: &Dependency,
+    _dependency: &Dependency,
   ) -> Result<Option<ResolveResult>, String> {
     todo!();
     // let response = self

@@ -1,7 +1,6 @@
 use std::path::Path;
 
 use super::DependencyOptions;
-use super::ExportSymbol;
 use super::LinkingSymbol;
 
 #[derive(Debug)]

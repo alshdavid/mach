@@ -3,7 +3,6 @@ use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 
-use once_cell::sync::Lazy;
 use petgraph::visit::EdgeRef;
 use petgraph::visit::NodeRef;
 use serde::Deserialize;
@@ -14,10 +13,7 @@ use crate::platform::transformation::testing::utils::setup_root;
 use crate::platform::transformation::testing::utils::SNAPSHOT_FILENAME;
 use crate::public::BundleBehavior;
 use crate::public::DependencyPriority;
-use crate::public::ExportSymbol;
-use crate::public::ImportSymbol;
 use crate::public::LinkingSymbol;
-use crate::public::ReexportSymbol;
 use crate::public::SpecifierType;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -56,7 +52,7 @@ impl GraphSnapshot {
     GraphSnapshot { config: internal }
   }
 
-  pub fn save(
+  pub fn _save(
     filepath: &Path,
     config: GraphSnapshotConfig,
   ) {
@@ -76,7 +72,7 @@ impl GraphSnapshot {
   }
 }
 
-pub fn generate_project_snapshot(project_root: &Path) {
+pub fn _generate_project_snapshot(project_root: &Path) {
   let snapshot_path = project_root.join(SNAPSHOT_FILENAME);
 
   let (mach_config, plugins, mut c) = setup_root(&project_root, &["./index.js"]);
@@ -124,5 +120,5 @@ pub fn generate_project_snapshot(project_root: &Path) {
     snapshot.insert(source_asset.file_path_relative.clone(), snapshot_entry);
   }
 
-  GraphSnapshot::save(&snapshot_path, snapshot);
+  GraphSnapshot::_save(&snapshot_path, snapshot);
 }

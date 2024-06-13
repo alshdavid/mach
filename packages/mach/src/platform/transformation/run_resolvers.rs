@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::platform::config::PluginContainerSync;
+use crate::platform::plugins::PluginContainerSync;
 use crate::public::Dependency;
 use crate::public::MachConfig;
 

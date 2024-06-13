@@ -1,11 +1,10 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
-use crate::platform::config::PluginContainerSync;
-use crate::platform::config::TransformerTarget;
+use crate::platform::plugins::PluginContainerSync;
+use crate::platform::plugins::TransformerTarget;
 use crate::public::Asset;
 use crate::public::DependencyOptions;
-use crate::public::ExportSymbol;
 use crate::public::LinkingSymbol;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;

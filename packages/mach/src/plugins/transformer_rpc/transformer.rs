@@ -3,8 +3,8 @@ use std::sync::Arc;
 
 use anyhow;
 
-use crate::plugins::resolver_javascript::resolve;
-use crate::public::DependencyOptions;
+// use crate::plugins::resolver_javascript::resolve;
+// use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::Transformer;
@@ -12,14 +12,14 @@ use crate::rpc::RpcHost;
 
 pub struct TransformerAdapter {
   transformer_specifier: String,
-  adapter: Arc<dyn RpcHost>,
+  _rpc_host: Arc<dyn RpcHost>,
 }
 
 impl TransformerAdapter {
   pub fn new(
-    config: &MachConfig,
-    initial_specifier: &str,
-    adapter: Arc<dyn RpcHost>,
+    _config: &MachConfig,
+    _initial_specifier: &str,
+    _adapter: Arc<dyn RpcHost>,
   ) -> anyhow::Result<Self> {
     // let specifier = resolve(&config.project_root, initial_specifier)?;
     // if !specifier.exists() {
@@ -53,7 +53,7 @@ impl TransformerAdapter {
 impl Transformer for TransformerAdapter {
   fn transform(
     &self,
-    asset: &mut MutableAsset,
+    _asset: &mut MutableAsset,
     _config: &MachConfig,
   ) -> Result<(), String> {
     //     let response = self

@@ -1,6 +1,5 @@
 use once_cell::sync::Lazy;
 use swc_core::atoms::Atom;
-use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;

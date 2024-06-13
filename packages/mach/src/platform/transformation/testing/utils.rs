@@ -8,12 +8,8 @@ use petgraph::visit::NodeRef;
 
 use super::super::build_asset_graph;
 use super::snapshot::GraphSnapshot;
-use crate::platform::config::load_plugins;
-use crate::platform::config::PluginContainerSync;
-use crate::platform::transformation::testing::snapshot::DependencySnapshot;
-use crate::platform::transformation::testing::snapshot::GraphSnapshotAsset;
-use crate::platform::transformation::testing::snapshot::GraphSnapshotConfig;
-use crate::platform::transformation::testing::snapshot::GraphSnapshotImport;
+use crate::platform::plugins::load_plugins;
+use crate::platform::plugins::PluginContainerSync;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::MachConfigSync;

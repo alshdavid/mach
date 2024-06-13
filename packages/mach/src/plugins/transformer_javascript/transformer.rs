@@ -13,7 +13,6 @@ use super::extract_imports_exports::extract_imports_exports;
 use super::replace_node_env::replace_node_env;
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
-use crate::public::BundleBehavior;
 use crate::public::DependencyOptions;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;

@@ -7,7 +7,6 @@ use markup5ever_rcdom::RcDom;
 use crate::public::BundleBehavior;
 use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
-use crate::public::ImportSymbol;
 use crate::public::MachConfig;
 use crate::public::MutableAsset;
 use crate::public::SpecifierType;

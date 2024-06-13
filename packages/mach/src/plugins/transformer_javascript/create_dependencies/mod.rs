@@ -1,5 +1,4 @@
 use crate::public::BundleBehavior;
-use crate::public::Dependency;
 use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
 use crate::public::LinkingSymbol;
@@ -22,64 +21,64 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       LinkingSymbol::ImportDirect { specifier } => {
         dependency.specifier = specifier;
       }
-      LinkingSymbol::ImportNamed { sym, specifier } => {
+      LinkingSymbol::ImportNamed { sym: _, specifier } => {
         dependency.specifier = specifier;
       }
       LinkingSymbol::ImportRenamed {
-        sym,
-        sym_as,
+        sym: _,
+        sym_as: _,
         specifier,
       } => {
         dependency.specifier = specifier;
       }
-      LinkingSymbol::ImportDefault { sym_as, specifier } => {
+      LinkingSymbol::ImportDefault { sym_as: _, specifier } => {
         dependency.specifier = specifier;
       }
-      LinkingSymbol::ImportNamespace { sym_as, specifier } => {
+      LinkingSymbol::ImportNamespace { sym_as: _, specifier } => {
         dependency.specifier = specifier;
       }
       LinkingSymbol::ImportDynamic { specifier } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
       }
-      LinkingSymbol::ImportDynamicNamed { specifier, sym } => {
+      LinkingSymbol::ImportDynamicNamed { specifier, sym: _ } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
       }
       LinkingSymbol::ImportDynamicRenamed {
         specifier,
-        sym,
-        sym_as,
+        sym: _,
+        sym_as: _,
       } => {
         dependency.specifier = specifier;
         dependency.priority = DependencyPriority::Lazy;
       }
-      LinkingSymbol::ExportNamed { sym } => continue,
-      LinkingSymbol::ExportDestructured { sym, sym_source } => continue,
+      LinkingSymbol::ExportNamed { sym: _ } => continue,
+      LinkingSymbol::ExportDestructured { sym: _, sym_source: _ } => continue,
       LinkingSymbol::ExportDestructuredRenamed {
-        sym,
-        sym_as,
-        sym_source,
+        sym: _,
+        sym_as: _,
+        sym_source: _,
       } => continue,
-      LinkingSymbol::ExportRenamed { sym, sym_as } => continue,
+      LinkingSymbol::ExportRenamed { sym: _, sym_as: _ } => continue,
       LinkingSymbol::ExportDefault => continue,
       LinkingSymbol::ReexportAll { specifier } => dependency.specifier = specifier,
-      LinkingSymbol::ReexportNamed { sym, specifier } => dependency.specifier = specifier,
+      LinkingSymbol::ReexportNamed { sym: _, specifier } => dependency.specifier = specifier,
       LinkingSymbol::ReexportRenamed {
-        sym,
-        sym_as,
+        sym: _,
+        sym_as: _,
         specifier,
       } => dependency.specifier = specifier,
-      LinkingSymbol::ReexportNamespace { sym_as, specifier } => dependency.specifier = specifier,
+      LinkingSymbol::ReexportNamespace { sym_as: _, specifier } => dependency.specifier = specifier,
       LinkingSymbol::ImportCommonjs { specifier } => {
         dependency.specifier = specifier;
         dependency.specifier_type = SpecifierType::Commonjs;
       }
-      LinkingSymbol::ImportCommonjsNamed { specifier, sym } => {
+      LinkingSymbol::ImportCommonjsNamed { specifier, sym: _ } => {
         dependency.specifier = specifier;
         dependency.specifier_type = SpecifierType::Commonjs;
       }
-      LinkingSymbol::ExportCommonjsNamed { sym } => continue,
+      LinkingSymbol::ExportCommonjsNamed { sym: _ } => continue,
       LinkingSymbol::ExportCommonjs => continue,
     }
 

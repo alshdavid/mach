@@ -5,9 +5,7 @@ use serde::Serialize;
 
 use super::BundleBehavior;
 use super::DependencyPriority;
-use super::ImportSymbol;
 use super::LinkingSymbol;
-use super::ReexportSymbol;
 use super::SpecifierType;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

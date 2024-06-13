@@ -4,7 +4,6 @@ use std::path::PathBuf;
 use super::hash::hash_sha_256;
 use super::AssetId;
 use super::BundleBehavior;
-use super::ExportSymbol;
 use super::LinkingSymbol;
 
 #[derive(Clone, Default)]

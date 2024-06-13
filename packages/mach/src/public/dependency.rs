@@ -7,9 +7,7 @@ use super::AssetId;
 use super::BundleBehavior;
 use super::DependencyId;
 use super::DependencyPriority;
-use super::ImportSymbol;
 use super::LinkingSymbol;
-use super::ReexportSymbol;
 use super::SpecifierType;
 
 #[derive(Default, Clone, Serialize, Deserialize)]

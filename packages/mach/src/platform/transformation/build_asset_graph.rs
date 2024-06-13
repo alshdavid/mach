@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use super::run_resolvers::run_resolvers;
-use crate::platform::config::PluginContainerSync;
+use crate::platform::plugins::PluginContainerSync;
 use crate::platform::config::ROOT_ASSET;
 use crate::platform::transformation::run_transformers::run_transformers;
 use crate::public::Asset;
