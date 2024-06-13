@@ -23,7 +23,7 @@ pub struct Asset {
   /// How the asset behaves within the bundle
   pub bundle_behavior: BundleBehavior,
   /// Symbols exported by the asset
-  pub exported_symbols: Vec<ExportSymbol>,
+  pub linking_symbols: Vec<ExportSymbol>,
 }
 
 impl Asset {
