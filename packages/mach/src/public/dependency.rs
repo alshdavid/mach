@@ -8,7 +8,7 @@ use super::BundleBehavior;
 use super::DependencyId;
 use super::DependencyPriority;
 use super::ImportSymbol;
-use super::ModuleSymbol;
+use super::LinkingSymbol;
 use super::ReexportSymbol;
 use super::SpecifierType;
 
@@ -27,7 +27,7 @@ pub struct Dependency {
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this target
-  pub linking_symbol: ModuleSymbol,
+  pub linking_symbol: LinkingSymbol,
   /// Where to place the dependency within the bundle
   pub bundle_behavior: BundleBehavior,
 }

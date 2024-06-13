@@ -2,9 +2,9 @@ use swc_core::ecma::ast::*;
 
 use super::walk_cjs::analyze_js_file_cjs;
 use super::walk_esm::analyze_js_file_esm;
-use crate::public::ModuleSymbol;
+use crate::public::LinkingSymbol;
 
-pub type AnalyzeFileResult = Vec<ModuleSymbol>;
+pub type AnalyzeFileResult = Vec<LinkingSymbol>;
 
 /// This will look through a JavaScript file and find/label the
 /// import/exports within it

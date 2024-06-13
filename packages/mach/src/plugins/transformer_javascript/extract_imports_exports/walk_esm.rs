@@ -2,9 +2,9 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
-use crate::public::ModuleSymbol;
+use crate::public::LinkingSymbol;
 
-pub fn analyze_js_file_esm(module: &Program) -> Vec<ModuleSymbol> {
+pub fn analyze_js_file_esm(module: &Program) -> Vec<LinkingSymbol> {
   let mut w = WalkerEsm { result: vec![] };
 
   module.visit_with(&mut w);
@@ -14,7 +14,7 @@ pub fn analyze_js_file_esm(module: &Program) -> Vec<ModuleSymbol> {
 
 #[derive(Debug)]
 pub struct WalkerEsm {
-  result: Vec<ModuleSymbol>,
+  result: Vec<LinkingSymbol>,
 }
 
 impl Visit for WalkerEsm {
@@ -38,7 +38,7 @@ impl Visit for WalkerEsm {
               // import './foo'
               //
               if decl.specifiers.len() == 0 {
-                self.result.push(ModuleSymbol::ImportDirect {
+                self.result.push(LinkingSymbol::ImportDirect {
                   specifier: import_specifier,
                 });
                 continue 'module_loop;
@@ -56,7 +56,7 @@ impl Visit for WalkerEsm {
                       let ModuleExportName::Ident(imported) = imported else {
                         unreachable!();
                       };
-                      self.result.push(ModuleSymbol::ImportRenamed {
+                      self.result.push(LinkingSymbol::ImportRenamed {
                         sym: imported.sym.to_string(),
                         sym_as: name.local.sym.to_string(),
                         specifier: import_specifier.clone(),
@@ -66,7 +66,7 @@ impl Visit for WalkerEsm {
                     // import { foo } from './foo'
                     //
                     else {
-                      self.result.push(ModuleSymbol::ImportNamed {
+                      self.result.push(LinkingSymbol::ImportNamed {
                         sym: name.local.sym.to_string(),
                         specifier: import_specifier.clone(),
                       });
@@ -76,7 +76,7 @@ impl Visit for WalkerEsm {
                   // import foo from './foo'
                   //
                   ImportSpecifier::Default(ident) => {
-                    self.result.push(ModuleSymbol::ImportDefault {
+                    self.result.push(LinkingSymbol::ImportDefault {
                       sym_as: ident.local.sym.to_string(),
                       specifier: import_specifier.clone(),
                     });
@@ -85,7 +85,7 @@ impl Visit for WalkerEsm {
                   // import * as foo from './foo'
                   //
                   ImportSpecifier::Namespace(decl) => {
-                    self.result.push(ModuleSymbol::ImportNamespace {
+                    self.result.push(LinkingSymbol::ImportNamespace {
                       sym_as: decl.local.sym.to_string(),
                       specifier: import_specifier.clone(),
                     });
@@ -100,7 +100,7 @@ impl Visit for WalkerEsm {
                 // export class foo {}
                 //
                 Decl::Class(decl) => {
-                  self.result.push(ModuleSymbol::ExportNamed {
+                  self.result.push(LinkingSymbol::ExportNamed {
                     sym: decl.ident.sym.to_string(),
                   });
                 }
@@ -108,7 +108,7 @@ impl Visit for WalkerEsm {
                 // export function foo() {}
                 //
                 Decl::Fn(decl) => {
-                  self.result.push(ModuleSymbol::ExportNamed {
+                  self.result.push(LinkingSymbol::ExportNamed {
                     sym: decl.ident.sym.to_string(),
                   });
                 }
@@ -120,7 +120,7 @@ impl Visit for WalkerEsm {
                       // export const foo = ''
                       //
                       Pat::Ident(decl) => {
-                        self.result.push(ModuleSymbol::ExportNamed {
+                        self.result.push(LinkingSymbol::ExportNamed {
                           sym: decl.id.sym.to_string(),
                         });
                       }
@@ -139,7 +139,7 @@ impl Visit for WalkerEsm {
                             // export const { one } = foo
                             //
                             ObjectPatProp::Assign(prop) => {
-                              self.result.push(ModuleSymbol::ExportDestructured {
+                              self.result.push(LinkingSymbol::ExportDestructured {
                                 sym: prop.key.sym.to_string(),
                                 sym_source: sym_source.sym.to_string(),
                               });
@@ -168,7 +168,7 @@ impl Visit for WalkerEsm {
                                 },
                                 PropName::BigInt(_) => todo!(),
                               };
-                              self.result.push(ModuleSymbol::ExportDestructuredRenamed {
+                              self.result.push(LinkingSymbol::ExportDestructuredRenamed {
                                 sym: key,
                                 sym_as: ident.sym.to_string(),
                                 sym_source: sym_source.sym.to_string(),
@@ -198,7 +198,7 @@ impl Visit for WalkerEsm {
                           };
                           match elm {
                             Pat::Ident(ident) => {
-                              self.result.push(ModuleSymbol::ExportDestructured {
+                              self.result.push(LinkingSymbol::ExportDestructured {
                                 sym: ident.sym.to_string(),
                                 sym_source: sym_source.sym.to_string(),
                               });
@@ -243,7 +243,7 @@ impl Visit for WalkerEsm {
                         let Some(import_specifier) = &decl.src else {
                           continue 'module_loop;
                         };
-                        self.result.push(ModuleSymbol::ReexportNamespace {
+                        self.result.push(LinkingSymbol::ReexportNamespace {
                           sym_as: ident.sym.to_string(),
                           specifier: import_specifier.value.to_string(),
                         })
@@ -265,7 +265,7 @@ impl Visit for WalkerEsm {
                         // export { foo as bar } from "specifier"
                         //
                         if let Some(ModuleExportName::Ident(exported)) = &name.exported {
-                          self.result.push(ModuleSymbol::ReexportRenamed {
+                          self.result.push(LinkingSymbol::ReexportRenamed {
                             sym: ident.sym.to_string(),
                             sym_as: exported.sym.to_string(),
                             specifier: import_specifier,
@@ -275,7 +275,7 @@ impl Visit for WalkerEsm {
                         // export { foo } from "specifier"
                         //
                         else {
-                          self.result.push(ModuleSymbol::ReexportNamed {
+                          self.result.push(LinkingSymbol::ReexportNamed {
                             sym: ident.sym.to_string(),
                             specifier: import_specifier,
                           });
@@ -285,7 +285,7 @@ impl Visit for WalkerEsm {
                         // export { foo as bar }"
                         //
                         if let Some(ModuleExportName::Ident(exported)) = &name.exported {
-                          self.result.push(ModuleSymbol::ExportRenamed {
+                          self.result.push(LinkingSymbol::ExportRenamed {
                             sym: ident.sym.to_string(),
                             sym_as: exported.sym.to_string(),
                           });
@@ -294,7 +294,7 @@ impl Visit for WalkerEsm {
                         // export { foo }"
                         //
                         else {
-                          self.result.push(ModuleSymbol::ExportNamed {
+                          self.result.push(LinkingSymbol::ExportNamed {
                             sym: ident.sym.to_string(),
                           });
                         }
@@ -314,7 +314,7 @@ impl Visit for WalkerEsm {
             // export default ''
             //
             ModuleDecl::ExportDefaultDecl(_) => {
-              self.result.push(ModuleSymbol::ExportDefault);
+              self.result.push(LinkingSymbol::ExportDefault);
             }
 
             //
@@ -322,7 +322,7 @@ impl Visit for WalkerEsm {
             // export default foo
             //
             ModuleDecl::ExportDefaultExpr(_) => {
-              self.result.push(ModuleSymbol::ExportDefault);
+              self.result.push(LinkingSymbol::ExportDefault);
             }
 
             //
@@ -333,7 +333,7 @@ impl Visit for WalkerEsm {
                 continue 'module_loop;
               }
               let import_specifier = decl.src.value.to_string();
-              self.result.push(ModuleSymbol::ReexportAll {
+              self.result.push(LinkingSymbol::ReexportAll {
                 specifier: import_specifier,
               });
             }
@@ -397,7 +397,7 @@ impl Visit for WalkerEsm {
                 match prop {
                   // const { foo, bar } = import()
                   ObjectPatProp::Assign(assign) => {
-                    self.result.push(ModuleSymbol::ImportDynamicNamed {
+                    self.result.push(LinkingSymbol::ImportDynamicNamed {
                       sym: assign.key.sym.to_string(),
                       specifier: specifier.clone(),
                     })
@@ -406,28 +406,28 @@ impl Visit for WalkerEsm {
                   ObjectPatProp::KeyValue(key_value) => {
                     println!("hiiii");
                     let PropName::Ident(key) = &key_value.key else {
-                      self.result.push(ModuleSymbol::ImportDynamic { specifier });
+                      self.result.push(LinkingSymbol::ImportDynamic { specifier });
                       return;
                     };
                     let Pat::Ident(value) = &*key_value.value else {
-                      self.result.push(ModuleSymbol::ImportDynamic { specifier });
+                      self.result.push(LinkingSymbol::ImportDynamic { specifier });
                       return;
                     };
-                    self.result.push(ModuleSymbol::ImportDynamicRenamed {
+                    self.result.push(LinkingSymbol::ImportDynamicRenamed {
                       sym: key.sym.to_string(),
                       sym_as: value.id.sym.to_string(),
                       specifier: specifier.clone(),
                     })
                   }
                   ObjectPatProp::Rest(_) => {
-                    self.result.push(ModuleSymbol::ImportDynamic { specifier });
+                    self.result.push(LinkingSymbol::ImportDynamic { specifier });
                     return;
                   }
                 }
               }
             }
             // Otherwise we don't know what is being imported
-            _ => self.result.push(ModuleSymbol::ImportDynamic { specifier }),
+            _ => self.result.push(LinkingSymbol::ImportDynamic { specifier }),
           }
         }
       }
@@ -455,7 +455,7 @@ impl Visit for WalkerEsm {
             let Lit::Str(import_specifier) = import_specifier_arg else {
               return;
             };
-            return self.result.push(ModuleSymbol::ImportDynamic {
+            return self.result.push(LinkingSymbol::ImportDynamic {
               specifier: import_specifier.value.to_string(),
             });
           }
@@ -468,7 +468,7 @@ impl Visit for WalkerEsm {
             let specifier_arg = call.args.get(0).unwrap();
             match &*specifier_arg.expr {
               Expr::Lit(Lit::Str(lit_str)) => {
-                return self.result.push(ModuleSymbol::ImportDynamic {
+                return self.result.push(LinkingSymbol::ImportDynamic {
                   specifier: lit_str.value.to_string(),
                 });
               }

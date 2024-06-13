@@ -7,7 +7,7 @@ use crate::public::Asset;
 use crate::public::DependencyOptions;
 use crate::public::ExportSymbol;
 use crate::public::MachConfig;
-use crate::public::ModuleSymbol;
+use crate::public::LinkingSymbol;
 use crate::public::MutableAsset;
 
 pub fn run_transformers(
@@ -28,7 +28,7 @@ pub fn run_transformers(
     ));
   };
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
-  let mut linking_symbols = Vec::<ModuleSymbol>::new();
+  let mut linking_symbols = Vec::<LinkingSymbol>::new();
 
   let mut mutable_asset = MutableAsset::new(
     &file_path,

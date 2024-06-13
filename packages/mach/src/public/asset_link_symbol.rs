@@ -4,7 +4,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
-pub enum ModuleSymbol {
+pub enum LinkingSymbol {
   /// import './foo'
   ImportDirect {
     specifier: String,
@@ -114,7 +114,7 @@ pub enum ModuleSymbol {
   ExportCommonjs,
 }
 
-impl Default for ModuleSymbol {
+impl Default for LinkingSymbol {
     fn default() -> Self {
       Self::ExportDefault
     }

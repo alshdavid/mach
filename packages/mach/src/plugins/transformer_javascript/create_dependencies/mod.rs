@@ -2,10 +2,10 @@ use crate::public::BundleBehavior;
 use crate::public::Dependency;
 use crate::public::DependencyOptions;
 use crate::public::DependencyPriority;
-use crate::public::ModuleSymbol;
+use crate::public::LinkingSymbol;
 use crate::public::SpecifierType;
 
-pub fn create_dependencies(linking_symbols: &[ModuleSymbol]) -> Vec<DependencyOptions> {
+pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyOptions> {
   let mut dependencies = vec![];
 
   for linking_symbol in linking_symbols.to_owned().into_iter() {
@@ -19,48 +19,48 @@ pub fn create_dependencies(linking_symbols: &[ModuleSymbol]) -> Vec<DependencyOp
     };
 
     match linking_symbol {
-      ModuleSymbol::ImportDirect { specifier } => {
+      LinkingSymbol::ImportDirect { specifier } => {
         dependency.specifier = specifier;
       }
-      ModuleSymbol::ImportNamed { sym, specifier } => {
+      LinkingSymbol::ImportNamed { sym, specifier } => {
         dependency.specifier_type = SpecifierType::ESM;
         dependency.specifier = specifier;
       }
-      ModuleSymbol::ImportRenamed {
+      LinkingSymbol::ImportRenamed {
         sym,
         sym_as,
         specifier,
       } => {}
-      ModuleSymbol::ImportDefault { sym_as, specifier } => todo!(),
-      ModuleSymbol::ImportNamespace { sym_as, specifier } => todo!(),
-      ModuleSymbol::ImportDynamic { specifier } => todo!(),
-      ModuleSymbol::ImportDynamicNamed { specifier, sym } => todo!(),
-      ModuleSymbol::ImportDynamicRenamed {
+      LinkingSymbol::ImportDefault { sym_as, specifier } => todo!(),
+      LinkingSymbol::ImportNamespace { sym_as, specifier } => todo!(),
+      LinkingSymbol::ImportDynamic { specifier } => todo!(),
+      LinkingSymbol::ImportDynamicNamed { specifier, sym } => todo!(),
+      LinkingSymbol::ImportDynamicRenamed {
         specifier,
         sym,
         sym_as,
       } => todo!(),
-      ModuleSymbol::ExportNamed { sym } => todo!(),
-      ModuleSymbol::ExportDestructured { sym, sym_source } => todo!(),
-      ModuleSymbol::ExportDestructuredRenamed {
+      LinkingSymbol::ExportNamed { sym } => todo!(),
+      LinkingSymbol::ExportDestructured { sym, sym_source } => todo!(),
+      LinkingSymbol::ExportDestructuredRenamed {
         sym,
         sym_as,
         sym_source,
       } => todo!(),
-      ModuleSymbol::ExportRenamed { sym, sym_as } => todo!(),
-      ModuleSymbol::ExportDefault => todo!(),
-      ModuleSymbol::ReexportAll { specifier } => todo!(),
-      ModuleSymbol::ReexportNamed { sym, specifier } => todo!(),
-      ModuleSymbol::ReexportRenamed {
+      LinkingSymbol::ExportRenamed { sym, sym_as } => todo!(),
+      LinkingSymbol::ExportDefault => todo!(),
+      LinkingSymbol::ReexportAll { specifier } => todo!(),
+      LinkingSymbol::ReexportNamed { sym, specifier } => todo!(),
+      LinkingSymbol::ReexportRenamed {
         sym,
         sym_as,
         specifier,
       } => todo!(),
-      ModuleSymbol::ReexportNamespace { sym_as, specifier } => todo!(),
-      ModuleSymbol::ImportCommonjs { specifier } => todo!(),
-      ModuleSymbol::ImportCommonjsNamed { specifier, sym } => todo!(),
-      ModuleSymbol::ExportCommonjsNamed { sym } => todo!(),
-      ModuleSymbol::ExportCommonjs => todo!(),
+      LinkingSymbol::ReexportNamespace { sym_as, specifier } => todo!(),
+      LinkingSymbol::ImportCommonjs { specifier } => todo!(),
+      LinkingSymbol::ImportCommonjsNamed { specifier, sym } => todo!(),
+      LinkingSymbol::ExportCommonjsNamed { sym } => todo!(),
+      LinkingSymbol::ExportCommonjs => todo!(),
     }
 
     dependencies.push(dependency);

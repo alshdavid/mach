@@ -2,7 +2,7 @@ use std::path::Path;
 
 use super::DependencyOptions;
 use super::ExportSymbol;
-use super::ModuleSymbol;
+use super::LinkingSymbol;
 
 #[derive(Debug)]
 pub struct MutableAsset<'a> {
@@ -10,7 +10,7 @@ pub struct MutableAsset<'a> {
   pub kind: &'a mut String,
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
-  pub linking_symbols: &'a mut Vec<ModuleSymbol>,
+  pub linking_symbols: &'a mut Vec<LinkingSymbol>,
 }
 
 impl<'a> MutableAsset<'a> {
@@ -19,7 +19,7 @@ impl<'a> MutableAsset<'a> {
     kind: &'a mut String,
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
-    linking_symbols: &'a mut Vec<ModuleSymbol>,
+    linking_symbols: &'a mut Vec<LinkingSymbol>,
   ) -> Self {
     return MutableAsset {
       file_path,

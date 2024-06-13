@@ -5,7 +5,7 @@ use super::hash::hash_sha_256;
 use super::AssetId;
 use super::BundleBehavior;
 use super::ExportSymbol;
-use super::ModuleSymbol;
+use super::LinkingSymbol;
 
 #[derive(Clone, Default)]
 pub struct Asset {
@@ -24,7 +24,7 @@ pub struct Asset {
   /// How the asset behaves within the bundle
   pub bundle_behavior: BundleBehavior,
   /// Symbols exported by the asset
-  pub linking_symbols: Vec<ModuleSymbol>,
+  pub linking_symbols: Vec<LinkingSymbol>,
 }
 
 impl Asset {

@@ -4,18 +4,18 @@ use swc_core::common::Span;
 use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
-use crate::public::ModuleSymbol;
+use crate::public::LinkingSymbol;
 
 
 static REQUIRE_SYMBOL: Lazy<Atom> = Lazy::new(|| Atom::from("require"));
 
-pub fn analyze_js_file_cjs(module: &Program) -> Vec<ModuleSymbol> {
+pub fn analyze_js_file_cjs(module: &Program) -> Vec<LinkingSymbol> {
   let mut w = WalkerCjs::default();
 
   module.visit_with(&mut w);
 
   if w.has_export {
-    w.results.push(ModuleSymbol::ExportCommonjs);
+    w.results.push(LinkingSymbol::ExportCommonjs);
   }
 
   return w.results;
@@ -24,7 +24,7 @@ pub fn analyze_js_file_cjs(module: &Program) -> Vec<ModuleSymbol> {
 #[derive(Debug, Default)]
 pub struct WalkerCjs {
   has_export: bool,
-  results: Vec<ModuleSymbol>,
+  results: Vec<LinkingSymbol>,
 }
 
 impl WalkerCjs {
@@ -111,7 +111,7 @@ impl Visit for WalkerCjs {
         let Lit::Str(import_specifier) = import_specifier_arg else {
           return;
         };
-        self.results.push(ModuleSymbol::ImportCommonjs {
+        self.results.push(LinkingSymbol::ImportCommonjs {
           specifier: import_specifier.value.to_string(),
         });
       }
