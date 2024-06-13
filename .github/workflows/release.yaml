@@ -41,6 +41,20 @@ jobs:
           source .github/actions/setup-env/setup-env.bash
           just unit-tests
 
+  benchmarks-micro:
+    name: "🧪 Benchmarks Micro"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-just
+      - uses: ./.github/actions/setup-nodejs
+      - uses: ./.github/actions/setup-rust
+      - uses: ./.github/actions/build-mach
+      - name: "Benchmarks (Micro)"
+        run: |
+          source .github/actions/setup-env/setup-env.bash
+          just bench-micro
+
   build:
     strategy:
       matrix:

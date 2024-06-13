@@ -158,6 +158,9 @@ fmt:
   node_modules/.bin/prettier ./packages --write
   node_modules/.bin/prettier ./examples --write
 
+bench-micro:
+  cargo bench
+
 [unix]
 build-publish:
   npm i
