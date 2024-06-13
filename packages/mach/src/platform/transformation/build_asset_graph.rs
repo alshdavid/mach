@@ -40,8 +40,6 @@ pub fn build_asset_graph(
 
   while let Some(dependency) = queue.pop() {
     let resolve_result = run_resolvers(&config, &plugins, &dependency)?;
-    println!("{:?}", dependency);
-
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
       c.asset_graph
