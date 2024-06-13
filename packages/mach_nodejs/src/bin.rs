@@ -1,8 +1,8 @@
 use std::thread;
 use std::time::SystemTime;
 
-use mach_bundler_core::cli::parse_options;
-use mach_bundler_core::cli::CommandType;
+use mach_bundler_core::core::cli::parse_options;
+use mach_bundler_core::core::cli::CommandType;
 // use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;
 use mach_bundler_core::Mach;

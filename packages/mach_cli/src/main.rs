@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
-use mach_bundler_core::cli::parse_options_from_cli;
-use mach_bundler_core::cli::CommandType;
+use mach_bundler_core::core::cli::parse_options_from_cli;
+use mach_bundler_core::core::cli::CommandType;
 // use mach_bundler_core::public::RpcHosts;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::DevOptions;

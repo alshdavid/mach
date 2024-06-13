@@ -9,13 +9,6 @@ use markup5ever_rcdom::Handle;
 use markup5ever_rcdom::Node;
 use markup5ever_rcdom::NodeData;
 
-/*
-{
-  "407c55513cdc22a": "e14bb8092cf1ed9.css",
-  "cc33a425931bc8f": "index.e266a5c3966ebec.js",
-  "db89c592f62b063": "index.html"
-}
-*/
 #[derive(Default)]
 pub struct CreateElementOptions<'a> {
   pub tag_name: &'a str,

@@ -5,7 +5,7 @@ use divan::bench;
 use divan::Bencher;
 
 use super::super::build_asset_graph;
-use crate::platform::plugins::load_plugins;
+use crate::core::plugins::load_plugins;
 use crate::public::Compilation;
 use crate::public::MachConfig;
 use crate::public::Machrc;

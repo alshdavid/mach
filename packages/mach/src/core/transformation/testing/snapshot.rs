@@ -8,9 +8,9 @@ use petgraph::visit::NodeRef;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::platform::transformation::build_asset_graph;
-use crate::platform::transformation::testing::utils::setup_root;
-use crate::platform::transformation::testing::utils::SNAPSHOT_FILENAME;
+use crate::core::transformation::build_asset_graph;
+use crate::core::transformation::testing::utils::setup_root;
+use crate::core::transformation::testing::utils::SNAPSHOT_FILENAME;
 use crate::public::BundleBehavior;
 use crate::public::DependencyPriority;
 use crate::public::LinkingSymbol;

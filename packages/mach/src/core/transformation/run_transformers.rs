@@ -1,8 +1,8 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
-use crate::platform::plugins::PluginContainerSync;
-use crate::platform::plugins::TransformerTarget;
+use crate::core::plugins::PluginContainerSync;
+use crate::core::plugins::TransformerTarget;
 use crate::public::Asset;
 use crate::public::DependencyOptions;
 use crate::public::LinkingSymbol;

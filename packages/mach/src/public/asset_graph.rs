@@ -17,7 +17,7 @@ use super::AssetId;
 use super::Dependency;
 use super::DependencyId;
 use super::MachConfig;
-use crate::platform::config::ROOT_ASSET;
+use crate::core::config::ROOT_ASSET;
 use crate::public::DependencyPriority;
 
 pub type AssetGraphSync = Arc<RwLock<AssetGraph>>;
