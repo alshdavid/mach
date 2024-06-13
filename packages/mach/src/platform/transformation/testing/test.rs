@@ -1,7 +1,6 @@
 use super::utils::test_project_snapshot;
 use super::utils::FIXTURES;
 
-
 // Retries to try catch determinism issues
 const RETRIES: usize = 5;
 

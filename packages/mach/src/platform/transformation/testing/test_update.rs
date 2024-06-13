@@ -8,7 +8,7 @@ fn _test_update_snapshots() {
     let project_root = dir.unwrap().path();
     let project_name = project_root.file_stem().unwrap().to_str().unwrap();
     if project_name.starts_with("skip_") {
-      continue
+      continue;
     }
     println!("UPDATE: {}", project_name);
     _generate_project_snapshot(&project_root)

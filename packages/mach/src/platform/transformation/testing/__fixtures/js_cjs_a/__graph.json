@@ -76,9 +76,7 @@
     "file_path": "b.js",
     "kind": "js",
     "bundle_behavior": "Default",
-    "linking_symbols": [
-      "ExportCommonjs"
-    ],
+    "linking_symbols": ["ExportCommonjs"],
     "imports": {}
   }
 }

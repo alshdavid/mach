@@ -31,10 +31,16 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       } => {
         dependency.specifier = specifier;
       }
-      LinkingSymbol::ImportDefault { sym_as: _, specifier } => {
+      LinkingSymbol::ImportDefault {
+        sym_as: _,
+        specifier,
+      } => {
         dependency.specifier = specifier;
       }
-      LinkingSymbol::ImportNamespace { sym_as: _, specifier } => {
+      LinkingSymbol::ImportNamespace {
+        sym_as: _,
+        specifier,
+      } => {
         dependency.specifier = specifier;
       }
       LinkingSymbol::ImportDynamic { specifier } => {
@@ -54,7 +60,10 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
         dependency.priority = DependencyPriority::Lazy;
       }
       LinkingSymbol::ExportNamed { sym: _ } => continue,
-      LinkingSymbol::ExportDestructured { sym: _, sym_source: _ } => continue,
+      LinkingSymbol::ExportDestructured {
+        sym: _,
+        sym_source: _,
+      } => continue,
       LinkingSymbol::ExportDestructuredRenamed {
         sym: _,
         sym_as: _,
@@ -69,7 +78,10 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
         sym_as: _,
         specifier,
       } => dependency.specifier = specifier,
-      LinkingSymbol::ReexportNamespace { sym_as: _, specifier } => dependency.specifier = specifier,
+      LinkingSymbol::ReexportNamespace {
+        sym_as: _,
+        specifier,
+      } => dependency.specifier = specifier,
       LinkingSymbol::ImportCommonjs { specifier } => {
         dependency.specifier = specifier;
         dependency.specifier_type = SpecifierType::Commonjs;
