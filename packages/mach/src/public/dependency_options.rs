@@ -6,6 +6,7 @@ use serde::Serialize;
 use super::BundleBehavior;
 use super::DependencyPriority;
 use super::ImportSymbol;
+use super::ModuleSymbol;
 use super::ReexportSymbol;
 use super::SpecifierType;
 
@@ -15,7 +16,6 @@ pub struct DependencyOptions {
   pub specifier_type: SpecifierType,
   pub priority: DependencyPriority,
   pub resolve_from: PathBuf,
-  pub imported_symbols: Vec<ImportSymbol>,
-  pub reimported_symbols: Vec<ReexportSymbol>,
+  pub linking_symbols: Vec<ModuleSymbol>,
   pub bundle_behavior: BundleBehavior,
 }

@@ -28,11 +28,13 @@ mod packages;
 mod resolver;
 mod specifier_type;
 mod transformer;
+mod asset_link_symbol;
 
 pub use self::asset::*;
 pub use self::asset_contents::*;
 pub use self::asset_graph::*;
 pub use self::asset_id::*;
+pub use self::asset_link_symbol::*;
 pub use self::asset_map::*;
 pub use self::bundle::*;
 pub use self::bundle_behavior::*;

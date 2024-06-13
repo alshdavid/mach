@@ -182,24 +182,24 @@ fn test_project_snapshot(
           );
 
       assert!(
-            snap_dependency.imported_symbols.len() == dependency.imported_symbols.len(),
+            snap_dependency.linking_symbols.len() == dependency.linking_symbols.len(),
             "Error: {}\n\tIncorrect Imported Symbols Length\n\tImport: {:?}\n\tSpecifier: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
             project_name,
             source_asset.file_path_relative,
             dependency.specifier,
-            snap_dependency.imported_symbols.len(),
-            dependency.imported_symbols.len(),
+            snap_dependency.linking_symbols.len(),
+            dependency.linking_symbols.len(),
           );
 
-      for imported_symbol in dependency.imported_symbols.iter() {
+      for imported_symbol in dependency.linking_symbols.iter() {
         assert!(
-            snap_dependency.imported_symbols.contains(imported_symbol),
+            snap_dependency.linking_symbols.contains(imported_symbol),
             "Error: {}\n\tMissing Import Symbol\n\tImport: {:?}\n\tSpecifier: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
             project_name,
             source_asset.file_path_relative,
             dependency.specifier,
-            snap_dependency.imported_symbols,
-            dependency.imported_symbols,
+            snap_dependency.linking_symbols,
+            dependency.linking_symbols,
           )
       }
 
@@ -233,22 +233,22 @@ fn test_project_snapshot(
     );
 
     assert!(
-      snap_asset.exported_symbols.len() == source_asset.exported_symbols.len(),
+      snap_asset.linking_symbols.len() == source_asset.linking_symbols.len(),
       "Error: {}\n\tIncorrect Exported Symbols Length\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
       project_name,
       source_asset.file_path_relative,
-      snap_asset.exported_symbols.len(),
-      source_asset.exported_symbols.len(),
+      snap_asset.linking_symbols.len(),
+      source_asset.linking_symbols.len(),
     );
 
-    for exported_symbol in source_asset.exported_symbols.iter() {
+    for linking_symbols in source_asset.linking_symbols.iter() {
       assert!(
-        snap_asset.exported_symbols.contains(exported_symbol),
-        "Error: {}\n\tMissing Import Symbol\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
+        snap_asset.linking_symbols.contains(linking_symbols),
+        "Error: {}\n\tMissing Linking Symbol\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
         project_name,
         source_asset.file_path_relative,
-        snap_asset.exported_symbols,
-        source_asset.exported_symbols,
+        snap_asset.linking_symbols,
+        source_asset.linking_symbols,
       )
     }
   }
@@ -287,8 +287,7 @@ fn generate_project_snapshot(project_root: &Path) {
           specifier_type: dependency.specifier_type.clone(),
           is_entry: dependency.is_entry.clone(),
           priority: dependency.priority.clone(),
-          imported_symbols: dependency.imported_symbols.clone(),
-          reexported_symbols: dependency.reexported_symbols.clone(),
+          linking_symbols: dependency.linking_symbols.clone(),
           bundle_behavior: dependency.bundle_behavior.clone(),
         },
       );
@@ -296,7 +295,7 @@ fn generate_project_snapshot(project_root: &Path) {
 
     let snapshot_entry = GraphSnapshotAsset {
       file_path: source_asset.file_path_relative.clone(),
-      exported_symbols: source_asset.exported_symbols.clone(),
+      linking_symbols: source_asset.linking_symbols.clone(),
       kind: source_asset.kind.clone(),
       bundle_behavior: source_asset.bundle_behavior.clone(),
       imports: snapshot_imports,

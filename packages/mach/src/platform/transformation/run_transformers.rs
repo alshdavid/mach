@@ -7,6 +7,7 @@ use crate::public::Asset;
 use crate::public::DependencyOptions;
 use crate::public::ExportSymbol;
 use crate::public::MachConfig;
+use crate::public::ModuleSymbol;
 use crate::public::MutableAsset;
 
 pub fn run_transformers(
@@ -27,14 +28,14 @@ pub fn run_transformers(
     ));
   };
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
-  let mut exported_symbols = Vec::<ExportSymbol>::new();
+  let mut linking_symbols = Vec::<ModuleSymbol>::new();
 
   let mut mutable_asset = MutableAsset::new(
     &file_path,
     &mut asset_kind,
     &mut content,
     &mut asset_dependencies,
-    &mut exported_symbols,
+    &mut linking_symbols,
   );
 
   let (mut pattern, mut transformers) = plugins.transformers.get(&file_target)?;
@@ -68,7 +69,7 @@ pub fn run_transformers(
   asset.name = file_target.file_stem.clone();
   asset.content = content;
   asset.kind = asset_kind;
-  asset.exported_symbols = exported_symbols;
+  asset.linking_symbols = linking_symbols;
 
   Ok(asset_dependencies)
 }

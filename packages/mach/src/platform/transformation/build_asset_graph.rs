@@ -31,8 +31,7 @@ pub fn build_asset_graph(
       source_asset_id: ROOT_ASSET.id.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
-      imported_symbols: Default::default(),
-      reexported_symbols: Default::default(),
+      linking_symbols: Default::default(),
       bundle_behavior: Default::default(),
     });
   }
@@ -57,7 +56,7 @@ pub fn build_asset_graph(
       name: Default::default(),
       kind: Default::default(),
       content: Default::default(),
-      exported_symbols: Default::default(),
+      linking_symbols: Default::default(),
     };
     completed_assets.insert(resolve_result.file_path.clone(), new_asset_id.clone());
 
@@ -74,8 +73,7 @@ pub fn build_asset_graph(
         source_asset_id: new_asset.id.clone(),
         resolve_from: resolve_result.file_path.clone(),
         priority: dependency_options.priority,
-        imported_symbols: dependency_options.imported_symbols,
-        reexported_symbols: dependency_options.reimported_symbols,
+        linking_symbols: dependency_options.linking_symbols,
         bundle_behavior: dependency_options.bundle_behavior,
       };
 

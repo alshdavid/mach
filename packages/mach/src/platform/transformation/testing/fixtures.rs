@@ -11,6 +11,7 @@ use crate::public::BundleBehavior;
 use crate::public::DependencyPriority;
 use crate::public::ExportSymbol;
 use crate::public::ImportSymbol;
+use crate::public::ModuleSymbol;
 use crate::public::ReexportSymbol;
 use crate::public::SpecifierType;
 
@@ -37,7 +38,7 @@ pub struct GraphSnapshotAsset {
   pub file_path: PathBuf,
   pub kind: String,
   pub bundle_behavior: BundleBehavior,
-  pub exported_symbols: Vec<ExportSymbol>,
+  pub linking_symbols: Vec<ModuleSymbol>,
   pub imports: GraphSnapshotImport,
 }
 
@@ -51,8 +52,7 @@ pub struct DependencySnapshot {
   pub specifier_type: SpecifierType,
   pub is_entry: bool,
   pub priority: DependencyPriority,
-  pub imported_symbols: Vec<ImportSymbol>,
-  pub reexported_symbols: Vec<ReexportSymbol>,
+  pub linking_symbols: Vec<ModuleSymbol>,
   pub bundle_behavior: BundleBehavior,
 }
 

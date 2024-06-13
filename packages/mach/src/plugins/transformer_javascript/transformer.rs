@@ -96,13 +96,13 @@ impl Transformer for TransformerJavaScript {
           specifier_type: dependency.specifier_type,
           priority: dependency.priority,
           resolve_from: asset.file_path.to_path_buf(),
-          imported_symbols: dependency.imported_symbols,
-          reimported_symbols: dependency.reexported_symbols,
+          // imported_symbols: dependency.imported_symbols,
+          linking_symbols: Default::default(),//dependency.linking_symbols,
           bundle_behavior: BundleBehavior::Default,
         });
       }
 
-      *asset.export_symbols = exported_symbols;
+      // *asset.export_symbols = exported_symbols;
 
       asset.set_code(&render_program(&program, source_map_og.clone()));
 

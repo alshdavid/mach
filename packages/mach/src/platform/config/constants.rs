@@ -15,5 +15,5 @@ pub static ROOT_ASSET: Lazy<Asset> = Lazy::new(|| Asset {
   kind: Default::default(),
   content: Default::default(),
   bundle_behavior: Default::default(),
-  exported_symbols: Default::default(),
+  linking_symbols: Default::default(),
 });

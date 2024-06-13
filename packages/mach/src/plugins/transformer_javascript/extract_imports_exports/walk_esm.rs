@@ -2,7 +2,7 @@ use swc_core::ecma::ast::*;
 use swc_core::ecma::visit::Visit;
 use swc_core::ecma::visit::VisitWith;
 
-use super::ModuleSymbol;
+use crate::public::ModuleSymbol;
 
 pub fn analyze_js_file_esm(module: &Program) -> Vec<ModuleSymbol> {
   let mut w = WalkerEsm { result: vec![] };

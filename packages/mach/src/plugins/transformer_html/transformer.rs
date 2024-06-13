@@ -33,10 +33,10 @@ impl Transformer for TransformerHtml {
         specifier_type: SpecifierType::ESM,
         priority: DependencyPriority::Lazy,
         resolve_from: asset.file_path.to_path_buf(),
-        imported_symbols: vec![ImportSymbol::Namespace {
-          sym_as: "".to_string(),
-        }],
-        reimported_symbols: Default::default(),
+        // imported_symbols: vec![ImportSymbol::Namespace {
+        //   sym_as: "".to_string(),
+        // }],
+        linking_symbols: Default::default(),
         bundle_behavior: BundleBehavior::Default,
       });
     }

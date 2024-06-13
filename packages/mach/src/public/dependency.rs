@@ -8,6 +8,7 @@ use super::BundleBehavior;
 use super::DependencyId;
 use super::DependencyPriority;
 use super::ImportSymbol;
+use super::ModuleSymbol;
 use super::ReexportSymbol;
 use super::SpecifierType;
 
@@ -28,9 +29,7 @@ pub struct Dependency {
   /// Path to resolve the specifier from
   pub resolve_from: PathBuf,
   /// Symbols that are imported from this target
-  pub imported_symbols: Vec<ImportSymbol>,
-  /// Symbols that are reexported from this target
-  pub reexported_symbols: Vec<ReexportSymbol>,
+  pub linking_symbols: Vec<ModuleSymbol>,
   /// Where to place the dependency within the bundle
   pub bundle_behavior: BundleBehavior,
 }
@@ -49,7 +48,7 @@ impl std::fmt::Debug for Dependency {
       .field("specifier_type", &self.specifier_type)
       .field("is_entry", &self.is_entry)
       .field("priority", &self.priority)
-      .field("imported_symbols", &self.imported_symbols)
+      .field("linking_symbols", &self.linking_symbols)
       .field("bundle_behavior", &self.bundle_behavior)
       .finish()
   }

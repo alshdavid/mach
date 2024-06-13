@@ -2,7 +2,7 @@ use swc_core::ecma::ast::*;
 
 use super::walk_cjs::analyze_js_file_cjs;
 use super::walk_esm::analyze_js_file_esm;
-use super::ModuleSymbol;
+use crate::public::ModuleSymbol;
 
 pub type AnalyzeFileResult = Vec<ModuleSymbol>;
 
