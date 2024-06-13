@@ -5,6 +5,7 @@ use std::thread;
 
 use mach_bundler_core::rpc::nodejs::RpcHostNodejs;
 use mach_bundler_core::BuildOptions;
+use mach_bundler_core::BuildResult;
 use mach_bundler_core::Mach;
 use napi::threadsafe_function::ThreadSafeCallContext;
 use napi::threadsafe_function::ThreadsafeFunction;
@@ -12,7 +13,6 @@ use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
 use napi::JsObject;
-use napi::JsUndefined;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -33,7 +33,7 @@ pub struct BuildOptionsNapi {
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BuildResult {
+pub struct BuildResultNapi {
   pub bundle_manifest: HashMap<String, String>,
   pub entries: HashMap<String, String>,
 }
@@ -44,7 +44,7 @@ pub fn build(
   env: Env,
   options: JsObject,
   callback: JsFunction,
-) -> napi::Result<JsUndefined> {
+) -> napi::Result<JsObject> {
   let options_napi = env.from_js_value::<BuildOptionsNapi, JsObject>(options)?;
   let mut options = BuildOptions::default();
 
@@ -72,16 +72,20 @@ pub fn build(
     options.project_root = Some(project_root);
   }
 
-  let thread_safe_callback: ThreadsafeFunction<usize> =
-    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<usize>| {
-      let message = ctx.env.to_js_value(&())?;
+  let (tx, rx) = tokio::sync::oneshot::channel::<anyhow::Result<BuildResult>>();
+
+  thread::spawn(move || tx.send(mach.build(options)));
+
+  let thread_safe_callback: ThreadsafeFunction<BuildResult> =
+    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<BuildResult>| {
+      let message = ctx.env.to_js_value(&ctx.value)?;
       Ok(vec![message])
     })?;
 
-  thread::spawn(move || {
-    match mach.build(options) {
-      Ok(_result) => {
-        thread_safe_callback.call(Ok(42), ThreadsafeFunctionCallMode::NonBlocking);
+  env.spawn_future(async move {
+    match rx.await.unwrap() {
+      Ok(result) => {
+        thread_safe_callback.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking);
       }
       Err(err) => {
         thread_safe_callback.call(
@@ -90,7 +94,6 @@ pub fn build(
         );
       }
     };
-  });
-
-  env.get_undefined()
+    Ok(())
+  })
 }

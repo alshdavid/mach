@@ -1,13 +1,14 @@
 import { Mach } from '@alshdavid/mach'
 
 const mach = new Mach({
-  nodeWorkers: 1,
+  nodeWorkers: 16,
 })
 
 const result = await mach.build({
   entries: ['./index.js'],
 })
 
+console.log(result)
 
-await new Promise(res => setTimeout(res, 2000))
+// await new Promise(res => setTimeout(res, 2000))
 // console.log({ result })

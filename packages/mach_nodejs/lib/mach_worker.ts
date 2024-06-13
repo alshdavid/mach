@@ -8,7 +8,7 @@ export class MachWorker {
   }
 
   async #rpc([err, id, data, done]: RpcCallbackWorker) {
-    console.log(["W", err, id, data, done])
+    console.log(["W", (await import('node:worker_threads')).threadId, err, id, data, done])
     if (err) {
       return done({ Err: err })
     }

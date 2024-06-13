@@ -8,7 +8,6 @@ use napi::Env;
 use napi::JsFunction;
 use napi::JsNumber;
 use napi::JsObject;
-use napi::JsUndefined;
 use napi_derive::napi;
 
 use crate::cmd::build;
@@ -58,14 +57,14 @@ pub fn mach_napi_new(
 
 #[napi]
 pub fn mach_napi_build(
-  mach_napi: &MachNapi,
+  this: &MachNapi,
   env: Env,
   options: JsObject,
   callback: JsFunction,
-) -> napi::Result<JsUndefined> {
+) -> napi::Result<JsObject> {
   build(
-    mach_napi.rpc_host_nodejs.clone(),
-    mach_napi.mach.clone(),
+    this.rpc_host_nodejs.clone(),
+    this.mach.clone(),
     env,
     options,
     callback,

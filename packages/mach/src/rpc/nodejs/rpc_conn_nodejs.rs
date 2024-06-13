@@ -73,7 +73,6 @@ impl RpcConnection for RpcConnectionNodejs {
     self
       .tx_rpc
       .send(RpcConnectionMessage::Ping { response: tx })?;
-    println!("hello");
     Ok(rx.recv()?.map_err(|e| anyhow::anyhow!(e))?)
   }
 }

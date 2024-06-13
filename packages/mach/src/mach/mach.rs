@@ -20,7 +20,6 @@ use crate::rpc::RpcHosts;
 
 #[derive(Clone, Default)]
 pub struct MachOptions {
-  /// Map of adapters used to communicate with plugin contexts
   pub rpc_hosts: RpcHosts,
   /// How many threads to use for compilation
   pub threads: Option<usize>,

@@ -69,6 +69,9 @@ pub fn build(
 
   let workers = nodejs.start()?;
   workers.ping()?;
+  workers.ping()?;
+  workers.ping()?;
+  workers.ping()?;
 
   // nodejs.shutdown()?;
 

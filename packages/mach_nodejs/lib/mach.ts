@@ -30,7 +30,7 @@ export class Mach {
   }
 
   async #rpc([err, id, data, done]: RpcCallbackMain) {
-    console.log(["M", err, id, data, done])
+    // console.log(["M", err, id, data, done])
     if (err) {
       return done({ Err: err })
     }
