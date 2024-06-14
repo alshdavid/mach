@@ -63,4 +63,5 @@ jobs:
       - name: "Benchmarks (Micro)"
         run: |
           source .github/actions/setup-env/setup-env.bash
+          just benchmark-generate mach 1
           just bench-micro
