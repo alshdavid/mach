@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "./.github/scripts",
+    "./benchmarks/*",
     "./packages/mach_nodejs",
     "./packages/mach_npm",
     "./packages/mach_playground",
