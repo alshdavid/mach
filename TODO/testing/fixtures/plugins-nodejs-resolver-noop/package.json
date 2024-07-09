@@ -1,0 +1,6 @@
+{
+  "name": "@workspace/integration-test-plugins-nodejs-resolver-noop",
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

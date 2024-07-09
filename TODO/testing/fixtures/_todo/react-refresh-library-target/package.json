@@ -1,0 +1,17 @@
+{
+  "source": "index.js",
+  "main": "dist/main.js",
+  "dependencies": {
+    "@parcel/transformer-react-refresh-wrap": "*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "name": "@workspace/integration-test-react-refresh-library-target",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

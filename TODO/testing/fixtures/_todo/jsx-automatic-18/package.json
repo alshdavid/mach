@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "dependencies": {
+    "react": "18.0.0-rc.0-next-9a7e6bf0d-2022011"
+  },
+  "name": "@workspace/integration-test-jsx-automatic-18",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

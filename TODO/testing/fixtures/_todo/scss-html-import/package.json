@@ -1,0 +1,25 @@
+{
+  "name": "@workspace/integration-test-scss-html-import",
+  "private": true,
+  "targets": {
+    "target1": {
+      "source": [
+        "./target1.html"
+      ],
+      "distDir": "./target1/"
+    },
+    "target2": {
+      "source": [
+        "./target2.html"
+      ],
+      "distDir": "./target2/"
+    }
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

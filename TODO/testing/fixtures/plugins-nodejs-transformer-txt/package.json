@@ -1,0 +1,6 @@
+{
+  "name": "@workspace/integration-test-plugins-nodejs-transformer-txt",
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

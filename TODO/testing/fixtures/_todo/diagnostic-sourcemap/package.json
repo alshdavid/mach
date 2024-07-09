@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach",
+    "flow-bin": "*"
+  },
+  "name": "@workspace/integration-test-diagnostic-sourcemap",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  }
+}

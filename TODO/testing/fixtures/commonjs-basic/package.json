@@ -1,0 +1,6 @@
+{
+  "name": "@workspace/integration-test-js-commonjs",
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@workspace/integration-test-html-canonical",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

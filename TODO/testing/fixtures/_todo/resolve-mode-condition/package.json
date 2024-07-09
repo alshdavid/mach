@@ -1,0 +1,21 @@
+{
+  "module": "dist/module.js",
+  "imports": {
+    "#is-development": {
+      "development": "./dev.js",
+      "production": "./prod.js",
+      "default": "./default.js"
+    }
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
+  },
+  "name": "@workspace/integration-test-resolve-mode-condition",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

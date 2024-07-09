@@ -1,0 +1,11 @@
+{
+  "main": ".output.js",
+  "name": "@workspace/integration-test-dotfile-bundle",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@workspace/integration-test-commonjs-template-literal-interpolation",
+  "private": true,
+  "main": "dist/index.js",
+  "targets": {
+    "main": {
+      "context": "node"
+    }
+  },
+  "dependencies": {
+    "lodash": "*"
+  },
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

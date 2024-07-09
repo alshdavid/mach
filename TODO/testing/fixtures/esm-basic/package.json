@@ -1,0 +1,7 @@
+{
+  "name": "@workspace/html-esm-in-html",
+  "type": "module",
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

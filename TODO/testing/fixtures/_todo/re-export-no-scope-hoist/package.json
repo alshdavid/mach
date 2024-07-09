@@ -1,0 +1,23 @@
+{
+  "source": "test.js",
+  "scope-hoist": "dist/scope-hoist.js",
+  "no-scope-hoist": "dist/no-scope-hoist.js",
+  "targets": {
+    "scope-hoist": {
+      "scopeHoist": true,
+      "optimize": false
+    },
+    "no-scope-hoist": {
+      "scopeHoist": false,
+      "optimize": false
+    }
+  },
+  "name": "@workspace/integration-test-re-export-no-scope-hoist",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}

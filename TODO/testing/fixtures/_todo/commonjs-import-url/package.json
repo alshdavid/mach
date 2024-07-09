@@ -1,0 +1,13 @@
+{
+  "engines": {
+    "node": ">=10"
+  },
+  "name": "@workspace/integration-test-commonjs-import-url",
+  "scripts": {
+    "build": "npx mach build",
+    "serve": "npx http-server -c=-1 -p=3000 ."
+  },
+  "devDependencies": {
+    "@alshdavid/mach": "../../../npm/mach"
+  }
+}
