@@ -7,6 +7,6 @@
     "checkJs": true,
     "noEmit": true
   },
-  "include": ["*.js"],
+  "include": ["lib"],
   "exclude": ["node_modules"]
 }

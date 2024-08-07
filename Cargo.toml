@@ -3,9 +3,7 @@ resolver = "2"
 
 members = [
   "./packages/mach",
-  "./packages/mach_cli",
-  "./packages/mach_nodejs",
-  "./packages/mach_wasm",
+  "./packages/mach_npm_bin",
 ]
 
 [profile.release]

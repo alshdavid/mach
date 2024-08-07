@@ -1,4 +1,6 @@
 // #![deny(unused_crate_dependencies)]
+#[cfg(feature = "cli_parser")]
+pub mod cli;
 pub mod cmd;
 pub mod kit;
 pub mod core;

@@ -1,5 +1,3 @@
-#[cfg(feature = "cli_parser")]
-pub mod cli;
 // pub mod bundling;
 pub mod config;
 // pub mod emit;

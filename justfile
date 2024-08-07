@@ -89,11 +89,11 @@ build:
   @rm -rf "{{out_dir}}"
   @rm -rf "{{out_dir_link}}"
   @mkdir -p "{{out_dir}}"
-  @rm -rf "./packages/mach_nodejs/_napi/index.node"
+  @rm -rf "./packages/mach_npm_bin/index.node"
   
   @# Build crates
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_nodejs/_napi/index.node"
+  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_npm_bin/index.node"
   
   @# Copy binary
   @mkdir -p "{{out_dir}}/bin"
@@ -108,18 +108,18 @@ build:
   @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
   @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
   @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
-  @if (Test-Path ".\packages\mach_nodejs\_napi\index.node") { Remove-Item -Recurse -Force ".\packages\mach_nodejs\_napi\index.node" | Out-Null }
+  @if (Test-Path ".\packages\mach_npm_bin\_napi\index.node") { Remove-Item -Recurse -Force ".\packages\mach_npm_bin\index.node" | Out-Null }
 
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
-  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_nodejs\_napi\index.node" | Out-Null  
+  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_npm_bin\index.node" | Out-Null  
 
   # Copy binary
   New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
 
 build-tsc:
-  cd "./packages/mach_nodejs" && npx tsc
+  cd "./packages/mach_npm_bin" && npx tsc
 
 [no-cd]
 run *ARGS:
@@ -156,7 +156,7 @@ build-publish:
   just build
   just build-tsc
   cp "./README.md" "./packages/mach_npm"
-  cp "./README.md" "./packages/mach_nodejs"
+  cp "./README.md" "./packages/mach_npm_bin"
 
 [windows]
 build-publish:
@@ -165,7 +165,7 @@ build-publish:
   just build
   just build-tsc
   Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
-  Copy-Item ".\README.md" -Destination "packages\mach_nodejs" | Out-Null
+  Copy-Item ".\README.md" -Destination "packages\mach_npm_bin" | Out-Null
 
 [private]
 build-publish-common:
@@ -180,22 +180,22 @@ build-publish-common:
     "{{MACH_VERSION}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_nodejs/package.json" \
+    "./packages/mach_npm_bin/package.json" \
     "name" \
     "@alshdavid/mach-{{os}}-{{arch}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_nodejs/package.json" \
+    "./packages/mach_npm_bin/package.json" \
     "version" \
     "{{MACH_VERSION}}"
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_nodejs/package.json" \
+    "./packages/mach_npm_bin/package.json" \
     "os.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "os" {{os}})
 
   node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_nodejs/package.json" \
+    "./packages/mach_npm_bin/package.json" \
     "cpu.0" \
     $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "arch" {{arch}})
 

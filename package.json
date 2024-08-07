@@ -3,9 +3,8 @@
   "private": true,
   "workspaces": [
     "./.github/scripts",
-    "./packages/mach_nodejs",
+    "./packages/mach_npm_bin",
     "./packages/mach_npm",
-    "./packages/mach_playground",
     "./testing"
   ],
   "nodemonConfig": {

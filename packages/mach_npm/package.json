@@ -3,10 +3,10 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "types": "./lib.d.ts",
-  "main": "./lib.js",
+  "types": "./lib/index.d.ts",
+  "main": "./lib/index.js",
   "bin": {
-    "mach": "./bin.js"
+    "mach": "./lib.js"
   },
   "repository": {
     "type": "git",

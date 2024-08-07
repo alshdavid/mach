@@ -1,0 +1,14 @@
+{
+  "name": "@alshdavid/mach-os-arch",
+  "version": "0.0.0-local",
+  "license": "MIT",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alshdavid/mach.git"
+  },
+  "os": [],
+  "cpu": []
+}
