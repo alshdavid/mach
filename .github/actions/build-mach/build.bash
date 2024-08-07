@@ -7,6 +7,3 @@ else
   echo "Building untagged local version"
   just build
 fi
-
-ls -l packages/mach_nodejs
-ls -l packages/mach_nodejs/_napi
