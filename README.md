@@ -154,23 +154,3 @@ of this project during my employment with them.<br>
 <img align="right" height="80px" src="./.docs/assets/logo-rust-discord.png" />
 Special thanks to the Rust Community Discord, an amazing community of talented engineers who were <br>welcoming and always happy to help out.<br>
 <a href="https://github.com/rust-community-discord">Join the Discord Here</a>
-
-## Benchmarks
-
-The benchmark takes the three-js source code, copies it 50 times, imports the 50 copies from a single entrypoint and measures the time to build.
-
-```javascript
-import * as copy_1 from './copy_1/Three.js'; window.copy_1 = copy_1;
-import * as copy_2 from './copy_2/Three.js'; window.copy_2 = copy_2;
-import * as copy_3 from './copy_3/Three.js'; window.copy_3 = copy_3;
-// ... and so on
-```
-
-The hardware I am using is a desktop AMD 7950x with 16 cores and the builds are using 16 threads.
-
-
-<p align="center">
-  <img align="center" width="100%" src="./.docs/assets/benchmarks/bench-2024-03-29.jpg">
-  <br>
-  <i>Build Time (lower is better)</i>
-</p>
