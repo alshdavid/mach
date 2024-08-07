@@ -113,7 +113,7 @@ jobs:
   publish-github-release:
     name: "🔁 Github Release"
     runs-on: ubuntu-latest
-    needs: [unit-tests,integration-tests, benchmarks-micro, npm-package, build-linux-amd64, build-linux-arm64, build-macos-amd64, build-macos-arm64, build-windows-amd64, build-windows-arm64]
+    needs: [unit-tests,integration-tests, benchmarks-micro, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-nodejs
@@ -134,7 +134,7 @@ jobs:
   publish-npm-package:
     name: "🔁 Publish: NPM"
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, benchmarks-micro, npm-package, build-linux-amd64, build-linux-arm64, build-macos-amd64, build-macos-arm64, build-windows-amd64, build-windows-arm64]
+    needs: [unit-tests, integration-tests, benchmarks-micro, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-nodejs
@@ -156,7 +156,7 @@ jobs:
   publish-crate:
     name: "🔁 Publish: Crates.io"
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, benchmarks-micro, npm-package, build-linux-amd64, build-linux-arm64, build-macos-amd64, build-macos-arm64, build-windows-amd64, build-windows-arm64]
+    needs: [unit-tests, integration-tests, benchmarks-micro, build]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-just
