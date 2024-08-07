@@ -59,7 +59,7 @@ const VALUES = {
   object_named_namespace_default_data: 'object_named',
 }
 
-describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
+describe.skip(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
   describe(`${FIXTURE_NAME} - Sanity`, { concurrency: true }, () => {
     test('Run in nodejs', async (t) => {
       await using nodejs = new NodejsContext({

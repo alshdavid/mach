@@ -8,6 +8,10 @@ import {
   MachNapi,
 } from '../_napi/index.js'
 
+export type BuildReport = {
+  entries: Record<string, string>
+}
+
 export type MachOptions = {
   threads?: number
   nodeWorkers?: number
@@ -29,6 +33,11 @@ export class Mach {
     this.#internal = machNapiNew(options, (...args: any) => this.#rpc(args))
   }
 
+  static build(options: MachBuildOptions & MachOptions): Promise<BuildReport> {
+    const mach = new Mach(options)
+    return mach.build(options)
+  }
+
   async #rpc([err, id, data, done]: RpcCallbackMain) {
     // console.log(["M", err, id, data, done])
     if (err) {
@@ -43,7 +52,7 @@ export class Mach {
     }
   }
 
-  async build(options: MachBuildOptions) {
+  async build(options: MachBuildOptions): Promise<BuildReport> {
     return new Promise(async (res, rej) => {
       const workers = this.#startWorkers()
 

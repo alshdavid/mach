@@ -6,7 +6,7 @@
     "start": "node --import tsx ./setup.ts"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
+    "@alshdavid/mach": "0.0.0-local",
     "@types/node": "20.12.12",
     "@shigen/polyfill-symbol-dispose": "^1.0.1",
     "puppeteer-core": "^22.8.2",

@@ -50,7 +50,7 @@ void (async function () {
     concurrency: true,
   })
     .on('test:fail', () => {
-      // process.exitCode = 1
+      process.exitCode = 1
     })
     .compose(new reporter.spec())
 
@@ -58,11 +58,3 @@ void (async function () {
   await new Promise((res) => finished(test_stream, res))
   await browser.close()
 })()
-
-/*
- if (option.endsWith('.ts')) {
-          files.push(option.slice(0, option.length - 3) + '.js')
-        } else {
-          files.push(option)
-        }
-*/

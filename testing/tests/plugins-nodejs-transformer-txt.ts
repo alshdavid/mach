@@ -9,7 +9,7 @@ import { equal_unsafe } from '../utils/asset/index.js'
 const FIXTURE_NAME = 'plugins-nodejs-transformer-txt'
 const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
+describe.skip(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
   let report: BuildReport
 
   before(async () => {

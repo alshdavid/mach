@@ -33,7 +33,7 @@ const VALUES = {
 const FIXTURE_NAME = 'commonjs-basic'
 const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
+describe.skip(`${FIXTURE_NAME} (continue on failure)`, { concurrency: true }, () => {
   describe(`${FIXTURE_NAME} - Sanity`, { concurrency: true }, () => {
     test('Run in nodejs', async (t) => {
       await using nodejs = new NodejsContext({

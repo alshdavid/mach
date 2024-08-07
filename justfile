@@ -145,7 +145,7 @@ serve:
   npx http-server -p 3000 ./examples
 
 integration-tests *ARGS:
-  node --import ./node_modules/tsx/dist/loader.mjs ./packages/testing/setup.ts {{ARGS}}
+  node --import ./node_modules/tsx/dist/loader.mjs ./testing/setup.ts {{ARGS}}
 
 unit-tests:
   cargo test

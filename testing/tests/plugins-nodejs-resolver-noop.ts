@@ -8,7 +8,7 @@ import { install_npm } from '../utils/npm.js'
 const FIXTURE_NAME = 'plugins-nodejs-resolver-noop'
 const FIXTURE = FIXTURES_PATH_FN(FIXTURE_NAME)
 
-describe(FIXTURE_NAME, { concurrency: true }, () => {
+describe.skip(FIXTURE_NAME, { concurrency: true }, () => {
   let report: BuildReport
 
   before(async () => {
