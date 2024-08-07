@@ -84,6 +84,7 @@ jobs:
             arch: arm64
             runner: windows-latest
           - name: 📦 NPM
+            type: npm
             os: linux
             arch: amd64
             runner: ubuntu-latest
@@ -96,12 +97,12 @@ jobs:
       - uses: ./.github/actions/setup-rust
       - uses: ./.github/actions/setup-env
       - uses: ./.github/actions/build-mach
-        if: matrix.name != "📦 NPM"
+        if: matrix.type != 'npm'
         with: 
           os: "${{ matrix.config.os }}"
           arch: "${{ matrix.config.arch }}"
       - uses: ./.github/actions/build-npm
-        if: matrix.name == "📦 NPM"
+        if: matrix.type == 'npm'
       - uses: actions/upload-artifact@v4
         with:
           name: mach-${{ matrix.config.os }}-${{ matrix.config.arch }}
