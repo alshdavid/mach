@@ -130,9 +130,11 @@ run *ARGS:
 serve:
   npx http-server -p 3000 ./examples
 
+alias test-integration := integration-tests
 integration-tests *ARGS:
   node --import ./node_modules/tsx/dist/loader.mjs ./testing/setup.ts {{ARGS}}
 
+alias test-unit := unit-tests
 unit-tests:
   cargo test
 

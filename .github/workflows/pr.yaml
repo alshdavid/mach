@@ -34,7 +34,7 @@ jobs:
       - name: "Integration tests"
         run: |
           source .github/actions/setup-env/setup-env.bash
-          just integration-tests
+          just test-integration
 
   unit-tests:
     name: "🧪 Unit Tests"
@@ -49,10 +49,10 @@ jobs:
       - name: "Unit tests"
         run: |
           source .github/actions/setup-env/setup-env.bash
-          just unit-tests
+          just test-unit
 
   benchmarks-micro:
-    name: "🧪 Benchmarks Micro"
+    name: "🏎️ Benchmarks Micro"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
