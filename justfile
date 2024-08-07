@@ -3,13 +3,7 @@ set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
 MACH_VERSION := env_var_or_default("MACH_VERSION", "")
 profile := env_var_or_default("profile", "debug")
 
-os := \
-if \
-  env_var_or_default("os", "") == "Windows_NT" { "windows" } \
-else if \
-  env_var_or_default("os", "") != "" { env_var("os") } \
-else \
-  { os() }
+os := env_var_or_default("os", os())
 
 arch := \
 if \
@@ -30,6 +24,12 @@ else if \
   os == "linux" { "so" } \
 else \
   { os() }
+
+bin := \
+if \
+  os == "windows" { "mach.exe" } \
+else \
+  { "mach" }
 
 target := \
 if \
@@ -99,9 +99,6 @@ build:
   @mkdir -p "{{out_dir}}/bin"
   @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
-build-tsc:
-  cd "./packages/mach_nodejs" && npx tsc
-
 [windows]
 build:
   # Install npm
@@ -121,25 +118,14 @@ build:
   New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
 
-[unix]
+build-tsc:
+  cd "./packages/mach_nodejs" && npx tsc
+
+[no-cd]
 run *ARGS:
   just build
-  {{out_dir}}/bin/mach {{ARGS}}
-
-[windows]
-run *ARGS:
-  just build
-  {{out_dir}}/bin/mach.exe {{ARGS}}
-
-[unix]
-example cmd fixture *ARGS:
-  @just build
-  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach {{cmd}} {{ARGS}}
-
-[windows]
-example cmd fixture *ARGS:
-  @just build
-  cd ./examples/{{fixture}} && {{out_dir}}/bin/mach.exe {{cmd}} {{ARGS}} 
+  pwd
+  {{out_dir}}/bin/{{bin}} {{ARGS}}
 
 serve:
   npx http-server -p 3000 ./examples
@@ -176,8 +162,8 @@ build-publish:
   just build-publish-common
   just build
   just build-tsc
-  cd ".\packages\mach_nodejs" && npx tsc
   Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
+  Copy-Item ".\README.md" -Destination "packages\mach_nodejs" | Out-Null
 
 [private]
 build-publish-common:
