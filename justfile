@@ -119,7 +119,7 @@ build:
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
 
 build-tsc:
-  cd "./packages/mach_npm_bin" && npx tsc
+  cd "./packages/mach_npm" && npx tsc
 
 [no-cd]
 run *ARGS:

@@ -1,3 +1,5 @@
+// Only one of these should be true
+
 // @ts-ignore
 export * from '@alshdavid/mach-linux-amd64'
 // @ts-ignore

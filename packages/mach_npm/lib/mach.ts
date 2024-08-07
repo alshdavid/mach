@@ -1,4 +1,4 @@
-import { MachNapi, machNapiNew } from '../mach_npm_bin/index.js'
+import { MachNapi, machNapiNew } from '../_/napi.cjs'
 
 export type BuildReport = {
   entries: Record<string, string>
