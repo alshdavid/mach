@@ -94,10 +94,6 @@ build:
   @# Build crates
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_npm_bin/index.node"
-  
-  @# Copy binary
-  @mkdir -p "{{out_dir}}/bin"
-  @cp "./target/.cargo/{{target}}/{{profile}}/mach" "{{out_dir}}/bin"
 
 [windows]
 build:
@@ -113,10 +109,6 @@ build:
   # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_npm_bin\index.node" | Out-Null  
-
-  # Copy binary
-  New-Item -ItemType "directory" -Force -Path "{{out_dir}}\bin" | Out-Null
-  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach.exe" -Destination "{{out_dir}}\bin" | Out-Null
 
 build-tsc:
   cd "./packages/mach_npm" && npx tsc

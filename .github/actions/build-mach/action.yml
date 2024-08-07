@@ -145,13 +145,8 @@ runs:
         export JOB_NAME="${os}-${arch}"
 
         mkdir $ROOT_DIR/artifacts
-        cd $ROOT_DIR/target/$JOB_NAME
 
-        mv release mach
-        tar -czvf mach-$JOB_NAME.tar.gz mach
-        mv mach-$JOB_NAME.tar.gz $ROOT_DIR/artifacts
-
-        cd $ROOT_DIR/packages/mach_nodejs
+        cd $ROOT_DIR/packages/mach_npm_bin
         npm pack
         mv *.tgz npm-mach-$JOB_NAME.tgz
         mv *.tgz $ROOT_DIR/artifacts/npm-mach-$JOB_NAME.tgz
@@ -176,13 +171,7 @@ runs:
 
         New-Item -ItemType "directory" -Force -Path "${env:RootPath}/artifacts"
 
-        echo "${env:RootPath}/target/${env:Job}"
-        cd "${env:RootPath}/target/${env:Job}"
-        mv release mach
-        tar -czvf "mach-${env:Job}.tar.gz" mach
-        Move-Item "mach-${env:Job}.tar.gz" -Destination "${env:RootPath}/artifacts"
-
-        cd "${env:RootPath}/packages/mach_nodejs"
+        cd "${env:RootPath}/packages/mach_npm_bin"
         npm pack
         Move-Item *.tgz -Destination "npm-mach-${env:Job}.tgz"
         Move-Item *.tgz -Destination "${env:RootPath}/artifacts/npm-mach-${env:Job}.tgz"
