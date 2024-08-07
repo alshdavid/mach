@@ -1,11 +1,9 @@
 {
-  "name": "@workspace/plugins-nodejs-resolver-noop",
+  "name": "@workspace/example-plugins-nodejs-resolver-noop",
   "scripts": {
-    "build": "npx mach build",
-    "serve": "npx http-server -c=-1 -p=3000 ."
+    "build": "npx mach build"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
-    "http-server": "*"
+    "@alshdavid/mach": "*"
   }
 }

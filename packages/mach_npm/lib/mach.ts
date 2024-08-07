@@ -1,4 +1,9 @@
 import { MachNapi, machNapiNew } from '../_/napi.cjs'
+import { Worker } from 'node:worker_threads'
+
+export function foo() {
+  new Worker('/home/dalsh/Development/alshdavid/mach/packages/mach_npm/_/worker.js')
+}
 
 export type BuildReport = {
   entries: Record<string, string>

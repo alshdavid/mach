@@ -6,7 +6,7 @@
     "build:optimize": "npx mach build ./src/index.js"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
+    "@alshdavid/mach": "*",
     "enhanced-resolve": "^5.16.1"
   }
 }

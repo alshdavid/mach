@@ -5,7 +5,8 @@
     "./.github/scripts",
     "./packages/mach_npm_bin",
     "./packages/mach_npm",
-    "./testing"
+    "./testing",
+    "./examples/*"
   ],
   "nodemonConfig": {
     "ignore": ["**/node_modules/**", "**/.git/**", "**/target/**"],

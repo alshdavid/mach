@@ -16,7 +16,7 @@ import { Paths } from '../platform/paths.mjs'
 
 //   json.devDependencies = json.devDependencies || {}
 //   json.devDependencies['http-server'] = "*"
-//   json.devDependencies['@alshdavid/mach'] = "workspace:*"
+//   json.devDependencies['@alshdavid/mach'] = "*"
 //   json.devDependencies = sort_object(json.devDependencies)
   
 //   fs.writeFileSync(json_path, JSON.stringify(json, null, 2))

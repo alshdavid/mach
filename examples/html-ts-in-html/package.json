@@ -1,14 +1,12 @@
 {
-  "name": "@workspace/html-ts-in-html",
+  "name": "@workspace/example-html-ts-in-html",
   "scripts": {
-    "build": "npx mach build",
-    "serve": "npx http-server -c=-1 -p=3000 ."
+    "build": "npx mach build"
   },
   "devDependencies": {
-    "@alshdavid/mach": "workspace:*",
+    "@alshdavid/mach": "*",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "http-server": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
