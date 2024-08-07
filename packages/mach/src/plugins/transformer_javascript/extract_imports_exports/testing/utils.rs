@@ -12,9 +12,9 @@ pub static CARGO_DIR: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(env!("CARGO_MAN
 pub static FIXTURES: Lazy<PathBuf> = Lazy::new(|| {
   CARGO_DIR
     .join("src")
-    .join("kit")
-    .join("swc")
-    .join("analyze_file")
+    .join("plugins")
+    .join("transformer_javascript")
+    .join("extract_imports_exports")
     .join("testing")
     .join("__fixtures")
 });
