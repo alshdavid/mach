@@ -1,5 +1,5 @@
 // CLI runner
-export function exec(): any
+export function exec(args: string[]): any
 
 // Mach
 export type MachNapi = {

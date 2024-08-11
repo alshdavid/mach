@@ -1,1 +1,0 @@
-import '../bin/main.js'

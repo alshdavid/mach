@@ -3,11 +3,6 @@
   "version": "0.0.0-local",
   "license": "MIT",
   "type": "module",
-  "types": "./_/lib.d.ts",
-  "main": "./_/lib.js",
-  "bin": {
-    "mach": "./_/bin.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alshdavid/mach.git"
@@ -20,6 +15,25 @@
     "postinstall.mjs",
     "tsconfig.json"
   ],
+  "bin": {
+    "mach": "bin.js",
+    "mach-dev": "bin_dev.sh"
+  },
+  "imports": {
+    "#bin": {
+      "source": "./cmd/bin.ts",
+      "default": "./cmd/bin.js"
+    },
+    "#worker": {
+      "source": "./lib/worker.ts",
+      "default": "./lib/worker.js"
+    }
+  },
+  "exports": {
+    "source": "./lib/index.ts",
+    "types": "./lib/index.ts",
+    "default": "./lib/index.js"
+  },
   "optionalDependencies": {
     "@alshdavid/mach-linux-amd64": "0.0.0-local",
     "@alshdavid/mach-linux-arm64": "0.0.0-local",
@@ -29,11 +43,11 @@
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
   },
   "devDependencies": {
-    "@types/node": "20.x.x",
-    "typescript": "^5.4.5",
+    "@types/node": "22.x.x",
+    "typescript": "5.x.x",
     "@alshdavid/mach-os-arch": "*"
   },
   "peerDependencies": {
-    "@types/node": "20.x.x"
+    "@types/node": ">=20"
   }
 }

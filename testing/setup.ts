@@ -1,6 +1,6 @@
-import * as foo from '@alshdavid/mach-os-arch'
+import * as mach from '@alshdavid/mach'
 
-console.log(foo.Mach)
+console.log(mach)
 
 
 // import '@shigen/polyfill-symbol-dispose'

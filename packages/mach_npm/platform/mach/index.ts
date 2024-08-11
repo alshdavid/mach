@@ -1,5 +1,7 @@
-import { MachNapi, machNapiNew } from '../_/napi.cjs'
+import native from '../native/index.cjs'
 import { Worker } from 'node:worker_threads'
+
+export { native }
 
 export function foo() {
   new Worker('/home/dalsh/Development/alshdavid/mach/packages/mach_npm/_/worker.js')

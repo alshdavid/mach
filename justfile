@@ -86,27 +86,17 @@ build:
   @test -d node_modules || npm install
 
   @# Clean dir
-  @rm -rf "{{out_dir}}"
-  @rm -rf "{{out_dir_link}}"
-  @mkdir -p "{{out_dir}}"
   @rm -rf "./packages/mach_npm_bin/index.node"
-  
-  @# Build crates
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_npm_bin/index.node"
 
 [windows]
 build:
-  # Install npm
+  @# Install npm
   if (!(Test-Path 'node_modules')) { npm install }
 
-  # Clean dir
-  @if (Test-Path {{out_dir}}) { Remove-Item -Recurse -Force {{out_dir}} | Out-Null }
-  @if (Test-Path {{out_dir_link}}) { Remove-Item -Recurse -Force {{out_dir_link}} | Out-Null }
-  @New-Item -ItemType "directory" -Force -Path "{{out_dir}}"  | Out-Null
+  @# Clean dir
   @if (Test-Path ".\packages\mach_npm_bin\_napi\index.node") { Remove-Item -Recurse -Force ".\packages\mach_npm_bin\index.node" | Out-Null }
-
-  # Build mach and napi
   cargo build {{profile_cargo}} {{target_cargo}}
   Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_npm_bin\index.node" | Out-Null  
 
@@ -116,15 +106,11 @@ build-tsc:
 [no-cd]
 run *ARGS:
   just build
-  pwd
-  {{out_dir}}/bin/{{bin}} {{ARGS}}
-
-serve:
-  npx http-server -p 3000 ./examples
+  env NODE_OPTIONS="--conditions="source" --experimental-strip-types --no-warnings" npx mach {{ARGS}}
 
 alias test-integration := integration-tests
 integration-tests *ARGS:
-  node --import ./node_modules/tsx/dist/loader.mjs ./testing/setup.ts {{ARGS}}
+  node --conditions="source" --experimental-strip-types --no-warnings ./testing/setup.ts {{ARGS}}
 
 alias test-unit := unit-tests
 unit-tests:

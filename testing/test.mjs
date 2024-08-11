@@ -1,0 +1,1 @@
+console.log(await import('@alshdavid/mach-os-arch'))

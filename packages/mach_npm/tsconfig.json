@@ -4,8 +4,10 @@
     "target": "ESNext",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "checkJs": true
+    "checkJs": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["lib", "bin"],
+  "include": ["lib", "cmd", "platform"],
   "exclude": ["node_modules"]
 }
