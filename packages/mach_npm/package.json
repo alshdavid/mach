@@ -45,6 +45,9 @@
   "devDependencies": {
     "@types/node": "22.x.x",
     "typescript": "5.x.x",
+    "@swc/cli": "*",
+    "@swc/core": "*",
+    "@swc/plugin-transform-imports": "*",
     "@alshdavid/mach-os-arch": "*"
   },
   "peerDependencies": {

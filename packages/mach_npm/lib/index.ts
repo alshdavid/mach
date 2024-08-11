@@ -1,1 +1,1 @@
-export * from '../platform/mach/index.ts'
+export * from '../platform/mach/index.js'
