@@ -17,7 +17,7 @@ try {
   const fs = require('node:fs')
   const path = require('node:path')
 
-  const package_json_path = path.join(__dirname, '..', 'package.json')
+  const package_json_path = path.join(__dirname, '..', '..', 'package.json')
   const package_json = JSON.parse(fs.readFileSync(package_json_path, 'utf8'))
 
   if (package_json.version !== '0.0.0-local') {

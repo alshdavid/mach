@@ -1,6 +1,6 @@
-//
-// This contains the bindings for the public API for Mach
-//
+/* 
+  This contains the library bindings for the public API for Mach
+*/
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
