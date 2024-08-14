@@ -9,21 +9,25 @@
     "./examples/*"
   ],
   "nodemonConfig": {
-    "ignore": ["**/node_modules/**", "**/.git/**", "**/target/**"],
-    "ext": "rs,ts,js,json",
     "delay": 250,
-    "signal" : "SIGTERM",
-    "exec": "clear && just build && just integration-tests"
+    "exec": "clear && just build && just integration-tests",
+    "ext": "rs,ts,js,json",
+    "ignore": [
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/target/**"
+    ],
+    "signal": "SIGTERM"
   },
   "devDependencies": {
-    "nodemon": "*",
-    "prettier": "*",
-    "typescript": "5.x.x",
-    "tsx": "*",
     "@alshdavid/mach": "0.0.0-local",
     "@alshdavid/mach-os-arch": "0.0.0-local",
-    "@types/node": ">=22",
     "@shigen/polyfill-symbol-dispose": "*",
-    "puppeteer-core": "*"
+    "@types/node": ">=20",
+    "nodemon": "*",
+    "prettier": "*",
+    "puppeteer-core": "*",
+    "tsx": "*",
+    "typescript": "*"
   }
 }
