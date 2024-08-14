@@ -25,8 +25,8 @@
       "default": "./cmd/bin.js"
     },
     "#worker": {
-      "source": "./lib/worker.ts",
-      "default": "./lib/worker.js"
+      "source": "./cmd/worker.ts",
+      "default": "./cmd/worker.js"
     }
   },
   "exports": {
@@ -41,14 +41,6 @@
     "@alshdavid/mach-macos-arm64": "0.0.0-local",
     "@alshdavid/mach-windows-amd64": "0.0.0-local",
     "@alshdavid/mach-windows-arm64": "0.0.0-local"
-  },
-  "devDependencies": {
-    "@types/node": "22.x.x",
-    "typescript": "5.x.x",
-    "@swc/cli": "*",
-    "@swc/core": "*",
-    "@swc/plugin-transform-imports": "*",
-    "@alshdavid/mach-os-arch": "*"
   },
   "peerDependencies": {
     "@types/node": ">=20"

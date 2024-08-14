@@ -4,12 +4,5 @@
   "type": "module",
   "scripts": {
     "start": "node --import tsx ./setup.ts"
-  },
-  "devDependencies": {
-    "@alshdavid/mach": "0.0.0-local",
-    "@alshdavid/mach-os-arch": "0.0.0-local",
-    "@types/node": ">=22",
-    "@shigen/polyfill-symbol-dispose": "*",
-    "puppeteer-core": "*"
   }
 }

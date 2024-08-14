@@ -17,6 +17,13 @@
   },
   "devDependencies": {
     "nodemon": "*",
-    "prettier": "*"
+    "prettier": "*",
+    "typescript": "5.x.x",
+    "tsx": "*",
+    "@alshdavid/mach": "0.0.0-local",
+    "@alshdavid/mach-os-arch": "0.0.0-local",
+    "@types/node": ">=22",
+    "@shigen/polyfill-symbol-dispose": "*",
+    "puppeteer-core": "*"
   }
 }
