@@ -1,8 +1,4 @@
 {
   "name": "@workspace/scripts",
-  "private": true,
-  "dependencies": {
-    "semver": "^7.6.0",
-    "prettier": "latest"
-  }
+  "private": true
 }

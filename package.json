@@ -27,6 +27,7 @@
     "nodemon": "*",
     "prettier": "*",
     "puppeteer-core": "*",
+    "semver": "*",
     "tsx": "*",
     "typescript": "*"
   }
