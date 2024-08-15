@@ -16,22 +16,17 @@
     "tsconfig.json"
   ],
   "bin": {
-    "mach": "bin.js",
-    "mach-dev": "bin_dev.sh"
+    "mach": "/cmd/bin.mjs"
   },
   "imports": {
-    "#bin": {
-      "source": "./cmd/bin.ts",
-      "default": "./cmd/bin.js"
-    },
     "#worker": {
       "source": "./cmd/worker.ts",
       "default": "./cmd/worker.js"
     }
   },
   "exports": {
-    "source": "./lib/index.ts",
-    "types": "./lib/index.ts",
+    "source": "./lib/index.dev.mjs",
+    "types": "./lib/index.mjs",
     "default": "./lib/index.js"
   },
   "optionalDependencies": {

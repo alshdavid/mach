@@ -11,7 +11,7 @@
   "nodemonConfig": {
     "delay": 250,
     "exec": "clear && just build && just integration-tests",
-    "ext": "rs,ts,js,json",
+    "ext": "rs,ts,mts,cts,js,mjs,cjs,json",
     "ignore": [
       "**/node_modules/**",
       "**/.git/**",
