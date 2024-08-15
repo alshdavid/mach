@@ -6,9 +6,14 @@ use crate::public::Dependency;
 use crate::public::ResolveResult;
 use crate::public::Resolver;
 
-#[derive(Debug)]
 pub struct ResolverJavaScript {
   resolver: OxcResolver,
+}
+
+impl std::fmt::Debug for ResolverJavaScript {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      write!(f, "ResolverJavaScript")
+    }
 }
 
 impl ResolverJavaScript {
@@ -39,7 +44,7 @@ impl Resolver for ResolverJavaScript {
   fn resolve(
     &self,
     dependency: &Dependency,
-  ) -> Result<Option<ResolveResult>, String> {
+  ) -> anyhow::Result<Option<ResolveResult>> {
     let resolve_from = {
       if dependency.resolve_from.is_file() {
         dependency.resolve_from.parent().unwrap()

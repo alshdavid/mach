@@ -45,12 +45,12 @@ impl AssetGraph {
     src: &AssetId,
     dest: &AssetId,
     dependency: Dependency,
-  ) -> Result<(bool, EdgeIndex), String> {
+  ) -> anyhow::Result<(bool, EdgeIndex)> {
     let Some(src_id) = self.node_index.get(&src) else {
-      return Err(format!("Unable to find Source Asset with ID: {}", src));
+      anyhow::bail!("Unable to find Source Asset with ID: {}", src);
     };
     let Some(dest_id) = self.node_index.get(&dest) else {
-      return Err(format!("Unable to find Dest Asset with ID: {}", dest));
+      anyhow::bail!("Unable to find Dest Asset with ID: {}", dest);
     };
     let dependency_id = dependency.id.clone();
     if let Some(edge_index) = self.edge_index.get(&dependency_id) {

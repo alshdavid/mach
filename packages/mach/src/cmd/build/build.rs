@@ -6,11 +6,11 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::super::MachOptions;
-use super::build_parse_config::parse_config;
+// use super::build_parse_config::parse_config;
 // use super::create_result::create_build_result;
 // use crate::platform::bundling::bundle;
 use crate::core::plugins::load_plugins;
-use crate::core::transformation::build_asset_graph;
+use crate::core::resolve_and_transform::resolve_and_transform;
 // use crate::public::AssetGraphSync;
 // use crate::public::AssetMap;
 // use crate::public::AssetMapSync;
@@ -18,6 +18,7 @@ use crate::core::transformation::build_asset_graph;
 // use crate::public::BundleManifestSync;
 // use crate::public::BundleMapSync;
 use crate::public::Compilation;
+use crate::public::MachConfig;
 // use crate::public::DependencyMapSync;
 // use crate::rpc::Engine;
 // use crate::platform::emit::emit;
@@ -64,21 +65,32 @@ pub fn build(
   mach_options: MachOptions,
   options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
+  // let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
 
   /*
     This is the bundler state. It is passed into
-    the bundling phases with read or write permissions
+    the bundling phases with read or write access
     depending on how that phase uses them
   */
-  let mut compilation = Compilation::new();
-  let adapter_map = mach_options.rpc_hosts;
+  let mut compilation = Compilation{
+    machrc: mach_options.config,
+    rpc_hosts: mach_options.rpc_hosts,
+    config: MachConfig {
+      threads: mach_options.threads,
+      entries: mach_options.entries,
+      project_root: mach_options.project_root,
+      env: mach_options.env,
+      out_folder: mach_options.out_folder,
+    },
+    asset_contents: Default::default(),
+    asset_graph: Default::default(),
+    plugins: Default::default(),
+  };
 
   /*
-    load_plugins() will read source the .machrc and will
-    fetch then initialize the referenced plugins
+    load_plugins() will read the Machrc and initialize the referenced plugins
   */
-  let plugins = load_plugins(&config, &config.machrc, &adapter_map)?;
+  load_plugins(&mut compilation)?;
 
   /*
     resolve_and_transform() build the AssetGraph.
@@ -86,10 +98,10 @@ pub fn build(
     It does this by crawling the source files, identify import statements, modifying their contents
     (like removing TypeScript types) and looping until there are no more import statements to resolve.
   */
-  build_asset_graph(config.clone(), plugins.clone(), &mut compilation)
+  resolve_and_transform(&mut compilation)
     .map_err(|e| anyhow::anyhow!(e))?;
 
-  println!("{}", &compilation.asset_graph.into_dot(&config));
+  println!("{}", &compilation.asset_graph.into_dot(&compilation.config));
 
   Ok(BuildResult::default())
 

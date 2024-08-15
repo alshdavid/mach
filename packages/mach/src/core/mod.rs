@@ -3,5 +3,5 @@ pub mod config;
 // pub mod emit;
 // pub mod packaging;
 pub mod plugins;
-pub mod transformation;
+pub mod resolve_and_transform;
 pub mod request_tracker;

@@ -106,11 +106,12 @@ build-tsc:
 [no-cd]
 run *ARGS:
   just build
-  env NODE_OPTIONS="--conditions="source" --experimental-strip-types --no-warnings" npx mach {{ARGS}}
+  env NODE_OPTIONS="--conditions=source --import tsx" npx mach {{ARGS}}
 
 alias test-integration := integration-tests
 integration-tests *ARGS:
-  node --conditions="source" --experimental-strip-types --no-warnings ./testing/setup.ts {{ARGS}}
+  just build
+  node --conditions=source --import tsx ./testing/setup.ts {{ARGS}}
 
 alias test-unit := unit-tests
 unit-tests:

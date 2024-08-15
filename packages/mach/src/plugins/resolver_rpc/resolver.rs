@@ -53,7 +53,7 @@ impl Resolver for ResolverAdapter {
   fn resolve(
     &self,
     _dependency: &Dependency,
-  ) -> Result<Option<ResolveResult>, String> {
+  ) -> anyhow::Result<Option<ResolveResult>> {
     todo!();
     // let response = self
     //   .adapter

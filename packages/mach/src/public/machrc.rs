@@ -1,15 +1,10 @@
 use std::collections::HashMap;
-use std::env;
-use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Machrc {
-  pub is_default: bool,
-  pub file_path: PathBuf,
-  pub engines: Vec<String>,
   pub resolvers: Option<Vec<String>>,
   pub transformers: Option<HashMap<String, Vec<String>>>,
 }
@@ -17,9 +12,6 @@ pub struct Machrc {
 impl Default for Machrc {
   fn default() -> Self {
     Self {
-      is_default: true,
-      file_path: env::current_exe().unwrap(),
-      engines: vec!["mach".to_string()],
       resolvers: Some(vec!["mach:resolver".to_string()]),
       transformers: Some(HashMap::from_iter([
         (

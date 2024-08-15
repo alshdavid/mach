@@ -1,4 +1,4 @@
-/* 
+/*
   This contains the library bindings for the public API for Mach
 */
 use std::collections::HashMap;
@@ -6,67 +6,97 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 
-use mach_bundler_core::rpc::nodejs::RpcHostNodejs;
-use mach_bundler_core::rpc::RpcHost;
 use mach_bundler_core::BuildOptions;
 use mach_bundler_core::BuildResult;
 use mach_bundler_core::Mach;
 use mach_bundler_core::MachOptions;
 use napi::bindgen_prelude::External;
+use napi::bindgen_prelude::FromNapiValue;
 use napi::threadsafe_function::ThreadSafeCallContext;
 use napi::threadsafe_function::ThreadsafeFunction;
 use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
 use napi::JsFunction;
+use napi::JsNumber;
 use napi::JsObject;
+use napi::JsString;
+use napi::JsUnknown;
+use napi::ValueType;
 use napi_derive::napi;
 use serde::Deserialize;
 use serde::Serialize;
 
 #[napi(object)]
 pub struct MachNapi {
-  pub node_worker_count: u32,
+  pub node_workers: u32,
   pub mach: External<Arc<Mach>>,
 }
 
 //
 // NEW
 //
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NewNapiOptions {
-  pub threads: Option<usize>,
-  pub node_workers: Option<usize>,
-}
-
 #[napi]
 pub fn mach_napi_new(
   env: Env,
   options: JsObject,
-  callback: JsFunction,
 ) -> napi::Result<MachNapi> {
-  let js_options = env.from_js_value::<NewNapiOptions, JsObject>(options)?;
-  let mut mach_options = MachOptions::default();
+  let mach_options = MachOptions {
+    rpc_hosts: Default::default(),
+    threads: 'block: {
+      let Ok(value) = options.get_named_property::<JsNumber>("threads") else {
+        break 'block Default::default();
+      };
+      value.get_uint32()? as usize
+    },
+    entries: 'block: {
+      let Ok(value) = options.get_named_property::<JsUnknown>("entries") else {
+        break 'block Default::default();
+      };
 
-  if let Some(threads) = js_options.threads {
-    mach_options.threads = threads
-  }
+      match value.get_type() {
+        Ok(ValueType::String) => {
+          let value = JsString::from_unknown(value)?;
+          let value = PathBuf::from(value.into_utf8()?.as_str()?.to_string());
+          vec![value]
+        },
+        Ok(ValueType::Object) => {
+          let value = JsObject::from_unknown(value)?;
+          let mut output = vec![];
+          for i in 0..value.get_array_length()? {
+            let element = value.get_element::<JsString>(i)?;
+            let element = PathBuf::from(element.into_utf8()?.as_str()?.to_string());
+            output.push(element)
+          }
+          output
+        },
+        _ => Default::default()
+      }
+    },
+    env: 'block: {
+      let Ok(value) = options.get_named_property::<JsObject>("env") else {
+        break 'block Default::default();
+      };
+      env.from_js_value(value)?
+    },
+    out_folder: 'block: {
+      let Ok(value) = options.get_named_property::<JsObject>("outFolder") else {
+        break 'block std::env::current_dir().unwrap().join("dist");
+      };
+      env.from_js_value(value)?
+    },
+    project_root: PathBuf::from(options.get_named_property::<JsString>("projectRoot")?.into_utf8()?.as_str()?),
+    config: Default::default(),
+  };
 
-  let node_workers: usize;
-  if let Some(nw) = js_options.node_workers {
-    node_workers = nw
-  } else {
-    node_workers = mach_options.threads;
-  }
+  // dbg!(&mach_options);
 
-  let rpc_host_nodejs = Arc::new(RpcHostNodejs::new(&env, callback, node_workers)?);
-
-  mach_options
-    .rpc_hosts
-    .insert(rpc_host_nodejs.engine(), rpc_host_nodejs.clone());
+  let mut node_workers = mach_options.threads.clone();
+  if let Ok(value) = options.get_named_property::<JsNumber>("nodeWorkers") {
+    node_workers = value.get_uint32()? as usize;
+  };
 
   Ok(MachNapi {
-    node_worker_count: node_workers as u32,
+    node_workers: node_workers as u32,
     mach: External::new(Arc::new(Mach::new(mach_options))),
   })
 }

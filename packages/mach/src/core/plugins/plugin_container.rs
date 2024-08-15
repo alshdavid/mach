@@ -7,34 +7,28 @@ use crate::public::Transformer;
 
 pub type PluginContainerSync = Arc<PluginContainer>;
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct PluginContainer {
-  pub resolvers: Vec<Box<dyn Resolver>>,
+  pub resolvers: Vec<Arc<dyn Resolver>>,
   pub transformers: TransformerMap,
 }
 
-impl PluginContainer {
-  pub fn to_sync(&mut self) -> PluginContainerSync {
-    Arc::new(std::mem::take(self))
-  }
-}
-
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct TransformerMap {
-  pub transformers: HashMap<String, Vec<Box<dyn Transformer>>>,
+  pub transformers: HashMap<String, Vec<Arc<dyn Transformer>>>,
 }
 
 impl TransformerMap {
   pub fn get(
     &self,
     file_target: &TransformerTarget,
-  ) -> Result<(String, &Vec<Box<dyn Transformer>>), String> {
+  ) -> anyhow::Result<(String, &Vec<Arc<dyn Transformer>>)> {
     for (pattern, transformers) in &self.transformers {
       if glob_match::glob_match(&pattern, &file_target.file_name) {
         return Ok((pattern.clone(), transformers));
       }
     }
-    return Err(format!("No transformer found {:?}", file_target.file_path,));
+    anyhow::bail!("No transformer found {:?}", file_target.file_path)
   }
 }
 

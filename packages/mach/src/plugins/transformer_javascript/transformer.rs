@@ -26,13 +26,13 @@ impl Transformer for TransformerJavaScript {
     &self,
     asset: &mut MutableAsset,
     config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     return swc_core::common::GLOBALS.set(&Globals::new(), move || {
       let source_map_og = Arc::new(SourceMap::default());
       let code = asset.get_code();
 
       let Ok(result) = parse_program(asset.file_path, &code, source_map_og.clone()) else {
-        return Err(format!("SWC Parse Error"));
+        anyhow::bail!("SWC Parse Error")
       };
 
       let mut program = result.program;

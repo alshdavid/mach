@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use super::run_resolvers::run_resolvers;
 use crate::core::config::ROOT_ASSET;
 use crate::core::plugins::PluginContainerSync;
-use crate::core::transformation::run_transformers::run_transformers;
+use crate::core::resolve_and_transform::run_transformers::run_transformers;
 use crate::public::Asset;
 use crate::public::AssetId;
 use crate::public::Compilation;
@@ -13,26 +13,24 @@ use crate::public::DependencyId;
 use crate::public::LinkingSymbol;
 use crate::public::MachConfigSync;
 
-pub fn build_asset_graph(
-  config: MachConfigSync,
-  plugins: PluginContainerSync,
+pub fn resolve_and_transform(
   c: &mut Compilation,
-) -> Result<(), String> {
+) -> anyhow::Result<()> {
   let mut queue = vec![];
 
   c.asset_graph.add_asset(ROOT_ASSET.clone());
 
-  for entry in config.entries.iter() {
+  for entry in c.config.entries.iter() {
     queue.push(Dependency {
       id: DependencyId::new(),
-      specifier: entry.clone(),
-      source_asset_path: config.project_root.clone(),
-      resolve_from: config.project_root.clone(),
+      specifier: entry.to_str().unwrap().to_string(),
+      source_asset_path: c.config.project_root.clone(),
+      resolve_from: c.config.project_root.clone(),
       source_asset_id: ROOT_ASSET.id.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
       linking_symbol: LinkingSymbol::ImportDirect {
-        specifier: entry.clone(),
+        specifier: entry.to_str().unwrap().to_string(),
       },
       bundle_behavior: Default::default(),
     });
@@ -41,7 +39,7 @@ pub fn build_asset_graph(
   let mut completed_assets = HashMap::<PathBuf, AssetId>::new();
 
   while let Some(dependency) = queue.pop() {
-    let resolve_result = run_resolvers(&config, &plugins, &dependency)?;
+    let resolve_result = run_resolvers(&c, &dependency)?;
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
       c.asset_graph
@@ -63,7 +61,7 @@ pub fn build_asset_graph(
     completed_assets.insert(resolve_result.file_path.clone(), new_asset_id.clone());
 
     let mut asset_dependencies =
-      run_transformers(&config, &plugins, &mut new_asset, &resolve_result)?;
+      run_transformers(&c, &mut new_asset, &resolve_result)?;
 
     while let Some(dependency_options) = asset_dependencies.pop() {
       let new_dependency = Dependency {

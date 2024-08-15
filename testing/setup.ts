@@ -1,6 +1,17 @@
-import * as mach from '@alshdavid/mach'
+import Mach from '@alshdavid/mach'
 
-console.log(mach)
+console.log(Mach)
+
+const mach = new Mach({
+  threads: 16,
+  nodeWorkers: 4,
+  entries: '/home/dalsh/Development/alshdavid/mach/examples/js-esm-a/src/index.js',
+  env: {},
+  outFolder: '/home/dalsh/Development/alshdavid/mach/testing/dist',
+  projectRoot: '/home/dalsh/Development/alshdavid/mach/examples/js-esm-a',
+})
+
+console.log(await mach.build())
 
 
 // import '@shigen/polyfill-symbol-dispose'

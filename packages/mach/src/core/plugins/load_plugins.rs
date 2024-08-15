@@ -1,7 +1,7 @@
+use std::sync::Arc;
+
 use anyhow;
 
-use super::PluginContainer;
-use super::PluginContainerSync;
 use crate::plugins::resolver_javascript::ResolverJavaScript;
 use crate::plugins::resolver_rpc::ResolverAdapter;
 use crate::plugins::transformer_css::TransformerCSS;
@@ -10,54 +10,49 @@ use crate::plugins::transformer_html::TransformerHtml;
 use crate::plugins::transformer_javascript::TransformerJavaScript;
 use crate::plugins::transformer_json::TransformerJson;
 use crate::plugins::transformer_rpc::TransformerAdapter;
-use crate::public::MachConfig;
-use crate::public::Machrc;
+use crate::public::Compilation;
 use crate::public::Transformer;
-use crate::rpc::RpcHosts;
 
 pub fn load_plugins(
-  config: &MachConfig,
-  machrc: &Machrc,
-  adapter_map: &RpcHosts,
-) -> anyhow::Result<PluginContainerSync> {
-  let mut plugins = PluginContainer::default();
-
-  if let Some(resolvers) = &machrc.resolvers {
+  c: &mut Compilation,
+) -> anyhow::Result<()> {
+  if let Some(resolvers) = &c.machrc.resolvers {
     for plugin_string in resolvers {
-      let Some((engine, specifier)) = plugin_string.split_once(':') else {
-        return Err(anyhow::anyhow!(format!(
-          "Unable to parse engine:specifier for {}",
-          plugin_string
-        )));
-      };
-
-      if engine == "mach" && specifier == "resolver" {
-        plugins.resolvers.push(Box::new(ResolverJavaScript::new()));
-        continue;
+      match plugin_string.as_str() {
+        // Built-in
+        "mach:resolver" => {
+          c.plugins.resolvers.push(Arc::new(ResolverJavaScript::new()));
+          continue;
+        }
+        // External
+        specifier => {
+          let Some((engine, specifier)) = specifier.split_once(':') else {
+            return Err(anyhow::anyhow!(format!(
+              "Unable to parse engine:specifier for {}",
+              plugin_string
+            )));
+          };
+    
+          let Some(adapter) = c.rpc_hosts.get(engine) else {
+            return Err(anyhow::anyhow!(format!(
+              "No plugin runtime for engine: {}\nCannot load plugin: {}",
+              engine, specifier
+            )));
+          };
+    
+          c.plugins.resolvers.push(Arc::new(ResolverAdapter::new(
+            &c.config,
+            specifier,
+            adapter.clone(),
+          )?));
+        }
       }
-
-      let Some(adapter) = adapter_map.get(engine) else {
-        return Err(anyhow::anyhow!(format!(
-          "No plugin runtime for engine: {}\nCannot load plugin: {}",
-          engine, specifier
-        )));
-      };
-
-      adapter.start()?;
-
-      plugins.resolvers.push(Box::new(ResolverAdapter::new(
-        &*config,
-        specifier,
-        adapter.clone(),
-      )?));
-
-      continue;
     }
   }
 
-  if let Some(transformers) = &machrc.transformers {
+  if let Some(transformers) = &c.machrc.transformers {
     for (pattern, specifiers) in transformers {
-      let mut transformers = Vec::<Box<dyn Transformer>>::new();
+      let mut transformers = Vec::<Arc<dyn Transformer>>::new();
 
       for plugin_string in specifiers {
         let Some((engine, specifier)) = plugin_string.split_once(':') else {
@@ -67,31 +62,31 @@ pub fn load_plugins(
           )));
         };
         if engine == "mach" && specifier == "transformer/javascript" {
-          transformers.push(Box::new(TransformerJavaScript {}));
+          transformers.push(Arc::new(TransformerJavaScript {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/css" {
-          transformers.push(Box::new(TransformerCSS {}));
+          transformers.push(Arc::new(TransformerCSS {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/html" {
-          transformers.push(Box::new(TransformerHtml {}));
+          transformers.push(Arc::new(TransformerHtml {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/json" {
-          transformers.push(Box::new(TransformerJson {}));
+          transformers.push(Arc::new(TransformerJson {}));
           continue;
         }
 
         if engine == "mach" && specifier == "transformer/drop" {
-          transformers.push(Box::new(TransformerDrop {}));
+          transformers.push(Arc::new(TransformerDrop {}));
           continue;
         }
 
-        let Some(adapter) = adapter_map.get(engine) else {
+        let Some(adapter) = c.rpc_hosts.get(engine) else {
           return Err(anyhow::anyhow!(format!(
             "No plugin runtime for engine: {}\nCannot load plugin: {}",
             engine, specifier
@@ -100,18 +95,19 @@ pub fn load_plugins(
 
         adapter.start()?;
 
-        transformers.push(Box::new(TransformerAdapter::new(
-          &*config,
+        transformers.push(Arc::new(TransformerAdapter::new(
+          &c.config,
           specifier,
           adapter.clone(),
         )?));
       }
 
-      plugins
+      c.plugins
         .transformers
         .transformers
         .insert(pattern.clone(), transformers);
     }
   }
-  return Ok(plugins.to_sync());
+  
+  return Ok(());
 }

@@ -88,24 +88,17 @@ fn parse_machrc(file_path: PathBuf) -> Result<Machrc, String> {
   };
 
   let mut mach_config = Machrc {
-    is_default: false,
-    file_path,
-    engines: vec!["mach".to_string()],
     resolvers: None,
     transformers: None,
   };
 
-  let Ok(json_file) = fs::read_to_string(&mach_config.file_path) else {
+  let Ok(json_file) = fs::read_to_string(&file_path) else {
     return Err("Unable to read file".to_string());
   };
 
   let Ok(json) = serde_json::from_str::<serde_json::Value>(&json_file) else {
     return Err("Unable to parse json".to_string());
   };
-
-  if json_file.contains("\"node:") {
-    mach_config.engines.push("node".to_string());
-  }
 
   if let Some(resolvers_value) = json.get("resolvers") {
     let mut resolvers = Vec::<String>::new();

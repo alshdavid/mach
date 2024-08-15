@@ -20,10 +20,10 @@ impl Transformer for TransformerHtml {
     &self,
     asset: &mut MutableAsset,
     _config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     let code = asset.get_code();
     let Ok(script_specifiers) = get_script_src_attrs(&code) else {
-      return Err("Unable process HTML".to_string());
+      anyhow::bail!("Unable process HTML".to_string())
     };
 
     for script_specifier in script_specifiers {

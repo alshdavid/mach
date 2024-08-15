@@ -10,7 +10,7 @@ impl Transformer for TransformerJson {
     &self,
     asset: &mut MutableAsset,
     _config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     let code = asset.get_code();
 
     asset.set_code(&format!("export default ({})", code));

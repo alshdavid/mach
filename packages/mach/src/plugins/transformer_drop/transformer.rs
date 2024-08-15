@@ -10,7 +10,7 @@ impl Transformer for TransformerDrop {
     &self,
     asset: &mut MutableAsset,
     _config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     asset.set_bytes(vec![]);
     return Ok(());
   }

@@ -8,5 +8,5 @@ pub trait Transformer: Debug + Send + Sync {
     &self,
     asset: &mut MutableAsset,
     config: &MachConfig,
-  ) -> Result<(), String>;
+  ) -> anyhow::Result<()>;
 }

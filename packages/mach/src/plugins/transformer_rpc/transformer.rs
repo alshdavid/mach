@@ -55,7 +55,7 @@ impl Transformer for TransformerAdapter {
     &self,
     _asset: &mut MutableAsset,
     _config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     //     let response = self
     //       .adapter
     //       .send_and_wait(AdapterOutgoingRequest::TransformerTransform(

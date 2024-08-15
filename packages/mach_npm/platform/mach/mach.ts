@@ -1,30 +1,30 @@
+import native, { MachNapi, MachNapiOptions } from '../native/index.cjs'
+
 export type BuildReport = {
-  entries: Record<string, string>
+  readonly assets: Record<string, string>
 }
 
-export type MachOptions = {
-  threads?: number
-  nodeWorkers?: number
-}
+export type MachOptions = MachNapiOptions
 
 export type MachBuildOptions = {
-  entries: string[]
-  projectRoot?: string
-  outFolder?: string
-  clean?: boolean
-  optimize?: boolean
-  bundleSplitting?: boolean
+  readonly clean?: boolean
+  readonly optimize?: boolean
+  readonly bundleSplitting?: boolean
 }
 
 export class Mach {
-  constructor(options: MachOptions = {}) {}
+  #inner: MachNapi
 
-  static build(options: MachBuildOptions & MachOptions): Promise<BuildReport> {
-    const mach = new Mach(options)
-    return mach.build(options)
+  constructor(options: MachOptions = {}) {
+    this.#inner = native.machNapiNew(options)
   }
 
-  async build(options: MachBuildOptions): Promise<BuildReport> {
+  static build(options: MachBuildOptions & MachOptions): Promise<BuildReport> {
+    return new Mach(options).build(options)
+  }
+
+  async build(options: MachBuildOptions = {}): Promise<BuildReport> {
+    native.machNapiBuild(this.#inner, options, () => {})
     return {} as any
   }
 }

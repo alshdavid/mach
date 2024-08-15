@@ -10,7 +10,7 @@ impl Transformer for TransformerCSS {
     &self,
     _asset: &mut MutableAsset,
     _config: &MachConfig,
-  ) -> Result<(), String> {
+  ) -> anyhow::Result<()> {
     return Ok(());
   }
 }
