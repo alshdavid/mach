@@ -103,10 +103,10 @@ impl AssetGraph {
       let mut label = String::from("ROOT");
 
       if asset.id == ROOT_ASSET.id {
-        return format!("label = \"{}\" ", label);
+        return format!("path = \"{}\" ", label);
       }
       label = asset.file_path_relative.to_str().unwrap().to_string();
-      format!("label = \"{}\" ", label)
+      format!("path = \"{}\" ", label)
     };
 
     let get_edge_attribute =
@@ -125,7 +125,7 @@ impl AssetGraph {
           );
         }
 
-        label += &format!("label = \"{}\" ", specifier);
+        label += &format!("specifier = \"{}\" ", specifier);
 
         if let DependencyPriority::Lazy = dependency.priority {
           label += &format!("; style = \"dashed\" ")
