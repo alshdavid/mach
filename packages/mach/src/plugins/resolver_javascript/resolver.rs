@@ -11,9 +11,12 @@ pub struct ResolverJavaScript {
 }
 
 impl std::fmt::Debug for ResolverJavaScript {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      write!(f, "ResolverJavaScript")
-    }
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
+    write!(f, "ResolverJavaScript")
+  }
 }
 
 impl ResolverJavaScript {

@@ -13,15 +13,15 @@ use crate::plugins::transformer_rpc::TransformerAdapter;
 use crate::public::Compilation;
 use crate::public::Transformer;
 
-pub fn load_plugins(
-  c: &mut Compilation,
-) -> anyhow::Result<()> {
+pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
   if let Some(resolvers) = &c.machrc.resolvers {
     for plugin_string in resolvers {
       match plugin_string.as_str() {
         // Built-in
         "mach:resolver" => {
-          c.plugins.resolvers.push(Arc::new(ResolverJavaScript::new()));
+          c.plugins
+            .resolvers
+            .push(Arc::new(ResolverJavaScript::new()));
           continue;
         }
         // External
@@ -32,14 +32,14 @@ pub fn load_plugins(
               plugin_string
             )));
           };
-    
+
           let Some(adapter) = c.rpc_hosts.get(engine) else {
             return Err(anyhow::anyhow!(format!(
               "No plugin runtime for engine: {}\nCannot load plugin: {}",
               engine, specifier
             )));
           };
-    
+
           c.plugins.resolvers.push(Arc::new(ResolverAdapter::new(
             &c.config,
             specifier,
@@ -108,6 +108,6 @@ pub fn load_plugins(
         .insert(pattern.clone(), transformers);
     }
   }
-  
+
   return Ok(());
 }

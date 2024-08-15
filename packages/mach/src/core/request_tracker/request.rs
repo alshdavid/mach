@@ -23,7 +23,10 @@ impl<'a, T: Clone> RunRequestContext<'a, T> {
     }
   }
 
-  pub fn run_request(&mut self, request: &dyn Request<T>) -> anyhow::Result<T> {
+  pub fn run_request(
+    &mut self,
+    request: &dyn Request<T>,
+  ) -> anyhow::Result<T> {
     self
       .request_tracker
       .run_child_request(request, self.parent_request_hash)
@@ -40,8 +43,10 @@ pub trait Request<T: Clone>: DynHash {
     hasher.finish()
   }
 
-  fn run(&self, request_context: RunRequestContext<T>)
-    -> Result<RequestResult<T>, RunRequestError>;
+  fn run(
+    &self,
+    request_context: RunRequestContext<T>,
+  ) -> Result<RequestResult<T>, RunRequestError>;
 }
 
 dyn_hash::hash_trait_object!(<T: Clone> Request<T>);

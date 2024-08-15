@@ -6,25 +6,10 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::super::MachOptions;
-// use super::build_parse_config::parse_config;
-// use super::create_result::create_build_result;
-// use crate::platform::bundling::bundle;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
-// use crate::public::AssetGraphSync;
-// use crate::public::AssetMap;
-// use crate::public::AssetMapSync;
-// use crate::public::BundleGraphSync;
-// use crate::public::BundleManifestSync;
-// use crate::public::BundleMapSync;
 use crate::public::Compilation;
 use crate::public::MachConfig;
-// use crate::public::DependencyMapSync;
-// use crate::rpc::Engine;
-// use crate::platform::emit::emit;
-// use crate::platform::packaging::package;
-// use crate::rpc::RpcHost;
-// use crate::public::OutputsSync;
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -63,16 +48,13 @@ pub struct BuildResult {
 
 pub fn build(
   mach_options: MachOptions,
-  options: BuildOptions,
+  _options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  // let config = parse_config(&options).map_err(|e| anyhow::anyhow!(e))?;
-
   /*
-    This is the bundler state. It is passed into
-    the bundling phases with read or write access
+    This is the bundler state. It is passed into the bundling phases with read or write access
     depending on how that phase uses them
   */
-  let mut compilation = Compilation{
+  let mut compilation = Compilation {
     machrc: mach_options.config,
     rpc_hosts: mach_options.rpc_hosts,
     config: MachConfig {
@@ -98,8 +80,7 @@ pub fn build(
     It does this by crawling the source files, identify import statements, modifying their contents
     (like removing TypeScript types) and looping until there are no more import statements to resolve.
   */
-  resolve_and_transform(&mut compilation)
-    .map_err(|e| anyhow::anyhow!(e))?;
+  resolve_and_transform(&mut compilation)?;
 
   println!("{}", &compilation.asset_graph.into_dot(&compilation.config));
 

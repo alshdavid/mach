@@ -1,20 +1,15 @@
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use once_cell::sync::Lazy;
 use petgraph::visit::EdgeRef;
 use petgraph::visit::NodeRef;
 
-use super::super::build_asset_graph;
+use super::super::resolve_and_transform;
 use super::snapshot::GraphSnapshot;
 use crate::core::plugins::load_plugins;
-use crate::core::plugins::PluginContainerSync;
 use crate::public::Compilation;
 use crate::public::MachConfig;
-use crate::public::MachConfigSync;
-use crate::public::Machrc;
-use crate::rpc::RpcHosts;
 
 pub static SNAPSHOT_FILENAME: &str = "__graph.json";
 pub static CARGO_DIR: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
@@ -30,19 +25,28 @@ pub static FIXTURES: Lazy<PathBuf> = Lazy::new(|| {
 pub fn setup_root<T: AsRef<str>>(
   project_root: &Path,
   entries: &[T],
-) -> (MachConfigSync, PluginContainerSync, Compilation) {
-  let mach_config = Arc::new(MachConfig {
-    entries: entries
-      .iter()
-      .map(|e| e.as_ref().to_string())
-      .collect::<Vec<String>>(),
-    project_root: project_root.to_owned(),
-    ..Default::default()
-  });
+) -> Compilation {
+  let mut compilation = Compilation {
+    machrc: Default::default(),
+    rpc_hosts: Default::default(),
+    config: MachConfig {
+      entries: entries
+        .iter()
+        .map(|e| PathBuf::from(e.as_ref().to_string()))
+        .collect::<Vec<PathBuf>>(),
+      project_root: project_root.to_owned(),
+      threads: 1,
+      env: Default::default(),
+      out_folder: Default::default(),
+    },
+    asset_contents: Default::default(),
+    asset_graph: Default::default(),
+    plugins: Default::default(),
+  };
 
-  let plugins = load_plugins(&mach_config, &Machrc::default(), &RpcHosts::new()).unwrap();
-  let compilation = Compilation::new();
-  (mach_config, plugins, compilation)
+  load_plugins(&mut compilation).unwrap();
+
+  compilation
 }
 
 pub fn test_project_snapshot(
@@ -56,9 +60,9 @@ pub fn test_project_snapshot(
 
   let snapshot = GraphSnapshot::load(&snapshot_path);
 
-  let (mach_config, plugins, mut c) = setup_root(&project_root, &snapshot.get_entries());
+  let mut c = setup_root(&project_root, &snapshot.get_entries());
 
-  if let Err(msg) = build_asset_graph(mach_config.clone(), plugins, &mut c) {
+  if let Err(msg) = resolve_and_transform(&mut c) {
     println!("{msg}");
     panic!()
   };

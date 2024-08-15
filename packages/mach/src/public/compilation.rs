@@ -1,11 +1,9 @@
-
-use crate::core::plugins::PluginContainer;
-use crate::rpc::RpcHosts;
-
 use super::AssetContents;
 use super::AssetGraph;
 use super::MachConfig;
 use super::Machrc;
+use crate::core::plugins::PluginContainer;
+use crate::rpc::RpcHosts;
 
 #[derive(Clone, Debug)]
 pub struct Compilation {

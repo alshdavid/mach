@@ -1,9 +1,7 @@
 use std::path::PathBuf;
 
-use crate::core::plugins::PluginContainerSync;
 use crate::public::Compilation;
 use crate::public::Dependency;
-use crate::public::MachConfig;
 
 #[derive(Debug)]
 pub struct RunResolversResult {

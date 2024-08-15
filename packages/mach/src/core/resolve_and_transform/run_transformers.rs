@@ -1,13 +1,11 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
-use crate::core::plugins::PluginContainerSync;
 use crate::core::plugins::TransformerTarget;
 use crate::public::Asset;
 use crate::public::Compilation;
 use crate::public::DependencyOptions;
 use crate::public::LinkingSymbol;
-use crate::public::MachConfig;
 use crate::public::MutableAsset;
 
 pub fn run_transformers(

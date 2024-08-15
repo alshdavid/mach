@@ -3,7 +3,6 @@ use std::path::PathBuf;
 
 use super::run_resolvers::run_resolvers;
 use crate::core::config::ROOT_ASSET;
-use crate::core::plugins::PluginContainerSync;
 use crate::core::resolve_and_transform::run_transformers::run_transformers;
 use crate::public::Asset;
 use crate::public::AssetId;
@@ -11,11 +10,8 @@ use crate::public::Compilation;
 use crate::public::Dependency;
 use crate::public::DependencyId;
 use crate::public::LinkingSymbol;
-use crate::public::MachConfigSync;
 
-pub fn resolve_and_transform(
-  c: &mut Compilation,
-) -> anyhow::Result<()> {
+pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
   let mut queue = vec![];
 
   c.asset_graph.add_asset(ROOT_ASSET.clone());
@@ -60,8 +56,7 @@ pub fn resolve_and_transform(
     };
     completed_assets.insert(resolve_result.file_path.clone(), new_asset_id.clone());
 
-    let mut asset_dependencies =
-      run_transformers(&c, &mut new_asset, &resolve_result)?;
+    let mut asset_dependencies = run_transformers(&c, &mut new_asset, &resolve_result)?;
 
     while let Some(dependency_options) = asset_dependencies.pop() {
       let new_dependency = Dependency {

@@ -37,5 +37,3 @@ export function machNapiBuild(
 
 // Worker.new()
 export function machWorkerNew(): any
-
-

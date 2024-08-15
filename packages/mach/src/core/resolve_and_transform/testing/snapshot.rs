@@ -8,9 +8,9 @@ use petgraph::visit::NodeRef;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::transformation::build_asset_graph;
-use crate::core::transformation::testing::utils::setup_root;
-use crate::core::transformation::testing::utils::SNAPSHOT_FILENAME;
+use super::utils::setup_root;
+use super::utils::SNAPSHOT_FILENAME;
+use crate::core::resolve_and_transform::resolve_and_transform;
 use crate::public::BundleBehavior;
 use crate::public::DependencyPriority;
 use crate::public::LinkingSymbol;
@@ -75,9 +75,9 @@ impl GraphSnapshot {
 pub fn _generate_project_snapshot(project_root: &Path) {
   let snapshot_path = project_root.join(SNAPSHOT_FILENAME);
 
-  let (mach_config, plugins, mut c) = setup_root(&project_root, &["./index.js"]);
+  let mut c = setup_root(&project_root, &["./index.js"]);
 
-  if let Err(msg) = build_asset_graph(mach_config.clone(), plugins, &mut c) {
+  if let Err(msg) = resolve_and_transform(&mut c) {
     println!("{msg}");
     panic!()
   };

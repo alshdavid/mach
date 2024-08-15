@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-await import("#bin")
+await import('#bin')

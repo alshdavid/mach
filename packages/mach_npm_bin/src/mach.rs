@@ -58,7 +58,7 @@ pub fn mach_napi_new(
           let value = JsString::from_unknown(value)?;
           let value = PathBuf::from(value.into_utf8()?.as_str()?.to_string());
           vec![value]
-        },
+        }
         Ok(ValueType::Object) => {
           let value = JsObject::from_unknown(value)?;
           let mut output = vec![];
@@ -68,8 +68,8 @@ pub fn mach_napi_new(
             output.push(element)
           }
           output
-        },
-        _ => Default::default()
+        }
+        _ => Default::default(),
       }
     },
     env: 'block: {
@@ -84,7 +84,12 @@ pub fn mach_napi_new(
       };
       env.from_js_value(value)?
     },
-    project_root: PathBuf::from(options.get_named_property::<JsString>("projectRoot")?.into_utf8()?.as_str()?),
+    project_root: PathBuf::from(
+      options
+        .get_named_property::<JsString>("projectRoot")?
+        .into_utf8()?
+        .as_str()?,
+    ),
     config: Default::default(),
   };
 

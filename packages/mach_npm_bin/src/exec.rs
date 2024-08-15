@@ -23,7 +23,7 @@ pub fn exec(args: Vec<String>) -> napi::Result<()> {
       Err(error) => {
         eprintln!("{}", error);
         return Err(());
-      },
+      }
     };
 
     let mach = Mach::new(MachOptions::default());

@@ -87,14 +87,20 @@ pub struct TestRequest<'a> {
 }
 
 impl<'a> std::fmt::Debug for TestRequest<'a> {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+  fn fmt(
+    &self,
+    f: &mut std::fmt::Formatter<'_>,
+  ) -> std::fmt::Result {
     f.debug_struct(&format!("TestRequest({})", self.name))
       .finish()
   }
 }
 
 impl<'a> TestRequest<'a> {
-  pub fn new<T: AsRef<str>>(name: T, sub_requests: &[&'a TestRequest<'a>]) -> Self {
+  pub fn new<T: AsRef<str>>(
+    name: T,
+    sub_requests: &[&'a TestRequest<'a>],
+  ) -> Self {
     Self {
       runs: Default::default(),
       name: name.as_ref().to_string(),
@@ -108,7 +114,10 @@ impl<'a> TestRequest<'a> {
 }
 
 impl<'a> std::hash::Hash for TestRequest<'a> {
-  fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+  fn hash<H: std::hash::Hasher>(
+    &self,
+    state: &mut H,
+  ) {
     self.name.hash(state);
   }
 }

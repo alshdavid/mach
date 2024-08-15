@@ -1,6 +1,6 @@
-use anyhow::anyhow;
 use std::collections::HashMap;
 
+use anyhow::anyhow;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 
@@ -27,7 +27,10 @@ impl<T: Clone> RequestTracker<T> {
     }
   }
 
-  pub fn run_request(&mut self, request: &dyn Request<T>) -> anyhow::Result<T> {
+  pub fn run_request(
+    &mut self,
+    request: &dyn Request<T>,
+  ) -> anyhow::Result<T> {
     self.run_child_request(request, None)
   }
 
@@ -46,7 +49,10 @@ impl<T: Clone> RequestTracker<T> {
     Ok(self.get_request(parent_request_hash, &request_id)?)
   }
 
-  fn prepare_request(&mut self, request_id: u64) -> anyhow::Result<bool> {
+  fn prepare_request(
+    &mut self,
+    request_id: u64,
+  ) -> anyhow::Result<bool> {
     let node_index = self
       .request_index
       .entry(request_id)
