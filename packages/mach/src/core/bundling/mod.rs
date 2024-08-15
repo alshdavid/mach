@@ -1,6 +1,5 @@
-mod bundle;
 mod bundle_single;
-// mod bundle_splitting;
-mod infer_exports;
+mod bundle_split;
 
-pub use self::bundle::*;
+pub use self::bundle_single::*;
+pub use self::bundle_split::*;

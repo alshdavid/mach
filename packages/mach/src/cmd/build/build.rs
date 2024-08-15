@@ -10,6 +10,8 @@ use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
 use crate::types::Compilation;
 use crate::types::MachConfig;
+use crate::core::bundling::bundle_single;
+use crate::core::bundling::bundle_split;
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -48,7 +50,7 @@ pub struct BuildResult {
 
 pub fn build(
   mach_options: MachOptions,
-  _options: BuildOptions,
+  build_options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
   /*
     This is the bundler state. It is passed into the bundling phases with read or write access
@@ -83,6 +85,12 @@ pub fn build(
   resolve_and_transform(&mut compilation)?;
 
   println!("{}", &compilation.asset_graph.into_dot(&compilation.config));
+
+  if build_options.bundle_splitting {
+    bundle_split(&mut compilation)?;
+  } else {
+    bundle_single(&mut compilation)?;
+  }
 
   Ok(BuildResult::default())
 

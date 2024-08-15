@@ -2,7 +2,7 @@
 import { register } from 'tsx/esm/api'
 register()
 
-import Mach from './index.mjs'
+import Mach from './index.js'
 
 export default Mach
-export * from './index.mjs'
+export * from './index.js'

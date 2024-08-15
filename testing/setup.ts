@@ -11,7 +11,9 @@ const mach = new Mach({
   projectRoot: '/home/dalsh/Development/alshdavid/mach/examples/js-esm-a',
 })
 
-console.log(await mach.build())
+console.log(await mach.build({
+  bundleSplitting: true
+}))
 
 
 // import '@shigen/polyfill-symbol-dispose'

@@ -25,8 +25,8 @@
     }
   },
   "exports": {
-    "source": "./lib/index.dev.mjs",
-    "types": "./lib/index.mjs",
+    "source": "./lib/index.ts.mjs",
+    "types": "./lib/index.ts",
     "default": "./lib/index.js"
   },
   "optionalDependencies": {
