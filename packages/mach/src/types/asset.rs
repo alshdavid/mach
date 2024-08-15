@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use super::hash::hash_sha_256;
+use crate::kit::hash::hash_sha_256;
 use super::AssetId;
 use super::BundleBehavior;
 use super::LinkingSymbol;

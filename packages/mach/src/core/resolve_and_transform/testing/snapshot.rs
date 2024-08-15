@@ -11,10 +11,10 @@ use serde::Serialize;
 use super::utils::setup_root;
 use super::utils::SNAPSHOT_FILENAME;
 use crate::core::resolve_and_transform::resolve_and_transform;
-use crate::public::BundleBehavior;
-use crate::public::DependencyPriority;
-use crate::public::LinkingSymbol;
-use crate::public::SpecifierType;
+use crate::types::BundleBehavior;
+use crate::types::DependencyPriority;
+use crate::types::LinkingSymbol;
+use crate::types::SpecifierType;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct GraphSnapshot {

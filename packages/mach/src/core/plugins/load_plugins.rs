@@ -10,8 +10,8 @@ use crate::plugins::transformer_html::TransformerHtml;
 use crate::plugins::transformer_javascript::TransformerJavaScript;
 use crate::plugins::transformer_json::TransformerJson;
 use crate::plugins::transformer_rpc::TransformerAdapter;
-use crate::public::Compilation;
-use crate::public::Transformer;
+use crate::types::Compilation;
+use crate::types::Transformer;
 
 pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
   if let Some(resolvers) = &c.machrc.resolvers {

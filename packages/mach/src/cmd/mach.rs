@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::public::Machrc;
+use crate::types::Machrc;
 use crate::rpc::RpcHosts;
 
 #[derive(Clone, Debug)]

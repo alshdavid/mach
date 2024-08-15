@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
-use std::sync::RwLock;
 
 use petgraph::dot::Config;
 use petgraph::dot::Dot;
@@ -18,9 +16,7 @@ use super::Dependency;
 use super::DependencyId;
 use super::MachConfig;
 use crate::core::config::ROOT_ASSET;
-use crate::public::DependencyPriority;
-
-pub type AssetGraphSync = Arc<RwLock<AssetGraph>>;
+use crate::types::DependencyPriority;
 
 #[derive(Default, Clone, Debug)]
 pub struct AssetGraph {

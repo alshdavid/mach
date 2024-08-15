@@ -5,9 +5,9 @@ use anyhow;
 
 // use crate::plugins::resolver_javascript::resolve;
 // use crate::public::DependencyOptions;
-use crate::public::MachConfig;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use crate::types::MachConfig;
+use crate::types::MutableAsset;
+use crate::types::Transformer;
 use crate::rpc::RpcHost;
 
 pub struct TransformerAdapter {

@@ -4,13 +4,13 @@ use markup5ever_rcdom::Handle;
 use markup5ever_rcdom::NodeData;
 use markup5ever_rcdom::RcDom;
 
-use crate::public::BundleBehavior;
-use crate::public::DependencyOptions;
-use crate::public::DependencyPriority;
-use crate::public::MachConfig;
-use crate::public::MutableAsset;
-use crate::public::SpecifierType;
-use crate::public::Transformer;
+use crate::types::BundleBehavior;
+use crate::types::DependencyOptions;
+use crate::types::DependencyPriority;
+use crate::types::MachConfig;
+use crate::types::MutableAsset;
+use crate::types::SpecifierType;
+use crate::types::Transformer;
 
 #[derive(Debug)]
 pub struct TransformerHtml {}

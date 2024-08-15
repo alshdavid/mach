@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
-use crate::public::Compilation;
-use crate::public::Dependency;
+use crate::types::Compilation;
+use crate::types::Dependency;
 
 #[derive(Debug)]
 pub struct RunResolversResult {

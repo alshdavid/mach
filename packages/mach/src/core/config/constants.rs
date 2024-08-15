@@ -2,8 +2,8 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::public::Asset;
-use crate::public::AssetId;
+use crate::types::Asset;
+use crate::types::AssetId;
 
 pub static ROOT_NODE: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(""));
 

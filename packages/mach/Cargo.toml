@@ -7,11 +7,6 @@ description = "Bundler For The Modern Web"
 edition = "2021"
 license = "MIT"
 
-[[bench]]
-name = "mach_bundler_core_benchmarks"
-harness = false
-path = "src/bench.rs"
-
 [features]
 cli_parser = ["dep:clap"]
 rpc_ipc = ["dep:ipc_channel_adapter"]

@@ -13,10 +13,10 @@ use super::extract_imports_exports::extract_imports_exports;
 use super::replace_node_env::replace_node_env;
 use crate::kit::swc::parse_program;
 use crate::kit::swc::render_program;
-use crate::public::DependencyOptions;
-use crate::public::MachConfig;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use crate::types::DependencyOptions;
+use crate::types::MachConfig;
+use crate::types::MutableAsset;
+use crate::types::Transformer;
 
 #[derive(Debug)]
 pub struct TransformerJavaScript {}

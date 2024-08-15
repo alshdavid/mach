@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 
-use crate::public::Resolver;
-use crate::public::Transformer;
+use crate::types::Resolver;
+use crate::types::Transformer;
 
 pub type PluginContainerSync = Arc<PluginContainer>;
 

@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-use super::hash::hash_string_sha_256;
-use super::hash::truncate;
+use crate::kit::hash::hash_string_sha_256;
+use crate::kit::hash::truncate;
 use super::Asset;
 use super::AssetId;
 use super::BundleId;

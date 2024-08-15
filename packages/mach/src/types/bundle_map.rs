@@ -1,13 +1,9 @@
 use std::collections::hash_map::Iter;
 use std::collections::hash_map::Values;
 use std::collections::HashMap;
-use std::sync::Arc;
-use std::sync::RwLock;
 
 use super::Bundle;
 use super::BundleId;
-
-pub type BundleMapSync = Arc<RwLock<BundleMap>>;
 
 #[derive(Default, Clone)]
 pub struct BundleMap {

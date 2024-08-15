@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use serde::Deserialize;
-
-pub type MachConfigSync = Arc<MachConfig>;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MachConfig {

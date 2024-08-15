@@ -8,8 +8,8 @@ use serde::Serialize;
 use super::super::MachOptions;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
-use crate::public::Compilation;
-use crate::public::MachConfig;
+use crate::types::Compilation;
+use crate::types::MachConfig;
 
 #[derive(Debug)]
 pub struct BuildOptions {

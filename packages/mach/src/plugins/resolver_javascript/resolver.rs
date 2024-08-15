@@ -2,9 +2,9 @@ use normalize_path::NormalizePath;
 use oxc_resolver::ResolveOptions as OxcResolveOptions;
 use oxc_resolver::Resolver as OxcResolver;
 
-use crate::public::Dependency;
-use crate::public::ResolveResult;
-use crate::public::Resolver;
+use crate::types::Dependency;
+use crate::types::ResolveResult;
+use crate::types::Resolver;
 
 pub struct ResolverJavaScript {
   resolver: OxcResolver,

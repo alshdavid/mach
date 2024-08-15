@@ -1,6 +1,6 @@
-use crate::public::MachConfig;
-use crate::public::MutableAsset;
-use crate::public::Transformer;
+use crate::types::MachConfig;
+use crate::types::MutableAsset;
+use crate::types::Transformer;
 
 #[derive(Debug)]
 pub struct TransformerCSS {}

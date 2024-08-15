@@ -2,7 +2,7 @@ use swc_core::ecma::ast::*;
 
 use super::walk_cjs::analyze_js_file_cjs;
 use super::walk_esm::analyze_js_file_esm;
-use crate::public::LinkingSymbol;
+use crate::types::LinkingSymbol;
 
 pub type AnalyzeFileResult = Vec<LinkingSymbol>;
 

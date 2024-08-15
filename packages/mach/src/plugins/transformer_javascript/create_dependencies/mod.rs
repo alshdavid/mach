@@ -1,8 +1,8 @@
-use crate::public::BundleBehavior;
-use crate::public::DependencyOptions;
-use crate::public::DependencyPriority;
-use crate::public::LinkingSymbol;
-use crate::public::SpecifierType;
+use crate::types::BundleBehavior;
+use crate::types::DependencyOptions;
+use crate::types::DependencyPriority;
+use crate::types::LinkingSymbol;
+use crate::types::SpecifierType;
 
 pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyOptions> {
   let mut dependencies = vec![];

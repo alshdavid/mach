@@ -1,11 +1,11 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
-use crate::public::Asset;
-use crate::public::Compilation;
-use crate::public::DependencyOptions;
-use crate::public::LinkingSymbol;
-use crate::public::MutableAsset;
+use crate::types::Asset;
+use crate::types::Compilation;
+use crate::types::DependencyOptions;
+use crate::types::LinkingSymbol;
+use crate::types::MutableAsset;
 
 pub fn run_transformers(
   c: &Compilation,

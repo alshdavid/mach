@@ -1,10 +1,10 @@
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
-use crate::public::Dependency;
-use crate::public::MachConfig;
-use crate::public::ResolveResult;
-use crate::public::Resolver;
+use crate::types::Dependency;
+use crate::types::MachConfig;
+use crate::types::ResolveResult;
+use crate::types::Resolver;
 use crate::rpc::RpcHostRef;
 
 #[derive(Debug)]

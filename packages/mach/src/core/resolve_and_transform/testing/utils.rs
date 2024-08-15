@@ -8,8 +8,8 @@ use petgraph::visit::NodeRef;
 use super::super::resolve_and_transform;
 use super::snapshot::GraphSnapshot;
 use crate::core::plugins::load_plugins;
-use crate::public::Compilation;
-use crate::public::MachConfig;
+use crate::types::Compilation;
+use crate::types::MachConfig;
 
 pub static SNAPSHOT_FILENAME: &str = "__graph.json";
 pub static CARGO_DIR: Lazy<PathBuf> = Lazy::new(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));

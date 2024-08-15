@@ -4,12 +4,12 @@ use std::path::PathBuf;
 use super::run_resolvers::run_resolvers;
 use crate::core::config::ROOT_ASSET;
 use crate::core::resolve_and_transform::run_transformers::run_transformers;
-use crate::public::Asset;
-use crate::public::AssetId;
-use crate::public::Compilation;
-use crate::public::Dependency;
-use crate::public::DependencyId;
-use crate::public::LinkingSymbol;
+use crate::types::Asset;
+use crate::types::AssetId;
+use crate::types::Compilation;
+use crate::types::Dependency;
+use crate::types::DependencyId;
+use crate::types::LinkingSymbol;
 
 pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
   let mut queue = vec![];
