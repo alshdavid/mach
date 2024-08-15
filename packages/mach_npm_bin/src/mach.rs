@@ -7,16 +7,11 @@ use std::sync::Arc;
 use std::thread;
 
 use mach_bundler_core::BuildOptions;
-use mach_bundler_core::BuildResult;
 use mach_bundler_core::Mach;
 use mach_bundler_core::MachOptions;
 use napi::bindgen_prelude::External;
 use napi::bindgen_prelude::FromNapiValue;
-use napi::threadsafe_function::ThreadSafeCallContext;
-use napi::threadsafe_function::ThreadsafeFunction;
-use napi::threadsafe_function::ThreadsafeFunctionCallMode;
 use napi::Env;
-use napi::JsFunction;
 use napi::JsNumber;
 use napi::JsObject;
 use napi::JsString;
@@ -131,10 +126,9 @@ pub struct BuildResultNapi {
 
 #[napi]
 pub fn mach_napi_build(
-  this: MachNapi,
   env: Env,
+  this: MachNapi,
   options: JsObject,
-  callback: JsFunction,
 ) -> napi::Result<JsObject> {
   let options_napi = env.from_js_value::<BuildOptionsNapi, JsObject>(options)?;
   let mut options = BuildOptions::default();
@@ -163,35 +157,22 @@ pub fn mach_napi_build(
     options.project_root = Some(project_root);
   }
 
-  let (tx, rx) = tokio::sync::oneshot::channel::<anyhow::Result<BuildResult>>();
+  let (deferred, promise) = env.create_deferred()?;
 
   thread::spawn({
     let mach = this.mach.clone();
-    move || tx.send(mach.build(options))
+    move || match mach.build(options) {
+      Ok(result) => deferred.resolve(move |env| {
+        Ok(env.to_js_value(&BuildResultNapi {
+          bundle_manifest: result.bundle_manifest,
+          entries: result.entries,
+        }))
+      }),
+      Err(err) => {
+        deferred.reject(napi::Error::from_reason(format!("{:?}", err)))
+      },
+    }
   });
 
-  let thread_safe_callback: ThreadsafeFunction<BuildResult> =
-    env.create_threadsafe_function(&callback, 0, |ctx: ThreadSafeCallContext<BuildResult>| {
-      let result = BuildResultNapi {
-        bundle_manifest: ctx.value.bundle_manifest,
-        entries: ctx.value.entries,
-      };
-      let message = ctx.env.to_js_value(&result)?;
-      Ok(vec![message])
-    })?;
-
-  env.spawn_future(async move {
-    match rx.await.unwrap() {
-      Ok(result) => {
-        thread_safe_callback.call(Ok(result), ThreadsafeFunctionCallMode::NonBlocking);
-      }
-      Err(err) => {
-        thread_safe_callback.call(
-          Err(napi::Error::from_reason(format!("{}", err))),
-          ThreadsafeFunctionCallMode::NonBlocking,
-        );
-      }
-    };
-    Ok(())
-  })
+  Ok(promise)
 }

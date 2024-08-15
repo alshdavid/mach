@@ -32,8 +32,6 @@ export type MachNapiBuildOptions = {
 export function machNapiBuild(
   mach: MachNapi,
   options: MachNapiBuildOptions,
-  callback: any,
-): any
+): Promise<any>
 
-// Worker.new()
 export function machWorkerNew(): any

@@ -24,7 +24,6 @@ export class Mach {
   }
 
   async build(options: MachBuildOptions = {}): Promise<BuildReport> {
-    native.machNapiBuild(this.#inner, options, () => {})
-    return {} as any
+    return native.machNapiBuild(this.#inner, options)
   }
 }

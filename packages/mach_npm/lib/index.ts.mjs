@@ -1,4 +1,4 @@
-// This will be removed when Nodejs stabilizes TypeScript support
+// This is for development and will be removed when Nodejs stabilizes TypeScript support
 import { register } from 'tsx/esm/api'
 register()
 

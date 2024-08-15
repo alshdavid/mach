@@ -92,6 +92,8 @@ pub fn build(
     bundle_single(&mut compilation)?;
   }
 
+  println!("wat");
+
   Ok(BuildResult::default())
 
   //   /*
