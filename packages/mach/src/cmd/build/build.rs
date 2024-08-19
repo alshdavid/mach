@@ -12,6 +12,7 @@ use crate::core::packaging::package;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
 use crate::types::Compilation;
+use crate::types::DebugAssetGraphOptions;
 use crate::types::MachConfig;
 
 #[derive(Debug)]
@@ -63,7 +64,7 @@ pub fn build(
 
   // This will resolve imports, transform files and build the AssetGraph.
   resolve_and_transform(&mut c)?;
-  emit_file(&c, "asset_graph.dot", c.debug_asset_graph_dot())?;
+  emit_file(&c, "asset_graph.dot", c.debug_asset_graph_dot(DebugAssetGraphOptions{ show_specifiers: false }))?;
 
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
   bundle(&mut c)?;

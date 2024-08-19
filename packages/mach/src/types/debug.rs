@@ -1,49 +1,72 @@
 use std::collections::HashSet;
 
-use petgraph::dot::Config;
-use petgraph::dot::Dot;
+use petgraph::visit::EdgeRef;
+use petgraph::visit::NodeRef;
 
-use crate::core::config::ROOT_ASSET;
 use crate::types::DependencyPriority;
 
 use super::Compilation;
 
+#[derive(Debug, Default)]
+pub struct DebugAssetGraphOptions {
+  pub show_specifiers: bool,
+}
+
 impl Compilation {
-  pub fn debug_asset_graph_dot(&self) -> String {
+  pub fn debug_asset_graph_dot(&self, DebugAssetGraphOptions{ show_specifiers }: DebugAssetGraphOptions) -> String {
+    let mut output = "digraph {\n".to_string();
+    output += "graph [shape=box];\n";
+    output += "node [shape=box];\n";
+
     let asset_graph = self.asset_graph.as_graph();
-    let dot = Dot::with_attr_getters(
-      &asset_graph,
-      &[Config::EdgeNoLabel, Config::NodeNoLabel],
-      &|_, edge_ref| -> String {
-        let dependency = edge_ref.weight();
-        let mut label = String::new();
+    let root_nx = self.asset_graph.root_node();
 
-        let mut specifier = dependency.specifier.clone();
-        if dependency.specifier.starts_with("/") || dependency.specifier.starts_with("\\") {
-          specifier = format!("");
-        }
+    for asset_nx in asset_graph.node_indices() {
+      let asset = self.asset_graph.get_with_nx(asset_nx).unwrap();
+      output += &format!("{} [label=\"", asset.id.0);
 
-        label += &format!("label=\"  {}\" ", specifier);
+      if asset_nx == root_nx {
+        output += &format!("Asset Graph\"]\n");
+        continue;
+      }
+
+      output += &format!("{}\"]\n", asset.file_path.file_name().unwrap().to_str().unwrap());
+    }
+
+    let mut nodes = vec![self.bundle_graph.root_node()];
+    let mut completed = HashSet::new();
+
+    while let Some(current_nx) = nodes.pop() {
+      let current_asset = self.asset_graph.get_with_nx(current_nx.clone()).unwrap();
+
+      for next_ref in self.asset_graph.get_dependencies(&current_nx) {
+        let next_nx = next_ref.target().id();
+        let next_asset = self.asset_graph.get_with_nx(next_nx.clone()).unwrap();
+        let dependency = next_ref.weight();
+
+        output += &format!("{} -> {} [", current_asset.id.0, next_asset.id.0);
 
         if let DependencyPriority::Lazy = dependency.priority {
-          label += &format!("; style = \"dashed\" ")
+          output += &format!("style=\"dashed\"");
         }
 
-        label
-      },
-      &|_, (_, asset)| {
-        if asset.id == ROOT_ASSET.id {
-          return format!("shape=box label=\"Asset Graph\" ");
+        if show_specifiers && current_nx != root_nx {
+          output += &format!("label=\"{}\"", dependency.specifier);
         }
 
-        let mut label = String::new();
-        label += &format!("[{}] ", asset.id.0);
-        label += &asset.file_path.to_str().unwrap().to_string();
+        output += &format!("]\n");
 
-        format!("shape=box label=\"{}\" ", label)
-      },
-    );
-    format!("{:?}", dot)
+        
+        if !completed.contains(&next_nx) {
+          nodes.push(next_nx);
+        }
+      }
+
+      completed.insert(current_nx);
+    }
+
+    output += "}";
+    output
   }
 
   pub fn debug_bundle_graph_dot(&self) -> String {
@@ -105,40 +128,3 @@ impl Compilation {
     output
   }
 }
-
-/*
-
-digraph G {
-    graph [shape=box fontsize=10 fontname="monospace"];
-    node [shape=box fontsize=10 fontname="monospace", margin="0.2,0" height=0];
-
-    subgraph cluster_0 {
-        label = "index.html";
-        graph [ranksep="0.02"];
-        edge[style=invis];
-        0 [label="src/index.html"]
-    }
-    
-    subgraph cluster_1 {
-        label = "index.css";
-        graph [ranksep="0.02"];
-        edge[style=invis];
-        1 [label="src/index.css"]
-    }
-
-
-    subgraph cluster_2 {
-        label = "index.js";
-        graph [ranksep="0.02"];
-        edge[style=invis];
-        2[label="src/index.js"]
-        3[label="src/a.js"]
-        2 -> 3
-    }
-    
-    0 -> 1 [style = "dashed" color=grey]
-    0 -> 2 [style = "dashed" color=grey]
-}
-
-
-*/
