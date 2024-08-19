@@ -1,11 +1,11 @@
 use anyhow;
 
 use crate::plugins::resolver_javascript::resolve;
+use crate::rpc::RpcHostRef;
 use crate::types::Dependency;
 use crate::types::MachConfig;
 use crate::types::ResolveResult;
 use crate::types::Resolver;
-use crate::rpc::RpcHostRef;
 
 #[derive(Debug)]
 pub struct ResolverAdapter {

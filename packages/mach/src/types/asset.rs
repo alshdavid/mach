@@ -1,10 +1,10 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use crate::kit::hash::hash_sha_256;
 use super::AssetId;
 use super::BundleBehavior;
 use super::LinkingSymbol;
+use crate::kit::hash::hash_sha_256;
 
 #[derive(Clone, Default)]
 pub struct Asset {

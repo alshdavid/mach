@@ -14,8 +14,13 @@ pub struct Bundle {
 }
 
 impl Bundle {
-  pub fn insert_asset(&mut self, asset: &Asset) -> Option<AssetId> {
-    self.assets.insert(asset.file_path_relative.clone(), asset.id.clone())
+  pub fn insert_asset(
+    &mut self,
+    asset: &Asset,
+  ) -> Option<AssetId> {
+    self
+      .assets
+      .insert(asset.file_path_relative.clone(), asset.id.clone())
   }
 }
 

@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::process::Stdio;
 
-use super::Bundle;
-use super::BundleId;
-
 use petgraph::stable_graph::EdgeIndex;
 use petgraph::stable_graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
 use petgraph::visit::NodeRef;
+
+use super::Bundle;
+use super::BundleId;
 
 #[derive(Clone, Debug)]
 pub struct BundleGraph {
@@ -24,14 +24,16 @@ impl Default for BundleGraph {
       graph: Default::default(),
     };
 
-    let bundle = Bundle{
+    let bundle = Bundle {
       id: Default::default(),
       kind: "ROOT".to_string(),
       entry_asset: Default::default(),
       assets: Default::default(),
     };
 
-    bundle_graph.node_index.insert(bundle.id.clone(), bundle_graph.root_node());
+    bundle_graph
+      .node_index
+      .insert(bundle.id.clone(), bundle_graph.root_node());
     bundle_graph.graph.add_node(bundle);
     bundle_graph
   }
@@ -90,7 +92,7 @@ impl BundleGraph {
 
     if self.graph.node_count() == 1 {
       println!("BundleGraph Empty");
-      return
+      return;
     }
 
     for node_index in self.graph.node_indices().into_iter() {
@@ -100,13 +102,35 @@ impl BundleGraph {
         if src.kind == "ROOT" {
           format!("ROOT")
         } else {
-          format!("[{}] ({}) {:?} - {}", src.id.0, src.kind, src.entry_asset.as_ref().map(|v| v.0.clone()), src.assets.iter().map(|id| id.1.0.to_string()).collect::<Vec<String>>().join(","))
+          format!(
+            "[{}] ({}) {:?} - {}",
+            src.id.0,
+            src.kind,
+            src.entry_asset.as_ref().map(|v| v.0.clone()),
+            src
+              .assets
+              .iter()
+              .map(|id| id.1 .0.to_string())
+              .collect::<Vec<String>>()
+              .join(",")
+          )
         }
       };
 
       while let Some(edge) = edges.next() {
         let dest = self.get_bundle(edge.target().id()).unwrap();
-        let dest = format!("[{}] ({}) {:?} - {} ", dest.id.0, dest.kind, dest.entry_asset.as_ref().map(|v| v.0.clone()), dest.assets.iter().map(|id| id.1.0.to_string()).collect::<Vec<String>>().join(","));
+        let dest = format!(
+          "[{}] ({}) {:?} - {} ",
+          dest.id.0,
+          dest.kind,
+          dest.entry_asset.as_ref().map(|v| v.0.clone()),
+          dest
+            .assets
+            .iter()
+            .map(|id| id.1 .0.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
+        );
 
         output.push_str(&format!("{} -> {}\n", src, dest));
       }

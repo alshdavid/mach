@@ -11,7 +11,7 @@ const mach = new Mach({
   nodeWorkers: 4,
   entries: [
     `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index.html`,
-    `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index2.html`
+    // `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index2.html`
   ],
   env: {},
   outFolder: '/home/dalsh/Development/alshdavid/mach/testing/dist',

@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use crate::types::Machrc;
 use crate::rpc::RpcHosts;
+use crate::types::Machrc;
 
 #[derive(Clone, Debug)]
 pub struct MachOptions {

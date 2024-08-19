@@ -160,7 +160,11 @@ impl AssetGraph {
     for node_index in self.graph.node_indices().into_iter() {
       let mut edges = self.get_dependencies(&node_index);
       let source_asset = self.get_asset(node_index).unwrap();
-      let mut src_path = source_asset.file_path_relative.to_str().unwrap().to_string();
+      let mut src_path = source_asset
+        .file_path_relative
+        .to_str()
+        .unwrap()
+        .to_string();
       if src_path == "" {
         // skip root
         continue;
@@ -172,7 +176,7 @@ impl AssetGraph {
         let dest_asset = self.get_asset(edge.target().id()).unwrap();
         let dest_path = dest_asset.file_path_relative.to_str().unwrap();
         let dest_path = format!("[{}] {}", dest_asset.id.0, dest_path);
-        
+
         output.push_str(&format!("{} -> {}\n", src_path, dest_path));
       }
     }
@@ -189,14 +193,19 @@ impl AssetGraph {
     stdin.write_all(output.as_bytes()).unwrap();
     stdin.write_all("\n`".as_bytes()).unwrap();
 
-    stdin.write_all(r#"
+    stdin
+      .write_all(
+        r#"
       const { init } = require('diagonjs')
 
       void async function() {
         const d = await init()
         console.log(d.translate.graphDAG(value))
       }()
-    "#.as_bytes()).unwrap();
+    "#
+        .as_bytes(),
+      )
+      .unwrap();
     drop(stdin);
 
     let output = child.wait_with_output().unwrap();

@@ -5,8 +5,8 @@ pub mod cmd;
 pub mod core;
 pub mod kit;
 pub mod plugins;
-pub mod types;
 pub mod rpc;
+pub mod types;
 
 //
 // Mach Lib API

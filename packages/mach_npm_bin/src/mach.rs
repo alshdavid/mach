@@ -152,9 +152,7 @@ pub fn mach_napi_build(
           entries: result.entries,
         }))
       }),
-      Err(err) => {
-        deferred.reject(napi::Error::from_reason(format!("{:?}", err)))
-      },
+      Err(err) => deferred.reject(napi::Error::from_reason(format!("{:?}", err))),
     }
   });
 

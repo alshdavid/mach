@@ -5,11 +5,12 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::super::MachOptions;
+use crate::core::bundling::bundle;
+use crate::core::packaging::package;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
 use crate::types::Compilation;
 use crate::types::MachConfig;
-use crate::core::bundling::bundle;
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -38,7 +39,6 @@ pub fn build(
   mach_options: MachOptions,
   _build_options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  
   // This is the bundler state. It is passed into the bundling phases with read or write access
   // depending on how that phase uses them
   let mut compilation = Compilation {
@@ -65,10 +65,10 @@ pub fn build(
 
   compilation.asset_graph.debug_render();
 
-
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
   bundle(&mut compilation)?;
 
+  package(&mut compilation)?;
   Ok(BuildResult::default())
 
   //   /*

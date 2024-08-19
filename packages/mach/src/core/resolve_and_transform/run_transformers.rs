@@ -30,7 +30,12 @@ pub fn run_transformers(
       break;
     };
 
-    let mut asset_kind = file_path.extension().unwrap_or_default().to_str().unwrap_or_default().to_string();
+    let mut asset_kind = file_path
+      .extension()
+      .unwrap_or_default()
+      .to_str()
+      .unwrap_or_default()
+      .to_string();
     let original_asset_kind = asset_kind.clone();
 
     let mut mutable_asset = MutableAsset::new(
@@ -63,9 +68,19 @@ pub fn run_transformers(
   }
 
   // Update existing Asset with new data
-  asset.name = file_path.file_stem().unwrap_or_default().to_str().unwrap_or_default().to_string();
+  asset.name = file_path
+    .file_stem()
+    .unwrap_or_default()
+    .to_str()
+    .unwrap_or_default()
+    .to_string();
   asset.content = content;
-  asset.kind = file_path.extension().unwrap_or_default().to_str().unwrap_or_default().to_string();
+  asset.kind = file_path
+    .extension()
+    .unwrap_or_default()
+    .to_str()
+    .unwrap_or_default()
+    .to_string();
   asset.linking_symbols = linking_symbols;
   asset.bundle_behavior = bundle_behavior;
 
