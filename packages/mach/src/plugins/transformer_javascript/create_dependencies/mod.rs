@@ -14,7 +14,7 @@ pub fn create_dependencies(linking_symbols: &[LinkingSymbol]) -> Vec<DependencyO
       priority: DependencyPriority::Sync,
       resolve_from: Default::default(),
       linking_symbol: linking_symbol.clone(),
-      bundle_behavior: BundleBehavior::Default,
+      bundle_behavior: BundleBehavior::Inline,
     };
 
     match linking_symbol {

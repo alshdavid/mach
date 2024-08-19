@@ -2,6 +2,7 @@ use std::fs;
 
 use super::run_resolvers::RunResolversResult;
 use crate::types::Asset;
+use crate::types::BundleBehavior;
 use crate::types::Compilation;
 use crate::types::DependencyOptions;
 use crate::types::LinkingSymbol;
@@ -19,6 +20,7 @@ pub fn run_transformers(
   };
   let mut asset_dependencies = Vec::<DependencyOptions>::new();
   let mut linking_symbols = Vec::<LinkingSymbol>::new();
+  let mut bundle_behavior = BundleBehavior::Inline;
 
   let (mut pattern, mut transformers) = c.plugins.transformers.get(&file_path)?;
 
@@ -37,6 +39,7 @@ pub fn run_transformers(
       &mut content,
       &mut asset_dependencies,
       &mut linking_symbols,
+      &mut bundle_behavior,
     );
 
     transformer.transform(&mut mutable_asset, &c.config)?;
@@ -64,6 +67,7 @@ pub fn run_transformers(
   asset.content = content;
   asset.kind = file_path.extension().unwrap_or_default().to_str().unwrap_or_default().to_string();
   asset.linking_symbols = linking_symbols;
+  asset.bundle_behavior = bundle_behavior;
 
   Ok(asset_dependencies)
 }

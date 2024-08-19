@@ -41,6 +41,7 @@ pub fn setup_root<T: AsRef<str>>(
     },
     asset_contents: Default::default(),
     asset_graph: Default::default(),
+    bundle_graph: Default::default(),
     plugins: Default::default(),
   };
 

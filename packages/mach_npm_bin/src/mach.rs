@@ -133,28 +133,12 @@ pub fn mach_napi_build(
   let options_napi = env.from_js_value::<BuildOptionsNapi, JsObject>(options)?;
   let mut options = BuildOptions::default();
 
-  if let Some(entries) = options_napi.entries {
-    options.entries = entries;
-  }
-
-  if let Some(out_folder) = options_napi.out_folder {
-    options.out_folder = out_folder;
-  }
-
   if let Some(clean) = options_napi.clean {
     options.clean = clean;
   }
 
   if let Some(optimize) = options_napi.optimize {
     options.optimize = optimize;
-  }
-
-  if let Some(bundle_splitting) = options_napi.bundle_splitting {
-    options.bundle_splitting = bundle_splitting;
-  }
-
-  if let Some(project_root) = options_napi.project_root {
-    options.project_root = Some(project_root);
   }
 
   let (deferred, promise) = env.create_deferred()?;

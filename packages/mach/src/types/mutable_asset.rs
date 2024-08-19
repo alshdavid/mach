@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use super::BundleBehavior;
 use super::DependencyOptions;
 use super::LinkingSymbol;
 
@@ -10,6 +11,7 @@ pub struct MutableAsset<'a> {
   content: &'a mut Vec<u8>,
   dependencies: &'a mut Vec<DependencyOptions>,
   pub linking_symbols: &'a mut Vec<LinkingSymbol>,
+  pub bundle_behavior: &'a mut BundleBehavior,
 }
 
 impl<'a> MutableAsset<'a> {
@@ -19,6 +21,7 @@ impl<'a> MutableAsset<'a> {
     content: &'a mut Vec<u8>,
     dependencies: &'a mut Vec<DependencyOptions>,
     linking_symbols: &'a mut Vec<LinkingSymbol>,
+    bundle_behavior: &'a mut BundleBehavior,
   ) -> Self {
     return MutableAsset {
       file_path,
@@ -26,6 +29,7 @@ impl<'a> MutableAsset<'a> {
       content,
       dependencies,
       linking_symbols,
+      bundle_behavior,
     };
   }
 

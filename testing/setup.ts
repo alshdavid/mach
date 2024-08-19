@@ -2,17 +2,24 @@ import Mach from '@alshdavid/mach'
 
 console.log(Mach)
 
+// const FIXTURE = 'js-css'
+// const FIXTURE = 'js-css-mutli-entry'
+const FIXTURE = 'html-js-css-multi-entry'
+
 const mach = new Mach({
   threads: 16,
   nodeWorkers: 4,
-  entries: '/home/dalsh/Development/alshdavid/mach/examples/js-esm-a/src/index.js',
+  entries: [
+    `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index.html`,
+    `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index2.html`
+  ],
   env: {},
   outFolder: '/home/dalsh/Development/alshdavid/mach/testing/dist',
-  projectRoot: '/home/dalsh/Development/alshdavid/mach/examples/js-esm-a',
+  projectRoot: `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}`,
 })
 
 console.log(await mach.build({
-  bundleSplitting: true
+  bundleSplitting: false
 }))
 
 

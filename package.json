@@ -29,6 +29,7 @@
     "puppeteer-core": "*",
     "semver": "*",
     "tsx": "*",
-    "typescript": "*"
+    "typescript": "*",
+    "diagonjs": "*"
   }
 }

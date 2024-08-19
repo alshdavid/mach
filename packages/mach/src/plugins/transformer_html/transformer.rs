@@ -36,7 +36,7 @@ impl Transformer for TransformerHtml {
         //   sym_as: "".to_string(),
         // }],
         linking_symbol: Default::default(),
-        bundle_behavior: BundleBehavior::Default,
+        bundle_behavior: BundleBehavior::Inline,
       });
     }
 

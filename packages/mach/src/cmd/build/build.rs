@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::path::PathBuf;
 
 use anyhow;
 use serde::Deserialize;
@@ -10,34 +9,21 @@ use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
 use crate::types::Compilation;
 use crate::types::MachConfig;
-use crate::core::bundling::bundle_single;
-use crate::core::bundling::bundle_split;
+use crate::core::bundling::bundle;
 
 #[derive(Debug)]
 pub struct BuildOptions {
-  /// Input file to build
-  pub entries: Vec<String>,
-  /// Output folder
-  pub out_folder: PathBuf,
-  /// Root directory of project
-  pub project_root: Option<PathBuf>,
   /// Delete output folder before emitting files
   pub clean: bool,
   /// Disable optimizations
   pub optimize: bool,
-  /// Enable bundle splitting (experimental)
-  pub bundle_splitting: bool,
 }
 
 impl Default for BuildOptions {
   fn default() -> Self {
     Self {
-      entries: vec![],
-      out_folder: PathBuf::from("dist"),
       clean: false,
       optimize: true,
-      bundle_splitting: false,
-      project_root: None,
     }
   }
 }
@@ -50,12 +36,11 @@ pub struct BuildResult {
 
 pub fn build(
   mach_options: MachOptions,
-  build_options: BuildOptions,
+  _build_options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  /*
-    This is the bundler state. It is passed into the bundling phases with read or write access
-    depending on how that phase uses them
-  */
+  
+  // This is the bundler state. It is passed into the bundling phases with read or write access
+  // depending on how that phase uses them
   let mut compilation = Compilation {
     machrc: mach_options.config,
     rpc_hosts: mach_options.rpc_hosts,
@@ -68,31 +53,21 @@ pub fn build(
     },
     asset_contents: Default::default(),
     asset_graph: Default::default(),
+    bundle_graph: Default::default(),
     plugins: Default::default(),
   };
 
-  /*
-    load_plugins() will read the Machrc and initialize the referenced plugins
-  */
+  // This will read the Machrc and initialize the referenced plugins
   load_plugins(&mut compilation)?;
 
-  /*
-    resolve_and_transform() build the AssetGraph.
-
-    It does this by crawling the source files, identify import statements, modifying their contents
-    (like removing TypeScript types) and looping until there are no more import statements to resolve.
-  */
+  // This will resolve imports, transform files and build the AssetGraph.
   resolve_and_transform(&mut compilation)?;
 
-  println!("{}", &compilation.asset_graph.into_dot(&compilation.config));
+  compilation.asset_graph.debug_render();
 
-  if build_options.bundle_splitting {
-    bundle_split(&mut compilation)?;
-  } else {
-    bundle_single(&mut compilation)?;
-  }
 
-  println!("wat");
+  // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
+  bundle(&mut compilation)?;
 
   Ok(BuildResult::default())
 

@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use std::io::Write;
 use std::path::PathBuf;
+use std::process::Stdio;
 
 use petgraph::dot::Config;
 use petgraph::dot::Dot;
@@ -9,6 +11,7 @@ use petgraph::stable_graph::EdgeReference;
 use petgraph::stable_graph::Edges;
 use petgraph::stable_graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
+use petgraph::visit::NodeRef;
 
 use super::Asset;
 use super::AssetId;
@@ -72,6 +75,13 @@ impl AssetGraph {
     self.graph.node_weight(index)
   }
 
+  pub fn get_asset_from_asset_id(
+    &self,
+    index: &AssetId,
+  ) -> Option<&NodeIndex> {
+    self.node_index.get(index)
+  }
+
   pub fn get_dependency(
     &self,
     index: EdgeIndex,
@@ -89,8 +99,13 @@ impl AssetGraph {
   pub fn as_graph(&self) -> &StableDiGraph<Asset, Dependency> {
     &self.graph
   }
+}
 
-  pub fn into_dot(
+//
+// Debugging
+//
+impl AssetGraph {
+  pub fn debug_dot(
     &self,
     config: &MachConfig,
   ) -> String {
@@ -137,5 +152,54 @@ impl AssetGraph {
       &get_node_attribute,
     );
     format!("{:?}", dot)
+  }
+
+  pub fn debug_render(&self) {
+    let mut output = String::new();
+
+    for node_index in self.graph.node_indices().into_iter() {
+      let mut edges = self.get_dependencies(&node_index);
+      let source_asset = self.get_asset(node_index).unwrap();
+      let mut src_path = source_asset.file_path_relative.to_str().unwrap().to_string();
+      if src_path == "" {
+        // skip root
+        continue;
+      } else {
+        src_path = format!("[{}] {}", source_asset.id.0, src_path);
+      }
+
+      while let Some(edge) = edges.next() {
+        let dest_asset = self.get_asset(edge.target().id()).unwrap();
+        let dest_path = dest_asset.file_path_relative.to_str().unwrap();
+        let dest_path = format!("[{}] {}", dest_asset.id.0, dest_path);
+        
+        output.push_str(&format!("{} -> {}\n", src_path, dest_path));
+      }
+    }
+
+    let mut command = std::process::Command::new("node");
+    command.stdin(Stdio::piped());
+    command.stdout(Stdio::piped());
+    command.stderr(Stdio::piped());
+
+    let mut child = command.spawn().unwrap();
+
+    let mut stdin = child.stdin.take().unwrap();
+    stdin.write_all("const value = `\n".as_bytes()).unwrap();
+    stdin.write_all(output.as_bytes()).unwrap();
+    stdin.write_all("\n`".as_bytes()).unwrap();
+
+    stdin.write_all(r#"
+      const { init } = require('diagonjs')
+
+      void async function() {
+        const d = await init()
+        console.log(d.translate.graphDAG(value))
+      }()
+    "#.as_bytes()).unwrap();
+    drop(stdin);
+
+    let output = child.wait_with_output().unwrap();
+    println!("{}", String::from_utf8(output.stdout).unwrap());
   }
 }

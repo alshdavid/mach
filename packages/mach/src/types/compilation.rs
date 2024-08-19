@@ -1,5 +1,6 @@
 use super::AssetContents;
 use super::AssetGraph;
+use super::BundleGraph;
 use super::MachConfig;
 use super::Machrc;
 use crate::core::plugins::PluginContainer;
@@ -12,5 +13,6 @@ pub struct Compilation {
   pub config: MachConfig,
   pub asset_contents: AssetContents,
   pub asset_graph: AssetGraph,
+  pub bundle_graph: BundleGraph,
   pub plugins: PluginContainer,
 }
