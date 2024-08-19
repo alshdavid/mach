@@ -2,7 +2,10 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::process::Stdio;
 
+use petgraph::dot::Config;
+use petgraph::dot::Dot;
 use petgraph::stable_graph::EdgeIndex;
+use petgraph::stable_graph::EdgeReference;
 use petgraph::stable_graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
@@ -87,6 +90,51 @@ impl BundleGraph {
 // Debugging
 //
 impl BundleGraph {
+  pub fn debug_dot(&self) -> String {
+    let get_node_attribute = |_: &StableDiGraph<Bundle, ()>,
+                              (nx, bundle): (NodeIndex, &Bundle)| {
+
+      if nx == self.root_node() {
+        return format!("shape=box label=\"ROOT\"");
+      }
+
+      let mut label = String::new();
+
+      label += &format!("kind:   {}\\l", bundle.kind);
+
+      if let Some(entry) = &bundle.entry_asset {
+        label += &format!("entry:  {}\\l", entry.0);
+      } else {
+        label += &format!("None\\l");
+      };
+
+      label += &format!("assets: ");
+
+      label += &bundle.assets
+        .iter()
+        .map(|id| id.1.0.to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
+
+      label += &format!("\\l");
+
+      return format!("shape=box label=\"{}\"", label);
+    };
+
+    let get_edge_attribute =
+      |_: &StableDiGraph<Bundle, ()>, _edge_ref: EdgeReference<()>| -> String {
+        "".to_string()
+      };
+
+    let dot = Dot::with_attr_getters(
+      &self.graph,
+      &[Config::EdgeNoLabel, Config::NodeNoLabel],
+      &get_edge_attribute,
+      &get_node_attribute,
+    );
+    format!("{:?}", dot)
+  }
+
   pub fn debug_render_graph(&self) {
     let mut output = String::new();
 

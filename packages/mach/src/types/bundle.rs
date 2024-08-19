@@ -20,7 +20,7 @@ impl Bundle {
   ) -> Option<AssetId> {
     self
       .assets
-      .insert(asset.file_path_relative.clone(), asset.id.clone())
+      .insert(asset.file_path.clone(), asset.id.clone())
   }
 }
 

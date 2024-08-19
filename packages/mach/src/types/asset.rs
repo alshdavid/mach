@@ -15,7 +15,7 @@ pub struct Asset {
   /// Absolute filepath to the asset
   pub file_path_absolute: PathBuf,
   /// Relative filepath to the asset
-  pub file_path_relative: PathBuf,
+  pub file_path: PathBuf,
   /// Describes the type of the Asset. Starts as the file extension
   pub kind: String,
   /// The body of the Asset in bytes
@@ -41,7 +41,7 @@ impl Debug for Asset {
     f.debug_struct("Asset")
       .field("id", &self.id.0)
       .field("file_path", &self.file_path_absolute)
-      .field("file_path_rel", &self.file_path_relative)
+      .field("file_path_rel", &self.file_path)
       .field("bundle_behavior", &self.bundle_behavior)
       .field("kind", &self.kind)
       .finish()

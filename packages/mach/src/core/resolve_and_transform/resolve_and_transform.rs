@@ -47,7 +47,7 @@ pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
     let mut new_asset = Asset {
       id: new_asset_id.clone(),
       file_path_absolute: resolve_result.file_path.clone(),
-      file_path_relative: resolve_result.file_path_relative.clone(),
+      file_path: resolve_result.file_path_relative.clone(),
       bundle_behavior: dependency.bundle_behavior.clone(),
       name: Default::default(),
       kind: Default::default(),

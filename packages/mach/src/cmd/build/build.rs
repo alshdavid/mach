@@ -7,6 +7,7 @@ use serde::Serialize;
 use super::super::MachOptions;
 use crate::core::bundling::bundle;
 use crate::core::emit::emit;
+use crate::core::emit::emit_file;
 use crate::core::packaging::package;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
@@ -40,7 +41,7 @@ pub fn build(
   mach_options: MachOptions,
   _build_options: BuildOptions,
 ) -> anyhow::Result<BuildResult> {
-  let mut compilation = Compilation {
+  let mut c = Compilation {
     machrc: mach_options.config,
     rpc_hosts: mach_options.rpc_hosts,
     config: MachConfig {
@@ -57,23 +58,21 @@ pub fn build(
   };
 
   // This will read the Machrc and initialize the referenced plugins
-  load_plugins(&mut compilation)?;
+  load_plugins(&mut c)?;
 
   // This will resolve imports, transform files and build the AssetGraph.
-  resolve_and_transform(&mut compilation)?;
-
-  compilation.asset_graph.debug_render();
+  resolve_and_transform(&mut c)?;
+  emit_file(&c, "asset_graph.dot", c.asset_graph.debug_dot())?;
 
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
-  bundle(&mut compilation)?;
-
-  compilation.bundle_graph.debug_render_graph();
+  bundle(&mut c)?;
+  emit_file(&c, "bundle_graph.dot", c.bundle_graph.debug_dot())?;
 
   // This will apply the runtime to and optimize the bundles
-  package(&mut compilation)?;
+  package(&mut c)?;
 
   // This will write the contents of the packaged bundles to disk
-  emit(&mut compilation)?;
+  emit(&mut c)?;
 
   Ok(BuildResult::default())
 }

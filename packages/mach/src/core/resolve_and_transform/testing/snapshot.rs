@@ -99,7 +99,7 @@ pub fn _generate_project_snapshot(project_root: &Path) {
       snapshot_imports.insert(
         dependency.specifier.clone(),
         DependencySnapshot {
-          resolves_to: dest_asset.file_path_relative.clone(),
+          resolves_to: dest_asset.file_path.clone(),
           specifier: dependency.specifier.clone(),
           specifier_type: dependency.specifier_type.clone(),
           priority: dependency.priority.clone(),
@@ -110,14 +110,14 @@ pub fn _generate_project_snapshot(project_root: &Path) {
     }
 
     let snapshot_entry = GraphSnapshotAsset {
-      file_path: source_asset.file_path_relative.clone(),
+      file_path: source_asset.file_path.clone(),
       linking_symbols: source_asset.linking_symbols.clone(),
       kind: source_asset.kind.clone(),
       bundle_behavior: source_asset.bundle_behavior.clone(),
       imports: snapshot_imports,
     };
 
-    snapshot.insert(source_asset.file_path_relative.clone(), snapshot_entry);
+    snapshot.insert(source_asset.file_path.clone(), snapshot_entry);
   }
 
   GraphSnapshot::_save(&snapshot_path, snapshot);

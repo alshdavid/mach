@@ -74,7 +74,7 @@ pub fn mach_napi_new(
       env.from_js_value(value)?
     },
     out_folder: 'block: {
-      let Ok(value) = options.get_named_property::<JsObject>("outFolder") else {
+      let Ok(value) = options.get_named_property::<JsString>("outFolder") else {
         break 'block std::env::current_dir().unwrap().join("dist");
       };
       env.from_js_value(value)?
@@ -107,14 +107,8 @@ pub fn mach_napi_new(
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BuildOptionsNapi {
-  pub entries: Option<Vec<String>>,
-  pub project_root: Option<PathBuf>,
-  pub out_folder: Option<PathBuf>,
   pub clean: Option<bool>,
   pub optimize: Option<bool>,
-  pub bundle_splitting: Option<bool>,
-  pub threads: Option<usize>,
-  pub node_workers: Option<usize>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

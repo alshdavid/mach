@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::io::Write;
-use std::path::PathBuf;
 use std::process::Stdio;
 
 use petgraph::dot::Config;
@@ -17,7 +16,6 @@ use super::Asset;
 use super::AssetId;
 use super::Dependency;
 use super::DependencyId;
-use super::MachConfig;
 use crate::core::config::ROOT_ASSET;
 use crate::types::DependencyPriority;
 
@@ -107,17 +105,18 @@ impl AssetGraph {
 impl AssetGraph {
   pub fn debug_dot(
     &self,
-    config: &MachConfig,
   ) -> String {
     let get_node_attribute = |_: &StableDiGraph<Asset, Dependency>,
                               (_, asset): (NodeIndex, &Asset)| {
-      let mut label = String::from("ROOT");
-
       if asset.id == ROOT_ASSET.id {
-        return format!("path = \"{}\" ", label);
+        return format!("shape=box label=\"ROOT\" ");
       }
-      label = asset.file_path_relative.to_str().unwrap().to_string();
-      format!("path = \"{}\" ", label)
+
+      let mut label = String::new();
+      label += &format!("[{}] ", asset.id.0);
+      label += &asset.file_path.to_str().unwrap().to_string();
+
+      format!("shape=box label=\"{}\" ", label)
     };
 
     let get_edge_attribute =
@@ -127,16 +126,10 @@ impl AssetGraph {
 
         let mut specifier = dependency.specifier.clone();
         if dependency.specifier.starts_with("/") || dependency.specifier.starts_with("\\") {
-          specifier = format!(
-            "./{}",
-            pathdiff::diff_paths(&PathBuf::from(&dependency.specifier), &config.project_root)
-              .unwrap()
-              .to_str()
-              .unwrap()
-          );
+          specifier = format!("");
         }
 
-        label += &format!("specifier = \"{}\" ", specifier);
+        label += &format!("label=\"  {}\" ", specifier);
 
         if let DependencyPriority::Lazy = dependency.priority {
           label += &format!("; style = \"dashed\" ")
@@ -161,7 +154,7 @@ impl AssetGraph {
       let mut edges = self.get_dependencies(&node_index);
       let source_asset = self.get_asset(node_index).unwrap();
       let mut src_path = source_asset
-        .file_path_relative
+        .file_path
         .to_str()
         .unwrap()
         .to_string();
@@ -174,7 +167,7 @@ impl AssetGraph {
 
       while let Some(edge) = edges.next() {
         let dest_asset = self.get_asset(edge.target().id()).unwrap();
-        let dest_path = dest_asset.file_path_relative.to_str().unwrap();
+        let dest_path = dest_asset.file_path.to_str().unwrap();
         let dest_path = format!("[{}] {}", dest_asset.id.0, dest_path);
 
         output.push_str(&format!("{} -> {}\n", src_path, dest_path));

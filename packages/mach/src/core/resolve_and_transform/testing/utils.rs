@@ -74,10 +74,10 @@ pub fn test_project_snapshot(
     let mut edges = c.asset_graph.get_dependencies(&node_index);
     let source_asset = c.asset_graph.get_asset(node_index).unwrap();
 
-    let Some(snap_asset) = snapshot.config.get(&source_asset.file_path_relative) else {
+    let Some(snap_asset) = snapshot.config.get(&source_asset.file_path) else {
       panic!(
         "Error: {}\n\tMissing Asset\n\tExpected Asset: {:?}\nGot: null",
-        project_name, source_asset.file_path_relative
+        project_name, source_asset.file_path
       )
     };
 
@@ -88,25 +88,25 @@ pub fn test_project_snapshot(
       let Some(snap_dependency) = snap_asset.imports.get(&dependency.specifier) else {
         panic!(
           "Error: {}\n\tMissing Specifier\n\tExpected Asset: {:?}\n\tWith Specifier {}\n\tGot: null",
-          project_name, source_asset.file_path_relative, dependency.specifier
+          project_name, source_asset.file_path, dependency.specifier
         )
       };
 
       assert!(
-        snap_dependency.resolves_to == dest_asset.file_path_relative,
+        snap_dependency.resolves_to == dest_asset.file_path,
         "Error: {}\n\tIncorrect Dependency Resolved Path\n\tImport: {:?}\n\tSpecifier: {}\n\tExpected: {:?}\n\tGot: {:?}",
         project_name,
-        source_asset.file_path_relative,
+        source_asset.file_path,
         dependency.specifier,
         snap_dependency.resolves_to,
-        dest_asset.file_path_relative
+        dest_asset.file_path
       );
 
       assert!(
         snap_dependency.specifier == dependency.specifier,
         "Error: {}\n\tIncorrect Dependency Specifier\n\tImport: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
         project_name,
-        source_asset.file_path_relative,
+        source_asset.file_path,
         snap_dependency.specifier,
         dependency.specifier,
       );
@@ -115,7 +115,7 @@ pub fn test_project_snapshot(
         snap_dependency.specifier_type == dependency.specifier_type,
         "Error: {}\n\tIncorrect Specifier Type\n\tImport: {:?}\n\tSpecifier: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
         project_name,
-        source_asset.file_path_relative,
+        source_asset.file_path,
         dependency.specifier,
         snap_dependency.specifier_type,
         dependency.specifier_type,
@@ -125,7 +125,7 @@ pub fn test_project_snapshot(
             snap_dependency.priority == dependency.priority,
             "Error: {}\n\tIncorrect Priority\n\tImport: {:?}\n\tSpecifier: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
             project_name,
-            source_asset.file_path_relative,
+            source_asset.file_path,
             dependency.specifier,
             snap_dependency.priority,
             dependency.priority,
@@ -157,7 +157,7 @@ pub fn test_project_snapshot(
           snap_dependency.bundle_behavior == dependency.bundle_behavior,
           "Error: {}\n\tIncorrect Bundle Behavior\n\tImport: {:?}\n\tSpecifier: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
           project_name,
-          source_asset.file_path_relative,
+          source_asset.file_path,
           dependency.specifier,
           snap_dependency.bundle_behavior,
           dependency.bundle_behavior,
@@ -168,7 +168,7 @@ pub fn test_project_snapshot(
       snap_asset.kind == source_asset.kind,
       "Error: {}\n\tIncorrect Asset Kind\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
       project_name,
-      source_asset.file_path_relative,
+      source_asset.file_path,
       snap_asset.kind,
       source_asset.kind,
     );
@@ -177,7 +177,7 @@ pub fn test_project_snapshot(
       snap_asset.bundle_behavior == source_asset.bundle_behavior,
       "Error: {}\n\tIncorrect Asset Bundle Behavior\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
       project_name,
-      source_asset.file_path_relative,
+      source_asset.file_path,
       snap_asset.bundle_behavior,
       source_asset.bundle_behavior,
     );
@@ -186,7 +186,7 @@ pub fn test_project_snapshot(
       snap_asset.linking_symbols.len() == source_asset.linking_symbols.len(),
       "Error: {}\n\tIncorrect Exported Symbols Length\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
       project_name,
-      source_asset.file_path_relative,
+      source_asset.file_path,
       snap_asset.linking_symbols.len(),
       source_asset.linking_symbols.len(),
     );
@@ -196,7 +196,7 @@ pub fn test_project_snapshot(
         snap_asset.linking_symbols.contains(linking_symbols),
         "Error: {}\n\tMissing Linking Symbol\n\tAsset: {:?}\n\tExpected: {:?}\n\tGot: {:?}",
         project_name,
-        source_asset.file_path_relative,
+        source_asset.file_path,
         snap_asset.linking_symbols,
         source_asset.linking_symbols,
       )

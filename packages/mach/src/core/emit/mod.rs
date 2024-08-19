@@ -1,3 +1,5 @@
+use std::{fs, path::Path};
+
 use crate::types::Compilation;
 
 pub fn emit(_c: &mut Compilation) -> anyhow::Result<()> {
@@ -16,5 +18,10 @@ pub fn emit(_c: &mut Compilation) -> anyhow::Result<()> {
   //   fs::write(complete_path, output.content.as_slice()).unwrap();
   // }
 
+  Ok(())
+}
+
+pub fn emit_file<K: AsRef<Path>, D: AsRef<[u8]>>(c: &Compilation, name: K, data: D) -> anyhow::Result<()> {
+  fs::write(c.config.out_folder.join(name), data)?;
   Ok(())
 }
