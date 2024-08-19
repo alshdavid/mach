@@ -4,7 +4,7 @@ console.log(Mach)
 
 // const FIXTURE = 'js-css'
 // const FIXTURE = 'js-css-mutli-entry'
-const FIXTURE = 'html-js-css-multi-entry'
+const FIXTURE = 'html-js-css-2'
 
 const mach = new Mach({
   threads: 16,

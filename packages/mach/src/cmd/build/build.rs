@@ -55,6 +55,7 @@ pub fn build(
     asset_graph: Default::default(),
     bundle_graph: Default::default(),
     plugins: Default::default(),
+    outputs: Default::default(),
   };
 
   // This will read the Machrc and initialize the referenced plugins

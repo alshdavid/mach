@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 pub type Outputs = Vec<Output>;
 
+#[derive(Clone)]
 pub struct Output {
   pub content: Vec<u8>,
   pub filepath: PathBuf,

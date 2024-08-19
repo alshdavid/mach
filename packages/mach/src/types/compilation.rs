@@ -3,6 +3,7 @@ use super::AssetGraph;
 use super::BundleGraph;
 use super::MachConfig;
 use super::Machrc;
+use super::Outputs;
 use crate::core::plugins::PluginContainer;
 use crate::rpc::RpcHosts;
 
@@ -14,5 +15,6 @@ pub struct Compilation {
   pub asset_contents: AssetContents,
   pub asset_graph: AssetGraph,
   pub bundle_graph: BundleGraph,
+  pub outputs: Outputs,
   pub plugins: PluginContainer,
 }

@@ -39,10 +39,11 @@ pub fn setup_root<T: AsRef<str>>(
       env: Default::default(),
       out_folder: Default::default(),
     },
+    plugins: Default::default(),
     asset_contents: Default::default(),
     asset_graph: Default::default(),
     bundle_graph: Default::default(),
-    plugins: Default::default(),
+    outputs: Default::default(),
   };
 
   load_plugins(&mut compilation).unwrap();

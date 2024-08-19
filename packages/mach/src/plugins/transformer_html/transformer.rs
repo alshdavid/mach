@@ -13,6 +13,16 @@ use crate::types::SpecifierType;
 use crate::types::Transformer;
 
 #[derive(Debug)]
+enum DocumentLink {
+  Script {
+    src: Option<String>,
+  },
+  Link {
+    href: Option<String>,
+  },
+}
+
+#[derive(Debug)]
 pub struct TransformerHtml {}
 
 impl Transformer for TransformerHtml {
@@ -22,44 +32,61 @@ impl Transformer for TransformerHtml {
     _config: &MachConfig,
   ) -> anyhow::Result<()> {
     let code = asset.get_code();
-    let Ok(script_specifiers) = get_script_src_attrs(&code) else {
+    let Ok(links) = get_script_src_attrs(&code) else {
       anyhow::bail!("Unable process HTML".to_string())
     };
 
-    for script_specifier in script_specifiers {
-      asset.add_dependency(DependencyOptions {
-        specifier: script_specifier,
+    for link in links {
+      let mut options = DependencyOptions {
+        specifier: Default::default(),
         specifier_type: SpecifierType::ESM,
         priority: DependencyPriority::Lazy,
         resolve_from: asset.file_path.to_path_buf(),
-        // imported_symbols: vec![ImportSymbol::Namespace {
-        //   sym_as: "".to_string(),
-        // }],
         linking_symbol: Default::default(),
         bundle_behavior: BundleBehavior::Inline,
-      });
+      };
+
+      match link {
+        DocumentLink::Script {
+          src,
+        } => {
+          let Some(src) = src else {
+            continue;
+          };
+          options.specifier = src;
+        }
+
+        DocumentLink::Link { href } => {
+          let Some(href) = href else {
+            continue;
+          };
+          options.specifier = href;
+        }
+      };
+
+      asset.add_dependency(options);
     }
 
     return Ok(());
   }
 }
 
-fn get_script_src_attrs(html: &str) -> Result<Vec<String>, ()> {
-  let mut script_src_attrs = Vec::<String>::new();
+fn get_script_src_attrs(html: &str) -> Result<Vec<DocumentLink>, ()> {
+  let mut links = Vec::<DocumentLink>::new();
 
   let dom = parse_document(RcDom::default(), Default::default())
     .from_utf8()
     .read_from(&mut html.as_bytes())
     .unwrap();
 
-  walk(&dom.document, &mut script_src_attrs);
+  walk(&dom.document, &mut links);
 
-  return Ok(script_src_attrs);
+  return Ok(links);
 }
 
 fn walk(
   handle: &Handle,
-  attrs_list: &mut Vec<String>,
+  links: &mut Vec<DocumentLink>,
 ) {
   let node = handle;
   match node.data {
@@ -69,18 +96,39 @@ fn walk(
       ..
     } => {
       if name.local.to_string() == "script" {
+        let mut src = None;
+
         for attr in attrs.borrow().iter() {
-          if attr.name.local.to_string() == "src" {
-            attrs_list.push(attr.value.to_string());
-            break;
-          }
+          match attr.name.local.to_string().as_str() {
+            "src" => src.replace(attr.value.to_string()),
+            _ => None,
+          };
         }
+
+        links.push(DocumentLink::Script {
+          src,
+        });
+      }
+
+      if name.local.to_string() == "link" {
+        let mut href = None;
+
+        for attr in attrs.borrow().iter() {
+          match attr.name.local.to_string().as_str() {
+            "href" => href.replace(attr.value.to_string()),
+            _ => None,
+          };
+        }
+
+        links.push(DocumentLink::Link {
+          href,
+        });
       }
     }
     _ => {}
   }
 
   for child in node.children.borrow().iter() {
-    walk(child, attrs_list);
+    walk(child, links);
   }
 }
