@@ -14,12 +14,8 @@ use crate::types::Transformer;
 
 #[derive(Debug)]
 enum DocumentLink {
-  Script {
-    src: Option<String>,
-  },
-  Link {
-    href: Option<String>,
-  },
+  Script { src: Option<String> },
+  Link { href: Option<String> },
 }
 
 #[derive(Debug)]
@@ -47,9 +43,7 @@ impl Transformer for TransformerHtml {
       };
 
       match link {
-        DocumentLink::Script {
-          src,
-        } => {
+        DocumentLink::Script { src } => {
           let Some(src) = src else {
             continue;
           };
@@ -105,9 +99,7 @@ fn walk(
           };
         }
 
-        links.push(DocumentLink::Script {
-          src,
-        });
+        links.push(DocumentLink::Script { src });
       }
 
       if name.local.to_string() == "link" {
@@ -120,9 +112,7 @@ fn walk(
           };
         }
 
-        links.push(DocumentLink::Link {
-          href,
-        });
+        links.push(DocumentLink::Link { href });
       }
     }
     _ => {}

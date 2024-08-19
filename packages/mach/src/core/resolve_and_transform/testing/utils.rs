@@ -73,7 +73,7 @@ pub fn test_project_snapshot(
 
   for node_index in graph.node_indices().into_iter() {
     let mut edges = c.asset_graph.get_dependencies(&node_index);
-    let source_asset = c.asset_graph.get_asset(node_index).unwrap();
+    let source_asset = c.asset_graph.get_with_nx(node_index).unwrap();
 
     let Some(snap_asset) = snapshot.config.get(&source_asset.file_path) else {
       panic!(
@@ -83,7 +83,7 @@ pub fn test_project_snapshot(
     };
 
     while let Some(edge) = edges.next() {
-      let dest_asset = c.asset_graph.get_asset(edge.target().id()).unwrap();
+      let dest_asset = c.asset_graph.get_with_nx(edge.target().id()).unwrap();
       let dependency = edge.weight();
 
       let Some(snap_dependency) = snap_asset.imports.get(&dependency.specifier) else {

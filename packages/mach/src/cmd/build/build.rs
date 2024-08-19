@@ -63,11 +63,11 @@ pub fn build(
 
   // This will resolve imports, transform files and build the AssetGraph.
   resolve_and_transform(&mut c)?;
-  emit_file(&c, "asset_graph.dot", c.asset_graph.debug_dot())?;
+  emit_file(&c, "asset_graph.dot", c.debug_asset_graph_dot())?;
 
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
   bundle(&mut c)?;
-  emit_file(&c, "bundle_graph.dot", c.bundle_graph.debug_dot())?;
+  emit_file(&c, "bundle_graph.dot", c.debug_bundle_graph_dot())?;
 
   // This will apply the runtime to and optimize the bundles
   package(&mut c)?;

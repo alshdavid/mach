@@ -91,9 +91,7 @@ impl BundleGraph {
 //
 impl BundleGraph {
   pub fn debug_dot(&self) -> String {
-    let get_node_attribute = |_: &StableDiGraph<Bundle, ()>,
-                              (nx, bundle): (NodeIndex, &Bundle)| {
-
+    let get_node_attribute = |_: &StableDiGraph<Bundle, ()>, (nx, bundle): (NodeIndex, &Bundle)| {
       if nx == self.root_node() {
         return format!("shape=box label=\"ROOT\"");
       }
@@ -110,9 +108,10 @@ impl BundleGraph {
 
       label += &format!("assets: ");
 
-      label += &bundle.assets
+      label += &bundle
+        .assets
         .iter()
-        .map(|id| id.1.0.to_string())
+        .map(|id| id.1 .0.to_string())
         .collect::<Vec<String>>()
         .join(", ");
 
@@ -122,9 +121,7 @@ impl BundleGraph {
     };
 
     let get_edge_attribute =
-      |_: &StableDiGraph<Bundle, ()>, _edge_ref: EdgeReference<()>| -> String {
-        "".to_string()
-      };
+      |_: &StableDiGraph<Bundle, ()>, _edge_ref: EdgeReference<()>| -> String { "".to_string() };
 
     let dot = Dot::with_attr_getters(
       &self.graph,

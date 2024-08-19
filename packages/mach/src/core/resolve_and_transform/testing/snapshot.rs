@@ -86,14 +86,14 @@ pub fn _generate_project_snapshot(project_root: &Path) {
   let graph = c.asset_graph.as_graph();
 
   for node_index in graph.node_indices().into_iter() {
-    let source_asset = c.asset_graph.get_asset(node_index).unwrap();
+    let source_asset = c.asset_graph.get_with_nx(node_index).unwrap();
 
     let mut snapshot_imports = GraphSnapshotImport::default();
 
     let mut edges = c.asset_graph.get_dependencies(&node_index);
 
     while let Some(edge) = edges.next() {
-      let dest_asset = c.asset_graph.get_asset(edge.target().id()).unwrap();
+      let dest_asset = c.asset_graph.get_with_nx(edge.target().id()).unwrap();
       let dependency = edge.weight();
 
       snapshot_imports.insert(
