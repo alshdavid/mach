@@ -70,7 +70,5 @@ pub fn bundle(c: &mut Compilation) -> anyhow::Result<()> {
     }
   }
 
-  c.bundle_graph.debug_render_graph();
-
   return Ok(());
 }
