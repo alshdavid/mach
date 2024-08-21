@@ -1,10 +1,11 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
+use crate::core::plugins::PluginContainer;
 use crate::types::BundleBehavior;
-use crate::types::Compilation;
 use crate::types::DependencyOptions;
 use crate::types::LinkingSymbol;
+use crate::types::MachConfig;
 use crate::types::MutableAsset;
 
 pub struct TransformerPipelineResult {
@@ -17,7 +18,8 @@ pub struct TransformerPipelineResult {
 }
 
 pub fn run_transformers(
-  c: &Compilation,
+  config: &MachConfig,
+  plugins: &PluginContainer,
   resolve_result: &RunResolversResult,
 ) -> anyhow::Result<TransformerPipelineResult> {
   let mut file_path = resolve_result.file_path.clone();
@@ -29,7 +31,7 @@ pub fn run_transformers(
   let mut linking_symbols = Vec::<LinkingSymbol>::new();
   let mut bundle_behavior = BundleBehavior::Inline;
 
-  let (mut pattern, mut transformers) = c.plugins.transformers.get(&file_path)?;
+  let (mut pattern, mut transformers) = plugins.transformers.get(&file_path)?;
 
   let mut i = 0;
   while i != transformers.len() {
@@ -54,14 +56,14 @@ pub fn run_transformers(
       &mut bundle_behavior,
     );
 
-    transformer.transform(&mut mutable_asset, &c.config)?;
+    transformer.transform(&mut mutable_asset, config)?;
     drop(mutable_asset);
 
     // If the file type and pattern changes restart transformers
     if asset_kind != original_asset_kind {
       file_path.set_extension(asset_kind);
 
-      let (new_pattern, new_transformers) = c.plugins.transformers.get(&file_path)?;
+      let (new_pattern, new_transformers) = plugins.transformers.get(&file_path)?;
       // Use new transformers if they are different to current ones
       if new_pattern != pattern {
         transformers = new_transformers;

@@ -7,7 +7,6 @@ use serde::Serialize;
 use super::super::MachOptions;
 use crate::core::bundling::bundle;
 use crate::core::emit::emit;
-use crate::core::emit::emit_file;
 use crate::core::packaging::package;
 use crate::core::plugins::load_plugins;
 use crate::core::resolve_and_transform::resolve_and_transform;
@@ -19,7 +18,7 @@ use crate::types::MachConfig;
 pub struct BuildOptions {
   /// Delete output folder before emitting files
   pub clean: bool,
-  /// Disable optimizations
+  /// Enable optimizations
   pub optimize: bool,
 }
 
@@ -63,17 +62,13 @@ pub fn build(
 
   // This will resolve imports, transform files and build the AssetGraph.
   resolve_and_transform(&mut c)?;
-  emit_file(
-    &c,
-    "asset_graph.dot",
-    c.debug_asset_graph_dot(DebugAssetGraphOptions {
-      show_specifiers: false,
-    })?,
-  )?;
+  c.debug_emit_asset_graph_dot(DebugAssetGraphOptions {
+    show_specifiers: false,
+  })?;
 
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
   bundle(&mut c)?;
-  emit_file(&c, "bundle_graph.dot", c.debug_bundle_graph_dot()?)?;
+  c.debug_emit_bundle_graph_dot()?;
 
   // This will apply the runtime to and optimize the bundles
   package(&mut c)?;

@@ -9,6 +9,7 @@ use super::BundleGraphExt;
 use super::Compilation;
 use super::ROOT_ASSET;
 use super::ROOT_BUNDLE;
+use crate::core::emit::emit_file;
 use crate::types::DependencyPriority;
 
 #[derive(Debug, Default)]
@@ -17,6 +18,18 @@ pub struct DebugAssetGraphOptions {
 }
 
 impl Compilation {
+  pub fn debug_emit_asset_graph_dot(
+    &self,
+    options: DebugAssetGraphOptions,
+  ) -> anyhow::Result<()> {
+    emit_file(
+      self,
+      "asset_graph.dot",
+      self.debug_asset_graph_dot(options)?,
+    )?;
+    Ok(())
+  }
+
   pub fn debug_asset_graph_dot(
     &self,
     DebugAssetGraphOptions { show_specifiers }: DebugAssetGraphOptions,
@@ -84,6 +97,11 @@ impl Compilation {
 
     output += "}";
     Ok(output)
+  }
+
+  pub fn debug_emit_bundle_graph_dot(&self) -> anyhow::Result<()> {
+    emit_file(self, "asset_graph.dot", self.debug_bundle_graph_dot()?)?;
+    Ok(())
   }
 
   pub fn debug_bundle_graph_dot(&self) -> anyhow::Result<String> {

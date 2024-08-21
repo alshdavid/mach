@@ -13,15 +13,21 @@ use crate::plugins::transformer_rpc::TransformerAdapter;
 use crate::types::Compilation;
 use crate::types::Transformer;
 
-pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
-  if let Some(resolvers) = &c.machrc.resolvers {
+pub fn load_plugins(
+  Compilation {
+    config,
+    plugins,
+    machrc,
+    rpc_hosts,
+    ..
+  }: &mut Compilation
+) -> anyhow::Result<()> {
+  if let Some(resolvers) = &machrc.resolvers {
     for plugin_string in resolvers {
       match plugin_string.as_str() {
         // Built-in
         "mach:resolver" => {
-          c.plugins
-            .resolvers
-            .push(Arc::new(ResolverJavaScript::new()));
+          plugins.resolvers.push(Arc::new(ResolverJavaScript::new()));
           continue;
         }
         // External
@@ -33,15 +39,15 @@ pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
             )));
           };
 
-          let Some(adapter) = c.rpc_hosts.get(engine) else {
+          let Some(adapter) = rpc_hosts.get(engine) else {
             return Err(anyhow::anyhow!(format!(
               "No plugin runtime for engine: {}\nCannot load plugin: {}",
               engine, specifier
             )));
           };
 
-          c.plugins.resolvers.push(Arc::new(ResolverAdapter::new(
-            &c.config,
+          plugins.resolvers.push(Arc::new(ResolverAdapter::new(
+            config,
             specifier,
             adapter.clone(),
           )?));
@@ -50,7 +56,7 @@ pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
     }
   }
 
-  if let Some(transformers) = &c.machrc.transformers {
+  if let Some(transformers) = &machrc.transformers {
     for (pattern, specifiers) in transformers {
       let mut transformers = Vec::<Arc<dyn Transformer>>::new();
 
@@ -86,7 +92,7 @@ pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
           continue;
         }
 
-        let Some(adapter) = c.rpc_hosts.get(engine) else {
+        let Some(adapter) = rpc_hosts.get(engine) else {
           return Err(anyhow::anyhow!(format!(
             "No plugin runtime for engine: {}\nCannot load plugin: {}",
             engine, specifier
@@ -96,13 +102,13 @@ pub fn load_plugins(c: &mut Compilation) -> anyhow::Result<()> {
         adapter.start()?;
 
         transformers.push(Arc::new(TransformerAdapter::new(
-          &c.config,
+          config,
           specifier,
           adapter.clone(),
         )?));
       }
 
-      c.plugins
+      plugins
         .transformers
         .transformers
         .insert(pattern.clone(), transformers);

@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
-use crate::types::Compilation;
+use crate::core::plugins::PluginContainer;
 use crate::types::Dependency;
+use crate::types::MachConfig;
 
 #[derive(Debug)]
 pub struct RunResolversResult {
@@ -10,16 +11,17 @@ pub struct RunResolversResult {
 }
 
 pub fn run_resolvers(
-  c: &Compilation,
+  config: &MachConfig,
+  plugins: &PluginContainer,
   dependency: &Dependency,
 ) -> anyhow::Result<RunResolversResult> {
-  for resolver in &c.plugins.resolvers {
+  for resolver in &plugins.resolvers {
     let Some(resolve_result) = resolver.resolve(&dependency)? else {
       continue;
     };
 
     return Ok(RunResolversResult {
-      file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &c.config.project_root)
+      file_path_relative: pathdiff::diff_paths(&resolve_result.file_path, &config.project_root)
         .unwrap(),
       file_path: resolve_result.file_path,
     });
