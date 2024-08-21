@@ -52,7 +52,6 @@ pub fn build(
       env: mach_options.env,
       out_folder: mach_options.out_folder,
     },
-    asset_contents: Default::default(),
     asset_graph: Default::default(),
     bundle_graph: Default::default(),
     plugins: Default::default(),
@@ -64,11 +63,17 @@ pub fn build(
 
   // This will resolve imports, transform files and build the AssetGraph.
   resolve_and_transform(&mut c)?;
-  emit_file(&c, "asset_graph.dot", c.debug_asset_graph_dot(DebugAssetGraphOptions{ show_specifiers: false }))?;
+  emit_file(
+    &c,
+    "asset_graph.dot",
+    c.debug_asset_graph_dot(DebugAssetGraphOptions {
+      show_specifiers: false,
+    })?,
+  )?;
 
   // This will read the asset graph and organize related assets into groupings (a.k.a bundles)
   bundle(&mut c)?;
-  emit_file(&c, "bundle_graph.dot", c.debug_bundle_graph_dot())?;
+  emit_file(&c, "bundle_graph.dot", c.debug_bundle_graph_dot()?)?;
 
   // This will apply the runtime to and optimize the bundles
   package(&mut c)?;

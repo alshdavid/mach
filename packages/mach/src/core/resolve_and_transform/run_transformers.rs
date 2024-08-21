@@ -1,18 +1,25 @@
 use std::fs;
 
 use super::run_resolvers::RunResolversResult;
-use crate::types::Asset;
 use crate::types::BundleBehavior;
 use crate::types::Compilation;
 use crate::types::DependencyOptions;
 use crate::types::LinkingSymbol;
 use crate::types::MutableAsset;
 
+pub struct TransformerPipelineResult {
+  pub name: String,
+  pub kind: String,
+  pub content: Vec<u8>,
+  pub linking_symbols: Vec<LinkingSymbol>,
+  pub bundle_behavior: BundleBehavior,
+  pub dependencies: Vec<DependencyOptions>,
+}
+
 pub fn run_transformers(
   c: &Compilation,
-  asset: &mut Asset,
   resolve_result: &RunResolversResult,
-) -> anyhow::Result<Vec<DependencyOptions>> {
+) -> anyhow::Result<TransformerPipelineResult> {
   let mut file_path = resolve_result.file_path.clone();
 
   let Ok(mut content) = fs::read(&resolve_result.file_path) else {
@@ -67,22 +74,22 @@ pub fn run_transformers(
     i += 1;
   }
 
-  // Update existing Asset with new data
-  asset.name = file_path
-    .file_stem()
-    .unwrap_or_default()
-    .to_str()
-    .unwrap_or_default()
-    .to_string();
-  asset.content = content;
-  asset.kind = file_path
-    .extension()
-    .unwrap_or_default()
-    .to_str()
-    .unwrap_or_default()
-    .to_string();
-  asset.linking_symbols = linking_symbols;
-  asset.bundle_behavior = bundle_behavior;
-
-  Ok(asset_dependencies)
+  Ok(TransformerPipelineResult {
+    name: file_path
+      .file_stem()
+      .unwrap_or_default()
+      .to_str()
+      .unwrap_or_default()
+      .to_string(),
+    kind: file_path
+      .extension()
+      .unwrap_or_default()
+      .to_str()
+      .unwrap_or_default()
+      .to_string(),
+    content,
+    linking_symbols,
+    bundle_behavior,
+    dependencies: asset_dependencies,
+  })
 }

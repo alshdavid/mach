@@ -1,15 +1,19 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use super::AssetId;
+use petgraph::graph::NodeIndex;
+
 use super::BundleBehavior;
+use super::Identifier;
 use super::LinkingSymbol;
 use crate::kit::hash::hash_sha_256;
 
+pub type AssetId = NodeIndex;
+
 #[derive(Clone, Default)]
 pub struct Asset {
-  /// Internal identifier
-  pub id: AssetId,
+  /// Identifier, assigned when the asset is added to the asset graph
+  pub id: Identifier<AssetId>,
   /// The file name without the extension
   pub name: String,
   /// Absolute filepath to the asset
@@ -28,7 +32,6 @@ pub struct Asset {
 
 impl Asset {
   pub fn content_hash(&self) -> String {
-    // Todo, cache this
     return hash_sha_256(&self.content);
   }
 }
@@ -39,7 +42,7 @@ impl Debug for Asset {
     f: &mut std::fmt::Formatter<'_>,
   ) -> std::fmt::Result {
     f.debug_struct("Asset")
-      .field("id", &self.id.0)
+      .field("id", &self.id)
       .field("file_path", &self.file_path_absolute)
       .field("file_path_rel", &self.file_path)
       .field("bundle_behavior", &self.bundle_behavior)

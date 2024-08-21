@@ -1,13 +1,17 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
+use petgraph::graph::NodeIndex;
+
 use super::Asset;
 use super::AssetId;
-use super::BundleId;
+use super::Identifier;
+
+pub type BundleId = NodeIndex;
 
 #[derive(Default, Clone)]
 pub struct Bundle {
-  pub id: BundleId,
+  pub id: Identifier<BundleId>,
   pub kind: String,
   pub entry_asset: Option<AssetId>,
   pub assets: BTreeMap<PathBuf, AssetId>,
@@ -17,10 +21,12 @@ impl Bundle {
   pub fn insert_asset(
     &mut self,
     asset: &Asset,
-  ) -> Option<AssetId> {
+  ) -> anyhow::Result<()> {
     self
       .assets
-      .insert(asset.file_path.clone(), asset.id.clone())
+      .insert(asset.file_path.clone(), asset.id.get()?.clone());
+
+    Ok(())
   }
 }
 
@@ -34,7 +40,7 @@ impl std::fmt::Debug for Bundle {
       assets.push(asset_id.clone())
     }
     f.debug_struct("Bundle")
-      .field("id", &self.id.0)
+      .field("id", &self.id)
       .field("kind", &self.kind)
       .field("assets", &assets)
       .field("entry_asset", &self.entry_asset)

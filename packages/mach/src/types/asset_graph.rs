@@ -1,100 +1,101 @@
-use std::collections::HashMap;
-
+use anyhow::Context;
+use once_cell::sync::Lazy;
+/// Extending StableGraph with Asset & Dependency specifics
 use petgraph::prelude::*;
-use petgraph::stable_graph::EdgeIndex;
 use petgraph::stable_graph::Edges;
-use petgraph::stable_graph::NodeIndex;
+use petgraph::stable_graph::NodeIndices;
 use petgraph::stable_graph::StableDiGraph;
 
 use super::Asset;
 use super::AssetId;
 use super::Dependency;
-use super::DependencyId;
 
-#[derive(Default, Clone, Debug)]
-pub struct AssetGraph {
-  node_index: HashMap<AssetId, NodeIndex>,
-  edge_index: HashMap<DependencyId, EdgeIndex>,
-  graph: StableDiGraph<Asset, Dependency>,
-}
+pub type AssetGraph = StableDiGraph<Asset, Dependency>;
 
-impl AssetGraph {
-  pub fn add_asset(
+pub static ROOT_ASSET: Lazy<AssetId> = Lazy::new(|| AssetId::new(0));
+
+impl AssetGraphExt for AssetGraph {
+  fn add_asset(
     &mut self,
     asset: Asset,
-  ) -> NodeIndex {
-    let asset_id = asset.id.clone();
-    let node_id = self.graph.add_node(asset);
-    self.node_index.insert(asset_id, node_id.clone());
-    node_id
+  ) -> &mut Asset {
+    let nx = self.add_node(asset);
+    let asset = self.node_weight_mut(nx.clone()).unwrap();
+    asset.id.set(nx).unwrap();
+    asset
   }
 
-  pub fn add_dependency(
+  fn get_asset(
+    &self,
+    id: AssetId,
+  ) -> Option<&Asset> {
+    self.node_weight(id)
+  }
+
+  fn try_get_asset(
+    &self,
+    id: AssetId,
+  ) -> anyhow::Result<&Asset> {
+    self.get_asset(id).context("Asset does not exist")
+  }
+
+  fn get_assets(&self) -> NodeIndices<Asset> {
+    self.node_indices()
+  }
+
+  fn get_asset_mut(
     &mut self,
-    src: &AssetId,
-    dest: &AssetId,
+    id: AssetId,
+  ) -> Option<&mut Asset> {
+    self.node_weight_mut(id)
+  }
+
+  fn add_dependency(
+    &mut self,
+    src: AssetId,
+    dest: AssetId,
     dependency: Dependency,
-  ) -> anyhow::Result<(bool, EdgeIndex)> {
-    let Some(src_id) = self.node_index.get(&src) else {
-      anyhow::bail!("Unable to find Source Asset with ID: {}", src);
-    };
-    let Some(dest_id) = self.node_index.get(&dest) else {
-      anyhow::bail!("Unable to find Dest Asset with ID: {}", dest);
-    };
-    let dependency_id = dependency.id.clone();
-    if let Some(edge_index) = self.edge_index.get(&dependency_id) {
-      return Ok((false, edge_index.clone()));
-    }
-    let edge_id = self
-      .graph
-      .add_edge(src_id.clone(), dest_id.clone(), dependency);
-
-    self.edge_index.insert(dependency_id, edge_id.clone());
-
-    Ok((true, edge_id))
+  ) -> &mut Dependency {
+    let ex = self.add_edge(src, dest, dependency);
+    let dependency = self.edge_weight_mut(ex.clone()).unwrap();
+    dependency.id.set(ex).unwrap();
+    dependency
   }
 
-  pub fn root_node(&self) -> NodeIndex {
-    NodeIndex::from(0)
-  }
-
-  pub fn get(
+  fn get_dependencies(
     &self,
-    asset_id: &AssetId,
-  ) -> Option<&Asset> {
-    let nx = self.node_index.get(asset_id)?;
-    self.get_with_nx(nx.clone())
-  }
-
-  pub fn get_with_nx(
-    &self,
-    index: NodeIndex,
-  ) -> Option<&Asset> {
-    self.graph.node_weight(index)
-  }
-
-  pub fn get_nx(
-    &self,
-    index: &AssetId,
-  ) -> Option<&NodeIndex> {
-    self.node_index.get(index)
-  }
-
-  pub fn get_dependency(
-    &self,
-    index: EdgeIndex,
-  ) -> Option<&Dependency> {
-    self.graph.edge_weight(index)
-  }
-
-  pub fn get_dependencies(
-    &self,
-    index: &NodeIndex,
+    id: AssetId,
   ) -> Edges<Dependency, Directed, u32> {
-    self.graph.edges(index.clone())
+    self.edges(id.clone())
   }
+}
 
-  pub fn as_graph(&self) -> &StableDiGraph<Asset, Dependency> {
-    &self.graph
-  }
+pub trait AssetGraphExt {
+  fn add_asset(
+    &mut self,
+    asset: Asset,
+  ) -> &mut Asset;
+  fn get_asset(
+    &self,
+    id: AssetId,
+  ) -> Option<&Asset>;
+  fn try_get_asset(
+    &self,
+    id: AssetId,
+  ) -> anyhow::Result<&Asset>;
+  fn get_asset_mut(
+    &mut self,
+    id: AssetId,
+  ) -> Option<&mut Asset>;
+  fn get_assets(&self) -> NodeIndices<Asset>;
+  fn add_dependency(
+    &mut self,
+    src: AssetId,
+    dest: AssetId,
+    dependency: Dependency,
+  ) -> &mut Dependency;
+  fn get_dependencies(
+    &self,
+    id: AssetId,
+  ) -> Edges<Dependency, Directed, u32>;
 }

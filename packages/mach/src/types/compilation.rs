@@ -1,4 +1,3 @@
-use super::AssetContents;
 use super::AssetGraph;
 use super::BundleGraph;
 use super::MachConfig;
@@ -12,7 +11,6 @@ pub struct Compilation {
   pub rpc_hosts: RpcHosts,
   pub machrc: Machrc,
   pub config: MachConfig,
-  pub asset_contents: AssetContents,
   pub asset_graph: AssetGraph,
   pub bundle_graph: BundleGraph,
   pub outputs: Outputs,

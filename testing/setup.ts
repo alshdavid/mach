@@ -5,15 +5,14 @@ console.log(Mach)
 // const FIXTURE = 'js-css'
 // const FIXTURE = 'js-css-mutli-entry'
 // const FIXTURE = 'html-js-css-2'
-const FIXTURE = 'js-dynamic'
+const FIXTURE = 'html-js-css'
+// const FIXTURE = 'js-dynamic'
 
 const mach = new Mach({
   threads: 16,
   nodeWorkers: 4,
   entries: [
-    `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/index.js`,
-    // `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index.html`,
-    // `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index2.html`
+    `/home/dalsh/Development/alshdavid/mach/testing/fixtures/${FIXTURE}/src/index.html`,
   ],
   env: {},
   outFolder: '/home/dalsh/Development/alshdavid/mach/testing/dist',

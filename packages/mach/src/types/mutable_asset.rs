@@ -1,8 +1,13 @@
 use std::path::Path;
+use std::path::PathBuf;
+
+use serde::Deserialize;
+use serde::Serialize;
 
 use super::BundleBehavior;
-use super::DependencyOptions;
+use super::DependencyPriority;
 use super::LinkingSymbol;
+use super::SpecifierType;
 
 #[derive(Debug)]
 pub struct MutableAsset<'a> {
@@ -23,14 +28,14 @@ impl<'a> MutableAsset<'a> {
     linking_symbols: &'a mut Vec<LinkingSymbol>,
     bundle_behavior: &'a mut BundleBehavior,
   ) -> Self {
-    return MutableAsset {
+    Self {
       file_path,
       kind,
       content,
       dependencies,
       linking_symbols,
       bundle_behavior,
-    };
+    }
   }
 
   #[allow(dead_code)]
@@ -63,4 +68,14 @@ impl<'a> MutableAsset<'a> {
   ) {
     self.dependencies.push(options);
   }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DependencyOptions {
+  pub specifier: String,
+  pub specifier_type: SpecifierType,
+  pub priority: DependencyPriority,
+  pub resolve_from: PathBuf,
+  pub linking_symbol: LinkingSymbol,
+  pub bundle_behavior: BundleBehavior,
 }

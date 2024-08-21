@@ -2,27 +2,26 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use super::run_resolvers::run_resolvers;
-use crate::core::config::ROOT_ASSET;
 use crate::core::resolve_and_transform::run_transformers::run_transformers;
 use crate::types::Asset;
+use crate::types::AssetGraphExt;
 use crate::types::AssetId;
 use crate::types::Compilation;
 use crate::types::Dependency;
-use crate::types::DependencyId;
 use crate::types::LinkingSymbol;
 
 pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
   let mut queue = vec![];
+  let root_asset = c.asset_graph.add_asset(Asset::default());
 
-  c.asset_graph.add_asset(ROOT_ASSET.clone());
-
+  // Add entries from config
   for entry in c.config.entries.iter() {
     queue.push(Dependency {
-      id: DependencyId::new(),
+      id: Default::default(),
       specifier: entry.to_str().unwrap().to_string(),
       source_asset_path: c.config.project_root.clone(),
       resolve_from: c.config.project_root.clone(),
-      source_asset_id: ROOT_ASSET.id.clone(),
+      source_asset_id: root_asset.id.get()?.clone(),
       specifier_type: Default::default(),
       priority: Default::default(),
       linking_symbol: LinkingSymbol::ImportDirect {
@@ -32,39 +31,49 @@ pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
     });
   }
 
+  // Avoid re-processing assets
   let mut completed_assets = HashMap::<PathBuf, AssetId>::new();
 
   while let Some(dependency) = queue.pop() {
     let resolve_result = run_resolvers(&c, &dependency)?;
 
     if let Some(asset_id) = completed_assets.get(&resolve_result.file_path) {
+      // Asset exists
       c.asset_graph
-        .add_dependency(&dependency.source_asset_id.clone(), &asset_id, dependency)?;
+        .add_dependency(dependency.source_asset_id, asset_id.clone(), dependency);
       continue;
     };
 
-    let new_asset_id = AssetId::new();
-    let mut new_asset = Asset {
-      id: new_asset_id.clone(),
-      file_path_absolute: resolve_result.file_path.clone(),
-      file_path: resolve_result.file_path_relative.clone(),
-      bundle_behavior: dependency.bundle_behavior.clone(),
-      name: Default::default(),
-      kind: Default::default(),
-      content: Default::default(),
-      linking_symbols: Default::default(),
+    // New Asset
+    let mut transformer_pipeline_result = run_transformers(&c, &resolve_result)?;
+
+    // Create new asset and add it to the
+    let new_asset_id = {
+      let asset = c.asset_graph.add_asset(Asset {
+        id: Default::default(),
+        name: transformer_pipeline_result.name,
+        file_path_absolute: resolve_result.file_path.clone(),
+        file_path: resolve_result.file_path_relative.clone(),
+        kind: transformer_pipeline_result.kind,
+        content: transformer_pipeline_result.content,
+        bundle_behavior: transformer_pipeline_result.bundle_behavior,
+        linking_symbols: transformer_pipeline_result.linking_symbols,
+      });
+      asset.id.get()?.clone()
     };
+
+    c.asset_graph
+      .add_dependency(dependency.source_asset_id.clone(), new_asset_id, dependency);
+
     completed_assets.insert(resolve_result.file_path.clone(), new_asset_id.clone());
 
-    let mut asset_dependencies = run_transformers(&c, &mut new_asset, &resolve_result)?;
-
-    while let Some(dependency_options) = asset_dependencies.pop() {
+    while let Some(dependency_options) = transformer_pipeline_result.dependencies.pop() {
       let new_dependency = Dependency {
-        id: DependencyId::new(),
+        id: Default::default(),
         specifier: dependency_options.specifier.clone(),
         specifier_type: dependency_options.specifier_type,
         source_asset_path: resolve_result.file_path.clone(),
-        source_asset_id: new_asset.id.clone(),
+        source_asset_id: new_asset_id.clone(),
         resolve_from: resolve_result.file_path.clone(),
         priority: dependency_options.priority,
         linking_symbol: dependency_options.linking_symbol,
@@ -73,14 +82,6 @@ pub fn resolve_and_transform(c: &mut Compilation) -> anyhow::Result<()> {
 
       queue.push(new_dependency);
     }
-
-    c.asset_graph.add_asset(new_asset);
-
-    c.asset_graph.add_dependency(
-      &dependency.source_asset_id.clone(),
-      &new_asset_id.clone(),
-      dependency,
-    )?;
   }
 
   Ok(())
