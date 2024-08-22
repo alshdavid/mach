@@ -1,0 +1,222 @@
+<script type="module" src="https://cdn.davidalsh.com/scripts/wc-mermaid.js"></script>
+<style>
+  table {
+    width: 100%; 
+    text-align: center;
+  }
+
+  td {
+    background-color: #fafafa;
+  }
+
+  wc-mermaid {
+    display: block;
+  }
+</style>
+
+<table border="1">
+
+<tr>
+<th>Input</th>
+<th>Output (Webpack 5)</th>
+<th>Output (Parcel)</th>
+</tr>
+
+<!-- 1 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A --> C
+  D -.-> E
+  B --> D
+  C -.-> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AC -.-> E
+  BD -.-> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AC -.-> E
+  BD -.-> E
+</wc-mermaid>
+</td></tr>
+
+<!-- 2 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A --> C
+  B -.-> C
+  C -.-> D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AC -.-> D
+  B -.-> C
+  C -.-> D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AC -.-> D
+  B -.-> C
+  C -.-> D
+</wc-mermaid>
+</td></tr>
+
+<!-- 3 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A --> D
+  B -.-> D
+  C -.-> D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AD
+  B -.-> D
+  C -.-> D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AD
+  B -.-> D
+  C -.-> D
+</wc-mermaid>
+</td></tr>
+
+<!-- 4 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  A -.-> C
+  B -->  D
+  C -.-> D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> C
+  A -.-> BD
+  C -.->  D
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> C
+  A -.->|preload| D
+  A -.-> BD
+  C -.->  D
+</wc-mermaid>
+</td></tr>
+
+<!-- 5 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -->  C
+  B -.-> C
+  C -->  D
+  D -->  E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACDE
+  B -.-> CDE
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACDE
+  B -.-> CDE
+</wc-mermaid>
+</td></tr>
+
+<!-- 6 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -->  C
+  B -.-> C
+  C -->  D
+  D -.->  E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACD -.-> E
+  B -.-> CD
+  CD -.-> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACD -.-> E
+  B -.-> CD
+  CD -.-> E
+</wc-mermaid>
+</td></tr>
+
+<!-- 7 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -->  C
+  B -.-> C
+  B --> E
+  C -->  D
+  D -.->  E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACD -.-> E
+  BE -.-> CD
+  CD -.->|load, unused| E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACD -.-> E
+  BE -.-> CD
+</wc-mermaid>
+</td></tr>
+
+<!-- 8 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  B -.-> C
+  C -.-> D
+  D -.-> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  B -.-> C
+  C -.-> D
+  D -.-> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  B -.-> C
+  C -.-> D
+  D -.-> E
+</wc-mermaid>
+</td></tr>
+
+</table>

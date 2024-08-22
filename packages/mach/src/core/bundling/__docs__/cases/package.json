@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/node": "*",
+    "parcel": "*",
+    "prettier": "*",
+    "webpack": "*",
+    "webpack-cli": "*"
+  }
+}
