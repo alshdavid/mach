@@ -219,4 +219,96 @@ flowchart TD
 </wc-mermaid>
 </td></tr>
 
+<!-- 9 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  B --> C
+  B --> D
+  D -.-> E
+  C --> E
+  C -.-> F
+  F --> D
+  B -.-> G
+  G --> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> BCED
+  BCED -.-> F
+  BCED -.-> G
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> BCED
+  BCED -.-> F
+  BCED -.-> G
+</wc-mermaid>
+</td></tr>
+
+<!-- 10 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  A --> E
+  B --> C
+  B --> D
+  D -.-> E
+  C --> E
+  C -.-> F
+  F --> D
+  B -.-> G
+  G --> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AE -.-> BCD
+  BCD -.-> F
+  BCD -.-> G
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  AE -.-> BCD
+  BCD -.-> F
+  BCD -.-> G
+</wc-mermaid>
+</td></tr>
+
+<!-- 11 -->
+<tr><td>
+<wc-mermaid> 
+flowchart TD
+  A -.-> B
+  A --> C
+  B --> C
+  B --> D
+  D -.-> E
+  C --> E
+  C -.-> F
+  F --> D
+  B -.-> G
+  G --> E
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+flowchart TD
+  ACE -.-> BD
+  BD -.-> F
+  BD -.-> G
+</wc-mermaid>
+</td><td>
+<wc-mermaid> 
+  flowchart TD
+  ACE -.-> BD
+  BD -.-> F
+  BD -.-> G
+</wc-mermaid>
+</td></tr>
+
 </table>
