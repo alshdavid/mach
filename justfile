@@ -91,7 +91,7 @@ fmt arg="--check":
   while read -r line; do
     line=$(echo "$line" | tr -d "[:space:]")
     args="$args --config $line"
-  done < "rust-fmt.toml"
+  done < "rustfmt-unstable.toml"
   args=$(echo "$args" | xargs)
   if [ "{{arg}}" = "--fix" ]; then
     cargo fmt -- $args

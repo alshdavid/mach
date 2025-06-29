@@ -1,10 +1,6 @@
-<h1 align="center">🌏️ <img height="40px" align="center" src="./.docs/assets/logo.svg"></img> 🚀</h1>
+<h1 align="center">🌏️ NitroPack 🚀</h1>
 
-<h3 align="center">Zero Configuration. Zero Dependencies. Fast AF</h3>
-
-<p align="center">
-  <img height="20px" src="./.docs/assets/prerelease.svg"></img>
-</p>
+<h3 align="center">Zero Dependencies. Fast AF</h3>
 
 <p align="center"><i>
   Nitropack is a super fast multi-threaded bundler written in Rust that puts an emphasis on<br>
