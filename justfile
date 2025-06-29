@@ -1,3 +1,4 @@
+libnode_version := "24.3.0"
 profile := env_var_or_default("profile", "debug")
 
 os := \
@@ -67,6 +68,7 @@ build:
   @mkdir -p "{{out_dir}}"
   cargo build {{profile_cargo}} {{target_cargo}}
   @cp "./target/.cargo/{{target}}/{{profile}}/{{bin_name}}" "{{out_dir}}/{{bin_name_out}}"
+  @test -d "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib" || just fetch-lib
 
 run *ARGS:
   just build
@@ -104,3 +106,11 @@ lint arg="--check":
 
 bench-micro:
   echo "TODO"
+
+fetch-lib:
+  rm -rf "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib/node"
+  rm -rf "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib/libnode.*"
+  rm -rf "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib/node.*"
+  mkdir -p "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib"
+  curl -L --url https://github.com/alshdavid/libnode-prebuilt/releases/download/v{{libnode_version}}/libnode-{{os}}-{{arch}}.tar.gz | tar -xvzf - -C "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib"
+  echo {{libnode_version}} > "{{ justfile_directory() }}/target/{{os}}-{{arch}}/lib/libnode.txt"
