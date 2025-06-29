@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
       - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/nodejs.sh | sh)
       - run: just build
       - run: just test-integration
 
