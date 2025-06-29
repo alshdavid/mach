@@ -1,3 +1,4 @@
-import { foo } from './foo.js'
+const content = 'Hello World'
 
-globalThis.foo = foo
+console.log(content)
+document.body.innerHTML = content

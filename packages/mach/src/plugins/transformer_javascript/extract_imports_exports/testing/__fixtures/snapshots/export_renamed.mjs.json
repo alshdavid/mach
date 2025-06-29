@@ -1,8 +1,0 @@
-[
-  {
-    "ExportRenamed": {
-      "sym": "foo",
-      "sym_as": "foo_renamed"
-    }
-  }
-]

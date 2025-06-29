@@ -1,9 +1,0 @@
-name: 'alshdavid/setup-env'
-description: "Generate Vars"
-
-runs:
-  using: 'composite'
-  steps:
-    - name: "Generate Vars" 
-      shell: bash
-      run: "bash .github/actions/setup-env/generate.bash"
