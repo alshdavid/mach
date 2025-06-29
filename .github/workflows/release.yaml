@@ -24,7 +24,7 @@ jobs:
       - run: eval $(curl -sSf sh.davidalsh.com/nodejs.sh | sh)
       - id: tag
         run: |
-          declare -i var=$(npm info @alshdavid/mach version | cut -d "." -f 3)
+          declare -i var=$(npm info @alshdavid/nitropack version | cut -d "." -f 3)
           var=$var+1
           NPM_VER="0.0.$var"
 
@@ -110,7 +110,7 @@ jobs:
       - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
       - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
       - run: eval $(curl -sSf sh.davidalsh.com/nodejs.sh | sh)
-      - run: sed -i -e "s/0.0.0-local/${NPM_VER}/g" crates/mach_cli/Cargo.toml
+      - run: sed -i -e "s/0.0.0-local/${NPM_VER}/g" crates/nitropack_cli/Cargo.toml
         env:
           NPM_VER: ${{needs.vars.outputs.NPM_VER}}
       - if: matrix.config.run
@@ -151,7 +151,7 @@ jobs:
           echo "Tag: ${GH_TAG}"
 
           gh release create $GH_TAG  --draft --notes "Automatically built binaries"
-          gh release edit $GH_TAG --title "🚀 Mach - $NPM_VER"
+          gh release edit $GH_TAG --title "🚀 Nitropack - $NPM_VER"
 
           cd artifacts
 
@@ -205,7 +205,7 @@ jobs:
   #     - uses: ./.github/actions/setup-nodejs
   #     - uses: ./.github/actions/setup-rust
   #     - uses: ./.github/actions/setup-env
-  #     - uses: ./.github/actions/build-mach
+  #     - uses: ./.github/actions/build-nitropack
   #     - name: Publish Crate
   #       env:
   #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

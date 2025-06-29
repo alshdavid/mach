@@ -54,15 +54,15 @@ else \
 
 bin_name := \
   if \
-    os == "windows" { "mach_bundler_cli.exe" } \
+    os == "windows" { "nitropack_bundler_cli.exe" } \
   else \
-    { "mach_bundler_cli" }
+    { "nitropack_bundler_cli" }
 
 bin_name_out := \
   if \
-    os == "windows" { "mach.exe" } \
+    os == "windows" { "nitropack.exe" } \
   else \
-    { "mach" }
+    { "nitropack" }
 
 cargo_base :=  join(justfile_directory(), "target", ".cargo", target, profile)
 out_base :=  join(justfile_directory(), "target", os + "-" + arch)
@@ -72,6 +72,7 @@ lib_dir := join(out_base, "lib")
 build *ARGS:
   node ./scripts/build.mjs {{ARGS}}
 
+[no-cd]
 run *ARGS:
   just build
   {{out_dir}}/{{bin_name_out}} {{ARGS}}
@@ -106,7 +107,7 @@ lint arg="--check":
     cargo clippy -- --deny "warnings"
   fi
 
-bench-micro:
-  echo "TODO"
+bench:
+  node ./scripts/bench.mjs
 
 

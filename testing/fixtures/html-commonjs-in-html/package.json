@@ -1,9 +1,9 @@
 {
   "name": "@workspace/example-html-commonjs-in-html",
   "scripts": {
-    "build": "npx mach build"
+    "build": "npx nitropack build"
   },
   "devDependencies": {
-    "@alshdavid/mach": "*"
+    "@alshdavid/nitropack": "*"
   }
 }

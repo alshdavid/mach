@@ -1,4 +1,4 @@
-import { Resolver } from '@alshdavid/mach'
+import { Resolver } from '@alshdavid/nitropack'
 
 export default new Resolver({
   loadConfig() {

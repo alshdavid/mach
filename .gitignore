@@ -11,7 +11,7 @@ target/
 /benchmarks
 *.node
 
-packages/mach_npm/README.md
+packages/nitropack_npm/README.md
 
 # dependencies
 node_modules/
@@ -70,7 +70,7 @@ Icon
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
-.com.apple.timemachine.donotpresent
+.com.apple.timenitropackine.donotpresent
 
 # Directories potentially created on remote AFP share
 .AppleDB

@@ -1,4 +1,4 @@
-import { Transformer } from '@alshdavid/mach'
+import { Transformer } from '@alshdavid/nitropack'
 
 export default new Transformer({
   loadConfig() {

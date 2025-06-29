@@ -1,0 +1,17 @@
+[package]
+name = "nitropack"
+version = "0.0.0-local"
+authors = ["alshdavid"]
+repository = "https://github.com/alshdavid/nitropack"
+description = "Bundler For The Modern Web"
+edition = "2021"
+license = "MIT"
+
+[features]
+libnode = ["dep:edon"]
+
+[dependencies]
+dyn_fs = "0.0.7"
+edon = { version = "0.0.17", optional = true }
+num_cpus = "1.17.0"
+tokio = { version = "1.45.1", features = ["full"] }

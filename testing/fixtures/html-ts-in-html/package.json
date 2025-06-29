@@ -1,10 +1,10 @@
 {
   "name": "@workspace/example-html-ts-in-html",
   "scripts": {
-    "build": "npx mach build"
+    "build": "npx nitropack build"
   },
   "devDependencies": {
-    "@alshdavid/mach": "*",
+    "@alshdavid/nitropack": "*",
     "@types/react": "18",
     "@types/react-dom": "18",
     "react": "18",

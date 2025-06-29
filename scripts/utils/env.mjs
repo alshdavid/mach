@@ -29,6 +29,6 @@ export const CARGO_TARGET = {
 }[`${OS}-${ARCH}`];
 
 export const CARGO_BIN_NAME =
-  OS === "windows" ? "mach_bundler_cli.exe" : "mach_bundler_cli";
+  OS === "windows" ? "nitropack_bundler_cli.exe" : "nitropack_bundler_cli";
 
-export const BIN_NAME = OS === "windows" ? "mach.exe" : "mach";
+export const BIN_NAME = OS === "windows" ? "nitropack.exe" : "nitropack";

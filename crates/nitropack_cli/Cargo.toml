@@ -1,0 +1,13 @@
+[package]
+name = "nitropack_bundler_cli"
+version = "0.0.0-local"
+authors = ["alshdavid"]
+repository = "https://github.com/alshdavid/nitropack"
+description = "Bundler For The Modern Web"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5.40", features = ["derive", "env"] }
+nitropack = { path = "../nitropack" }
+

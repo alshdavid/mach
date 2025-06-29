@@ -2,8 +2,8 @@
 resolver = "2"
 
 members = [
-  "./crates/mach",
-  "./crates/mach_cli",
+  "./crates/nitropack",
+  "./crates/nitropack_cli",
 ]
 
 [profile.release]

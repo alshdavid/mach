@@ -7,25 +7,25 @@
 </p>
 
 <p align="center"><i>
-  Mach is a super fast multi-threaded bundler written in Rust that puts an emphasis on<br>
+  Nitropack is a super fast multi-threaded bundler written in Rust that puts an emphasis on<br>
   developer experience and the runtime performance of the compiled application.<br>
   <br>
-  Mach is heavily inspired by the <a href="https://parceljs.org/">Parcel bundler</a>
+  Nitropack is heavily inspired by the <a href="https://parceljs.org/">Parcel bundler</a>
 </i></p>
 
 <p align="center">
   <a href=".docs/CONTRIBUTING.md">Contributing Guidelines</a>
   .
-  <a href="https://github.com/alshdavid/mach/issues">Submit an Issue</a>
+  <a href="https://github.com/alshdavid/nitropack/issues">Submit an Issue</a>
   .
-  <a href="https://github.com/alshdavid/mach/discussions">Ask a Question</a>
+  <a href="https://github.com/alshdavid/nitropack/discussions">Ask a Question</a>
   .
   <a href="BLOG.md">Blog</a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/@alshdavid/mach">
-  <img src="https://img.shields.io/npm/dm/@alshdavid/mach.svg">
+  <img src="https://img.shields.io/npm/v/@alshdavid/nitropack">
+  <img src="https://img.shields.io/npm/dm/@alshdavid/nitropack.svg">
   <img src="https://img.shields.io/badge/install_dependencies-0-green">
 </p>
 
@@ -38,7 +38,7 @@
 ## Special Thanks
 
 <img align="right" height="40px" src="./.docs/assets/logo-parcel.svg" />
-Mach is heavily inspired by Parcel. It derives learnings, approaches and adapts code directly from the project.<br>
+Nitropack is heavily inspired by Parcel. It derives learnings, approaches and adapts code directly from the project.<br>
 <a href="https://parceljs.org/">Check it out here</a><br>
 
 ---

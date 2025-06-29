@@ -1,22 +1,22 @@
 {
   "resolvers": [
-    "mach:resolver"
+    "nitropack:resolver"
   ],
   "transformers": {
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
-      "mach:transformer/javascript"
+      "nitropack:transformer/javascript"
     ],
     "*.txt": [
       "node:./plugins/transformer.mjs"
     ],
     "*.css": [
-      "mach:transformer/css"
+      "nitropack:transformer/css"
     ],
     "*.html": [
-      "mach:transformer/html"
+      "nitropack:transformer/html"
     ],
     "*.{svg,png,json,gif,woff2,woff,txt}": [
-      "mach:transformer/drop"
+      "nitropack:transformer/drop"
     ]
   }
 }

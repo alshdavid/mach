@@ -1,8 +1,8 @@
 {
-  "name": "@alshdavid/mach",
+  "name": "@alshdavid/nitropack",
   "version": "0.0.0-local",
   "bin": {
-    "mach": "./mach.exe"
+    "nitropack": "./nitropack.exe"
   },
   "scripts": {
     "postinstall": "node ./postinstall.mjs"

@@ -6,8 +6,8 @@ import * as stream from "node:stream";
 import * as tar from "./tar.cjs";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const __bin = path.join(__dirname, "mach.exe");
-const __bin_unix = path.join(__dirname, "mach");
+const __bin = path.join(__dirname, "nitropack.exe");
+const __bin_unix = path.join(__dirname, "nitropack");
 
 const HTTP_SERVER_RS_BIN_PATH = process.env.HTTP_SERVER_RS_BIN_PATH;
 const HTTP_SERVER_RS_SKIP_DOWNLOAD = process.env.HTTP_SERVER_RS_SKIP_DOWNLOAD;
@@ -52,9 +52,9 @@ async function downloadBin() {
     ).trim();
   }
 
-  let url = `https://github.com/alshdavid/mach/releases/latest/download/${os}-${arch}.tar.gz`;
+  let url = `https://github.com/alshdavid/nitropack/releases/latest/download/${os}-${arch}.tar.gz`;
   if (tag !== "latest") {
-    url = `https://github.com/alshdavid/mach/releases/download/${tag}/${os}-${arch}.tar.gz`;
+    url = `https://github.com/alshdavid/nitropack/releases/download/${tag}/${os}-${arch}.tar.gz`;
   }
 
   const response = await globalThis.fetch(url);
