@@ -1,9 +1,0 @@
-{
-  "name": "@workspace/fixture-js-dynamic",
-  "scripts": {
-    "build": "npx mach build"
-  },
-  "devDependencies": {
-    "@alshdavid/mach": "*"
-  }
-}

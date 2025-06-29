@@ -1,6 +1,9 @@
 {
-  "name": "@workspace/integration-test-plugins-nodejs-resolver-noop",
+  "name": "@workspace/example-plugins-nodejs-resolver-noop",
+  "scripts": {
+    "build": "npx mach build"
+  },
   "devDependencies": {
-    "@alshdavid/mach": "../../../npm/mach"
+    "@alshdavid/mach": "*"
   }
 }

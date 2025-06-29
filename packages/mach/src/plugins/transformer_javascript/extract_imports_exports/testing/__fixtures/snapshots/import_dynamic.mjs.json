@@ -1,7 +1,0 @@
-[
-  {
-    "ImportDynamic": {
-      "specifier": "./foo"
-    }
-  }
-]

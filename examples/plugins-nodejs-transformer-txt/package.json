@@ -1,9 +1,0 @@
-{
-  "name": "@workspace/example-plugins-nodejs-transformer-txt",
-  "scripts": {
-    "build": "npx mach build"
-  },
-  "devDependencies": {
-    "@alshdavid/mach": "*"
-  }
-}

@@ -1,9 +1,12 @@
-set windows-shell := ["pwsh", "-NoLogo", "-NoProfileLoadTime", "-Command"]
-
-MACH_VERSION := env_var_or_default("MACH_VERSION", "")
 profile := env_var_or_default("profile", "debug")
 
-os := env_var_or_default("os", os())
+os := \
+if \
+  env_var_or_default("os", "") == "Windows_NT" { "windows" } \
+else if \
+  env_var_or_default("os", "") != "" { env_var("os") } \
+else \
+  { os() }
 
 arch := \
 if \
@@ -15,27 +18,11 @@ else if \
 else \
   { arch() }
 
-dylib := \
-if \
-  os == "windows" { "dll" } \
-else if \
-  os == "macos" { "dylib" } \
-else if \
-  os == "linux" { "so" } \
-else \
-  { os() }
-
-bin := \
-if \
-  os == "windows" { "mach.exe" } \
-else \
-  { "mach" }
-
 target := \
 if \
-  os + arch == "linuxamd64" { "x86_64-unknown-linux-gnu" } \
+  os + arch == "linuxamd64" { "x86_64-unknown-linux-musl" } \
 else if \
-  os + arch == "linuxarm64" { "aarch64-unknown-linux-gnu" } \
+  os + arch == "linuxarm64" { "aarch64-unknown-linux-musl" } \
 else if \
   os + arch == "macosamd64" { "x86_64-apple-darwin" } \
 else if\
@@ -61,135 +48,59 @@ else if \
 else \
   { "--target " + target } 
 
+bin_name := \
+  if \
+    os == "windows" { "mach_bundler_cli.exe" } \
+  else \
+    { "mach_bundler_cli" }
+
+bin_name_out := \
+  if \
+    os == "windows" { "mach.exe" } \
+  else \
+    { "mach" }
+
 out_dir :=  join(justfile_directory(), "target", os + "-" + arch, profile)
-out_dir_link :=  join(justfile_directory(), "target", profile)
 
-_default:
-  @echo "Available Env:"
-  @echo "    profile"
-  @echo "        debug [default]"
-  @echo "        release"
-  @echo "    os"
-  @echo "        auto [default]"
-  @echo "        linux"
-  @echo "        macos"
-  @echo "        windows"
-  @echo "    arch"
-  @echo "        auto [default]"
-  @echo "        arm64"
-  @echo "        amd64"
-  @just --list --unsorted
-
-[unix]
 build:
-  @# Install npm
-  @test -d node_modules || npm install
-
-  @# Clean dir
-  @rm -rf "./packages/mach_npm_bin/index.node"
+  @rm -rf "{{out_dir}}"
+  @mkdir -p "{{out_dir}}"
   cargo build {{profile_cargo}} {{target_cargo}}
-  @cp "./target/.cargo/{{target}}/{{profile}}/libmach_bundler_npm_os_arch.{{dylib}}" "./packages/mach_npm_bin/index.node"
+  @cp "./target/.cargo/{{target}}/{{profile}}/{{bin_name}}" "{{out_dir}}/{{bin_name_out}}"
 
-[windows]
-build:
-  @# Install npm
-  if (!(Test-Path 'node_modules')) { npm install }
-
-  @# Clean dir
-  @if (Test-Path ".\packages\mach_npm_bin\_napi\index.node") { Remove-Item -Recurse -Force ".\packages\mach_npm_bin\index.node" | Out-Null }
-  cargo build {{profile_cargo}} {{target_cargo}}
-  Copy-Item ".\target\.cargo\{{target}}\{{profile}}\mach_bundler_npm_os_arch.{{dylib}}" -Destination ".\packages\mach_npm_bin\index.node" | Out-Null  
-
-build-tsc:
-  cd "./packages/mach_npm" && npx tsc
-
-[no-cd]
 run *ARGS:
   just build
-  env NODE_OPTIONS="--conditions=source --import tsx" npx mach {{ARGS}}
+  {{out_dir}}/{{bin_name_out}} {{ARGS}}
 
-alias test-integration := integration-tests
-integration-tests *ARGS:
-  just build
-  node --conditions=source --import tsx ./testing/setup.ts {{ARGS}}
-
-alias test-unit := unit-tests
-unit-tests:
+test:
   cargo test
 
-watch:
-  npx nodemon
+format arg="--check":
+  #!/usr/bin/env bash
+  just fmt {{arg}}
+  just lint {{arg}}
 
-fmt:
-  cargo +nightly fmt
-  node_modules/.bin/prettier ./packages --write
-  node_modules/.bin/prettier ./examples --write
+fmt arg="--check":
+  #!/usr/bin/env bash
+  args=""
+  while read -r line; do
+    line=$(echo "$line" | tr -d "[:space:]")
+    args="$args --config $line"
+  done < "rust-fmt.toml"
+  args=$(echo "$args" | xargs)
+  if [ "{{arg}}" = "--fix" ]; then
+    cargo fmt -- $args
+  else
+    cargo fmt --check -- $args
+  fi
+
+lint arg="--check":
+  #!/usr/bin/env bash
+  if [ "{{arg}}" = "--fix" ]; then
+    cargo clippy --fix --allow-dirty -- --deny "warnings"
+  else
+    cargo clippy -- --deny "warnings"
+  fi
 
 bench-micro:
-  cargo bench
-
-[unix]
-build-publish:
-  npm i
-  just build-publish-common
-  just build
-  just build-tsc
-  cp "./README.md" "./packages/mach_npm"
-  cp "./README.md" "./packages/mach_npm_bin"
-
-[windows]
-build-publish:
-  npm i 
-  just build-publish-common
-  just build
-  just build-tsc
-  Copy-Item ".\README.md" -Destination "packages\mach_npm" | Out-Null
-  Copy-Item ".\README.md" -Destination "packages\mach_npm_bin" | Out-Null
-
-[private]
-build-publish-common:
-  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./packages/mach/Cargo.toml" \
-    "0.0.0-local" \
-    {{MACH_VERSION}}
-
-  node {{justfile_directory()}}/.github/scripts/ci/string-replace.mjs \
-    "./packages/mach_npm/package.json" \
-    "0.0.0-local" \
-    "{{MACH_VERSION}}"
-
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_npm_bin/package.json" \
-    "name" \
-    "@alshdavid/mach-{{os}}-{{arch}}"
-
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_npm_bin/package.json" \
-    "version" \
-    "{{MACH_VERSION}}"
-
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_npm_bin/package.json" \
-    "os.0" \
-    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "os" {{os}})
-
-  node {{justfile_directory()}}/.github/scripts/ci/json.mjs \
-    "./packages/mach_npm_bin/package.json" \
-    "cpu.0" \
-    $(node "{{justfile_directory()}}/.github/scripts/ci/map.mjs" "arch" {{arch}})
-
-benchmark project="mach" count="50" script="build" *ARGS="":
-  @just {{ if project == "mach" { "build" } else { "_skip" } }}
-  just benchmark-generate {{project}} {{count}}
-  cd benchmarks/{{project}}_{{count}} && \
-  rm -rf dist && \
-  CMD="console.log(require(\"./package.json\").scripts[\"build\"])" && \
-  CMD="$(echo $CMD | node)" && \
-  echo $CMD && \
-  mach_profiler=../{{project}}_{{count}}.csv \
-  time bash -c "$CMD {{ARGS}}"
-
-benchmark-generate project="mach" count="50":
-  PROJECT={{project}} \
-  BENCH_COPIES={{count}} \
-  node .github/scripts/ci/generate_benchmark.mjs
+  echo "TODO"

@@ -1,7 +1,0 @@
-[
-  {
-    "ImportDirect": {
-      "specifier": "./foo"
-    }
-  }
-]
