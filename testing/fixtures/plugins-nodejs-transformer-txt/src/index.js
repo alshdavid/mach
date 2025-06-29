@@ -1,7 +1,5 @@
 import content from './content.txt'
 
-globalThis.content_key = undefined
-
-if (typeof content !== 'undefined') {
-  globalThis.content_key = content
-}
+console.log('works')
+console.log(content)
+document.body.innerHTML = content

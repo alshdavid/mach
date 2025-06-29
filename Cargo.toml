@@ -2,8 +2,8 @@
 resolver = "2"
 
 members = [
-  "./packages/mach",
-  "./packages/mach_npm_bin",
+  "./crates/mach",
+  "./crates/mach_cli",
 ]
 
 [profile.release]

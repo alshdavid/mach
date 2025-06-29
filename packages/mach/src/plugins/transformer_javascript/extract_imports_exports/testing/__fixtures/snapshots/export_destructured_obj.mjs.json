@@ -1,8 +1,0 @@
-[
-  {
-    "ExportDestructured": {
-      "sym": "bar",
-      "sym_source": "foo"
-    }
-  }
-]

@@ -1,9 +1,0 @@
-{
-  "name": "@workspace/example-js-esm-a",
-  "scripts": {
-    "build": "npx mach build"
-  },
-  "devDependencies": {
-    "@alshdavid/mach": "*"
-  }
-}

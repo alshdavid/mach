@@ -10,57 +10,30 @@ on:
       - '*'
 
 jobs:
-  linux-amd64:
-    name: "🐥 Linux AMD64"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { profile: debug }
-
   integration-tests:
     name: "🧪 Integration Tests"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { profile: debug }
-      - name: "Integration tests"
-        run: |
-          source .github/actions/setup-env/setup-env.bash
-          just test-integration
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just build
+      - run: just test-integration
 
   unit-tests:
     name: "🧪 Unit Tests"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { profile: debug }
-      - name: "Unit tests"
-        run: |
-          source .github/actions/setup-env/setup-env.bash
-          just test-unit
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just test-unit
 
   benchmarks-micro:
     name: "🏎️ Benchmarks Micro"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-      - name: "Benchmarks (Micro)"
-        run: |
-          source .github/actions/setup-env/setup-env.bash
-          just bench-micro
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just bench-micro
