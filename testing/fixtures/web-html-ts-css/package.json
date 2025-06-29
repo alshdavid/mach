@@ -1,6 +1,0 @@
-{
-  "name": "@workspace/integration-test-web-html-ts-css",
-  "devDependencies": {
-    "@alshdavid/mach": "../../../npm/mach"
-  }
-}

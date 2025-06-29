@@ -1,0 +1,8 @@
+[package]
+name = "mach_bundler_core"
+version = "0.0.0-local"
+authors = ["alshdavid"]
+repository = "https://github.com/alshdavid/mach"
+description = "Bundler For The Modern Web"
+edition = "2021"
+license = "MIT"

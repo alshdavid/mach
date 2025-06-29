@@ -4,56 +4,63 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-on: 
+defaults:
+  run:
+    shell: bash
+
+on:
   push:
     branches:
       - "main"
-      - "develop"
 
 jobs:
-  integration-tests:
-    name: "🧪 Integration Tests"
-    runs-on: ubuntu-latest
+  vars:
+    name: "📋 Generate Variables"
+    runs-on: ubuntu-24.04
+    outputs:
+      NPM_VER: ${{ steps.tag.outputs.NPM_VER }}
+      GH_TAG: ${{ steps.tag.outputs.GH_TAG }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { profile: debug }
-      - name: "Integration tests"
+      - run: eval $(curl -sSf sh.davidalsh.com/nodejs.sh | sh)
+      - id: tag
         run: |
-          source .github/actions/setup-env/setup-env.bash
-          just test-integration
+          declare -i var=$(npm info @alshdavid/mach version | cut -d "." -f 3)
+          var=$var+1
+          NPM_VER="0.0.$var"
 
-  unit-tests:
-    name: "🧪 Unit Tests"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-        with: { profile: debug }
-      - name: "Unit tests"
-        run: |
-          source .github/actions/setup-env/setup-env.bash
-          just test-unit
+          GH_TAG="$(date -u +"v%Y.%m.%d.%H%M").${GITHUB_SHA::4}"
 
-  benchmarks-micro:
-    name: "🏎️ Benchmarks Micro"
-    runs-on: ubuntu-latest
+          echo NPM_VER: $NPM_VER
+          echo GH_TAG:$GH_TAG
+          echo "NPM_VER=$NPM_VER" >> "$GITHUB_OUTPUT"
+          echo "GH_TAG=$GH_TAG" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/build-mach
-      - name: "Benchmarks (Micro)"
-        run: |
-          source .github/actions/setup-env/setup-env.bash
-          just bench-micro
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just test
+
+  format:
+    name: 📝 Format
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just fmt
+
+  lint:
+    name: 🤓 Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: just lint
 
   build:
     strategy:
@@ -62,124 +69,144 @@ jobs:
           - name: 🐥 Linux AMD64
             os: linux
             arch: amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
+            run: rustup target add x86_64-unknown-linux-musl
+
           - name: 🐥 Linux ARM64
             os: linux
             arch: arm64
-            runner: ubuntu-latest
-          - name: 🍎 MacOS AMD64
-            os: macos
-            arch: amd64
-            runner: macos-13
+            runner: ubuntu-24.04-arm
+            run: rustup target add aarch64-unknown-linux-musl
+
+          # Apple is dropping support for MacOS amd64 and building libnode for it is annoying
+          # - name: 🍎 MacOS AMD64
+          #   os: macos
+          #   arch: amd64
+          #   runner: macos-13
+
           - name: 🍎 MacOS ARM64
             os: macos
             arch: arm64
-            runner: macos-14
+            runner: macos-15
+
           - name: 🟦 Windows AMD64
             os: windows
             arch: amd64
             runner: windows-latest
-          - name: 🟦 Windows ARM64
-            os: windows
-            arch: arm64
-            runner: windows-latest
-    name: "${{ matrix.config.name }}"
+
+          # Libnode does not support ARM Windows
+          # - name: 🟦 Windows ARM64
+          #   os: windows
+          #   arch: arm64
+          #   runner: windows-latest
+          #   run: rustup target add aarch64-pc-windows-msvc
+
+    name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.runner }}
+    needs:
+      - vars
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/setup-env
-      - uses: ./.github/actions/build-mach
-        with: 
+      - run: eval $(curl -sSf sh.davidalsh.com/just.sh | sh)
+      - run: eval $(curl -sSf sh.davidalsh.com/rust.sh | sh)
+      - run: sed -i -e "s/0.0.0-local/${NPM_VER}/g" crates/mach_cli/Cargo.toml
+        env:
+          NPM_VER: ${{needs.vars.outputs.NPM_VER}}
+      - if: matrix.config.run
+        run: ${{ matrix.config.run }}
+      - env:
           os: "${{ matrix.config.os }}"
           arch: "${{ matrix.config.arch }}"
+          profile: "release"
+        run: just build
       - uses: actions/upload-artifact@v4
         with:
-          name: mach-${{ matrix.config.os }}-${{ matrix.config.arch }}
-          path: ${{ github.workspace }}/artifacts/**/*
-          if-no-files-found: error
-          retention-days: 1
-
-  npm-package:
-    name: "📦 NPM"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/setup-env
-      - uses: ./.github/actions/build-npm
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }}
-          path: ${{ github.workspace }}/artifacts/**/*
+          name: ${{ matrix.config.os }}-${{ matrix.config.arch }}
+          path: ${{ github.workspace }}/target/${{ matrix.config.os }}-${{ matrix.config.arch }}/**/*
           if-no-files-found: error
           retention-days: 1
 
   publish-github-release:
-    name: "🔁 Github Release"
-    runs-on: ubuntu-latest
-    needs: [unit-tests,integration-tests, benchmarks-micro, npm-package, build]
+    name: "🔄 Publish Github Release"
+    runs-on: ubuntu-24.04
+    needs:
+      - vars
+      - test
+      - format
+      - lint
+      - build
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-env
       - uses: actions/download-artifact@v4
-        with:
-          path: ${{ github.workspace }}/artifacts
+        with: { path: artifacts }
       - name: Publish` Github Release
         env:
+          GH_TAG: ${{needs.vars.outputs.GH_TAG}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_VER: ${{needs.vars.outputs.NPM_VER}}
         run: |
-          echo TEMP: Skip for now
-          exit 0
+          set -e
 
-          source .github/actions/setup-env/setup-env.bash
-          bash .github/workflows/release/publish-github-release.bash
+          echo "Tag: ${GH_TAG}"
+
+          gh release create $GH_TAG  --draft --notes "Automatically built binaries"
+          gh release edit $GH_TAG --title "🚀 Mach - $NPM_VER"
+
+          cd artifacts
+
+          for name in *; do
+            cd "${{ github.workspace }}/artifacts/${name}/release"
+            chmod +x ./*
+            tar -czvf ./${name}.tar.gz ./*
+            gh release upload $GH_TAG ${name}.tar.gz
+          done
+
+          gh release edit $GH_TAG --draft=false
 
   publish-npm-package:
-    name: "🔁 Publish: NPM"
-    runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, benchmarks-micro, npm-package, build]
+    name: "🔄 Publish NPM Package"
+    runs-on: ubuntu-24.04
+    needs:
+      - vars
+      - test
+      - format
+      - lint
+      - build
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-env
-      - uses: actions/download-artifact@v4
-        with:
-          path: ${{ github.workspace }}/artifacts
-      - name: Publish NPM Package
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: eval $(curl -sSf sh.davidalsh.com/nodejs.sh | sh)
+      - env:
+          GH_TAG: ${{needs.vars.outputs.GH_TAG}}
+          NPM_VER: ${{needs.vars.outputs.NPM_VER}}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          echo TEMP: Skip for now
-          exit 0
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> $HOME/.npmrc
+          echo "GH_TAG: ${GH_TAG}"
+          echo "NPM_VER: ${NPM_VER}"
+          sed -i -e "s/0.0.0-local/${NPM_VER}/g" ./npm/package.json
+          cp ./README.md ./npm/README.md
+          cd npm
+          echo "$GH_TAG" > tag
+          npm publish --access=public
 
-          source .github/actions/setup-env/setup-env.bash
-          bash .github/workflows/release/publish-npm-package.bash
+  # publish-crate:
+  #   name: "🔁 Publish: Crates.io"
+  #   runs-on: ubuntu-latest
+  #   needs: [unit-tests, integration-tests, benchmarks-micro, npm-package, build]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-just
+  #     - uses: ./.github/actions/setup-nodejs
+  #     - uses: ./.github/actions/setup-rust
+  #     - uses: ./.github/actions/setup-env
+  #     - uses: ./.github/actions/build-mach
+  #     - name: Publish Crate
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         CRATES_IO_API_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
+  #       run: |
+  #         echo TEMP: Skip for now
+  #         exit 0
 
-  publish-crate:
-    name: "🔁 Publish: Crates.io"
-    runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, benchmarks-micro, npm-package, build]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-just
-      - uses: ./.github/actions/setup-nodejs
-      - uses: ./.github/actions/setup-rust
-      - uses: ./.github/actions/setup-env
-      - uses: ./.github/actions/build-mach
-      - name: Publish Crate
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CRATES_IO_API_TOKEN: ${{ secrets.CRATES_IO_API_TOKEN }}
-        run: |
-          echo TEMP: Skip for now
-          exit 0
-
-          source .github/actions/setup-env/setup-env.bash
-          bash .github/workflows/release/publish-crate.bash
+  #         source .github/actions/setup-env/setup-env.bash
+  #         bash .github/workflows/release/publish-crate.bash

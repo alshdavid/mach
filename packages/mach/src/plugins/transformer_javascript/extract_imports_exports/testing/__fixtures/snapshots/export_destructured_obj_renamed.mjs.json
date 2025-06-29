@@ -1,9 +1,0 @@
-[
-  {
-    "ExportDestructuredRenamed": {
-      "sym": "bar",
-      "sym_as": "bar_renamed",
-      "sym_source": "foo"
-    }
-  }
-]

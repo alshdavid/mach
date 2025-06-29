@@ -1,0 +1,10 @@
+{
+  "name": "@alshdavid/mach",
+  "version": "0.0.0-local",
+  "bin": {
+    "mach": "./mach.exe"
+  },
+  "scripts": {
+    "postinstall": "node ./postinstall.mjs"
+  }
+}

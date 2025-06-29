@@ -1,2 +1,0 @@
-output('b');
-require('./c');
